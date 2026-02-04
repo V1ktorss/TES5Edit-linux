@@ -33,6 +33,7 @@ function wbTryReadRegistryString(
   const aRegPath, aValueName: string;
   out aValue: string
 ): Boolean;
+function wbTryInitializeMOHook(const aHookDll, aProfile: string): Boolean;
 function wbOpenUrl(const aUrl: string): Boolean;
 function wbShellExecute(
   const aVerb, aFileName, aParams, aWorkingDir: string;
@@ -50,6 +51,7 @@ function wbCreateProcessWait(
   out aExitCode: Cardinal
 ): Boolean;
 function wbGetVirtualKeyState(const aVirtualKey: Integer): SmallInt;
+function wbIsVirtualKeyPressed(const aVirtualKey: Integer): Boolean;
 procedure wbSleepMs(const aMilliseconds: Cardinal);
 function wbGetSteamInstallFolder: string;
 function wbIsAssociatedWithExtension(const aExt, aExecPath: string): Boolean;
@@ -144,6 +146,15 @@ begin
   Exit;
   {$ENDIF}
   Result := 0;
+end;
+
+function wbIsVirtualKeyPressed(const aVirtualKey: Integer): Boolean;
+begin
+  {$IFDEF MSWINDOWS}
+  Result := (GetAsyncKeyState(aVirtualKey) and $8000) <> 0;
+  Exit;
+  {$ENDIF}
+  Result := False;
 end;
 
 procedure wbSleepMs(const aMilliseconds: Cardinal);
@@ -383,6 +394,31 @@ begin
     finally
       Free;
     end;
+  {$ENDIF}
+end;
+
+function wbTryInitializeMOHook(const aHookDll, aProfile: string): Boolean;
+{$IFDEF MSWINDOWS}
+type
+  TMOInitFunc = function(logLevel: Integer; profileName: LPCWSTR): BOOL; cdecl;
+var
+  lHookDll: HMODULE;
+  lInit: TMOInitFunc;
+{$ENDIF}
+begin
+  Result := False;
+  if (aHookDll = '') or (not FileExists(aHookDll)) then
+    Exit;
+
+  {$IFDEF MSWINDOWS}
+  lHookDll := LoadLibrary(PChar(aHookDll));
+  if lHookDll = 0 then
+    Exit(False);
+
+  Pointer(@lInit) := GetProcAddress(lHookDll, 'Init');
+  if Assigned(Pointer(@lInit)) then
+    Result := lInit(0, PWideChar(UnicodeString(aProfile)));
+  Exit;
   {$ENDIF}
 end;
 

@@ -61,9 +61,14 @@ This document tracks what is already done for the native Linux path and what com
 - Started `xeInit` decoupling:
   - moved known-folder and registry-read access behind `wbPlatform` helpers
   - reduced direct platform-coupled calls in `xEdit/xeInit.pas`
+  - moved async key-state checks to `wbPlatform.wbIsVirtualKeyPressed`
+  - moved MO hook DLL initialization behind `wbPlatform.wbTryInitializeMOHook`
+  - removed direct `Windows` unit dependency from `xeInit` (local VK constants)
 - Started `xeMainForm` decoupling:
   - moved external URL launch to `wbPlatform.wbOpenUrl`
   - removed direct `ShellAPI` usage from `xEdit/xeMainForm.pas`
+  - moved async key-state checks to `wbPlatform.wbIsVirtualKeyPressed`
+  - moved sync key-state checks to `wbPlatform.wbGetVirtualKeyState`
 - Started `xejviScriptAdapterMisc` decoupling:
   - added `wbPlatform.OpenUrl` script API bridge
   - routed common `ShellExecute(open, URL)` path through `wbPlatform`
@@ -74,6 +79,7 @@ This document tracks what is already done for the native Linux path and what com
   - gated `TRegistryIniFile` script registration to Windows-only
   - reduced direct `Windows` unit dependence in script adapter with cross-platform show-window constants
   - gated clipboard adapter registration/implementation to Windows-only
+  - removed `Windows` unit dependency from `xejviScriptAdapter.pas` by replacing `Int64Rec`-based conversion
 
 ## Risks
 

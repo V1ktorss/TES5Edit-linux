@@ -17,7 +17,6 @@ uses
   System.TypInfo,
   SysUtils,
   Variants,
-  Windows,
   Graphics,
   wbInterface,
   wbImplementation,
@@ -82,7 +81,7 @@ begin
     varInt64, varUInt64:
       begin
         i64 := v;
-        Result := Int64Rec(i64).Lo;
+        Result := Cardinal(UInt64(i64) and UInt64($FFFFFFFF));
       end;
     varString, varUString:
       Result := StrToInt(v);

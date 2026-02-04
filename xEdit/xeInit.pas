@@ -61,7 +61,6 @@ implementation
 uses
   System.UITypes,
   SysUtils,
-  Windows,
   Dialogs,
   IOUtils,
   IniFiles,
@@ -89,6 +88,11 @@ uses
   wbDefinitionsSF1,
   wbSteamVDFParser,
   xeScriptHost;
+
+const
+  VK_SHIFT = $10;
+  VK_CONTROL = $11;
+  VK_MENU = $12;
 
 function xeCheckForValidExtension(const aFilePath : string): Boolean;
 begin
@@ -146,9 +150,9 @@ begin
   if FileExists(xeSettingsFileName) then begin
     ResetSettings := FindCmdLineSwitch('resetsettings');
     if not ResetSettings then begin
-      Shift := GetAsyncKeyState(VK_SHIFT) < 0;
-      Ctrl := GetAsyncKeyState(VK_CONTROL) < 0;
-      Alt := GetAsyncKeyState(VK_MENU) < 0;
+      Shift := wbIsVirtualKeyPressed(VK_SHIFT);
+      Ctrl := wbIsVirtualKeyPressed(VK_CONTROL);
+      Alt := wbIsVirtualKeyPressed(VK_MENU);
       if Shift and Ctrl and Alt then
         ResetSettings := MessageDlg('Reset ALL settings? (Existing settings file will be backed up.)',
           mtConfirmation, [mbYes, mbNo], 0, mbNo) = mrYes;
@@ -315,62 +319,12 @@ begin
   end
 end;
 
-{===SafeLoadLibrary============================================================}
-{$IFDEF CPUX86}
-function TestAndClearFPUExceptions(AExceptionMask: Word): Boolean;
-asm
-      PUSH    ECX
-      MOV     CX, AX
-      FSTSW   AX
-      TEST    AX, CX
-      JNE     @@bad
-      XOR     EAX, EAX
-      INC     EAX
-      JMP     @@exit
-@@bad:
-      XOR     EAX, EAX
-@@exit:
-      POP     ECX
-      FCLEX
-      RET
-end;
-{------------------------------------------------------------------------------}
-function SafeLoadLibrary(const Filename: string; ErrorMode: UINT): HMODULE;
-var
-  OldMode: UINT;
-  FPUControlWord: Word;
-begin
-  OldMode := SetErrorMode(ErrorMode);
-  try
-    FPUControlWord := Get8087CW();
-    Result := LoadLibrary(PChar(Filename));
-    TestAndClearFPUExceptions(0);
-    Set8087CW(FPUControlWord);
-  finally
-    SetErrorMode(OldMode);
-  end;
-end;
-{==============================================================================}
-{$ENDIF CPUX86}
-
-
 function xeLoadMOHookFile: Boolean;
-var
-  HookDll : HMODULE;
-  Init    : function(logLevel: Integer; profileName: LPCWSTR): BOOL; cdecl;
 begin
   if not wbShouldLoadMOHookFile then
     Exit(True);
-  Result := False;
-  if not FileExists(wbMOHookFile) then
-    Exit;
 
-  HookDll := SafeLoadLibrary(wbMOHookFile, SEM_NOOPENFILEERRORBOX);
-  if HookDll <> 0 then begin
-    Pointer(@Init) := GetProcAddress(HookDll, 'Init');
-    if Assigned(Pointer(@Init)) then
-      Result := Init(0, PWideChar(UnicodeString(wbMOProfile)));
-  end;
+  Result := wbTryInitializeMOHook(wbMOHookFile, wbMOProfile);
 end;
 
 procedure DoInitPath(const ParamIndex: Integer);
