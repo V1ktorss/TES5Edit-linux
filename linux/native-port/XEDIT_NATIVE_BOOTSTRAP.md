@@ -24,6 +24,15 @@ This report identifies:
 - highest-impact files for staged refactor order
 - script-host adapter blockers (`xEdit/JvI/*`)
 
+Current snapshot (latest audit in repo):
+
+- Match count reduced from `81` to `73`
+- Files with matches reduced from `25` to `24`
+- Current top hotspots:
+  - `xEdit/JvI/xejviScriptAdapterMisc.pas`
+  - `xEdit/xeMainForm.pas`
+  - form units still tied to `Windows` + `Vcl.*`
+
 ## Step 2: Stabilize Platform Abstraction Boundary
 
 Prioritize high-impact files:
@@ -37,6 +46,12 @@ For each file:
 - isolate direct `Windows`/`Vcl`/`Registry` calls behind `wbPlatform*` wrappers
 - avoid changing UI behavior in this phase
 - add small compile-time guards where needed
+
+Priority for next pass:
+
+1. continue reducing Windows-only registrations in `xejviScriptAdapterMisc.pas`
+2. isolate more message/input helpers from `xeMainForm.pas` into `wbPlatform`
+3. decide whether `TRegistryIniFile` script support stays Windows-only or gets a cross-platform replacement
 
 ## Step 3: Define First xEdit Native Milestone
 
