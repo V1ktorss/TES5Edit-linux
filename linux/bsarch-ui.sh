@@ -8,6 +8,8 @@ BUILD_DIR="${SCRIPT_DIR}/.build-bsarch-ui"
 UI_BIN="${BUILD_DIR}/bsarch-ui"
 PRO_FILE="${CPP_DIR}/bsarch_ui_cpp.pro"
 LOG_FILE="${BSARCH_UI_LOG:-/tmp/bsarchse-launch.log}"
+DEBUG_UI="${BSARCH_UI_DEBUG:-0}"
+DEFAULT_QT_PLUGIN_PATH=""
 
 show_error() {
   local msg="$1"
@@ -49,19 +51,81 @@ rotate_log
   echo "=== $(date -Iseconds) bsarch-ui.sh start ==="
   echo "BSARCH_BIN=${BSARCH_BIN}"
   echo "DISPLAY=${DISPLAY:-<empty>} WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-<empty>}"
+  echo "XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-<empty>} XDG_CURRENT_DESKTOP=${XDG_CURRENT_DESKTOP:-<empty>} DESKTOP_SESSION=${DESKTOP_SESSION:-<empty>}"
+  echo "QT_QPA_PLATFORM=${QT_QPA_PLATFORM:-<empty>} QT_PLUGIN_PATH=${QT_PLUGIN_PATH:-<empty>} LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-<empty>}"
+  if [[ "$DEBUG_UI" == "1" ]]; then
+    echo "BSARCH_UI_DEBUG=1 (enabling QT_DEBUG_PLUGINS + qt.qpa.* logging)"
+  fi
 } >>"$LOG_FILE"
 
-# Use existing binary directly for reliable GUI launch from file managers.
-if [[ -x "$UI_BIN" ]]; then
+# Ensure Qt can find platform plugins when launched outside a full desktop environment.
+if [[ -z "${QT_PLUGIN_PATH:-}" ]]; then
+  if [[ -d "/usr/lib/qt/plugins" ]]; then
+    DEFAULT_QT_PLUGIN_PATH="/usr/lib/qt/plugins"
+  elif [[ -d "/usr/lib/qt5/plugins" ]]; then
+    DEFAULT_QT_PLUGIN_PATH="/usr/lib/qt5/plugins"
+  elif [[ -d "/usr/lib64/qt5/plugins" ]]; then
+    DEFAULT_QT_PLUGIN_PATH="/usr/lib64/qt5/plugins"
+  fi
+  if [[ -n "$DEFAULT_QT_PLUGIN_PATH" ]]; then
+    export QT_PLUGIN_PATH="$DEFAULT_QT_PLUGIN_PATH"
+    echo "QT_PLUGIN_PATH set to ${QT_PLUGIN_PATH}" >>"$LOG_FILE"
+  fi
+fi
+if [[ -n "${QT_PLUGIN_PATH:-}" && -d "${QT_PLUGIN_PATH}/platforms" ]]; then
+  echo "QT platforms: $(ls -1 "${QT_PLUGIN_PATH}/platforms" 2>/dev/null | tr '\n' ' ')" >>"$LOG_FILE"
+fi
+
+# Optional verbose Qt plugin diagnostics when troubleshooting startup crashes.
+if [[ "$DEBUG_UI" == "1" ]]; then
+  export QT_DEBUG_PLUGINS=1
+  export QT_LOGGING_RULES="qt.qpa.*=true"
+fi
+
+run_ui_attempt() {
+  local platform="$1"
+  local label="$2"
+  if [[ -n "$platform" ]]; then
+    echo "=== $(date -Iseconds) attempt ${label} (QT_QPA_PLATFORM=${platform}) ===" >>"$LOG_FILE"
+    QT_QPA_PLATFORM="$platform" "$UI_BIN" >>"$LOG_FILE" 2>&1
+  else
+    echo "=== $(date -Iseconds) attempt ${label} (QT_QPA_PLATFORM=default) ===" >>"$LOG_FILE"
+    "$UI_BIN" >>"$LOG_FILE" 2>&1
+  fi
+  return $?
+}
+
+run_ui_with_fallbacks() {
+  local ec=0
   set +e
-  "$UI_BIN" >>"$LOG_FILE" 2>&1
-  ec=$?
+  if [[ -n "${QT_QPA_PLATFORM:-}" ]]; then
+    run_ui_attempt "" "explicit-env"
+    ec=$?
+  else
+    if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+      run_ui_attempt "wayland" "wayland"
+      ec=$?
+      if [[ "$ec" -ne 0 ]]; then
+        run_ui_attempt "xcb" "xcb-fallback"
+        ec=$?
+      fi
+    else
+      run_ui_attempt "xcb" "xcb"
+      ec=$?
+    fi
+  fi
   set -e
   echo "=== $(date -Iseconds) bsarch-ui.sh exit code ${ec} ===" >>"$LOG_FILE"
   if [[ "$ec" -ne 0 ]]; then
-    show_error "BSArchSE failed to start. See log: $LOG_FILE"
+    show_error "BSArchSE failed to start. See log: $LOG_FILE\nIf this repeats, ensure Qt platform plugins are installed (e.g. qt5-wayland and/or xcb) and try QT_QPA_PLATFORM=wayland or xcb."
   fi
-  exit "$ec"
+  return "$ec"
+}
+
+# Use existing binary directly for reliable GUI launch from file managers.
+if [[ -x "$UI_BIN" ]]; then
+  run_ui_with_fallbacks
+  exit $?
 fi
 
 if ! command -v qmake >/dev/null 2>&1; then
@@ -81,12 +145,5 @@ if [[ ! -x "$UI_BIN" ]]; then
   fi
 fi
 
-set +e
-"$UI_BIN" >>"$LOG_FILE" 2>&1
-ec=$?
-set -e
-echo "=== $(date -Iseconds) bsarch-ui.sh exit code ${ec} ===" >>"$LOG_FILE"
-if [[ "$ec" -ne 0 ]]; then
-  show_error "BSArchSE failed to start. See log: $LOG_FILE"
-fi
-exit "$ec"
+run_ui_with_fallbacks
+exit $?
