@@ -1,0 +1,43 @@
+name: BSArch Linux CI
+
+on:
+  push:
+    branches:
+      - dev-4.1.6
+      - main
+  pull_request:
+
+jobs:
+  linux-bsarch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Qt Build Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qtbase5-dev qt5-qmake make
+
+      - name: Build BSArchSE (Qt)
+        run: |
+          qmake -o linux/.build-bsarch-ui/Makefile linux/bsarch_ui_cpp/bsarch_ui_cpp.pro
+          make -C linux/.build-bsarch-ui -j"$(nproc)"
+          test -x linux/.build-bsarch-ui/bsarch-ui
+
+      - name: Run BSArch Smoke Test
+        if: ${{ hashFiles('linux/bin/bsarch-core') != '' }}
+        run: |
+          chmod +x linux/native-port/smoke-test-bsarch.sh
+          chmod +x linux/native-port/regression-paths-bsarch.sh
+          chmod +x linux/native-port/stress-large-bsarch.sh
+          linux/native-port/smoke-test-bsarch.sh
+          linux/native-port/regression-paths-bsarch.sh
+          linux/native-port/stress-large-bsarch.sh
+
+      - name: Warn When bsarch-core Is Missing
+        if: ${{ hashFiles('linux/bin/bsarch-core') == '' }}
+        run: |
+          echo "linux/bin/bsarch-core not present in this checkout."
+          echo "Qt build completed, but CLI smoke test was skipped."

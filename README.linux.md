@@ -35,11 +35,12 @@ FO4Edit
 For BSArch:
 
 ```bash
-./start-bsarch.sh
+./BSArch-linux
 ```
 
 - With no arguments it opens the UI (desktop session) or shows CLI help.
 - With arguments it forwards directly to `BSArch-linux`.
+- `start-bsarch.sh` remains as a compatibility wrapper.
 
 ## Manual usage
 
@@ -58,7 +59,7 @@ A native Linux UI for `BSArch-linux` is included:
 ```bash
 chmod +x linux/bsarch-ui.sh linux/install-bsarch-ui.sh
 ./linux/install-bsarch-ui.sh
-BSArch-UI
+BSArch-linux
 ```
 
 The UI is implemented in `C++` with `Qt Widgets` (`linux/bsarch_ui_cpp`).

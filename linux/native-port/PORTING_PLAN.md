@@ -1,72 +1,79 @@
 # Native Linux Port Plan (No Wine)
 
-This is a practical migration plan to make xEdit run natively on Linux.
+This document tracks what is already done for the native Linux path and what comes next.
 
-## Reality check
+## Current Status
 
-- Current codebase is tightly coupled to Delphi + VCL + Windows APIs.
-- A direct "compile on Linux" switch does not exist.
-- Fastest path is staged migration:
-  1. Port non-UI tools first
-  2. Isolate platform dependencies
-  3. Rebuild GUI with Linux-capable framework
+- Native `BSArch` CLI build works on Linux (`BSArch-linux` launcher -> `linux/bin/bsarch-core`).
+- Linux platform compatibility layer exists in Pascal core (`wbPlatform` and helper units).
+- Linux wrappers and start scripts are present (`start-bsarch.sh`, `linux/bsarch-ui.sh`).
+- Native GUI exists as C++/Qt app (`BSArchSE`) with archive list workflows.
+- GUI supports:
+  - archive browsing + drag and drop
+  - file list filtering/search/sorting
+  - unpack selected
+  - pack selected
+  - archive info dialog
+  - double-click open via `Tmp` extraction
 
-## Target architecture
+## Completed Milestones
 
-- `core/` Pure parsing/business logic (cross-platform Pascal)
-- `platform/` OS abstractions (file dialogs, process launch, registry replacement, paths)
-- `apps/bsarch-cli` First native deliverable
-- `apps/xedit-gui` Final GUI app (Lazarus LCL or Qt binding)
+1. Dependency boundary setup
+- Windows-specific calls were isolated enough for BSArch path.
+- Linux-safe helper units were added.
 
-## Phases
+2. Native BSArch CLI milestone
+- `pack`, `unpack`, `list`, `dump` run natively on Linux.
+- CLI launch path is now independent from Wine.
 
-1. **Dependency audit and boundaries (1-2 weeks)**
-- Catalog all `Windows`, `Winapi.*`, `Vcl.*`, `Registry`, `ShellAPI` usages.
-- Define abstraction units (`uxPlatform*` / `wbPlatform*`) for OS calls.
-- Freeze feature scope for first native milestone (BSArch CLI).
+3. Native BSArch GUI milestone
+- Python prototype replaced with C++/Qt (`BSArchSE`).
+- KDE/Plasma workflow improved (Dolphin/start scripts/desktop entry).
 
-2. **Core extraction (2-4 weeks)**
-- Move non-UI archive/data parsing units behind platform-neutral interfaces.
-- Remove direct Windows type leakage from core units.
-- Add Linux-safe path/process/time helpers.
+## Open Work (Next)
 
-3. **Native BSArch CLI (1-2 weeks)**
-- Build with FreePascal/Lazarus.
-- Support unpack/pack/list/info on Linux paths.
-- Add regression fixtures against known BSA/BA2 archives.
+1. Stabilization and startup hardening
+- Verify Dolphin launch behavior across Plasma sessions.
+- Add explicit fallback dialog when GUI cannot open.
+- Keep startup logs minimal and rotate/clean them.
 
-4. **xDump CLI feasibility (1-2 weeks)**
-- Port command-line-only pieces.
-- Validate performance and output parity.
+2. Functional parity checks
+- Validate `Pack Selected` and `Unpack Selected` against large archives.
+- Add regression tests for path normalization (`\\` vs `/`, root entries, nested folders).
+- Validate `Tmp` cleanup behavior on crash and normal close.
+- Implemented automated path regression script: `linux/native-port/regression-paths-bsarch.sh`.
+- Implemented large-archive stress script: `linux/native-port/stress-large-bsarch.sh` (pack/list/unpack/launcher passthrough).
 
-5. **xEdit GUI strategy spike (2-3 weeks)**
-- Option A: Lazarus LCL port (closest Pascal workflow).
-- Option B: keep core in Pascal, rebuild GUI in another stack.
-- Decide based on prototype: startup, tree rendering, script host viability.
+3. Packaging
+- Ship `BSArchSE` and `bsarch-core` as one distributable artifact.
+- Add desktop entry/icon install script defaults for user-level install.
+- Add release checklist for Arch/Garuda.
+- Implemented packaging script: `linux/native-port/package-bsarchse.sh`.
+- Implemented release checklist: `linux/native-port/release-checklist-arch-garuda.md`.
 
-6. **GUI migration (multi-month)**
-- Replace VCL forms and VirtualTrees with Linux-capable equivalents.
-- Rework scripting host bindings currently tied to Windows/VCL.
-- Recreate settings/storage without Windows Registry.
+4. Next native targets
+- Evaluate `xDump` CLI feasibility with same platform abstraction model.
+- Record blockers for full xEdit GUI migration (VCL forms, script host, registry assumptions).
 
-## Highest-risk blockers
+## Risks
 
-- Deep VCL dependency across many forms and controls.
-- Script adapter exposes Windows-specific APIs to scripts.
-- Registry and Shell integration assumptions in startup/helpers.
+- Large VCL surface area still blocks direct xEdit GUI port.
+- Script host and plugin assumptions may still include Windows-only behavior.
+- GUI usability parity with original BSArchPro still needs incremental tuning.
 
-## First milestone definition (recommended)
+## Immediate Action List
 
-Deliver `bsarch-linux` native binary with:
-- archive inspect/list/extract/create
-- parity tests for core commands
-- packaged release artifact (AppImage or distro package)
+1. Add smoke test script for BSArchSE:
+- Implemented: `linux/native-port/smoke-test-bsarch.sh`
+- Automated: core pack/list/unpack roundtrip + launcher CLI passthrough
+- Manual checklist included for GUI actions (`Unpack Selected`, `Pack Selected`, `Archiv-Info`, double-click open)
 
-This gives immediate user value while reducing risk before GUI migration.
+2. Add basic CI job (Linux) for:
+- Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`
+- Builds `BSArchSE` (Qt) on Ubuntu
+- Runs `linux/native-port/smoke-test-bsarch.sh` when `linux/bin/bsarch-core` is present
 
-## Immediate next tasks
-
-1. Install toolchain: `fpc`, `lazarus`, `make`, `git`.
-2. Run dependency audit script (`audit-windows-deps.sh`).
-3. Create `wbPlatform` abstraction unit and port one core unit end-to-end.
-4. Attempt first Linux build for BSArch-only target.
+3. Finalize launcher behavior:
+- `BSArch-linux` should remain the single entry point for users.
+- Implemented in docs/install scripts: `BSArch-linux` is the default command and desktop launcher target.
+- `BSArch-UI` and `start-bsarch.sh` remain compatibility aliases.
