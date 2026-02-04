@@ -13,7 +13,7 @@ DEFAULT_QT_PLUGIN_PATH=""
 
 show_error() {
   local msg="$1"
-  if command -v kdialog >/dev/null 2>&1; then
+  if command -v kdialog >/dev/null 2>&1 && [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]]; then
     kdialog --error "$msg" 2>/dev/null || true
   fi
   echo "$msg" >&2
@@ -52,11 +52,21 @@ rotate_log
   echo "BSARCH_BIN=${BSARCH_BIN}"
   echo "DISPLAY=${DISPLAY:-<empty>} WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-<empty>}"
   echo "XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-<empty>} XDG_CURRENT_DESKTOP=${XDG_CURRENT_DESKTOP:-<empty>} DESKTOP_SESSION=${DESKTOP_SESSION:-<empty>}"
+  echo "XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-<empty>} DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS:-<empty>}"
   echo "QT_QPA_PLATFORM=${QT_QPA_PLATFORM:-<empty>} QT_PLUGIN_PATH=${QT_PLUGIN_PATH:-<empty>} LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-<empty>}"
   if [[ "$DEBUG_UI" == "1" ]]; then
     echo "BSARCH_UI_DEBUG=1 (enabling QT_DEBUG_PLUGINS + qt.qpa.* logging)"
   fi
 } >>"$LOG_FILE"
+
+# Ensure runtime dir for Wayland if missing.
+if [[ -z "${XDG_RUNTIME_DIR:-}" ]]; then
+  RUNTIME_FALLBACK="/run/user/$(id -u)"
+  if [[ -d "$RUNTIME_FALLBACK" ]]; then
+    export XDG_RUNTIME_DIR="$RUNTIME_FALLBACK"
+    echo "XDG_RUNTIME_DIR set to ${XDG_RUNTIME_DIR}" >>"$LOG_FILE"
+  fi
+fi
 
 # Ensure Qt can find platform plugins when launched outside a full desktop environment.
 if [[ -z "${QT_PLUGIN_PATH:-}" ]]; then
