@@ -13,7 +13,7 @@ unit xeModuleSelectForm;
 interface
 
 uses
-  Windows, Messages, UITypes, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  UITypes, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, CheckLst, Menus,
   Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
   wbInterface, wbLoadOrder, Vcl.ExtCtrls, System.Actions, Vcl.ActnList, Vcl.Mask;
@@ -119,6 +119,7 @@ implementation
 
 uses
   xeMainForm,
+  wbPlatform,
   StrUtils;
 
 procedure TfrmModuleSelect.mniInvertSelectionClick(Sender: TObject);
@@ -363,7 +364,7 @@ end;
 procedure TfrmModuleSelect.edFilterKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if Key = VK_DOWN then begin
+  if Key = vkDown then begin
     vstModules.FocusedNode := vstModules.GetFirstVisible;
     if Assigned(vstModules.FocusedNode) then begin
       vstModules.ClearSelection;
@@ -419,7 +420,7 @@ procedure TfrmModuleSelect.FormKeyDown(Sender: TObject; var Key: Word; Shift: TS
 var
   Node: PVirtualNode;
 begin
-  if Key = VK_RETURN then begin
+  if Key = vkReturn then begin
     if edFilter.Focused then begin
       vstModules.SetFocus;
       vstModules.ClearSelection;
@@ -453,12 +454,12 @@ begin
       if btnOK.Enabled then
         btnOK.Click;
     end;
-  end else if Key = VK_ESCAPE then begin
+  end else if Key = vkEscape then begin
     if btnCancel.Enabled then
       btnCancel.Click;
-  end else if Key = VK_MULTIPLY then
+  end else if Key = vkMultiply then
     mniInvertSelection.Click
-  else if Key = VK_DELETE then
+  else if Key = vkDelete then
     if cbPreset.Focused then begin
       if Shift = [ssShift] then begin
         Key := 0;
@@ -950,7 +951,7 @@ procedure TfrmModuleSelect.vstModulesKeyDown(Sender: TObject; var Key: Word; Shi
 var
   FirstVisible: PVirtualNode;
 begin
-  if Key = VK_UP then
+  if Key = vkUp then
     if Shift = [] then begin
       FirstVisible := vstModules.GetFirstVisible;
       if not Assigned(FirstVisible) or (vstModules.FocusedNode = FirstVisible) then
@@ -968,7 +969,7 @@ end;
 
 procedure TfrmModuleSelect.vstModulesNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
 begin
-  if not wbRequireCtrlForDblClick or (GetKeyState(VK_CONTROL) < 0) then
+  if not wbRequireCtrlForDblClick or wbIsVirtualKeyPressed(VK_CONTROL) then
     with HitInfo do
       if Assigned(HitNode) then
         if [

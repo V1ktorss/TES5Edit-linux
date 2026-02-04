@@ -13,7 +13,7 @@ unit xeOptionsForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ExtCtrls, wbInterface,
   Vcl.Styles.Utils.SystemMenu, Vcl.Samples.Spin, Vcl.Themes,
   System.Generics.Collections, Vcl.Styles.Ext, Vcl.Styles.Preview;
@@ -296,7 +296,7 @@ end;
 procedure TfrmOptions.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if Key = VK_ESCAPE then
+  if Key = vkEscape then
     ModalResult := mrCancel;
 end;
 
