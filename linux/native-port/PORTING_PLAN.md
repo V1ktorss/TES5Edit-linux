@@ -79,7 +79,9 @@ This document tracks what is already done for the native Linux path and what com
   - gated `TRegistryIniFile` script registration to Windows-only
   - reduced direct `Windows` unit dependence in script adapter with cross-platform show-window constants
   - gated clipboard adapter registration/implementation to Windows-only
+  - removed remaining direct `Windows` unit import from `xejviScriptAdapterMisc.pas`
   - removed `Windows` unit dependency from `xejviScriptAdapter.pas` by replacing `Int64Rec`-based conversion
+  - gated `JvInterpreter_Windows` registration to Windows-only in `xejviScriptAdapter.pas`
 
 ## Risks
 

@@ -35,7 +35,9 @@ uses
   JvInterpreter_SysUtils,
   JvInterpreter_Classes,
   JvInterpreter_Dialogs,
+  {$IFDEF MSWINDOWS}
   JvInterpreter_Windows,
+  {$ENDIF}
   JvInterpreter_Math,
   //JvInterpreter_JvEditor,
   JvInterpreter_Buttons,
@@ -2423,7 +2425,9 @@ begin
   JvInterpreter_SysUtils.RegisterJvInterpreterAdapter(GlobalJvInterpreterAdapter);
   JvInterpreter_Classes.RegisterJvInterpreterAdapter(GlobalJvInterpreterAdapter);
   JvInterpreter_Dialogs.RegisterJvInterpreterAdapter(GlobalJvInterpreterAdapter);
+  {$IFDEF MSWINDOWS}
   JvInterpreter_Windows.RegisterJvInterpreterAdapter(GlobalJvInterpreterAdapter);
+  {$ENDIF}
   JvInterpreter_Graphics.RegisterJvInterpreterAdapter(GlobalJvInterpreterAdapter);
   JvInterpreter_Controls.RegisterJvInterpreterAdapter(GlobalJvInterpreterAdapter);
   JvInterpreter_Buttons.RegisterJvInterpreterAdapter(GlobalJvInterpreterAdapter);

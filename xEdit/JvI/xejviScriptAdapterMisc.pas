@@ -20,9 +20,6 @@ procedure RegisterJvInterpreterAdapter(JvInterpreterAdapter: TJvInterpreterAdapt
 implementation
 
 uses
-  {$IFDEF MSWINDOWS}
-  Windows,
-  {$ENDIF}
   Graphics,
   Classes,
   SysUtils,
@@ -51,7 +48,6 @@ uses
   wbInterface;
 
 const
-{$IFNDEF MSWINDOWS}
   SW_HIDE = 0;
   SW_SHOWNORMAL = 1;
   SW_SHOWMINIMIZED = 2;
@@ -64,7 +60,6 @@ const
   SW_RESTORE = 9;
   SW_SHOWDEFAULT = 10;
   SW_MAXIMIZE = 3;
-{$ENDIF}
 
 
 { Classes Events }
@@ -662,11 +657,7 @@ begin
   ) then begin
     Value := ExitCode;
   end else
-    {$IFDEF MSWINDOWS}
-    raise Exception.Create('ShellExecute failed, error code ' + IntToStr(GetLastError));
-    {$ELSE}
     raise Exception.Create('ShellExecute failed');
-    {$ENDIF}
 end;
 
 // file, params, show window, timeout
@@ -683,11 +674,7 @@ begin
   ) then begin
     Value := ExitCode;
   end else
-    {$IFDEF MSWINDOWS}
-    raise Exception.Create('CreateProcess failed, error code ' + IntToStr(GetLastError));
-    {$ELSE}
     raise Exception.Create('CreateProcess failed');
-    {$ENDIF}
 end;
 
 procedure JvInterpreter_Sleep(var Value: Variant; Args: TJvInterpreterArgs);
