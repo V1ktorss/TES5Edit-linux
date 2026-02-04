@@ -13,7 +13,7 @@ unit xeDeveloperMessageForm;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
   JvExStdCtrls, JvRichEdit, FileContainer, JvHtControls;
 
@@ -61,6 +61,7 @@ implementation
 
 uses
   wbInterface,
+  wbPlatform,
   xeMainForm,
   Vcl.Styles.Utils.SystemMenu;
 
@@ -176,7 +177,7 @@ var
   Stream: TStream;
 begin
   wbPatron := False;
-  LockWindowUpdate(Handle);
+  wbLockWindowUpdate(Handle);
   try
     btnOops.Visible := False;
     btnOK.Visible := True;
@@ -203,7 +204,7 @@ begin
     end;
     FixZoom;
   finally
-    LockWindowUpdate(0);
+    wbLockWindowUpdate(0);
   end;
 end;
 

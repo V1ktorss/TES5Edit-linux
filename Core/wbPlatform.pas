@@ -37,6 +37,7 @@ function wbTryInitializeMOHook(const aHookDll, aProfile: string): Boolean;
 function wbGetClipboardText: string;
 procedure wbSetClipboardText(const aText: string);
 function wbShowWindowNoActivate(const aHandle: THandle): Boolean;
+procedure wbLockWindowUpdate(const aHandle: THandle);
 function wbOpenUrl(const aUrl: string): Boolean;
 function wbCopyFile(
   const aSource, aDestination: string;
@@ -457,6 +458,13 @@ begin
     Exit;
   {$IFDEF MSWINDOWS}
   Result := ShowWindow(aHandle, SW_SHOWNOACTIVATE);
+  {$ENDIF}
+end;
+
+procedure wbLockWindowUpdate(const aHandle: THandle);
+begin
+  {$IFDEF MSWINDOWS}
+  Windows.LockWindowUpdate(aHandle);
   {$ENDIF}
 end;
 

@@ -101,6 +101,9 @@ This document tracks what is already done for the native Linux path and what com
   - removed direct `Windows`/`Messages` imports from `xeLODGenForm`, `xeFilterOptionsForm`, and `xeElementDetailForm`
   - replaced legacy `VK_ESCAPE` usage in `xeLODGenForm` and `xeFilterOptionsForm` with cross-platform `vkEscape`
   - removed direct `Windows`/`Messages` imports from `xeWaitForm`, `xeLegendForm`, and `xeLogAnalyzerForm`
+  - replaced `GetKeyState` usage in `xeFileSelectForm` with `wbIsVirtualKeyPressed`, switched legacy VK constants to `vk*`, and removed `Windows`/`Messages` imports
+  - removed `Winapi.Windows`/`Winapi.Messages` imports from `xeWorldspaceCellDetailsForm`
+  - routed `xeDeveloperMessageForm` window-update locking through `wbPlatform.wbLockWindowUpdate` and dropped direct WinAPI imports
 
 ## Risks
 

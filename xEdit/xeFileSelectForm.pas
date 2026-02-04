@@ -13,7 +13,7 @@ unit xeFileSelectForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, CheckLst, Menus,
   Vcl.Styles.Utils.SystemMenu;
 
@@ -53,6 +53,7 @@ implementation
 
 uses
   wbInterface,
+  wbPlatform,
   xeMainForm,
   StrUtils;
 
@@ -70,7 +71,7 @@ end;
 
 procedure TfrmFileSelect.CheckListBox1DblClick(Sender: TObject);
 begin
-  if not wbRequireCtrlForDblClick or (GetKeyState(VK_CONTROL) < 0) then begin
+  if not wbRequireCtrlForDblClick or wbIsVirtualKeyPressed(VK_CONTROL) then begin
     SelectNone1.Click;
     if (CheckListBox1.ItemIndex >= 0) and (CheckListBox1.ItemIndex < CheckListBox1.Count) then begin
       CheckListBox1.Checked[CheckListBox1.ItemIndex] := True;
@@ -116,16 +117,16 @@ begin
   if edSearch.Focused then
     Exit;
 
-  if Key = VK_RETURN then
+  if Key = vkReturn then
     btnOK.Click
-  else if Key = VK_ESCAPE then begin
+  else if Key = vkEscape then begin
     if not NoEscape then
       ModalResult := mrCancel;
-  end else if Key = VK_SUBTRACT then
+  end else if Key = vkSubtract then
     SelectNone1.Click
-  else if Key = VK_ADD then
+  else if Key = vkAdd then
     SelectAll1.Click
-  else if Key = VK_MULTIPLY then
+  else if Key = vkMultiply then
     InvertSelection1.Click;
 end;
 
