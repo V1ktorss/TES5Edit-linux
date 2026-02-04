@@ -2034,12 +2034,18 @@ begin
     AddFunction('SysUtils', 'ExcludeTrailingBackslash', JvInterpreter_ExcludeTrailingBackslash, 1, [varEmpty], varEmpty);
     AddFunction('System', 'StringOfChar', JvInterpreter_StringOfChar, 2, [varEmpty, varEmpty], varEmpty);
     AddFunction('Windows', 'CopyFile', JvInterpreter_CopyFile, 3, [varEmpty, varEmpty, varEmpty], varEmpty);
+    AddFunction('wbPlatform', 'CopyFile', JvInterpreter_CopyFile, 3, [varEmpty, varEmpty, varEmpty], varEmpty);
     AddFunction('wbPlatform', 'OpenUrl', JvInterpreter_wbOpenUrl, 1, [varEmpty], varEmpty);
     AddFunction('ShellApi', 'ShellExecute', JvInterpreter_ShellExecute, 6, [varEmpty, varEmpty, varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);
     AddFunction('ShellApi', 'ShellExecuteWait', JvInterpreter_ShellExecuteWait, 6, [varEmpty, varEmpty, varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);
+    AddFunction('wbPlatform', 'ShellExecute', JvInterpreter_ShellExecute, 6, [varEmpty, varEmpty, varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);
+    AddFunction('wbPlatform', 'ShellExecuteWait', JvInterpreter_ShellExecuteWait, 6, [varEmpty, varEmpty, varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);
     AddFunction('Windows', 'CreateProcessWait', JvInterpreter_CreateProcessWait, 4, [varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);
     AddFunction('Windows', 'Sleep', JvInterpreter_Sleep, 1, [varEmpty], varEmpty);
     AddFunction('Windows', 'GetKeyState', JvInterpreter_GetKeyState, 1, [varEmpty], varEmpty);
+    AddFunction('wbPlatform', 'CreateProcessWait', JvInterpreter_CreateProcessWait, 4, [varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);
+    AddFunction('wbPlatform', 'Sleep', JvInterpreter_Sleep, 1, [varEmpty], varEmpty);
+    AddFunction('wbPlatform', 'GetKeyState', JvInterpreter_GetKeyState, 1, [varEmpty], varEmpty);
     AddFunction('FileCtrl', 'SelectDirectory', JvInterpreter_SelectDirectory, 4, [varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);
 
     { TEncoding }
