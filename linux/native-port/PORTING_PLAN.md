@@ -86,6 +86,7 @@ This document tracks what is already done for the native Linux path and what com
   - gated legacy `Windows.*` and `ShellApi.*` script registrations to Windows-only
   - moved clipboard read/write implementation to `wbPlatform` and added `wbPlatform` clipboard aliases
   - removed remaining `Vcl.Clipbrd` usage from `xeModGroupEditForm` by routing copy actions through `wbSetClipboardText`
+  - removed unused `Windows`/`Messages` imports from `xeEditWarningForm` to reduce baseline WinAPI coupling
   - removed `Windows` unit dependency from `xejviScriptAdapter.pas` by replacing `Int64Rec`-based conversion
   - gated `JvInterpreter_Windows` registration to Windows-only in `xejviScriptAdapter.pas`
 
