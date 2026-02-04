@@ -70,6 +70,10 @@ This document tracks what is already done for the native Linux path and what com
   - replaced script `CopyFile` binding with platform-neutral file copy logic
   - moved `CreateProcessWait` and `GetKeyState` bindings to `wbPlatform` wrappers
   - moved `ShellExecuteWait` and `Sleep` bindings to `wbPlatform` wrappers
+  - moved `ShellExecute` binding to `wbPlatform` wrapper and removed direct `ShellApi` dependency
+  - gated `TRegistryIniFile` script registration to Windows-only
+  - reduced direct `Windows` unit dependence in script adapter with cross-platform show-window constants
+  - gated clipboard adapter registration/implementation to Windows-only
 
 ## Risks
 

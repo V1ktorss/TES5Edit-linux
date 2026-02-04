@@ -20,7 +20,9 @@ procedure RegisterJvInterpreterAdapter(JvInterpreterAdapter: TJvInterpreterAdapt
 implementation
 
 uses
+  {$IFDEF MSWINDOWS}
   Windows,
+  {$ENDIF}
   Graphics,
   Classes,
   SysUtils,
@@ -33,19 +35,36 @@ uses
   Forms,
   Menus,
   CheckLst,
-  ShellApi,
   IOUtils,
   FileCtrl,
   IniFiles,
+  {$IFDEF MSWINDOWS}
   Registry,
+  Vcl.Clipbrd,
+  {$ENDIF}
   Math,
   Types,
-  Vcl.Clipbrd,
   RegularExpressionsCore,
   RegularExpressionsConsts,
   JsonDataObjects,
   wbPlatform,
   wbInterface;
+
+const
+{$IFNDEF MSWINDOWS}
+  SW_HIDE = 0;
+  SW_SHOWNORMAL = 1;
+  SW_SHOWMINIMIZED = 2;
+  SW_SHOWMAXIMIZED = 3;
+  SW_SHOWNOACTIVATE = 4;
+  SW_SHOW = 5;
+  SW_MINIMIZE = 6;
+  SW_SHOWMINNOACTIVE = 7;
+  SW_SHOWNA = 8;
+  SW_RESTORE = 9;
+  SW_SHOWDEFAULT = 10;
+  SW_MAXIMIZE = 3;
+{$ENDIF}
 
 
 { Classes Events }
@@ -76,16 +95,22 @@ end;
 
 procedure JvInterpreter_Clipboard_GetAsText(var Value: Variant; Args: TJvInterpreterArgs);
 begin
+  {$IFDEF MSWINDOWS}
   Value := Clipboard.AsText;
+  {$ELSE}
+  Value := '';
+  {$ENDIF}
 end;
 
 procedure JvInterpreter_Clipboard_SetAsText(var Value: Variant; Args: TJvInterpreterArgs);
 begin
+  {$IFDEF MSWINDOWS}
   var s := string(Args.Values[0]);
   if Length(s) > 0 then
     Clipboard.AsText := s
   else
     Clipboard.Clear;
+  {$ENDIF}
 end;
 
 { StrUtils }
@@ -608,25 +633,12 @@ end;
 
 procedure JvInterpreter_ShellExecute(var Value: Variant; Args: TJvInterpreterArgs);
 begin
-  // Migration path: route common "open URL" usage through wbPlatform.
-  if SameText(String(Args.Values[1]), 'open')
-    and (Trim(String(Args.Values[3])) = '')
-    and (Trim(String(Args.Values[4])) = '')
-  then begin
-    if wbOpenUrl(String(Args.Values[2])) then
-      Value := 33
-    else
-      Value := 31;
-    Exit;
-  end;
-
-  Value := ShellExecute(
-    Args.Values[0],
-    PWideChar(String(Args.Values[1])),
-    PWideChar(String(Args.Values[2])),
-    PWideChar(String(Args.Values[3])),
-    PWideChar(String(Args.Values[4])),
-    Args.Values[5]
+  Value := wbShellExecute(
+    String(Args.Values[1]),
+    String(Args.Values[2]),
+    String(Args.Values[3]),
+    String(Args.Values[4]),
+    Integer(Args.Values[5])
   );
 end;
 
@@ -650,7 +662,11 @@ begin
   ) then begin
     Value := ExitCode;
   end else
+    {$IFDEF MSWINDOWS}
     raise Exception.Create('ShellExecute failed, error code ' + IntToStr(GetLastError));
+    {$ELSE}
+    raise Exception.Create('ShellExecute failed');
+    {$ENDIF}
 end;
 
 // file, params, show window, timeout
@@ -667,7 +683,11 @@ begin
   ) then begin
     Value := ExitCode;
   end else
+    {$IFDEF MSWINDOWS}
     raise Exception.Create('CreateProcess failed, error code ' + IntToStr(GetLastError));
+    {$ELSE}
+    raise Exception.Create('CreateProcess failed');
+    {$ENDIF}
 end;
 
 procedure JvInterpreter_Sleep(var Value: Variant; Args: TJvInterpreterArgs);
@@ -1139,10 +1159,12 @@ end;
 
 { TRegistryIniFile }
 
+{$IFDEF MSWINDOWS}
 procedure TRegistryIniFile_Create(var Value: Variant; Args: TJvInterpreterArgs);
 begin
   Value := O2V(TRegistryIniFile.Create(String(Args.Values[0])));
 end;
+{$ENDIF}
 
 { TControl }
 
@@ -1974,8 +1996,10 @@ begin
     AddConst('Windows', 'SW_SHOWNORMAL', Ord(SW_SHOWNORMAL));
 
     { Clipboard }
+    {$IFDEF MSWINDOWS}
     AddFunction('Vcl.Clipbrd', 'GetClipboardText', JvInterpreter_Clipboard_GetAsText, 0, [varEmpty], varEmpty);
     AddFunction('Vcl.Clipbrd', 'SetClipboardText', JvInterpreter_Clipboard_SetAsText, 1, [varString], varEmpty);
+    {$ENDIF}
 
     { StrUtils }
     AddFunction('StrUtils', 'ContainsStr', JvInterpreter_ContainsStr, 2, [varEmpty, varEmpty], varEmpty);
@@ -2201,8 +2225,10 @@ begin
     AddGet(TMemIniFile, 'SetStrings', TMemIniFile_SetStrings, 1, [varEmpty], varEmpty);
 
     { TRegistryIniFile }
+    {$IFDEF MSWINDOWS}
     AddClass('Registry', TRegistryIniFile, 'TRegistryIniFile');
     AddGet(TRegistryIniFile, 'Create', TRegistryIniFile_Create, 1, [varEmpty], varEmpty);
+    {$ENDIF}
 
     { TControl }
     AddConst('Controls', 'seFont', Ord(seFont));

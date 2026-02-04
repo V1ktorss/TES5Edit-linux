@@ -34,6 +34,10 @@ function wbTryReadRegistryString(
   out aValue: string
 ): Boolean;
 function wbOpenUrl(const aUrl: string): Boolean;
+function wbShellExecute(
+  const aVerb, aFileName, aParams, aWorkingDir: string;
+  const aShowWindow: Integer
+): Integer;
 function wbShellExecuteWait(
   const aVerb, aFileName, aParams, aWorkingDir: string;
   const aShowWindow: Integer;
@@ -220,6 +224,49 @@ begin
     lProc.Options := [];
     lProc.Execute;
     Result := True;
+  finally
+    lProc.Free;
+  end;
+  Exit;
+  {$ENDIF}
+  {$ENDIF}
+end;
+
+function wbShellExecute(
+  const aVerb, aFileName, aParams, aWorkingDir: string;
+  const aShowWindow: Integer
+): Integer;
+{$IFDEF FPC}
+{$IFDEF LINUX}
+var
+  lProc: TProcess;
+{$ENDIF}
+{$ENDIF}
+begin
+  Result := 31;
+
+  {$IFDEF MSWINDOWS}
+  Result := ShellExecute(0, PWideChar(aVerb), PWideChar(aFileName), PWideChar(aParams), PWideChar(aWorkingDir), aShowWindow);
+  Exit;
+  {$ENDIF}
+
+  {$IFDEF FPC}
+  {$IFDEF LINUX}
+  lProc := TProcess.Create(nil);
+  try
+    if SameText(Trim(aVerb), 'open') and (Trim(aParams) = '') then begin
+      lProc.Executable := '/usr/bin/xdg-open';
+      lProc.Parameters.Add(aFileName);
+    end else begin
+      lProc.Executable := aFileName;
+      if Trim(aParams) <> '' then
+        lProc.Parameters.Add(aParams);
+      if Trim(aWorkingDir) <> '' then
+        lProc.CurrentDirectory := aWorkingDir;
+    end;
+    lProc.Options := [];
+    lProc.Execute;
+    Result := 33;
   finally
     lProc.Free;
   end;
