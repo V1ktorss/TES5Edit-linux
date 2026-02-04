@@ -42,6 +42,22 @@ FO4Edit
 
 You can pass normal xEdit arguments after the mode.
 
+## BSArch Native UI
+
+A native Linux UI for `BSArch-linux` is included:
+
+```bash
+chmod +x linux/bsarch-ui.sh linux/install-bsarch-ui.sh linux/bsarch_ui.py
+./linux/install-bsarch-ui.sh
+BSArch-UI
+```
+
+The UI supports:
+- Archive info
+- Pack folder -> archive
+- Unpack archive -> folder
+- Live output log
+
 ## Optional environment variables
 
 - `WINEPREFIX`: override Wine prefix
