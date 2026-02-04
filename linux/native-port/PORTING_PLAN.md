@@ -70,6 +70,8 @@ This document tracks what is already done for the native Linux path and what com
   - moved async key-state checks to `wbPlatform.wbIsVirtualKeyPressed`
   - moved sync key-state checks to `wbPlatform.wbIsVirtualKeyPressed`
   - moved direct clipboard read/write usage to `wbGetClipboardText`/`wbSetClipboardText`
+- Extended `wbPlatform` helpers:
+  - added `wbShowWindowNoActivate` wrapper for non-activating tip-form display
 - Started `xejviScriptAdapterMisc` decoupling:
   - added `wbPlatform.OpenUrl` script API bridge
   - routed common `ShellExecute(open, URL)` path through `wbPlatform`
@@ -91,6 +93,8 @@ This document tracks what is already done for the native Linux path and what com
   - moved `xeTipForm` no-activate show path behind `wbShowWindowNoActivate` and dropped direct `Windows` import
   - removed `Windows` unit dependency from `xejviScriptAdapter.pas` by replacing `Int64Rec`-based conversion
   - gated `JvInterpreter_Windows` registration to Windows-only in `xejviScriptAdapter.pas`
+  - removed direct `Windows` imports from `xeLocalizationForm` and `xeLocalizePluginForm`
+  - replaced `MessageBox` usage in `xeLocalizePluginForm` with cross-platform `MessageDlg`
 
 ## Risks
 

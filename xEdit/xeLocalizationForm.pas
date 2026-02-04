@@ -13,7 +13,7 @@ unit xeLocalizationForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, VirtualTrees, VirtualEditTree, ExtDlgs, Menus,
   SynEdit, SynMemo, xeMainForm, IniFiles;
 

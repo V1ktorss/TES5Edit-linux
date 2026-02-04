@@ -13,7 +13,7 @@ unit xeLocalizePluginForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, CheckLst;
 
 type
@@ -61,7 +61,7 @@ begin
     j := 0;
     for i := 0 to Pred(clbFrom.Count) do begin
       if clbFrom.Checked[i] and clbTo.Checked[i] then begin
-        MessageBox(0, PChar('Translation files should not match'), 'Error', 0);
+        MessageDlg('Translation files should not match', mtError, [mbOK], 0);
         Action := caNone;
         Exit;
       end;
@@ -69,7 +69,7 @@ begin
       if clbTo.Checked[i] then Dec(j);
     end;
     if j <> 0 then begin
-      MessageBox(0, PChar('Translation files should come in pairs'), 'Error', 0);
+      MessageDlg('Translation files should come in pairs', mtError, [mbOK], 0);
       Action := caNone;
     end;
   end;
