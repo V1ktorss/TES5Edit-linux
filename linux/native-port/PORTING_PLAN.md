@@ -100,6 +100,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved `xeViewElementsForm` clipboard + compare-launch paths to `wbPlatform` (`wbSetClipboardText`, `wbCreateProcessWait`) and removed direct `Windows`/`ShellApi`/`Clipbrd` imports
   - removed direct `Windows`/`Messages` imports from `xeLODGenForm`, `xeFilterOptionsForm`, and `xeElementDetailForm`
   - replaced legacy `VK_ESCAPE` usage in `xeLODGenForm` and `xeFilterOptionsForm` with cross-platform `vkEscape`
+  - removed direct `Windows`/`Messages` imports from `xeWaitForm`, `xeLegendForm`, and `xeLogAnalyzerForm`
 
 ## Risks
 

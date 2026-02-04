@@ -13,7 +13,7 @@ unit xeWaitForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs,
   wbInterface, StdCtrls, Buttons, ExtCtrls;
 
@@ -246,4 +246,3 @@ end;
 initialization
 //  wbCreateWaitForm := _CreateWaitForm;
 end.
-
