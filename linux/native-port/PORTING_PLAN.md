@@ -83,6 +83,7 @@ This document tracks what is already done for the native Linux path and what com
   - added `wbPlatform.*` alias registrations in script adapter for process/shell/file helpers
   - moved script `CopyFile` implementation to `wbPlatform.wbCopyFile`
   - added non-Windows fallback for `Registry.TRegistryIniFile` scripts (maps to `TMemIniFile`)
+  - gated legacy `Windows.*` and `ShellApi.*` script registrations to Windows-only
   - removed `Windows` unit dependency from `xejviScriptAdapter.pas` by replacing `Int64Rec`-based conversion
   - gated `JvInterpreter_Windows` registration to Windows-only in `xejviScriptAdapter.pas`
 

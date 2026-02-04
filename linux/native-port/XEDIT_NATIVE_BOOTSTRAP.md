@@ -26,12 +26,16 @@ This report identifies:
 
 Current snapshot (latest audit in repo):
 
-- Match count reduced from `81` to `73`
+- Match count reduced from `81` to `56`
 - Files with matches reduced from `25` to `24`
 - Current top hotspots:
   - `xEdit/JvI/xejviScriptAdapterMisc.pas`
   - `xEdit/xeMainForm.pas`
   - form units still tied to `Windows` + `Vcl.*`
+
+Note:
+
+- audit now filters legacy script namespace markers (for example `AddFunction('Windows', ...)`) to focus on actual code dependencies.
 
 ## Step 2: Stabilize Platform Abstraction Boundary
 

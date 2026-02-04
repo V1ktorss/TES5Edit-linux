@@ -8,35 +8,41 @@ OUT_FILE="${OUT_DIR}/xedit-readiness.txt"
 mkdir -p "${OUT_DIR}"
 
 PATTERN='\bWinapi\.|\bWindows\b|\bVcl\.|\bRegistry\b|\bShellAPI\b|\bShlObj\b'
+EXCLUDE_PATTERN="AddConst\\('Windows'|AddFunction\\('Windows'|AddFunction\\('ShellApi'|AddClass\\('Registry'"
+
+collect_matches() {
+  rg -n --no-heading -e "${PATTERN}" "$1" 2>/dev/null \
+    | rg -v -e "${EXCLUDE_PATTERN}" || true
+}
 
 {
   echo "# xEdit Native Readiness Audit"
   echo "# generated: $(date -Iseconds)"
   echo
   echo "## Summary"
-  total_matches="$( (rg -n --no-heading -e "${PATTERN}" "${ROOT_DIR}/xEdit" || true) | wc -l )"
-  total_files="$( (rg -l -e "${PATTERN}" "${ROOT_DIR}/xEdit" || true) | wc -l )"
+  total_matches="$(collect_matches "${ROOT_DIR}/xEdit" | wc -l)"
+  total_files="$(collect_matches "${ROOT_DIR}/xEdit" | awk -F: '{print $1}' | sort -u | wc -l)"
   echo "- Match count: ${total_matches}"
   echo "- Files with matches: ${total_files}"
   echo
 
   echo "## Top files by match count"
-  (rg -n --no-heading -e "${PATTERN}" "${ROOT_DIR}/xEdit" || true) \
+  collect_matches "${ROOT_DIR}/xEdit" \
     | awk -F: '{count[$1]++} END{for (f in count) print count[f] "\t" f}' \
     | sort -rn \
     | sed -n '1,25p'
   echo
 
   echo "## Script host hotspot (JvI adapters)"
-  rg -n --no-heading -e "${PATTERN}" "${ROOT_DIR}/xEdit/JvI" || true
+  collect_matches "${ROOT_DIR}/xEdit/JvI"
   echo
 
   echo "## Main form hotspot"
-  rg -n --no-heading -e "${PATTERN}" "${ROOT_DIR}/xEdit/xeMainForm.pas" || true
+  collect_matches "${ROOT_DIR}/xEdit/xeMainForm.pas"
   echo
 
   echo "## Raw matches"
-  rg -n --no-heading -e "${PATTERN}" "${ROOT_DIR}/xEdit"
+  collect_matches "${ROOT_DIR}/xEdit"
 } > "${OUT_FILE}"
 
 echo "Wrote: ${OUT_FILE}"
