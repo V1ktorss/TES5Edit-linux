@@ -32,12 +32,14 @@ jobs:
           chmod +x linux/native-port/smoke-test-bsarch.sh
           chmod +x linux/native-port/regression-paths-bsarch.sh
           chmod +x linux/native-port/stress-large-bsarch.sh
-          linux/native-port/smoke-test-bsarch.sh
-          linux/native-port/regression-paths-bsarch.sh
-          linux/native-port/stress-large-bsarch.sh
+          chmod +x linux/native-port/xedit-readiness-audit.sh
+          chmod +x linux/native-port/check-xedit-readiness.sh
+          chmod +x linux/native-port/smoke-test-xedit-headless.sh
+          chmod +x linux/native-port/run-all-checks.sh
+          linux/native-port/run-all-checks.sh
 
       - name: Warn When bsarch-core Is Missing
         if: ${{ hashFiles('linux/bin/bsarch-core') == '' }}
         run: |
           echo "linux/bin/bsarch-core not present in this checkout."
-          echo "Qt build completed, but CLI smoke test was skipped."
+          echo "Qt build completed, but native-port checks were skipped."

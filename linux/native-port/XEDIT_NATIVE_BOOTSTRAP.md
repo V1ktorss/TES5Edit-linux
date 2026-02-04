@@ -63,6 +63,7 @@ Note:
 - audit now reports core blockers and style namespaces separately to make remaining Linux blockers explicit.
 - CI gate: `.github/workflows/xedit-readiness-ci.yml` runs the readiness check in strict mode (`ENFORCE_STYLE=1`) on push/PR.
 - CI also runs `linux/native-port/smoke-test-xedit-headless.sh` when `linux/bin/xedit-core` is present.
+- CI workflows now delegate to `linux/native-port/run-all-checks.sh` as shared check entry point.
 
 ## Step 2: Stabilize Platform Abstraction Boundary
 

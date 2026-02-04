@@ -22,21 +22,14 @@ jobs:
 
       - name: Run xEdit Readiness Check
         run: |
+          chmod +x linux/native-port/smoke-test-bsarch.sh
+          chmod +x linux/native-port/regression-paths-bsarch.sh
+          chmod +x linux/native-port/stress-large-bsarch.sh
           chmod +x linux/native-port/xedit-readiness-audit.sh
           chmod +x linux/native-port/check-xedit-readiness.sh
-          ENFORCE_STYLE=1 linux/native-port/check-xedit-readiness.sh
-
-      - name: Run xEdit Headless Smoke Test
-        if: ${{ hashFiles('linux/bin/xedit-core') != '' }}
-        run: |
           chmod +x linux/native-port/smoke-test-xedit-headless.sh
-          linux/native-port/smoke-test-xedit-headless.sh
-
-      - name: Warn When xedit-core Is Missing
-        if: ${{ hashFiles('linux/bin/xedit-core') == '' }}
-        run: |
-          echo "linux/bin/xedit-core not present in this checkout."
-          echo "Headless smoke test was skipped."
+          chmod +x linux/native-port/run-all-checks.sh
+          ENFORCE_STYLE=1 linux/native-port/run-all-checks.sh
 
       - name: Upload readiness report
         uses: actions/upload-artifact@v4

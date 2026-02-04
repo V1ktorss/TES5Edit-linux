@@ -143,7 +143,7 @@ This document tracks what is already done for the native Linux path and what com
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`
 - Builds `BSArchSE` (Qt) on Ubuntu
-- Runs `linux/native-port/smoke-test-bsarch.sh` when `linux/bin/bsarch-core` is present
+- Runs `linux/native-port/run-all-checks.sh` (readiness + BSArch checks + optional xEdit smoke) when `linux/bin/bsarch-core` is present
 
 3. Finalize launcher behavior:
 - `BSArch-linux` should remain the single entry point for users.
