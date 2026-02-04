@@ -102,6 +102,7 @@ Useful toggles for faster local runs:
 RUN_BSARCH_STRESS=0 linux/native-port/run-all-checks.sh
 RUN_BSARCH=0 linux/native-port/run-all-checks.sh
 RUN_XEDIT_HEADLESS=0 linux/native-port/run-all-checks.sh
+ENFORCE_STYLE=0 linux/native-port/run-all-checks.sh
 ```
 
 This runs:

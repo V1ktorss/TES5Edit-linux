@@ -142,6 +142,7 @@ This document tracks what is already done for the native Linux path and what com
 - Manual checklist included for GUI actions (`Unpack Selected`, `Pack Selected`, `Archiv-Info`, double-click open)
 - Added convenience runner: `linux/native-port/run-all-checks.sh` (strict readiness + BSArch checks + optional xEdit headless smoke)
 - Runner now supports toggles for quicker local loops (`RUN_BSARCH_STRESS=0`, `RUN_BSARCH=0`, `RUN_XEDIT_HEADLESS=0`)
+- Runner now also supports readiness mode toggle (`ENFORCE_STYLE=1` strict, `ENFORCE_STYLE=0` core-only)
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`

@@ -38,6 +38,10 @@ Combined local check runner:
 linux/native-port/run-all-checks.sh
 ```
 
+Runner modes:
+- default strict mode: `ENFORCE_STYLE=1`
+- core-only mode: `ENFORCE_STYLE=0`
+
 Output:
 
 - `linux/native-port/reports/xedit-readiness.txt`

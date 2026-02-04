@@ -8,8 +8,10 @@ RUN_READINESS="${RUN_READINESS:-1}"
 RUN_BSARCH="${RUN_BSARCH:-1}"
 RUN_BSARCH_STRESS="${RUN_BSARCH_STRESS:-1}"
 RUN_XEDIT_HEADLESS="${RUN_XEDIT_HEADLESS:-1}"
+ENFORCE_STYLE="${ENFORCE_STYLE:-1}"
 
 echo "[checks] Starting native-port checks"
+echo "[checks] Config: RUN_READINESS=${RUN_READINESS} RUN_BSARCH=${RUN_BSARCH} RUN_BSARCH_STRESS=${RUN_BSARCH_STRESS} RUN_XEDIT_HEADLESS=${RUN_XEDIT_HEADLESS} ENFORCE_STYLE=${ENFORCE_STYLE}"
 
 run_if_exists() {
   local label="$1"
@@ -25,8 +27,12 @@ run_if_exists() {
 }
 
 if [[ "${RUN_READINESS}" == "1" ]]; then
-  echo "[checks] Readiness (strict)"
-  ENFORCE_STYLE=1 linux/native-port/check-xedit-readiness.sh
+  if [[ "${ENFORCE_STYLE}" == "1" ]]; then
+    echo "[checks] Readiness (strict)"
+  else
+    echo "[checks] Readiness (core-only)"
+  fi
+  ENFORCE_STYLE="${ENFORCE_STYLE}" linux/native-port/check-xedit-readiness.sh
 else
   echo "[checks] Skipping readiness check (RUN_READINESS=${RUN_READINESS})"
 fi
