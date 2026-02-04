@@ -44,6 +44,7 @@ uses
   RegularExpressionsCore,
   RegularExpressionsConsts,
   JsonDataObjects,
+  wbPlatform,
   wbInterface;
 
 
@@ -587,7 +588,16 @@ end;
 
 procedure JvInterpreter_CopyFile(var Value: Variant; Args: TJvInterpreterArgs);
 begin
-  Value := CopyFile(PWideChar(String(Args.Values[0])), PWideChar(String(Args.Values[1])), Args.Values[2]);
+  try
+    if Boolean(Args.Values[2]) and FileExists(String(Args.Values[1])) then
+      Value := False
+    else begin
+      TFile.Copy(String(Args.Values[0]), String(Args.Values[1]), not Boolean(Args.Values[2]));
+      Value := True;
+    end;
+  except
+    Value := False;
+  end;
 end;
 
 procedure JvInterpreter_StringOfChar(var Value: Variant; Args: TJvInterpreterArgs);
@@ -598,6 +608,18 @@ end;
 
 procedure JvInterpreter_ShellExecute(var Value: Variant; Args: TJvInterpreterArgs);
 begin
+  // Migration path: route common "open URL" usage through wbPlatform.
+  if SameText(String(Args.Values[1]), 'open')
+    and (Trim(String(Args.Values[3])) = '')
+    and (Trim(String(Args.Values[4])) = '')
+  then begin
+    if wbOpenUrl(String(Args.Values[2])) then
+      Value := 33
+    else
+      Value := 31;
+    Exit;
+  end;
+
   Value := ShellExecute(
     Args.Values[0],
     PWideChar(String(Args.Values[1])),
@@ -606,6 +628,11 @@ begin
     PWideChar(String(Args.Values[4])),
     Args.Values[5]
   );
+end;
+
+procedure JvInterpreter_wbOpenUrl(var Value: Variant; Args: TJvInterpreterArgs);
+begin
+  Value := wbOpenUrl(String(Args.Values[0]));
 end;
 
 // parent window, verb, file, params, dir, show window
@@ -636,29 +663,15 @@ end;
 // file, params, show window, timeout
 procedure JvInterpreter_CreateProcessWait(var Value: Variant; Args: TJvInterpreterArgs);
 var
-  StartUpInfo: TStartUpInfo;
-  ProcessInfo: TProcessInformation;
   ExitCode: Cardinal;
 begin
-  FillChar(StartUpInfo, SizeOf(TStartUpInfo), 0);
-  with StartUpInfo do begin
-    cb := SizeOf(TStartUpInfo);
-    dwFlags := STARTF_USESHOWWINDOW or STARTF_FORCEONFEEDBACK;
-    wShowWindow := Args.Values[2];
-  end;
-
-  if CreateProcess(
-    PWideChar(String(Args.Values[0])),
-    PWideChar(String(Args.Values[1])),
-    nil, nil, False, NORMAL_PRIORITY_CLASS,
-    nil,
-    nil,
-    StartUpInfo, ProcessInfo)
-  then begin
-    WaitforSingleObject(ProcessInfo.hProcess, Cardinal(Args.Values[3]));
-    GetExitCodeProcess(ProcessInfo.hProcess, ExitCode);
-    CloseHandle(ProcessInfo.hThread);
-    CloseHandle(ProcessInfo.hProcess);
+  if wbCreateProcessWait(
+    String(Args.Values[0]),
+    String(Args.Values[1]),
+    Integer(Args.Values[2]),
+    Cardinal(Args.Values[3]),
+    ExitCode
+  ) then begin
     Value := ExitCode;
   end else
     raise Exception.Create('CreateProcess failed, error code ' + IntToStr(GetLastError));
@@ -671,7 +684,7 @@ end;
 
 procedure JvInterpreter_GetKeyState(var Value: Variant; Args: TJvInterpreterArgs);
 begin
-  Value := GetKeyState(Args.Values[0]);
+  Value := wbGetVirtualKeyState(Integer(Args.Values[0]));
 end;
 
 procedure JvInterpreter_SelectDirectory(var Value: Variant; Args: TJvInterpreterArgs);
@@ -2017,6 +2030,7 @@ begin
     AddFunction('SysUtils', 'ExcludeTrailingBackslash', JvInterpreter_ExcludeTrailingBackslash, 1, [varEmpty], varEmpty);
     AddFunction('System', 'StringOfChar', JvInterpreter_StringOfChar, 2, [varEmpty, varEmpty], varEmpty);
     AddFunction('Windows', 'CopyFile', JvInterpreter_CopyFile, 3, [varEmpty, varEmpty, varEmpty], varEmpty);
+    AddFunction('wbPlatform', 'OpenUrl', JvInterpreter_wbOpenUrl, 1, [varEmpty], varEmpty);
     AddFunction('ShellApi', 'ShellExecute', JvInterpreter_ShellExecute, 6, [varEmpty, varEmpty, varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);
     AddFunction('ShellApi', 'ShellExecuteWait', JvInterpreter_ShellExecuteWait, 6, [varEmpty, varEmpty, varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);
     AddFunction('Windows', 'CreateProcessWait', JvInterpreter_CreateProcessWait, 4, [varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);

@@ -23,9 +23,24 @@ type
   TwbPlatformOutputProc = reference to procedure(const aLine: string);
   TwbPlatformProc = reference to procedure;
   TwbPlatformTerminateFunc = reference to function: Boolean;
+  TwbKnownFolder = (wkDocuments, wkLocalAppData);
 
 function wbPathCombine(const aBase, aChild: string): string;
 function wbNormalizePath(const aPath: string): string;
+function wbGetKnownFolderPath(const aFolder: TwbKnownFolder): string;
+function wbTryReadRegistryString(
+  const aCurrentUser: Boolean;
+  const aRegPath, aValueName: string;
+  out aValue: string
+): Boolean;
+function wbOpenUrl(const aUrl: string): Boolean;
+function wbCreateProcessWait(
+  const aFileName, aParams: string;
+  const aShowWindow: Integer;
+  const aTimeout: Cardinal;
+  out aExitCode: Cardinal
+): Boolean;
+function wbGetVirtualKeyState(const aVirtualKey: Integer): SmallInt;
 function wbGetSteamInstallFolder: string;
 function wbIsAssociatedWithExtension(const aExt, aExecPath: string): Boolean;
 function wbAssociateWithExtension(const aExt, aName, aDescr, aExecPath: string): Boolean;
@@ -67,6 +82,60 @@ begin
   Result := IncludeTrailingPathDelimiter(aBase) + aChild;
 end;
 
+function wbCreateProcessWait(
+  const aFileName, aParams: string;
+  const aShowWindow: Integer;
+  const aTimeout: Cardinal;
+  out aExitCode: Cardinal
+): Boolean;
+{$IFDEF MSWINDOWS}
+var
+  lStartUpInfo: TStartUpInfo;
+  lProcessInfo: TProcessInformation;
+{$ENDIF}
+begin
+  Result := False;
+  aExitCode := Cardinal(-1);
+
+  {$IFDEF MSWINDOWS}
+  FillChar(lStartUpInfo, SizeOf(TStartUpInfo), 0);
+  with lStartUpInfo do begin
+    cb := SizeOf(TStartUpInfo);
+    dwFlags := STARTF_USESHOWWINDOW or STARTF_FORCEONFEEDBACK;
+    wShowWindow := aShowWindow;
+  end;
+
+  if not CreateProcess(
+    PWideChar(aFileName),
+    PWideChar(aParams),
+    nil, nil, False, NORMAL_PRIORITY_CLASS,
+    nil,
+    nil,
+    lStartUpInfo, lProcessInfo
+  ) then
+    Exit(False);
+
+  try
+    WaitforSingleObject(lProcessInfo.hProcess, aTimeout);
+    GetExitCodeProcess(lProcessInfo.hProcess, aExitCode);
+    Result := True;
+  finally
+    CloseHandle(lProcessInfo.hThread);
+    CloseHandle(lProcessInfo.hProcess);
+  end;
+  Exit;
+  {$ENDIF}
+end;
+
+function wbGetVirtualKeyState(const aVirtualKey: Integer): SmallInt;
+begin
+  {$IFDEF MSWINDOWS}
+  Result := GetKeyState(aVirtualKey);
+  Exit;
+  {$ENDIF}
+  Result := 0;
+end;
+
 function wbNormalizePath(const aPath: string): string;
 var
   lResult: string;
@@ -74,6 +143,118 @@ begin
   lResult := StringReplace(aPath, '\', PathDelim, [rfReplaceAll]);
   lResult := StringReplace(lResult, '/', PathDelim, [rfReplaceAll]);
   Result := ExcludeTrailingPathDelimiter(lResult);
+end;
+
+function wbGetKnownFolderPath(const aFolder: TwbKnownFolder): string;
+{$IFDEF MSWINDOWS}
+var
+  lCSIDL: Integer;
+  lBuffer: array[0..MAX_PATH - 1] of Char;
+{$ENDIF}
+{$IFDEF LINUX}
+var
+  lHome: string;
+{$ENDIF}
+begin
+  Result := '';
+  {$IFDEF MSWINDOWS}
+  case aFolder of
+    wkDocuments: lCSIDL := CSIDL_PERSONAL;
+    wkLocalAppData: lCSIDL := CSIDL_LOCAL_APPDATA;
+  else
+    Exit;
+  end;
+  if SHGetSpecialFolderPath(0, lBuffer, lCSIDL, True) then
+    Result := IncludeTrailingPathDelimiter(StrPas(lBuffer));
+  Exit;
+  {$ENDIF}
+
+  {$IFDEF LINUX}
+  lHome := GetEnvironmentVariable('HOME');
+  if lHome = '' then
+    Exit;
+  case aFolder of
+    wkDocuments: Result := wbPathCombine(lHome, 'Documents');
+    wkLocalAppData: Result := wbPathCombine(lHome, '.local/share');
+  end;
+  if Result <> '' then
+    Result := IncludeTrailingPathDelimiter(Result);
+  Exit;
+  {$ENDIF}
+end;
+
+function wbOpenUrl(const aUrl: string): Boolean;
+{$IFDEF FPC}
+{$IFDEF LINUX}
+var
+  lProc: TProcess;
+{$ENDIF}
+{$ENDIF}
+begin
+  Result := False;
+  if Trim(aUrl) = '' then
+    Exit;
+
+  {$IFDEF MSWINDOWS}
+  Result := ShellExecute(0, 'open', PChar(aUrl), nil, nil, SW_SHOWNORMAL) > 32;
+  Exit;
+  {$ENDIF}
+
+  {$IFDEF FPC}
+  {$IFDEF LINUX}
+  lProc := TProcess.Create(nil);
+  try
+    lProc.Executable := '/usr/bin/xdg-open';
+    lProc.Parameters.Add(aUrl);
+    lProc.Options := [];
+    lProc.Execute;
+    Result := True;
+  finally
+    lProc.Free;
+  end;
+  Exit;
+  {$ENDIF}
+  {$ENDIF}
+end;
+
+function wbTryReadRegistryString(
+  const aCurrentUser: Boolean;
+  const aRegPath, aValueName: string;
+  out aValue: string
+): Boolean;
+{$IFDEF MSWINDOWS}
+var
+  lAccess: Cardinal;
+{$ENDIF}
+begin
+  aValue := '';
+  Result := False;
+  if (aRegPath = '') or (aValueName = '') then
+    Exit;
+
+  {$IFDEF MSWINDOWS}
+  with TRegistry.Create do
+    try
+      if aCurrentUser then
+        RootKey := HKEY_CURRENT_USER
+      else
+        RootKey := HKEY_LOCAL_MACHINE;
+
+      lAccess := KEY_READ or KEY_WOW64_32KEY;
+      Access := lAccess;
+      if not OpenKey(aRegPath, False) then begin
+        lAccess := KEY_READ or KEY_WOW64_64KEY;
+        Access := lAccess;
+        if not OpenKey(aRegPath, False) then
+          Exit(False);
+      end;
+
+      aValue := StringReplace(ReadString(aValueName), '"', '', [rfReplaceAll]);
+      Result := aValue <> '';
+    finally
+      Free;
+    end;
+  {$ENDIF}
 end;
 
 function wbGetSteamInstallFolder: string;

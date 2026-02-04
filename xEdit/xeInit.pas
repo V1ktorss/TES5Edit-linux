@@ -62,14 +62,12 @@ uses
   System.UITypes,
   SysUtils,
   Windows,
-  Registry,
-  ShellApi,
   Dialogs,
-  ShlObj,
   IOUtils,
   IniFiles,
   Vcl.Themes,
   Vcl.Styles,
+  wbPlatform,
   wbHelpers,
   wbInterface,
   wbImplementation,
@@ -270,15 +268,6 @@ begin
   except end;
 end;
 
-function GetCSIDLShellFolder(CSIDLFolder: Integer): string;
-begin
-  SetLength(Result, MAX_PATH);
-  SHGetSpecialFolderPath(0, PChar(Result), CSIDLFolder, True);
-  SetLength(Result, StrLen(PChar(Result)));
-  if (Result <> '') then
-    Result := IncludeTrailingBackslash(Result);
-end;
-
 const
   DataName : array[Boolean] of string = (
     'Data',
@@ -391,9 +380,18 @@ const
   sSureAIRegKey           = '\Software\SureAI\';
 
 var
-  s, regPath, regKey, client: string;
+  s, regPath, regKey, client, regValue: string;
   isEpicNV : Boolean;
   IniFile : TMemIniFile;
+
+  function TryReadInstallPathFromRegistry(
+    const aCurrentUser: Boolean;
+    const aPath, aValue: string;
+    out aInstallPath: string
+  ): Boolean;
+  begin
+    Result := wbTryReadRegistryString(aCurrentUser, aPath, aValue, aInstallPath);
+  end;
 begin
   wbModGroupFileName := wbProgramPath + wbAppName + wbToolName + '.modgroups';
   isEpicNV := false;
@@ -417,51 +415,51 @@ begin
             break;
         end;
 
-    if (wbDataPath = '') then with TRegistry.Create do try
-      Access  := KEY_READ or KEY_WOW64_32KEY;
-      RootKey := HKEY_LOCAL_MACHINE;
-      client  := 'Steam';
+    if (wbDataPath = '') then begin
+      client := 'Steam';
+      regPath := '';
+      regKey := '';
 
       case wbGameMode of
         gmTES3, gmTES4, gmFO3, gmFNV, gmTES5, gmFO4, gmSSE, gmTES5VR, gmFO4VR: begin
           regPath := sBethRegKey + wbGameNameReg + '\';
+          regKey := 'Installed Path';
         end;
         gmEnderal, gmEnderalSE: begin
-          RootKey := HKEY_CURRENT_USER;
           regPath := sSureAIRegKey + wbGameNameReg + '\';
+          regKey := 'Install_Path';
         end;
         gmFO76, gmSF1, gmTES4R: begin
           regPath := sUninstallRegKey + wbGameNameReg + '\';
+          regKey := 'InstallLocation';
         end;
       end;
 
-      if not OpenKey(regPath, False) then begin
-        Access := KEY_READ or KEY_WOW64_64KEY;
-        if not OpenKey(regPath, False) then begin
-          s := 'Fatal: Could not open registry key: ' + regPath;
-          ShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
-          wbDontSave := True;
-          Exit;
+      if regPath <> '' then begin
+        case wbGameMode of
+          gmEnderal, gmEnderalSE:
+            if not TryReadInstallPathFromRegistry(True, regPath, regKey, regValue) then begin
+              s := 'Fatal: Could not open registry key: ' + regPath;
+              ShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
+              wbDontSave := True;
+              Exit;
+            end;
+        else
+          if not TryReadInstallPathFromRegistry(False, regPath, regKey, regValue) then begin
+            s := 'Fatal: Could not open registry key: ' + regPath;
+            ShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
+            wbDontSave := True;
+            Exit;
+          end;
         end;
       end;
 
-      case wbGameMode of
-      gmTES3, gmTES4, gmFO3, gmFNV, gmTES5, gmFO4, gmSSE, gmTES5VR, gmFO4VR:
-                  regKey := 'Installed Path';
-      gmEnderal, gmEnderalSE:  regKey := 'Install_Path';
-      gmFO76, gmSF1, gmTES4R:  regKey := 'InstallLocation';
-      end;
-
-      wbDataPath := ReadString(regKey);
-      wbDataPath := StringReplace(wbDataPath, '"', '', [rfReplaceAll]);
-
+      wbDataPath := regValue;
       if (wbDataPath = '') then begin
         s := Format('Fatal: Could not determine %s installation path, no "%s" registry key', [wbGameName2, regKey]);
         ShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
         wbDontSave := True;
       end;
-    finally
-      Free;
     end;
 
     if wbDataPath <> '' then
@@ -487,7 +485,7 @@ begin
   wbMOHookFile := wbDataPath + '..\Mod Organizer\hook.dll';
 
   if not wbFindCmdLineParam('M', wbMyGamesTheGamePath) then begin
-    xeMyProfileName := GetCSIDLShellFolder(CSIDL_PERSONAL);
+    xeMyProfileName := wbGetKnownFolderPath(wkDocuments);
     if xeMyProfileName = '' then begin
       ShowMessage('Fatal: Could not determine my documents folder');
       Exit;
@@ -563,7 +561,7 @@ begin
        or xeCheckForValidExtension(wbPluginsFileName)
     then begin
       xeParamIndex := ParamIndex;
-      wbPluginsFileName := GetCSIDLShellFolder(CSIDL_LOCAL_APPDATA);
+      wbPluginsFileName := wbGetKnownFolderPath(wkLocalAppData);
       if wbPluginsFileName = '' then begin
         ShowMessage('Fatal: Could not determine the local application data folder');
         Exit;
@@ -586,7 +584,7 @@ begin
   if not FileExists(xeSettingsFileName) then
   begin
     if wbIsOblivionR then
-      xeSettingsFileName := GetCSIDLShellFolder(CSIDL_LOCAL_APPDATA) + wbGameName2 + '\Plugins.'+LowerCase(wbAppName)+'viewsettings'
+      xeSettingsFileName := wbGetKnownFolderPath(wkLocalAppData) + wbGameName2 + '\Plugins.'+LowerCase(wbAppName)+'viewsettings'
     else
       xeSettingsFileName := ChangeFileExt(wbPluginsFileName, '.'+LowerCase(wbAppName)+'viewsettings');
   end;

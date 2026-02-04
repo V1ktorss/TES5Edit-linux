@@ -54,6 +54,21 @@ This document tracks what is already done for the native Linux path and what com
 4. Next native targets
 - Evaluate `xDump` CLI feasibility with same platform abstraction model.
 - Record blockers for full xEdit GUI migration (VCL forms, script host, registry assumptions).
+- Implemented xEdit bootstrap doc: `linux/native-port/XEDIT_NATIVE_BOOTSTRAP.md`.
+- Implemented xEdit readiness audit script/report:
+  - `linux/native-port/xedit-readiness-audit.sh`
+  - `linux/native-port/reports/xedit-readiness.txt`
+- Started `xeInit` decoupling:
+  - moved known-folder and registry-read access behind `wbPlatform` helpers
+  - reduced direct platform-coupled calls in `xEdit/xeInit.pas`
+- Started `xeMainForm` decoupling:
+  - moved external URL launch to `wbPlatform.wbOpenUrl`
+  - removed direct `ShellAPI` usage from `xEdit/xeMainForm.pas`
+- Started `xejviScriptAdapterMisc` decoupling:
+  - added `wbPlatform.OpenUrl` script API bridge
+  - routed common `ShellExecute(open, URL)` path through `wbPlatform`
+  - replaced script `CopyFile` binding with platform-neutral file copy logic
+  - moved `CreateProcessWait` and `GetKeyState` bindings to `wbPlatform` wrappers
 
 ## Risks
 

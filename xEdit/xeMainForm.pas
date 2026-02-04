@@ -34,7 +34,6 @@ uses
   ActiveX,
   Buttons,
   ActnList,
-  ShellAPI,
   IOUtils,
   Actions,
   System.Generics.Defaults,
@@ -61,6 +60,7 @@ uses
   wbBSA,
   wbNifScanner,
   wbLOD,
+  wbPlatform,
   wbHelpers,
   xeInit,
   wbLocalization,
@@ -1268,8 +1268,6 @@ uses
   {$IFNDEF LiteVersion}
   cxVTEditors,
   {$ENDIF}
-  ShlObj,
-  Registry,
   StrUtils,
   Types,
   {$IFNDEF VER220}
@@ -8593,7 +8591,7 @@ var
 procedure TfrmMain.bnHelpClick(Sender: TObject);
 begin
   if Now - LastHelpClick > 1/24/60/60 then begin
-    ShellExecute(Handle, 'open', PChar(wbHelpUrl), '', '', SW_SHOWNORMAL);
+    wbOpenUrl(wbHelpUrl);
     LastHelpClick := Now;
   end;
 end;
@@ -8604,7 +8602,7 @@ var
 procedure TfrmMain.bnVideosClick(Sender: TObject);
 begin
   if Now - LastVideosClick > 1/24/60/60 then begin
-    ShellExecute(Handle, 'open', PChar(wbVideosUrl), '', '', SW_SHOWNORMAL);
+    wbOpenUrl(wbVideosUrl);
     LastVideosClick := Now;
   end;
 end;
@@ -8642,7 +8640,7 @@ var
   Dummy: Boolean;
 begin
   if Now - LastNexusModsClick > 1/24/60/60 then begin
-    ShellExecute(Handle, 'open', PChar(wbNexusModsUrl), '', '', SW_SHOWNORMAL);
+    wbOpenUrl(wbNexusModsUrl);
     LastNexusModsClick := Now;
   end;
   jbhNexusModsCloseBtnClick(Sender, Dummy);
@@ -8656,7 +8654,7 @@ var
   Dummy: Boolean;
 begin
   if Now - LastGitHubClick > 1/24/60/60 then begin
-    ShellExecute(Handle, 'open', PChar(wbGitHubUrl), '', '', SW_SHOWNORMAL);
+    wbOpenUrl(wbGitHubUrl);
     LastGitHubClick := Now;
   end;
   jbhGitHubCloseBtnClick(Sender, Dummy);
@@ -8668,7 +8666,7 @@ var
 procedure TfrmMain.bnDiscordClick(Sender: TObject);
 begin
   if Now - LastDiscordClick > 1/24/60/60 then begin
-    ShellExecute(Handle, 'open', PChar(wbDiscordUrl), '', '', SW_SHOWNORMAL);
+    wbOpenUrl(wbDiscordUrl);
     LastDiscordClick := Now;
   end;
 end;
@@ -8679,7 +8677,7 @@ var
 procedure TfrmMain.bnPatreonClick(Sender: TObject);
 begin
   if Now - LastPatreonClick > 1/24/60/60 then begin
-    ShellExecute(Handle, 'open', PChar(wbPatreonUrl), '', '', SW_SHOWNORMAL);
+    wbOpenUrl(wbPatreonUrl);
     LastPatreonClick := Now;
   end;
   if Assigned(Settings) then begin
@@ -8695,7 +8693,7 @@ var
 procedure TfrmMain.bnKoFiClick(Sender: TObject);
 begin
   if Now - LastKoFiClick > 1/24/60/60 then begin
-    ShellExecute(Handle, 'open', PChar(wbKoFiUrl), '', '', SW_SHOWNORMAL);
+    wbOpenUrl(wbKoFiUrl);
     LastKoFiClick := Now;
   end;
   if Assigned(Settings) then begin
@@ -8711,7 +8709,7 @@ var
 procedure TfrmMain.bnPayPalClick(Sender: TObject);
 begin
   if Now - LastPayPalClick > 1/24/60/60 then begin
-    ShellExecute(Handle, 'open', PChar(wbPayPalUrl), '', '', SW_SHOWNORMAL);
+    wbOpenUrl(wbPayPalUrl);
     LastPayPalClick := Now;
   end;
 end;
@@ -22147,5 +22145,3 @@ finalization
     EndTransaction(Handle);
   end;
 end.
-
-
