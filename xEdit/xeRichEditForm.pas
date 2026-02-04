@@ -175,14 +175,14 @@ begin
     Exit;
 
   if vstTOC.Focused then begin
-    if Key = VK_RETURN then begin
+    if Key = vkReturn then begin
       Key := 0;
       TOCSelected(vstTOC.FocusedNode);
       Exit;
     end;
   end else
     case Key of
-      VK_UP, VK_DOWN, VK_NEXT, VK_PRIOR: begin
+      vkUp, vkDown, vkNext, vkPrior: begin
         if not reMain.Focused then begin
           Inc(InRedirectKey);
           try
@@ -206,15 +206,15 @@ begin
 
   if Shift = [ssCtrl] then
     case Key of
-      VK_ADD: begin
+      vkAdd: begin
         tbrZoom.Position := tbrZoom.Position + tbrZoom.Frequency;
         tbrZoomChange(tbrZoom);
       end;
-      VK_SUBTRACT: begin
+      vkSubtract: begin
         tbrZoom.Position := tbrZoom.Position - tbrZoom.Frequency;
         tbrZoomChange(tbrZoom);
       end;
-      VK_NUMPAD0, Ord('0'): begin
+      vkNumpad0, Ord('0'): begin
         tbrZoom.Position := 100;
         tbrZoomChange(tbrZoom);
       end;
@@ -222,7 +222,7 @@ begin
 
   if edSearch.Focused then begin
 
-    if Key = VK_RETURN then begin
+    if Key = vkReturn then begin
       Key := 0;
 
       if edSearch.Text = '' then
@@ -234,13 +234,13 @@ begin
 
       reMain.FindText(edSearch.Text, i, 1000000, [stSetSelection]);
     end else
-      if Key = VK_ESCAPE then
+      if Key = vkEscape then
           edSearch.Clear;
 
     Exit;
   end;
 
-  if reMain.Focused and (Key = VK_F3) then begin
+  if reMain.Focused and (Key = vkF3) then begin
     if edSearch.Text = '' then
       Exit;
 
@@ -255,7 +255,7 @@ begin
     Exit;
   end;
 
-  if (Key = VK_RETURN) or (Key = VK_ESCAPE) then begin
+  if (Key = vkReturn) or (Key = vkEscape) then begin
     btnOk.Click;
     Key := 0;
     Exit;

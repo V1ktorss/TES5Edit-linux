@@ -13,7 +13,7 @@ unit xeModGroupEditForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, CheckLst, Menus,
   Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
   wbInterface, wbLoadOrder, wbModGroups, Vcl.ExtCtrls,
@@ -89,7 +89,7 @@ end;
 
 procedure TfrmModGroupEdit.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if Key = VK_RETURN then begin
+  if Key = vkReturn then begin
     if edName.Focused then begin
       vstModGroupItems.SetFocus;
       Exit;
@@ -97,7 +97,7 @@ begin
     CheckState;
     if btnOK.Enabled then
       btnOK.Click;
-  end else if Key = VK_ESCAPE then begin
+  end else if Key = vkEscape then begin
     if btnCancel.Enabled then
       btnCancel.Click;
   end;
@@ -272,7 +272,7 @@ end;
 procedure TfrmModGroupEdit.edNameKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if Key = VK_DOWN then
+  if Key = vkDown then
     vstModGroupItems.SetFocus;
 end;
 
@@ -396,7 +396,7 @@ begin
   else
     ParentNodeData := nil;
   case Key of
-    VK_DELETE: begin
+    vkDelete: begin
       Key := 0;
       if Assigned(ParentNodeData) then begin
         if (ssShift in Shift) or (MessageDlg('Do you want to delete CRC32 "'+NodeData.mgindCRC32.ToString+'" from "'+ParentNodeData.mgindModGroupItem.mgiFileName+'"?', mtConfirmation, mbYesNo, 0, mbNo) = mrYes) then
@@ -405,7 +405,7 @@ begin
         if (ssShift in Shift) or (MessageDlg('Do you want to delete "'+NodeData.mgindModGroupItem.mgiFileName+'" from this ModGroup?', mtConfirmation, mbYesNo, 0, mbNo) = mrYes) then
           vstModGroupItems.DeleteNode(HitInfo.HitNode);
     end;
-    VK_INSERT: begin
+    vkInsert: begin
       Key := 0;
       if Assigned(ParentNodeData) or (Shift = [ssShift]) then begin
         if Assigned(ParentNodeData) then begin
@@ -500,7 +500,7 @@ begin
         vstModGroupItems.Selected[vstModGroupItems.FocusedNode] := True;
       end
     end;
-    VK_UP: if Shift = [ssCtrl] then begin
+    vkUp: if Shift = [ssCtrl] then begin
       TargetNode := vstModGroupItems.GetPreviousSibling(HitInfo.HitNode);
       if Assigned(TargetNode) then
         vstModGroupItems.MoveTo(HitInfo.HitNode, TargetNode, amInsertBefore, False);
@@ -508,7 +508,7 @@ begin
       if HitInfo.HitNode = vstModGroupItems.GetFirstVisible then
         edName.SetFocus;
     end;
-    VK_DOWN: if Shift = [ssCtrl] then begin
+    vkDown: if Shift = [ssCtrl] then begin
       TargetNode := vstModGroupItems.GetNextSibling(HitInfo.HitNode);
       if Assigned(TargetNode) then
         vstModGroupItems.MoveTo(HitInfo.HitNode, TargetNode, amInsertAfter, False);
