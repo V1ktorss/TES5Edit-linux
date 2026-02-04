@@ -68,7 +68,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved external URL launch to `wbPlatform.wbOpenUrl`
   - removed direct `ShellAPI` usage from `xEdit/xeMainForm.pas`
   - moved async key-state checks to `wbPlatform.wbIsVirtualKeyPressed`
-  - moved sync key-state checks to `wbPlatform.wbGetVirtualKeyState`
+  - moved sync key-state checks to `wbPlatform.wbIsVirtualKeyPressed`
 - Started `xejviScriptAdapterMisc` decoupling:
   - added `wbPlatform.OpenUrl` script API bridge
   - routed common `ShellExecute(open, URL)` path through `wbPlatform`

@@ -5437,7 +5437,7 @@ begin
       mniMasterAndLeafsDisabled.Checked := not OnlyShowMasterAndLeafs;
 
       // hold shift to skip building references
-      if (wbGetVirtualKeyState(VK_SHIFT) < 0) then begin
+      if (wbIsVirtualKeyPressed(VK_SHIFT)) then begin
         wbBuildRefs := False;
         AddMessage('The SHIFT key is pressed, skip building references for all plugins!');
       end;
@@ -6491,7 +6491,7 @@ begin
       xeLoadAndApplyFontAndScale(Settings, 'UI', 'FontMessages', mmoMessages);
 
       // skip reading main form position if Shift is pressed
-      if wbGetVirtualKeyState(VK_SHIFT) >= 0 then begin
+      if not wbIsVirtualKeyPressed(VK_SHIFT) then begin
         i := Settings.ReadInteger(Name, 'Left', 0);
         j := Settings.ReadInteger(Name, 'Top', 0);
         k := Settings.ReadInteger(Name, 'Width', 0);
@@ -7915,7 +7915,7 @@ begin
 
         ActiveRecords[Pred(vstView.FocusedColumn)].UpdateRefs;
         TargetElement := nil;
-        Control := wbGetVirtualKeyState(VK_CONTROL) < 0;
+        Control := wbIsVirtualKeyPressed(VK_CONTROL);
         if EditAddedElement or (wbFocusAddedElement xor Control) then begin
           ViewFocusedElement := NewElement;
           EditFocusedViewElement := EditAddedElement;
@@ -9104,7 +9104,7 @@ begin
     s := Copy(s, 6, High(Integer));
   if Length(s) <> 8 then
     Exit;
-  if wbGetVirtualKeyState(VK_CONTROL) >= 0 then
+  if not wbIsVirtualKeyPressed(VK_CONTROL) then
     Exit;
   edFormIDSearch.Text := s;
   Key := VK_RETURN;
@@ -9196,7 +9196,7 @@ begin
     BeSilent := False;
     CountToAdd := 1;
 
-    if (Supports(NodeData.Element, IwbGroupRecord) and (wbGetVirtualKeyState(VK_SHIFT) < 0)) then
+    if (Supports(NodeData.Element, IwbGroupRecord) and (wbIsVirtualKeyPressed(VK_SHIFT))) then
       if InputQuery('Add multiple', 'How many:', s) then try
         CountToAdd := StrToInt(s);
         BeSilent := True;
@@ -9716,7 +9716,7 @@ begin
   Nodes := vstNav.GetSortedSelection(True);
 
   // renumber to destination file if several records were selected or Shift is pressed
-  if (Length(Nodes) > 1) or (wbGetVirtualKeyState(VK_SHIFT) < 0) then begin
+  if (Length(Nodes) > 1) or (wbIsVirtualKeyPressed(VK_SHIFT)) then begin
     NodeData := vstNav.GetNodeData(Nodes[0]);
     if not Assigned(NodeData) then
       Exit;
@@ -10403,7 +10403,7 @@ begin
         cbUseBacklightPower.Visible := True;
       end else
       // hidden option to split trees lod atlases when Shift is pressed
-      if wbGetVirtualKeyState(VK_SHIFT) < 0 then begin
+      if wbIsVirtualKeyPressed(VK_SHIFT) then begin
         _Files := @Files;
         btnSplitTreesLOD.Visible := True;
       end;
@@ -17852,7 +17852,7 @@ begin
 
   if HotColumn < 1 then
     Exit;
-  if wbGetVirtualKeyState(VK_CONTROL) >= 0 then
+  if not wbIsVirtualKeyPressed(VK_CONTROL) then
     Exit;
 
   Dec(HotColumn);
@@ -17882,7 +17882,7 @@ var
 begin
   if vstView.HotColumn < 1 then
     Exit;
-  if wbGetVirtualKeyState(VK_CONTROL) >= 0 then
+  if not wbIsVirtualKeyPressed(VK_CONTROL) then
     Exit;
   if not vstView.HotTrack then
     Exit;
@@ -17917,7 +17917,7 @@ begin
   if RebuildingViewTree then
     Exit;
 
-  Shift := wbGetVirtualKeyState(VK_CONTROL) < 0;
+  Shift := wbIsVirtualKeyPressed(VK_CONTROL);
 
   NodeDatas := Sender.GetNodeData(Node);
   if not Assigned(NodeDatas) then
@@ -17968,7 +17968,7 @@ var
 begin
   if Column < 1 then
     Exit;
-  if wbGetVirtualKeyState(VK_SHIFT) < 0 then
+  if wbIsVirtualKeyPressed(VK_SHIFT) then
     Exit;
 
   Dec(Column);
@@ -18163,7 +18163,7 @@ begin
       if Assigned(ActiveMaster) then
         Caption := ActiveMaster.Name + '\' + Caption;
 
-      ModalEdit := wbIKnowWhatImDoing or (wbGetVirtualKeyState(VK_SHIFT) < 0);
+      ModalEdit := wbIKnowWhatImDoing or (wbIsVirtualKeyPressed(VK_SHIFT));
 
       for i := Low(ActiveRecords) to High(ActiveRecords) do
         AddElement(NodeDatas[i].Element, vstView.FocusedColumn = Succ(i),
@@ -18388,7 +18388,7 @@ begin
   if RebuildingViewTree then
     Exit;
 
-  Shift := wbGetVirtualKeyState(VK_CONTROL) < 0;
+  Shift := wbIsVirtualKeyPressed(VK_CONTROL);
 
   NodeDatas := Sender.GetNodeData(Node);
   if not Assigned(NodeDatas) then
@@ -19420,7 +19420,7 @@ begin
   // Fullexpand when Alt is pressed
   // No fullexpand if script is running because it can be hotkeyed to Alt+...
   // and use JumpTo() command which expands the navigation tree
-  if (wbGetVirtualKeyState(VK_MENU) < 0) and not Assigned(Script) then
+  if (wbIsVirtualKeyPressed(VK_MENU)) and not Assigned(Script) then
     Sender.FullExpand(Node);
 end;
 
@@ -20102,7 +20102,7 @@ var
 begin
   Allow := False;
 
-  if wbGetVirtualKeyState(VK_CONTROL) >= 0 then
+  if not wbIsVirtualKeyPressed(VK_CONTROL) then
     Exit;
 
   if (HotColumn < 1) or (HotColumn >= TVirtualEditTree(Sender).Header.Columns.Count) then
@@ -20363,7 +20363,7 @@ var
   Element                     : IwbElement;
   HotColumn                   : TColumnIndex;
 begin
-  if wbGetVirtualKeyState(VK_CONTROL) >= 0 then
+  if not wbIsVirtualKeyPressed(VK_CONTROL) then
     Exit;
 
   HotColumn := TVirtualEditTree(Sender).HotColumn;
