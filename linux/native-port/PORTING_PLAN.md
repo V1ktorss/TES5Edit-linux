@@ -138,6 +138,7 @@ This document tracks what is already done for the native Linux path and what com
 - Implemented: `linux/native-port/smoke-test-bsarch.sh`
 - Automated: core pack/list/unpack roundtrip + launcher CLI passthrough
 - Manual checklist included for GUI actions (`Unpack Selected`, `Pack Selected`, `Archiv-Info`, double-click open)
+- Added convenience runner: `linux/native-port/run-all-checks.sh` (strict readiness + BSArch checks + optional xEdit headless smoke)
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`

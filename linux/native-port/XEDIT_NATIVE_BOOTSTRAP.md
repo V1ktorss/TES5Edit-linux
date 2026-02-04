@@ -32,6 +32,12 @@ Optional headless startup smoke:
 linux/native-port/smoke-test-xedit-headless.sh
 ```
 
+Combined local check runner:
+
+```bash
+linux/native-port/run-all-checks.sh
+```
+
 Output:
 
 - `linux/native-port/reports/xedit-readiness.txt`
