@@ -80,6 +80,29 @@ The UI supports:
 - Pack folder -> archive
 - Unpack archive -> folder
 
+## Native Port Checks
+
+Native/Linux checks live in `linux/native-port/`.
+
+Run everything locally:
+
+```bash
+linux/native-port/run-all-checks.sh
+```
+
+This runs:
+- xEdit readiness gate (`ENFORCE_STYLE=1`)
+- BSArch smoke/path/stress checks (if `linux/bin/bsarch-core` exists)
+- xEdit headless smoke (if a native xEdit binary is available)
+
+Important scripts:
+- `linux/native-port/check-xedit-readiness.sh`
+- `linux/native-port/xedit-readiness-audit.sh`
+- `linux/native-port/smoke-test-bsarch.sh`
+- `linux/native-port/regression-paths-bsarch.sh`
+- `linux/native-port/stress-large-bsarch.sh`
+- `linux/native-port/smoke-test-xedit-headless.sh`
+
 ## Optional environment variables
 
 - `WINEPREFIX`: override Wine prefix
