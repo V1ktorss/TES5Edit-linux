@@ -96,6 +96,14 @@ CI-equivalent preflight:
 ENFORCE_STYLE=1 linux/native-port/ci-preflight.sh
 ```
 
+Useful toggles for faster local runs:
+
+```bash
+RUN_BSARCH_STRESS=0 linux/native-port/run-all-checks.sh
+RUN_BSARCH=0 linux/native-port/run-all-checks.sh
+RUN_XEDIT_HEADLESS=0 linux/native-port/run-all-checks.sh
+```
+
 This runs:
 - xEdit readiness gate (`ENFORCE_STYLE=1`)
 - BSArch smoke/path/stress checks (if `linux/bin/bsarch-core` exists)
