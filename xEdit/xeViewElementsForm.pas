@@ -13,9 +13,9 @@ unit xeViewElementsForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, wbInterface, ComCtrls, ExtCtrls, StdCtrls, Buttons, Menus, IniFiles,
-  SynEdit, SynMemo, xeMainForm, Clipbrd, System.UITypes;
+  SynEdit, SynMemo, xeMainForm, System.UITypes;
 
 type
   TwbEdit = record
@@ -72,7 +72,7 @@ implementation
 {$R *.dfm}
 
 uses
-  wbHelpers, ShellApi;
+  wbHelpers, wbPlatform;
 
 { TfrmViewElements }
 
@@ -136,7 +136,7 @@ begin
   if pcView.PageCount > 0 then
   begin
     Memo := TMemo(pcView.ActivePage.Controls[0]);
-    Clipboard.AsText := Memo.Text;
+    wbSetClipboardText(Memo.Text);
     frmMain.PostAddMessage('Copied field to clipboard');
   end
 end;
@@ -146,8 +146,7 @@ var
   TabSheet1, TabSheet2 : TTabSheet;
   idx: integer;
   Path, aFile1, aFile2, aExe, aParams: string;
-  StartUpInfo: TStartUpInfo;
-  ProcessInfo: TProcessInformation;
+  ExitCode: Cardinal;
   sl: TStringList;
 begin
   if pcView.PageCount < 2 then
@@ -178,23 +177,9 @@ begin
     TMemo(TabSheet1.Controls[0]).Lines.SaveToFile(aFile1);
     aParams := StringReplace(aParams, '%1', '"'+aFile1+'"', []);
 
-    FillChar(StartUpInfo, SizeOf(TStartUpInfo), 0);
-    with StartUpInfo do begin
-      cb := SizeOf(TStartUpInfo);
-      dwFlags := STARTF_USESHOWWINDOW or STARTF_FORCEONFEEDBACK;
-      wShowWindow := SW_SHOWNORMAL;
-    end;
-
     aParams := '"'+aExe+'"'+aParams;
 
-    if CreateProcess(PChar(aExe), PChar(aParams),
-      nil, nil, false, NORMAL_PRIORITY_CLASS,
-      nil, nil, StartUpInfo, ProcessInfo)
-    then begin
-      WaitforSingleObject(ProcessInfo.hProcess, INFINITE);
-      //GetExitCodeProcess(ProcessInfo.hProcess, ExitCode);
-      CloseHandle(ProcessInfo.hThread);
-      CloseHandle(ProcessInfo.hProcess);
+    if wbCreateProcessWait(aExe, aParams, 1 { SW_SHOWNORMAL }, Cardinal(-1), ExitCode) then begin
       sl := TStringList.Create;
       try
         sl.LoadfromFile(aFile1);
@@ -219,10 +204,10 @@ begin
       DeleteFile(aFile1);
       DeleteFile(aFile2);
     end else
-      raise Exception.Create(SysErrorMessage(GetLastError));
+      raise Exception.Create('Could not execute command');
   except
     on E: Exception do
-      MessageBox(0, PChar('Could not execute command line'#13 + aExe + ' ' + aParams + #13'Error: ' + E.Message), 'Error', 0);
+      MessageDlg('Could not execute command line'#13 + aExe + ' ' + aParams + #13'Error: ' + E.Message, mtError, [mbOK], 0);
   end;
 end;
 
@@ -349,7 +334,7 @@ end;
 procedure TfrmViewElements.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if Key = VK_ESCAPE then
+  if Key = vkEscape then
     btnCancel.Click;
 end;
 
