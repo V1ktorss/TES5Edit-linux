@@ -13,9 +13,13 @@ unit wbStreams;
 interface
 
 uses
-  SysUtils, Math, Classes, Windows;
+  SysUtils, Math, Classes;
 
 type
+  {$IFDEF FPC}
+  TBufferedFileStream = class(TFileStream);
+  {$ENDIF}
+
   TwbBaseCachedFileStream = class(TBufferedFileStream)
   public
     function ReadByte: Byte; inline;

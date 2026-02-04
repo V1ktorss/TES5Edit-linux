@@ -26,7 +26,9 @@ uses
   Types,
   SysUtils,
   IOUtils,
+  {$IFNDEF FPC}
   Threading,
+  {$ENDIF}
   Diagnostics,
   wbBSArchive in 'Core\wbBSArchive.pas',
   wbCommandLine in 'Core\wbCommandLine.pas',
@@ -260,6 +262,18 @@ var
   bsa: TwbBSArchive;
   Completed: Integer;
   sw: TStopwatch;
+  procedure PackSingleFile(aIndex: Integer);
+  begin
+    try
+      bsa.AddFile(root, root + sl[aIndex]);
+    except
+      on E: Exception do
+        raise Exception.Create('File packing error "' + root + sl[aIndex] + '": ' + E.Message);
+    end;
+    Inc(Completed);
+    if (Completed mod 10 = 0) or (Completed = Pred(sl.Count)) then
+      Write(#13'[' + IntToStr(Round((Completed + 1) / sl.Count * 100)) + '%]');
+  end;
 begin
   sw := TStopwatch.StartNew;
   root := IncludeTrailingPathDelimiter(aFolderName);
@@ -283,8 +297,8 @@ begin
   sl := TStringList.Create;
   bsa := TwbBSArchive.Create;
   try
-    bsa.Compress := FindCmdLineSwitch('z', s);
-    bsa.ShareData := FindCmdLineSwitch('share', s);
+    bsa.Compress := FindCmdLineSwitch('z');
+    bsa.ShareData := FindCmdLineSwitch('share');
     bsa.Multithreaded := FindCmdLineSwitch('mt');
 
     if atype in [baFO4dds, baSFdds] then begin
@@ -333,6 +347,16 @@ begin
 
     Completed := 0;
     if bsa.Multithreaded then
+      {$IFDEF FPC}
+      for i := 0 to Pred(sl.Count) do begin
+        bsa.SyncBeginWrite;
+        try
+          PackSingleFile(i);
+        finally
+          bsa.SyncEndWrite;
+        end;
+      end
+      {$ELSE}
       TParallel.&For(0, Pred(sl.Count), procedure(i:Integer) begin
         try
           bsa.AddFile(root, root + sl[i]);
@@ -349,17 +373,10 @@ begin
           bsa.SyncEndWrite;
         end;
       end)
+      {$ENDIF}
     else
       for i := 0 to Pred(sl.Count) do begin
-        try
-          bsa.AddFile(root, root + sl[i]);
-        except
-          on E: Exception do
-            raise Exception.Create('File packing error "' + root + sl[i] + '": ' + E.Message);
-        end;
-        Inc(Completed);
-        if (Completed mod 10 = 0) or (Completed = Pred(sl.Count)) then
-          Write(#13'[' + IntToStr(Round((Completed+1)/sl.Count*100)) + '%]');
+        PackSingleFile(i);
       end;
 
     try
@@ -396,7 +413,8 @@ var
   FileData: TBytes;
 begin
   // fo4 archives can contain backslashes
-  fname := StringReplace(aFileName, '/', '\', [rfReplaceAll]);
+  fname := StringReplace(aFileName, '\', PathDelim, [rfReplaceAll]);
+  fname := StringReplace(fname, '/', PathDelim, [rfReplaceAll]);
 
   dir := UnpackDir + ExtractFilePath(fname);
   if not DirectoryExists(dir) then begin
@@ -717,6 +735,8 @@ begin
       System.ExitCode := 1;
     end;
   end;
+  {$IFNDEF FPC}
   if DebugHook <> 0 then
     ReadLn;
+  {$ENDIF}
 end.

@@ -52,8 +52,7 @@ type
 implementation
 
 Uses
-  Windows,
-  Registry;
+  wbPlatform;
 
 { TSteamVDFParser }
 
@@ -186,34 +185,10 @@ begin
   inherited;
 end;
 
-// Returns empty string if it could not find the registry key with a path or the path does not exist.
+// Returns empty string if it could not resolve the Steam install folder.
 function GetSteamInstallFolder: string;
-const
-  sSteamKey   = '\SOFTWARE\Valve\Steam\';
-  sRegKey     = 'InstallPath';
-var
-  s: string;
 begin
-  Result := '';
-  with TRegistry.Create do try
-    Access  := KEY_READ or KEY_WOW64_32KEY;
-    RootKey := HKEY_LOCAL_MACHINE;
-
-    if not OpenKey(sSteamKey, False) then begin
-      Access := KEY_READ or KEY_WOW64_64KEY;
-      if not OpenKey(sSteamKey, False) then begin
-        Result := '';
-        Exit;
-      end;
-    end;
-
-    s := ReadString(sRegKey);
-    s := StringReplace(s, '"', '', [rfReplaceAll]);
-    if DirectoryExists(s) then
-      Result := s;
-  finally
-    Free;
-  end;
+  Result := wbGetSteamInstallFolder;
 end;
 
 // Returns empty string if the determined library folder doesn't exist.
@@ -225,7 +200,7 @@ begin
   if sSteamFolder = '' then
     Result := ''
   else
-    Result := sSteamFolder + '\SteamApps\libraryfolders.vdf';
+    Result := wbPathCombine(sSteamFolder, 'steamapps/libraryfolders.vdf');
 
   if not FileExists(Result) then
     Result := '';
@@ -270,8 +245,9 @@ begin
   if LibraryFolder = '' then
     Exit;
 
-  var lAppsFolder := LibraryFolder + '\SteamApps\';
-  var lManifestFile := lAppsFolder+'appmanifest_'+SteamID+'.acf';
+  LibraryFolder := wbNormalizePath(LibraryFolder);
+  var lAppsFolder := wbPathCombine(LibraryFolder, 'steamapps');
+  var lManifestFile := wbPathCombine(lAppsFolder, 'appmanifest_' + SteamID + '.acf');
   if not FileExists(lManifestFile) then
     Exit;
   SteamParser := TSteamVDFParser.Create;
@@ -280,7 +256,7 @@ begin
     var lFolder := SteamParser.GetValueByPath('AppState\installdir');
     if lFolder <> '' then
     begin
-      var lFullPath := lAppsFolder + 'common\' + lFolder;
+      var lFullPath := wbPathCombine(wbPathCombine(lAppsFolder, 'common'), lFolder);
       if DirectoryExists(lFullPath) then
         Result := lFullPath;
     end;
@@ -291,4 +267,3 @@ begin
 end;
 
 end.
-

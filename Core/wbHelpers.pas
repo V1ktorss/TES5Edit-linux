@@ -21,12 +21,10 @@ uses
   Graphics,
   Controls,
   Forms,
-  ShellAPI,
-  ShlObj,
   IniFiles,
-  Registry,
   RegularExpressionsCore,
   wbInterface,
+  wbPlatform,
   Imaging,
   ImagingTypes;
 
@@ -1384,137 +1382,34 @@ begin
 end;
 
 function wbIsAssociatedWithExtension(aExt: string): Boolean;
-var
-  Name: string;
 begin
-  Result := False;
-  with TRegistry.Create do try
-    RootKey := HKEY_CURRENT_USER;
-    if OpenKey('\Software\Classes\' + LowerCase(aExt), False) then begin
-      Name := ReadString('');
-      if OpenKey('\Software\Classes\' + Name + '\DefaultIcon', False) then
-        if SameText(ReadString(''), ParamStr(0)) then
-          Result := True;
-    end;
-  finally
-    Free;
-  end;
+  Result := wbPlatform.wbIsAssociatedWithExtension(aExt, ParamStr(0));
 end;
 
 function wbAssociateWithExtension(aExt, aName, aDescr: string): Boolean;
 begin
-  Result := False;
-
-  if aExt = '' then
-    Exit
-  else
-    aExt := LowerCase(aExt);
-
-  if aExt[1] <> '.' then
-    aExt := '.' + aExt;
-
-  with TRegistry.Create do try
-    RootKey := HKEY_CURRENT_USER;
-
-    if OpenKey('\Software\Classes\' + aExt, True) then
-      WriteString('', aName)
-    else
-      raise Exception.Create('Not enough rights to modify the registry');
-
-    if OpenKey('\Software\Classes\' + aName, True) then
-      WriteString('', aDescr);
-
-    if OpenKey('\Software\Classes\' + aName + '\DefaultIcon', True) then
-      WriteString('', ParamStr(0));
-
-    if OpenKey('\Software\Classes\' + aName + '\shell\open\command', True) then
-      WriteString('', ParamStr(0) + ' "%1"');
-
-    Result := True;
-  finally
-    Free;
-  end;
-
-  SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nil, nil);
+  Result := wbPlatform.wbAssociateWithExtension(aExt, aName, aDescr, ParamStr(0));
 end;
 
 function ExecuteCaptureConsoleOutput(const aCommandLine: string): Cardinal;
-type
-  OemString = type AnsiString(CP_OEMCP);
-const
-  CReadBuffer = 4096;
-var
-  saSecurity: TSecurityAttributes;
-  hRead: THandle;
-  hWrite: THandle;
-  suiStartup: TStartupInfo;
-  piProcess: TProcessInformation;
-  pBuffer: array [0..CReadBuffer] of AnsiChar;
-  dBuffer: array [0..CReadBuffer] of Char;
-  pCmdLine: array [0..MAX_PATH] of Char;
-  dRead, dRunning, dw: DWord;
-  s: string;
 begin
-  saSecurity.nLength := SizeOf(TSecurityAttributes);
-  saSecurity.bInheritHandle := True;
-  saSecurity.lpSecurityDescriptor := nil;
-
-  if CreatePipe(hRead, hWrite, @saSecurity, 0) then begin
-    try
-      FillChar(suiStartup, SizeOf(TStartupInfo), #0);
-      suiStartup.cb := SizeOf(TStartupInfo);
-      suiStartup.hStdInput := hRead;
-      suiStartup.hStdOutput := hWrite;
-      suiStartup.hStdError := hWrite;
-      suiStartup.dwFlags := STARTF_USESTDHANDLES or STARTF_USESHOWWINDOW;
-      suiStartup.wShowWindow := SW_HIDE;
-
-      StrPCopy(pCmdLine, aCommandLine);
-      if CreateProcess(nil, pCmdLine, @saSecurity, @saSecurity, True, NORMAL_PRIORITY_CLASS, nil, nil, suiStartup, piProcess) then begin
-        try
-          repeat
-            dRunning := WaitForSingleObject(piProcess.hProcess, 100);
-            Application.ProcessMessages;
-
-            if wbForceTerminate or (GetKeyState(VK_ESCAPE) and 128 = 128) then begin
-              dw := Integer(TerminateProcess(piProcess.hProcess, 1));
-              if dw <> 0 then begin
-                dw := WaitForSingleObject(piProcess.hProcess, 1000);
-                if dw = WAIT_FAILED then
-                  Result := GetLastError;
-              end else
-                Result := GetLastError;
-
-              wbProgressCallback('Interrupted by user!');
-              Exit;
-            end;
-
-            if PeekNamedPipe(hRead, nil, 0, nil, @dRead, nil) then begin
-              if dRead > 0 then repeat
-                dRead := 0;
-                ReadFile(hRead, pBuffer[0], CReadBuffer, dRead, nil);
-                pBuffer[dRead] := #0;
-                OemToChar(pBuffer, dBuffer);
-                s := Trim(string(Oemstring(pBuffer)));
-                if s <> '' then
-                  wbProgressCallback(s);
-              until dRead < CReadBuffer;
-            end;
-          until dRunning <> WAIT_TIMEOUT;
-          GetExitCodeProcess(piProcess.hProcess, Result);
-        finally
-          CloseHandle(piProcess.hProcess);
-          CloseHandle(piProcess.hThread);
-        end;
-      end else
-        RaiseLastOSError;
-
-    finally
-      CloseHandle(hRead);
-      CloseHandle(hWrite);
-    end;
-  end else
-    RaiseLastOSError;
+  Result := wbExecuteCaptureConsoleOutput(
+    aCommandLine,
+    procedure(const aLine: string)
+    begin
+      wbProgressCallback(aLine);
+    end,
+    procedure
+    begin
+      Application.ProcessMessages;
+    end,
+    function: Boolean
+    begin
+      Result := wbForceTerminate or ((GetKeyState(VK_ESCAPE) and 128) = 128);
+      if Result then
+        wbProgressCallback('Interrupted by user!');
+    end
+  );
 end;
 
 function wbIsAeroEnabled: Boolean;

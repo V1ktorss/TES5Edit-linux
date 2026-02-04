@@ -11,13 +11,14 @@ unit wbBSArchive;
 interface
 
 uses
-  System.SysUtils,
-  System.Classes,
-  Winapi.Windows,
-  System.Threading,
-  System.SyncObjs,
-  System.Generics.Defaults,
-  System.Generics.Collections,
+  SysUtils,
+  Classes,
+  {$IFNDEF FPC}
+  Threading,
+  {$ENDIF}
+  SyncObjs,
+  Generics.Defaults,
+  Generics.Collections,
   wbStreams,
   tfTypes,
   tfMD5;
@@ -379,11 +380,15 @@ type
     fPackedData: array of TPackedDataInfo;
     fPackedDataCount: Integer;
 
-    {$IF CompilerVersion >= 34.0} { Delphi 10.4 }
-    Sync: TLightweightMREW;
+    {$IFDEF FPC}
+    Sync: TMultiReadExclusiveWriteSynchronizer;
     {$ELSE}
-    Sync: IReadWriteSync;
-    {$IFEND}
+      {$IF CompilerVersion >= 34.0} { Delphi 10.4 }
+      Sync: TLightweightMREW;
+      {$ELSE}
+      Sync: IReadWriteSync;
+      {$IFEND}
+    {$ENDIF}
 
     function GetArchiveFormatName: string;
     function GetFileCount: Cardinal;
@@ -620,7 +625,7 @@ begin
   Result := Size-Position;
   if Result > Count then
     Result := Count;
-  System.Move(Buffer, Pointer(PByte(Memory) + Position)^, Result);
+  Move(Buffer, Pointer(PByte(Memory) + Position)^, Result);
   Seek(Result, soCurrent);
 end;
 
@@ -857,6 +862,10 @@ destructor TwbBSArchive.Destroy;
 begin
   if fStates * [stReading, stWriting] <> [] then
     Close;
+  {$IFDEF FPC}
+  Sync.Free;
+  {$ENDIF}
+  inherited;
 end;
 
 function TwbBSArchive.GetArchiveFormatName: string;
@@ -893,10 +902,15 @@ end;
 procedure TwbBSArchive.SetMultiThreaded(aValue: Boolean);
 begin
   fMultiThreaded := aValue;
-  {$IF CompilerVersion < 34.0}
+  {$IFDEF FPC}
   if aValue and not Assigned(Sync) then
-    Sync := TReadWriteSync.Create;
-  {$IFEND}
+    Sync := TMultiReadExclusiveWriteSynchronizer.Create;
+  {$ELSE}
+    {$IF CompilerVersion < 34.0}
+    if aValue and not Assigned(Sync) then
+      Sync := TReadWriteSync.Create;
+    {$IFEND}
+  {$ENDIF}
 end;
 
 function TwbBSArchive.FindFileRecordTES3(const aFileName: string; var aFileIdx: Integer): Boolean;
@@ -1760,7 +1774,7 @@ begin
     raise Exception.Create('Archive is not in writing mode');
 
   i := Length(aRootDir);
-  if (i > 1) and (aRootDir[Length(aRootDir)] <> '\') then
+  if (i > 1) and (aRootDir[Length(aRootDir)] <> '\') and (aRootDir[Length(aRootDir)] <> '/') then
     Inc(i);
 
   fname := Copy(aFileName, i + 1, Length(aFileName));
@@ -2450,6 +2464,7 @@ begin
   if not Assigned(aProc) then
     Exit;
 
+  {$IFNDEF FPC}
   if fMultiThreaded and not aSingleThreaded then
     case fType of
       baTES3:
@@ -2473,6 +2488,7 @@ begin
         end);
     end
   else
+  {$ENDIF}
     case fType of
       baTES3:
         for i := Low(fFilesTES3) to High(fFilesTES3) do
@@ -2513,7 +2529,7 @@ begin
     FreeAndNil(fStream);
 
   if stWriting in fStates then
-    System.SysUtils.DeleteFile(fFileName);
+    DeleteFile(fFileName);
 
   fStates := [];
   fType := baNone;
@@ -2535,6 +2551,7 @@ end;
 procedure TwbBSArchive.ResourceDict(const aDict: TwbResourceDict; aFolder: string);
 var
   Folder : string;
+  lName  : string;
   i, j   : Integer;
 begin
   if not Assigned(aDict) then
@@ -2552,7 +2569,7 @@ begin
         with fFoldersTES4[i] do begin
           if (Folder = '') or Name.StartsWith(Folder, True) then
             for j := Low(Files) to High(Files) do begin
-              var lName := Name + '\' + Files[j].Name;
+              lName := Name + '\' + Files[j].Name;
               aDict.TryAdd(lName, wbNothing);
             end;
         end;
