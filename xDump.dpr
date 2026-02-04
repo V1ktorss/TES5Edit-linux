@@ -25,11 +25,14 @@ uses
   TypInfo,
   Classes,
   SysUtils,
+  {$IFDEF MSWINDOWS}
   Windows,
   Registry,
+  {$ENDIF}
   IniFiles,
   ZlibEx,
   lz4,
+  wbPlatform,
   wbBSA in 'Core\wbBSA.pas',
   wbCommandLine in 'Core\wbCommandLine.pas',
   wbSort in 'Core\wbSort.pas',
@@ -61,7 +64,9 @@ uses
 const
   IMAGE_FILE_LARGE_ADDRESS_AWARE = $0020;
 
+{$IFDEF MSWINDOWS}
 {$SetPEFlags IMAGE_FILE_LARGE_ADDRESS_AWARE}
+{$ENDIF}
 
 var
   StartTime            : TDateTime;
@@ -830,7 +835,7 @@ const
   sSureAIRegKey           = '\Software\SureAI\';
 
 var
-  regPath, regKey, client: string;
+  regPath, regKey: string;
   ProgramPath : String;
   DataPath    : String;
 begin
@@ -839,52 +844,42 @@ begin
   if not wbFindCmdLineParam('D', DataPath) then begin
     DataPath := CheckAppPath;
 
-    if (DataPath = '') then with TRegistry.Create do try
-      Access  := KEY_READ or KEY_WOW64_32KEY;
-      RootKey := HKEY_LOCAL_MACHINE;
-      client  := 'Steam';
-
+    if (DataPath = '') then begin
+      regPath := '';
+      regKey := '';
       case wbGameMode of
       gmTES3, gmTES4, gmFO3, gmFNV, gmTES5, gmFO4, gmSSE, gmTES5VR, gmFO4VR, gmSF1: begin
         regPath := sBethRegKey + wbGameNameReg + '\';
+        regKey := 'Installed Path';
       end;
       gmEnderal, gmEnderalSE: begin
-        RootKey := HKEY_CURRENT_USER;
         regPath := sSureAIRegKey + wbGameNameReg + '\';
+        regKey := 'Install_Path';
       end;
       gmFO76: begin
         regPath := sUninstallRegKey + wbGameNameReg + '\';
-        client  := 'Bethesda.net Launcher';
+        regKey := 'Path';
       end;
       end;
 
-      if not OpenKey(regPath, False) then begin
-        Access := KEY_READ or KEY_WOW64_64KEY;
-        if not OpenKey(regPath, False) then begin
-          ReportProgress('Warning: Could not open registry key: ' + regPath);
-          Exit;
+      if (regPath <> '') and (regKey <> '') then begin
+        {$IFDEF MSWINDOWS}
+        if not wbTryReadRegistryString(
+          wbGameMode in [gmEnderal, gmEnderalSE],
+          regPath,
+          regKey,
+          DataPath
+        ) then begin
+          ReportProgress(Format('Warning: Could not determine %s installation path, no "%s" registry key', [wbGameName2, regKey]));
         end;
+        {$ELSE}
+        ReportProgress(Format('Warning: Could not determine %s installation path; registry lookup not available on this platform', [wbGameName2]));
+        {$ENDIF}
       end;
-
-      case wbGameMode of
-      gmTES3, gmTES4, gmFO3, gmFNV, gmTES5, gmFO4, gmSSE, gmTES5VR, gmFO4VR, gmSF1:
-                  regKey := 'Installed Path';
-      gmEnderal, gmEnderalSE:  regKey := 'Install_Path';
-      gmFO76:     regKey := 'Path';
-      end;
-
-      DataPath := ReadString(regKey);
-      DataPath := StringReplace(DataPath, '"', '', [rfReplaceAll]);
-
-      if DataPath = '' then begin
-        ReportProgress(Format('Warning: Could not determine %s installation path, no "%s" registry key', [wbGameName2, regKey]));
-      end;
-    finally
-      Free;
     end;
 
     if (DataPath <> '') then
-      DataPath := IncludeTrailingPathDelimiter(DataPath) + 'Data\';
+      DataPath := IncludeTrailingPathDelimiter(DataPath) + 'Data' + PathDelim;
 
   end else
     DataPath := IncludeTrailingPathDelimiter(DataPath);

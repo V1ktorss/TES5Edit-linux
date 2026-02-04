@@ -124,9 +124,13 @@ This document tracks what is already done for the native Linux path and what com
   - replaced remaining `Vcl.Styles.*` namespace usages with `Styles.*` equivalents across key forms; readiness audit now reports zero core blockers and zero style-namespace matches
   - added readiness gate script `linux/native-port/check-xedit-readiness.sh` and CI workflow `.github/workflows/xedit-readiness-ci.yml` to enforce zero core blockers on push/PR
   - extended readiness gate with strict mode (`ENFORCE_STYLE=1`) and enabled it in CI to keep style namespace usage at zero as well
-  - configured xEdit readiness CI to run with `RUN_BSARCH=0` so the lane stays focused on xEdit/readiness checks
-  - added optional headless smoke script `linux/native-port/smoke-test-xedit-headless.sh` and wired CI to run it when `linux/bin/xedit-core` is available
-  - added `linux/native-port/ci-preflight.sh` as shared CI entry point to run all native-port checks with consistent permissions and strict-style gating
+- configured xEdit readiness CI to run with `RUN_BSARCH=0` so the lane stays focused on xEdit/readiness checks
+- added optional headless smoke script `linux/native-port/smoke-test-xedit-headless.sh` and wired CI to run it when `linux/bin/xedit-core` is available
+- added `linux/native-port/ci-preflight.sh` as shared CI entry point to run all native-port checks with consistent permissions and strict-style gating
+- started xDump CLI decoupling:
+  - guarded Windows-only imports and PE flags behind `MSWINDOWS`
+  - routed registry lookup through `wbTryReadRegistryString` (Windows only)
+  - normalized data path suffix to `Data` + `PathDelim` for cross-platform paths
 
 ## Risks
 
