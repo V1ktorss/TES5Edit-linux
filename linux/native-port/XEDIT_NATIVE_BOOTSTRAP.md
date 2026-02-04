@@ -26,11 +26,12 @@ This report identifies:
 
 Current snapshot (latest audit in repo):
 
-- Match count reduced from `81` to `53`
-- Files with matches reduced from `25` to `24`
+- Match count reduced from `81` to `50`
+- Files with matches reduced from `25` to `23`
 - Current top hotspots:
-  - `xEdit/JvI/xejviScriptAdapterMisc.pas`
   - `xEdit/xeMainForm.pas`
+  - `xEdit/xeRichEditForm.pas`
+  - `xEdit/xeModGroupEditForm.pas`
   - form units still tied to `Windows` + `Vcl.*`
 
 Note:
@@ -53,9 +54,9 @@ For each file:
 
 Priority for next pass:
 
-1. continue reducing Windows-only registrations in `xejviScriptAdapterMisc.pas`
+1. reduce Windows/VCL imports across the top form units (`xeMainForm`, `xeRichEditForm`, `xeModGroupEditForm`)
 2. isolate more message/input helpers from `xeMainForm.pas` into `wbPlatform`
-3. decide whether `TRegistryIniFile` script support stays Windows-only or gets a cross-platform replacement
+3. keep parity checks for script-host behavior while broadening Linux-safe wrappers
 
 ## Step 3: Define First xEdit Native Milestone
 

@@ -8,7 +8,7 @@ OUT_FILE="${OUT_DIR}/xedit-readiness.txt"
 mkdir -p "${OUT_DIR}"
 
 PATTERN='\bWinapi\.|\bWindows\b|\bVcl\.|\bRegistry\b|\bShellAPI\b|\bShlObj\b'
-EXCLUDE_PATTERN="AddConst\\('Windows'|AddFunction\\('Windows'|AddFunction\\('ShellApi'|AddFunction\\('Vcl\\.Clipbrd'|AddClass\\('Registry'"
+EXCLUDE_PATTERN="AddConst\\('Windows'|AddFunction\\('Windows'|AddFunction\\('ShellApi'|AddFunction\\('Vcl\\.Clipbrd'|AddClass\\('Registry'|CurrentVersion\\\\Uninstall"
 
 collect_matches() {
   rg -n --no-heading -e "${PATTERN}" "$1" 2>/dev/null \

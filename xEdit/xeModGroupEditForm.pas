@@ -62,7 +62,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Vcl.Clipbrd,
+  wbPlatform,
   wbHelpers,
   xeModuleSelectForm,
   xeMainForm,
@@ -517,10 +517,10 @@ begin
       Key := 0;
       if Assigned(ParentNodeData) then begin
         if Assigned(NodeData) then
-          Clipboard.AsText := NodeData.mgindCRC32.ToString
+          wbSetClipboardText(NodeData.mgindCRC32.ToString)
       end else begin
         if Assigned(NodeData) then
-          Clipboard.AsText := NodeData.mgindModGroupItem.mgiFileName;
+          wbSetClipboardText(NodeData.mgindModGroupItem.mgiFileName);
       end;
     end;
     Ord('N'): if Shift = [ssCtrl] then begin

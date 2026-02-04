@@ -76,15 +76,16 @@ This document tracks what is already done for the native Linux path and what com
   - moved `CreateProcessWait` and `GetKeyState` bindings to `wbPlatform` wrappers
   - moved `ShellExecuteWait` and `Sleep` bindings to `wbPlatform` wrappers
   - moved `ShellExecute` binding to `wbPlatform` wrapper and removed direct `ShellApi` dependency
-  - gated `TRegistryIniFile` script registration to Windows-only
+  - initially gated `TRegistryIniFile` script registration to Windows-only
   - reduced direct `Windows` unit dependence in script adapter with cross-platform show-window constants
   - gated clipboard adapter registration/implementation to Windows-only
   - removed remaining direct `Windows` unit import from `xejviScriptAdapterMisc.pas`
   - added `wbPlatform.*` alias registrations in script adapter for process/shell/file helpers
   - moved script `CopyFile` implementation to `wbPlatform.wbCopyFile`
-  - added non-Windows fallback for `Registry.TRegistryIniFile` scripts (maps to `TMemIniFile`)
+  - replaced `Registry.TRegistryIniFile` script binding with cross-platform `TMemIniFile` alias
   - gated legacy `Windows.*` and `ShellApi.*` script registrations to Windows-only
   - moved clipboard read/write implementation to `wbPlatform` and added `wbPlatform` clipboard aliases
+  - removed remaining `Vcl.Clipbrd` usage from `xeModGroupEditForm` by routing copy actions through `wbSetClipboardText`
   - removed `Windows` unit dependency from `xejviScriptAdapter.pas` by replacing `Int64Rec`-based conversion
   - gated `JvInterpreter_Windows` registration to Windows-only in `xejviScriptAdapter.pas`
 

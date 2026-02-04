@@ -35,9 +35,6 @@ uses
   IOUtils,
   FileCtrl,
   IniFiles,
-  {$IFDEF MSWINDOWS}
-  Registry,
-  {$ENDIF}
   Math,
   Types,
   RegularExpressionsCore,
@@ -1128,15 +1125,6 @@ begin
   TMemIniFile(Args.Obj).SetStrings(TStrings(V2O(Args.Values[0])));
 end;
 
-{ TRegistryIniFile }
-
-{$IFDEF MSWINDOWS}
-procedure TRegistryIniFile_Create(var Value: Variant; Args: TJvInterpreterArgs);
-begin
-  Value := O2V(TRegistryIniFile.Create(String(Args.Values[0])));
-end;
-{$ENDIF}
-
 { TControl }
 
 procedure TControl_ScaleValue(var Value: Variant; Args: TJvInterpreterArgs);
@@ -2220,13 +2208,8 @@ begin
     AddGet(TMemIniFile, 'SetStrings', TMemIniFile_SetStrings, 1, [varEmpty], varEmpty);
 
     { TRegistryIniFile }
-    {$IFDEF MSWINDOWS}
-    AddClass('Registry', TRegistryIniFile, 'TRegistryIniFile');
-    AddGet(TRegistryIniFile, 'Create', TRegistryIniFile_Create, 1, [varEmpty], varEmpty);
-    {$ELSE}
     AddClass('Registry', TMemIniFile, 'TRegistryIniFile');
     AddGet(TMemIniFile, 'Create', TMemIniFile_Create, 1, [varEmpty], varEmpty);
-    {$ENDIF}
 
     { TControl }
     AddConst('Controls', 'seFont', Ord(seFont));
