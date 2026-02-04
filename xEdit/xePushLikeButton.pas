@@ -13,7 +13,6 @@ unit xePushLikeButton;
 interface
 
 uses
-  Windows,
   Messages,
   Classes,
   SysUtils,
@@ -22,6 +21,12 @@ uses
   StdCtrls,
   Themes,
   Styles;
+
+const
+  XE_BS_PUSHLIKE = $00001000;
+  XE_BS_CHECKBOX = $00000002;
+  XE_CS_HREDRAW  = $0002;
+  XE_CS_VREDRAW  = $0001;
 
 type
   TButton = class(StdCtrls.TButton)
@@ -69,8 +74,8 @@ begin
   inherited CreateParams(Params);
   if FPushLike then
   begin
-    Params.Style := Params.Style or BS_PUSHLIKE  or BS_CHECKBOX;
-    Params.WindowClass.style := Params.WindowClass.style and not (CS_HREDRAW or CS_VREDRAW);
+    Params.Style := Params.Style or XE_BS_PUSHLIKE or XE_BS_CHECKBOX;
+    Params.WindowClass.style := Params.WindowClass.style and not (XE_CS_HREDRAW or XE_CS_VREDRAW);
   end;
 end;
 
