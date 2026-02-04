@@ -26,6 +26,12 @@ Strict mode (also fails on style namespace usage):
 ENFORCE_STYLE=1 linux/native-port/check-xedit-readiness.sh
 ```
 
+Optional headless startup smoke:
+
+```bash
+linux/native-port/smoke-test-xedit-headless.sh
+```
+
 Output:
 
 - `linux/native-port/reports/xedit-readiness.txt`
@@ -50,6 +56,7 @@ Note:
 - audit now filters legacy script namespace markers (for example `AddFunction('Windows', ...)`) to focus on actual code dependencies.
 - audit now reports core blockers and style namespaces separately to make remaining Linux blockers explicit.
 - CI gate: `.github/workflows/xedit-readiness-ci.yml` runs the readiness check in strict mode (`ENFORCE_STYLE=1`) on push/PR.
+- CI also runs `linux/native-port/smoke-test-xedit-headless.sh` when `linux/bin/xedit-core` is present.
 
 ## Step 2: Stabilize Platform Abstraction Boundary
 
