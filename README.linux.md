@@ -32,6 +32,15 @@ SSEEdit
 FO4Edit
 ```
 
+For BSArch:
+
+```bash
+./start-bsarch.sh
+```
+
+- With no arguments it opens the UI (desktop session) or shows CLI help.
+- With arguments it forwards directly to `BSArch-linux`.
+
 ## Manual usage
 
 ```bash
@@ -47,16 +56,28 @@ You can pass normal xEdit arguments after the mode.
 A native Linux UI for `BSArch-linux` is included:
 
 ```bash
-chmod +x linux/bsarch-ui.sh linux/install-bsarch-ui.sh linux/bsarch_ui.py
+chmod +x linux/bsarch-ui.sh linux/install-bsarch-ui.sh
 ./linux/install-bsarch-ui.sh
 BSArch-UI
 ```
 
+The UI is implemented in `C++` with `Qt Widgets` (`linux/bsarch_ui_cpp`).
+
 The UI supports:
 - Archive info
+- Drag and drop archive loading
+- Input menu (`☰`) with `Archives Browse`
+- Multi-archive selection in `Archives Browse` (info/list workflows)
+- Archive file list with extension filter, search, and compression filter checkboxes (`All`, `Compressed`, `Uncompressed`)
+- Resizable columns: `[Compressed]`, `Asset Name`, `Source File`
+- Select helpers: `Rest`, `Clear List`
+- Tabs: `Archive File List` and `Archive List`
+- Right-click list menu: `Unpack Selected`, `Pack Selected`, `Archiv-Info`
+- Double-click an entry to unpack it into `./Tmp` and open it with the default app
+- Unpack actions ask for target folder when started
+- Command results are shown via dialogs/status bar (no output panel)
 - Pack folder -> archive
 - Unpack archive -> folder
-- Live output log
 
 ## Optional environment variables
 

@@ -135,6 +135,7 @@ publish/
 # Windows Azure Build Output
 csx
 *.build.csdef
+linux/.build-bsarch-ui/
 
 # Windows Store app package directory
 AppPackages/

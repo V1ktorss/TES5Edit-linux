@@ -8,15 +8,15 @@ BIN_DIR="${HOME}/.local/bin"
 APP_DIR="${HOME}/.local/share/applications"
 
 mkdir -p "$BIN_DIR" "$APP_DIR"
-chmod +x "$LAUNCHER" "${SCRIPT_DIR}/bsarch_ui.py"
+chmod +x "$LAUNCHER"
 
 ln -sf "$LAUNCHER" "${BIN_DIR}/BSArch-UI"
 
 cat > "${APP_DIR}/BSArch-UI.desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Name=BSArch UI
-Comment=Native Linux UI for BSArch
+Name=BSArchSE
+Comment=BSArchSE
 Exec=${BIN_DIR}/BSArch-UI
 Terminal=false
 Categories=Utility;Game;
