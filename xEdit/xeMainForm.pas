@@ -1509,7 +1509,7 @@ begin
     s := 'Could not rename "'+lFrom+'". File not found.';
     wbProgress(s);
     if not aSilent then
-      MessageBox(0, PChar(s), 'Error', 0);
+      MessageDlg(s, mtError, [mbOK], 0);
     Exit;
   end;
 
@@ -1523,7 +1523,7 @@ begin
       s := 'Could not get last modified time of "' + lTo + '".';
       wbProgress(s);
       if not aSilent then
-        MessageBox(0, PChar(s), 'Error', 0);
+        MessageDlg(s, mtError, [mbOK], 0);
     end;
     lBackup := wbBackupPath + ExtractFileName(aTo) + '.backup.' + FormatDateTime('yyyy_mm_dd_hh_nn_ss', Now);
     s := lBackup;
@@ -1539,7 +1539,7 @@ begin
         s := 'Could not rename "' + lTo + '" to "' + lBackup + '".';
         wbProgress(s);
         if not aSilent then
-          MessageBox(0, PChar(s), 'Error', 0);
+          MessageDlg(s, mtError, [mbOK], 0);
         Exit;
       end;
     end else begin
@@ -1549,7 +1549,7 @@ begin
         s := 'Could not delete "' + lTo + '".';
         wbProgress(s);
         if not aSilent then
-          MessageBox(0, PChar(s), 'Error', 0);
+          MessageDlg(s, mtError, [mbOK], 0);
         Exit;
       end;
     end;
@@ -1561,7 +1561,7 @@ begin
     s := 'Could not rename "' + lFrom + '" to "' + lTo + '".';
     wbProgress(s);
     if not aSilent then
-      MessageBox(0, PChar('Could not rename "' + lFrom + '" to "' + lTo + '".'), 'Error', 0);
+      MessageDlg('Could not rename "' + lFrom + '" to "' + lTo + '".', mtError, [mbOK], 0);
     Exit;
   end;
 
@@ -1573,7 +1573,7 @@ begin
       s := 'Could not set last modified time of "' + lTo + '".';
       wbProgress(s);
       if not aSilent then
-        MessageBox(0, PChar(s), 'Error', 0);
+        MessageDlg(s, mtError, [mbOK], 0);
     end;
 
   Result := True;
@@ -1600,7 +1600,7 @@ begin
     s := 'Could not rename "'+lFrom+'". File not found.';
     wbProgress(s);
     if not aSilent then
-      MessageBox(0, PChar(s), 'Error', 0);
+      MessageDlg(s, mtError, [mbOK], 0);
     Exit;
   end;
 
@@ -1617,7 +1617,7 @@ begin
     s := 'Could not rename "' + lFrom + '" to "' + lBackup + '".';
     wbProgress(s);
     if not aSilent then
-      MessageBox(0, PChar(s), 'Error', 0);
+      MessageDlg(s, mtError, [mbOK], 0);
     Exit;
   end;
 
@@ -1671,8 +1671,13 @@ begin
       AnyError := True;
 
   if AnyError then begin
-    MessageBox(0, PChar('One or more errors occured during renaming of saved modules.'+#13#13+
-    'Please check the files in your data path: ' + wbDataPath), 'Error', 0);
+    MessageDlg(
+      'One or more errors occured during renaming of saved modules.' + #13#13 +
+      'Please check the files in your data path: ' + wbDataPath,
+      mtError,
+      [mbOK],
+      0
+    );
     if _SaveProgress and Assigned(frmMain) then
       frmMain.SaveLogs(False);
   end;

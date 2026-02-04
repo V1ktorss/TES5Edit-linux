@@ -107,6 +107,7 @@ This document tracks what is already done for the native Linux path and what com
   - removed `Windows`/`Messages` imports from `xeOptionsForm` and switched to `vkEscape`
   - removed `Windows`/`Messages` imports from `xeModuleSelectForm`, replaced `GetKeyState` with `wbIsVirtualKeyPressed`, and switched legacy VK constants to `vk*`
   - removed direct `Windows` import from `xeScriptForm`, switched legacy VK constants to `vk*`, and replaced backup copy call with `wbCopyFile`
+  - replaced direct `MessageBox` calls in `xeMainForm` rename/backup error paths with `MessageDlg`
 
 ## Risks
 
