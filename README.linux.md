@@ -90,6 +90,12 @@ Run everything locally:
 linux/native-port/run-all-checks.sh
 ```
 
+CI-equivalent preflight:
+
+```bash
+ENFORCE_STYLE=1 linux/native-port/ci-preflight.sh
+```
+
 This runs:
 - xEdit readiness gate (`ENFORCE_STYLE=1`)
 - BSArch smoke/path/stress checks (if `linux/bin/bsarch-core` exists)
@@ -102,6 +108,7 @@ Important scripts:
 - `linux/native-port/regression-paths-bsarch.sh`
 - `linux/native-port/stress-large-bsarch.sh`
 - `linux/native-port/smoke-test-xedit-headless.sh`
+- `linux/native-port/ci-preflight.sh`
 
 ## Optional environment variables
 

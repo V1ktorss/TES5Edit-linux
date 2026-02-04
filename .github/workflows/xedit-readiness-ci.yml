@@ -22,14 +22,8 @@ jobs:
 
       - name: Run xEdit Readiness Check
         run: |
-          chmod +x linux/native-port/smoke-test-bsarch.sh
-          chmod +x linux/native-port/regression-paths-bsarch.sh
-          chmod +x linux/native-port/stress-large-bsarch.sh
-          chmod +x linux/native-port/xedit-readiness-audit.sh
-          chmod +x linux/native-port/check-xedit-readiness.sh
-          chmod +x linux/native-port/smoke-test-xedit-headless.sh
-          chmod +x linux/native-port/run-all-checks.sh
-          ENFORCE_STYLE=1 linux/native-port/run-all-checks.sh
+          chmod +x linux/native-port/ci-preflight.sh
+          ENFORCE_STYLE=1 linux/native-port/ci-preflight.sh
 
       - name: Upload readiness report
         uses: actions/upload-artifact@v4

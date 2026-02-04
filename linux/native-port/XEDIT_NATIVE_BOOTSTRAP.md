@@ -64,6 +64,7 @@ Note:
 - CI gate: `.github/workflows/xedit-readiness-ci.yml` runs the readiness check in strict mode (`ENFORCE_STYLE=1`) on push/PR.
 - CI also runs `linux/native-port/smoke-test-xedit-headless.sh` when `linux/bin/xedit-core` is present.
 - CI workflows now delegate to `linux/native-port/run-all-checks.sh` as shared check entry point.
+- CI preflight helper: `linux/native-port/ci-preflight.sh`.
 
 ## Step 2: Stabilize Platform Abstraction Boundary
 
