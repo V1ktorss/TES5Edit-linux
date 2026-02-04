@@ -24,7 +24,7 @@ jobs:
         run: |
           chmod +x linux/native-port/xedit-readiness-audit.sh
           chmod +x linux/native-port/check-xedit-readiness.sh
-          linux/native-port/check-xedit-readiness.sh
+          ENFORCE_STYLE=1 linux/native-port/check-xedit-readiness.sh
 
       - name: Upload readiness report
         uses: actions/upload-artifact@v4

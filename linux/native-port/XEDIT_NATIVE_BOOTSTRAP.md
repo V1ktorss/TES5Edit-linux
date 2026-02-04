@@ -20,6 +20,12 @@ Enforced check:
 linux/native-port/check-xedit-readiness.sh
 ```
 
+Strict mode (also fails on style namespace usage):
+
+```bash
+ENFORCE_STYLE=1 linux/native-port/check-xedit-readiness.sh
+```
+
 Output:
 
 - `linux/native-port/reports/xedit-readiness.txt`
@@ -43,7 +49,7 @@ Note:
 
 - audit now filters legacy script namespace markers (for example `AddFunction('Windows', ...)`) to focus on actual code dependencies.
 - audit now reports core blockers and style namespaces separately to make remaining Linux blockers explicit.
-- CI gate: `.github/workflows/xedit-readiness-ci.yml` runs the readiness check on push/PR.
+- CI gate: `.github/workflows/xedit-readiness-ci.yml` runs the readiness check in strict mode (`ENFORCE_STYLE=1`) on push/PR.
 
 ## Step 2: Stabilize Platform Abstraction Boundary
 
