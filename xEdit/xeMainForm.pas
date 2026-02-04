@@ -3456,7 +3456,7 @@ begin
         Exit;
       end;
       CompareFile := s;
-      CopyFile(PChar(FileName), PChar(CompareFile), false);
+      wbCopyFile(FileName, CompareFile, False);
       // We need to propagate a flag to mark the copy temporary, so it can be deleted on close
       Include(States, fsIsTemporary);
     end;
@@ -3517,7 +3517,7 @@ begin
         Break;
     until False;
 
-    CopyFile(PChar(FileName), PChar(CompareFile), false);
+    wbCopyFile(FileName, CompareFile, False);
   end;
 
   vstNav.PopupMenu := nil;
@@ -6348,7 +6348,7 @@ begin
 
   tmrCheckUnsaved.Enabled := False;
 
-  LockWindowUpdate(Handle);
+  wbLockWindowUpdate(Handle);
   try
     BackHistory := nil;
     ForwardHistory := nil;
@@ -6364,7 +6364,7 @@ begin
     for i := 0 to Pred(pgMain.PageCount) do
       pgMain.Pages[i].TabVisible := tbsMessages = pgMain.Pages[i];
   finally
-    LockWindowUpdate(0);
+    wbLockWindowUpdate(0);
   end;
 
   Files := nil;
@@ -10234,7 +10234,7 @@ var
   Section     : string;
 begin
   if wbIsFallout76 or wbIsStarfield then begin
-    Application.MessageBox('LOD generation not supported.', 'Warning', MB_ICONINFORMATION + MB_OK);
+    MessageDlg('LOD generation not supported.', mtInformation, [mbOK], 0);
     Exit;
   end;
   
@@ -10368,11 +10368,12 @@ begin
       if Assigned(Sender) and (wbGameMode in [gmSSE, gmTES5VR, gmEnderalSE]) then begin
         cbObjectsLOD.Checked := False;
         cbObjectsLOD.Enabled := False;
-        Application.MessageBox(
+        MessageDlg(
           'Objects LOD generation for Skyrim Special Edition and Skyrim VR is possible only in xLODGen mode either ' +
           'by renaming executable to SSELODGen.exe or running with -lodgen command line parameter.',
-          'Warning',
-          MB_ICONINFORMATION + MB_OK
+          mtInformation,
+          [mbOK],
+          0
         );
       end else
         cbObjectsLOD.Checked := Settings.ReadBool(Section, 'ObjectsLOD', True);
@@ -15433,14 +15434,14 @@ end;
 procedure TfrmMain.pnlNavResize(Sender: TObject);
 begin
   if lblFilterHint.Visible then begin
-    LockWindowUpdate(pnlNav.Handle);
+    wbLockWindowUpdate(pnlNav.Handle);
     try
       lblFilterHint.AutoSize := False;
       vstNav.Align := alNone;
       lblFilterHint.AutoSize := True;
       vstNav.Align := alClient;
     finally
-      LockWindowUpdate(0);
+      wbLockWindowUpdate(0);
     end;
   end;
 end;
@@ -15600,7 +15601,7 @@ var
   Containers                  : TwbContainerElementRefs;
 begin
   sw := TStopwatch.StartNew;
-  LockWindowUpdate(vstView.Handle);
+  wbLockWindowUpdate(vstView.Handle);
   vstView.BeginUpdate;
   try
     repeat
@@ -15674,7 +15675,7 @@ begin
     vstView.EndUpdate;
     if vstView.FocusedColumn > NoColumn then
       vstView.ScrollIntoView(vstView.FocusedColumn, False);
-    LockWindowUpdate(0);
+    wbLockWindowUpdate(0);
   end;
   sw.Stop;
   if sw.ElapsedMilliseconds > 1000 then
