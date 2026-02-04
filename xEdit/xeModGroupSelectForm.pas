@@ -16,7 +16,7 @@ uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, CheckLst, Menus,
   Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
-  wbInterface, wbLoadOrder, wbModGroups, Vcl.ExtCtrls, System.Actions, Vcl.ActnList,
+  wbInterface, wbLoadOrder, wbModGroups, ExtCtrls, System.Actions, ActnList,
   System.UITypes;
 
 const

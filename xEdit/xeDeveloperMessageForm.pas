@@ -13,8 +13,8 @@ unit xeDeveloperMessageForm;
 interface
 
 uses
-  System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+  System.SysUtils, System.Variants, System.Classes, Graphics,
+  Controls, Forms, Dialogs, ExtCtrls, StdCtrls,
   JvExStdCtrls, JvRichEdit, FileContainer, JvHtControls;
 
 type

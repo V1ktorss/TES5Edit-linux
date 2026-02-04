@@ -13,8 +13,8 @@ unit xeLegendForm;
 interface
 
 uses
-  System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, System.IniFiles,
+  System.SysUtils, System.Variants, System.Classes, Graphics,
+  Controls, Forms, Dialogs, Grids, System.IniFiles,
   wbInterface;
 
 type

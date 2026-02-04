@@ -13,8 +13,8 @@ unit xeWorldspaceCellDetailsForm;
 interface
 
 uses
-  System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Samples.Spin;
+  System.SysUtils, System.Variants, System.Classes, Graphics,
+  Controls, Forms, Dialogs, StdCtrls, Vcl.Samples.Spin;
 
 type
   TfrmWorldspaceCellDetails = class(TForm)

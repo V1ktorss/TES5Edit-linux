@@ -26,13 +26,13 @@ This report identifies:
 
 Current snapshot (latest audit in repo):
 
-- Match count reduced from `81` to `27`
-- Files with matches reduced from `25` to `12`
+- Match count reduced from `81` to `13`
+- Files with matches reduced from `25` to `9`
 - Current top hotspots:
   - `xEdit/xeMainForm.pas`
-  - `xEdit/xeRichEditForm.pas`
-  - `xEdit/xeModGroupEditForm.pas`
-  - form units still tied to `Windows` + `Vcl.*`
+  - `xEdit/xeOptionsForm.pas`
+  - style/theme integration units (`Vcl.Styles.*`, `Vcl.Themes`, `Vcl.Samples.Spin`)
+  - remaining findings are now mostly VCL-style namespace dependencies, not direct WinAPI calls
 
 Note:
 
@@ -54,7 +54,7 @@ For each file:
 
 Priority for next pass:
 
-1. reduce Windows/VCL imports across the top form units (`xeMainForm`, `xeRichEditForm`, `xeModGroupEditForm`)
+1. evaluate how much style/theme support (`Vcl.Styles.*`) must stay for parity vs. native-first profiles
 2. isolate more message/input helpers from `xeMainForm.pas` into `wbPlatform`
 3. keep parity checks for script-host behavior while broadening Linux-safe wrappers
 

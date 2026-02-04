@@ -14,7 +14,7 @@ interface
 
 uses
   Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, IOUtils, StrUtils, Vcl.ComCtrls, System.UITypes,
+  Dialogs, StdCtrls, ExtCtrls, IOUtils, StrUtils, ComCtrls, System.UITypes,
   SynEdit, SynMemo, SynEditKeyCmds, xeMainForm, SynHighlighterPas;
 
 const

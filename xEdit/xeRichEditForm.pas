@@ -13,9 +13,9 @@ unit xeRichEditForm;
 interface
 
 uses
-  Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, JvExStdCtrls, JvRichEdit,
-  Vcl.ExtCtrls, Vcl.ComCtrls, VirtualTrees, JvExExtCtrls, JvSplitter, xePushLikeButton;
+  Messages, System.SysUtils, System.Variants, System.Classes, Graphics,
+  Controls, Forms, Dialogs, StdCtrls, JvExStdCtrls, JvRichEdit,
+  ExtCtrls, ComCtrls, VirtualTrees, JvExExtCtrls, JvSplitter, xePushLikeButton;
 
 type
   TfrmRichEdit = class(TForm)
