@@ -131,6 +131,8 @@ This document tracks what is already done for the native Linux path and what com
   - guarded Windows-only imports and PE flags behind `MSWINDOWS`
   - routed registry lookup through `wbTryReadRegistryString` (Windows only)
   - normalized data path suffix to `Data` + `PathDelim` for cross-platform paths
+  - added Linux build helper: `linux/native-port/build-xdump.sh`
+  - made LZ4 Pascal units tolerate non-Windows builds (CPU defines + non-Windows uses)
 
 ## Risks
 
