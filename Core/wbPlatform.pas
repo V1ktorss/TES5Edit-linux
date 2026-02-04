@@ -34,6 +34,8 @@ function wbTryReadRegistryString(
   out aValue: string
 ): Boolean;
 function wbTryInitializeMOHook(const aHookDll, aProfile: string): Boolean;
+function wbGetClipboardText: string;
+procedure wbSetClipboardText(const aText: string);
 function wbOpenUrl(const aUrl: string): Boolean;
 function wbCopyFile(
   const aSource, aDestination: string;
@@ -86,7 +88,8 @@ uses
   , Windows,
   Registry,
   ShellAPI,
-  ShlObj
+  ShlObj,
+  Vcl.Clipbrd
   {$ENDIF}
   ;
 
@@ -424,6 +427,25 @@ begin
   if Assigned(Pointer(@lInit)) then
     Result := lInit(0, PWideChar(UnicodeString(aProfile)));
   Exit;
+  {$ENDIF}
+end;
+
+function wbGetClipboardText: string;
+begin
+  {$IFDEF MSWINDOWS}
+  Result := Clipboard.AsText;
+  Exit;
+  {$ENDIF}
+  Result := '';
+end;
+
+procedure wbSetClipboardText(const aText: string);
+begin
+  {$IFDEF MSWINDOWS}
+  if aText <> '' then
+    Clipboard.AsText := aText
+  else
+    Clipboard.Clear;
   {$ENDIF}
 end;
 

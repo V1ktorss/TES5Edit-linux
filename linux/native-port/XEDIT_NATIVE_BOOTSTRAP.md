@@ -26,7 +26,7 @@ This report identifies:
 
 Current snapshot (latest audit in repo):
 
-- Match count reduced from `81` to `56`
+- Match count reduced from `81` to `53`
 - Files with matches reduced from `25` to `24`
 - Current top hotspots:
   - `xEdit/JvI/xejviScriptAdapterMisc.pas`
