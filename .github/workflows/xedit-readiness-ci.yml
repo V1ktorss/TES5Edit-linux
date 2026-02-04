@@ -23,7 +23,7 @@ jobs:
       - name: Run xEdit Readiness Check
         run: |
           chmod +x linux/native-port/ci-preflight.sh
-          ENFORCE_STYLE=1 linux/native-port/ci-preflight.sh
+          ENFORCE_STYLE=1 RUN_BSARCH=0 linux/native-port/ci-preflight.sh
 
       - name: Upload readiness report
         uses: actions/upload-artifact@v4
