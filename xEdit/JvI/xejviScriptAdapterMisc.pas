@@ -2216,6 +2216,9 @@ begin
     {$IFDEF MSWINDOWS}
     AddClass('Registry', TRegistryIniFile, 'TRegistryIniFile');
     AddGet(TRegistryIniFile, 'Create', TRegistryIniFile_Create, 1, [varEmpty], varEmpty);
+    {$ELSE}
+    AddClass('Registry', TMemIniFile, 'TRegistryIniFile');
+    AddGet(TMemIniFile, 'Create', TMemIniFile_Create, 1, [varEmpty], varEmpty);
     {$ENDIF}
 
     { TControl }
