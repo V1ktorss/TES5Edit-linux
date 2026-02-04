@@ -114,6 +114,8 @@ This document tracks what is already done for the native Linux path and what com
   - removed unnecessary `Vcl.Mask` imports from `xeMainForm`, `xeRichEditForm`, `xeModGroupEditForm`, `xeModGroupSelectForm`, and `xeModuleSelectForm`
   - removed `Vcl.Mask` import from `xeLogAnalyzerForm`
   - removed direct `Windows` import from `xePushLikeButton` by using local style-flag constants in `CreateParams`
+  - removed direct `Windows` import from `xeMainForm` by defining local VK constants and replacing WinAPI directory-change notifications with portable timestamp polling loops
+  - replaced `LockWindowUpdate` and warning message-box usages in additional `xeMainForm` paths with platform wrappers / `MessageDlg`
 
 ## Risks
 

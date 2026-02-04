@@ -13,7 +13,6 @@ unit xeMainForm;
 interface
 
 uses
-  Windows,
   Messages,
   SysUtils,
   Variants,
@@ -81,6 +80,18 @@ const
   DefaultInterval             = 1 / 24 / 6; // 10 minutes
   MaxSaveListCount            = 5;
   ScriptSelfTerminated        = 'Script terminated itself, Result=';
+  VK_SHIFT                    = $10;
+  VK_CONTROL                  = $11;
+  VK_MENU                     = $12;
+  VK_LBUTTON                  = $01;
+  VK_RETURN                   = $0D;
+  VK_DELETE                   = $2E;
+  VK_INSERT                   = $2D;
+  VK_DOWN                     = $28;
+  VK_UP                       = $26;
+  VK_LEFT                     = $25;
+  VK_RIGHT                    = $27;
+  VK_F2                       = $71;
 
 type
   TDynBooleans = array of Boolean;
@@ -21748,36 +21759,50 @@ begin
 end;
 
 procedure TPluggyLinkThread.Execute;
+  function GetPluggyStamp: Int64;
+  const
+    cPluggyFiles: array[0..2] of string = (
+      'Pluggy' + wbAppName + 'ViewRef.csv',
+      'Pluggy' + wbAppName + 'ViewInventory.csv',
+      'Pluggy' + wbAppName + 'ViewSpells.csv'
+    );
+  var
+    i: Integer;
+    lFile: string;
+    lTime: TDateTime;
+    lStamp: TTimeStamp;
+    lTicks: Int64;
+  begin
+    Result := -1;
+    for i := Low(cPluggyFiles) to High(cPluggyFiles) do begin
+      lFile := plFolder + cPluggyFiles[i];
+      if not FileExists(lFile) then
+        Continue;
+      lTime := TFile.GetLastWriteTimeUtc(lFile);
+      lStamp := DateTimeToTimeStamp(lTime);
+      lTicks := Int64(lStamp.Date) * 86400000 + lStamp.Time;
+      if lTicks > Result then
+        Result := lTicks;
+    end;
+  end;
 var
-  WaitHandle : THandle;
+  LastStamp: Int64;
+  CurrentStamp: Int64;
 begin
   plFolder := wbMyGamesTheGamePath + 'Pluggy\User Files\';
   frmMain.PostAddMessage('[PluggyLink] Starting for: ' + plFolder);
-  ChangeDetected;
+  LastStamp := GetPluggyStamp;
+  if LastStamp >= 0 then
+    ChangeDetected;
   try
-    WaitHandle := FindFirstChangeNotification(
-      PChar(plFolder),
-      False,
-      FILE_NOTIFY_CHANGE_FILE_NAME or FILE_NOTIFY_CHANGE_LAST_WRITE
-    );
-    if WaitHandle = INVALID_HANDLE_VALUE then
-      RaiseLastOSError;
-    try
-      repeat
-        case WaitForSingleObject(WaitHandle, 1000) of
-          WAIT_OBJECT_0: begin
-            ChangeDetected;
-            if not FindNextChangeNotification(WaitHandle) then
-              RaiseLastOSError;
-          end;
-          WAIT_FAILED:
-            RaiseLastOSError;
-        end;
-      until Terminated or wbForceTerminate;
-    finally
-      if not FindCloseChangeNotification(WaitHandle) then
-        RaiseLastOSError;
-    end;
+    repeat
+      wbSleepMs(1000);
+      CurrentStamp := GetPluggyStamp;
+      if (CurrentStamp >= 0) and (CurrentStamp <> LastStamp) then begin
+        LastStamp := CurrentStamp;
+        ChangeDetected;
+      end;
+    until Terminated or wbForceTerminate;
   except
     on E: Exception do
       frmMain.PostAddMessage('[PluggyLink] Error: ' + E.Message);
@@ -21925,36 +21950,37 @@ begin
 end;
 
 procedure TGameLinkThread.Execute;
+  function GetGameLinkStamp: Int64;
+  var
+    lFile: string;
+    lTime: TDateTime;
+    lStamp: TTimeStamp;
+  begin
+    lFile := glFolder + 'xEditLink.ini';
+    if not FileExists(lFile) then
+      Exit(-1);
+    lTime := TFile.GetLastWriteTimeUtc(lFile);
+    lStamp := DateTimeToTimeStamp(lTime);
+    Result := Int64(lStamp.Date) * 86400000 + lStamp.Time;
+  end;
 var
-  WaitHandle : THandle;
+  LastStamp: Int64;
+  CurrentStamp: Int64;
 begin
   glFolder := wbDataPath + 'xEdit\';
   frmMain.PostAddMessage('[GameLink] Starting for: ' + glFolder);
-  ChangeDetected;
+  LastStamp := GetGameLinkStamp;
+  if LastStamp >= 0 then
+    ChangeDetected;
   try
-    WaitHandle := FindFirstChangeNotification(
-      PChar(glFolder),
-      False,
-      FILE_NOTIFY_CHANGE_FILE_NAME or FILE_NOTIFY_CHANGE_LAST_WRITE
-    );
-    if WaitHandle = INVALID_HANDLE_VALUE then
-      RaiseLastOSError;
-    try
-      repeat
-        case WaitForSingleObject(WaitHandle, 1000) of
-          WAIT_OBJECT_0: begin
-            ChangeDetected;
-            if not FindNextChangeNotification(WaitHandle) then
-              RaiseLastOSError;
-          end;
-          WAIT_FAILED:
-            RaiseLastOSError;
-        end;
-      until Terminated or wbForceTerminate;
-    finally
-      if not FindCloseChangeNotification(WaitHandle) then
-        RaiseLastOSError;
-    end;
+    repeat
+      wbSleepMs(1000);
+      CurrentStamp := GetGameLinkStamp;
+      if (CurrentStamp >= 0) and (CurrentStamp <> LastStamp) then begin
+        LastStamp := CurrentStamp;
+        ChangeDetected;
+      end;
+    until Terminated or wbForceTerminate;
   except
     on E: Exception do
       frmMain.PostAddMessage('[GameLink] Error: ' + E.Message);
