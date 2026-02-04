@@ -1,17 +1,17 @@
 # xEdit Native Readiness Audit
-# generated: 2026-02-04T21:25:15+01:00
+# generated: 2026-02-04T21:26:57+01:00
 
 ## Summary
-- Match count: 46
+- Match count: 45
 - Files with matches: 19
 
 ## Top files by match count
 6	/home/v1ktors/TES5Edit-linux/xEdit/xeMainForm.pas
 5	/home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas
-4	/home/v1ktors/TES5Edit-linux/xEdit/xeModGroupSelectForm.pas
 4	/home/v1ktors/TES5Edit-linux/xEdit/xeModGroupEditForm.pas
 3	/home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas
 3	/home/v1ktors/TES5Edit-linux/xEdit/xeModuleSelectForm.pas
+3	/home/v1ktors/TES5Edit-linux/xEdit/xeModGroupSelectForm.pas
 3	/home/v1ktors/TES5Edit-linux/xEdit/xeDeveloperMessageForm.pas
 2	/home/v1ktors/TES5Edit-linux/xEdit/xeWorldspaceCellDetailsForm.pas
 2	/home/v1ktors/TES5Edit-linux/xEdit/xeScriptForm.pas
@@ -37,49 +37,48 @@
 75:  SynEdit, SynMemo, SynEditKeyCmds, Vcl.Mask;
 
 ## Raw matches
-/home/v1ktors/TES5Edit-linux/xEdit/xeDeveloperMessageForm.pas:16:  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-/home/v1ktors/TES5Edit-linux/xEdit/xeDeveloperMessageForm.pas:17:  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
-/home/v1ktors/TES5Edit-linux/xEdit/xeDeveloperMessageForm.pas:65:  Vcl.Styles.Utils.SystemMenu;
-/home/v1ktors/TES5Edit-linux/xEdit/xeFilterOptionsForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-/home/v1ktors/TES5Edit-linux/xEdit/xeFileSelectForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-/home/v1ktors/TES5Edit-linux/xEdit/xeFileSelectForm.pas:18:  Vcl.Styles.Utils.SystemMenu;
-/home/v1ktors/TES5Edit-linux/xEdit/xeElementDetailForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-/home/v1ktors/TES5Edit-linux/xEdit/xeModGroupSelectForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+/home/v1ktors/TES5Edit-linux/xEdit/xeLegendForm.pas:16:  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+/home/v1ktors/TES5Edit-linux/xEdit/xeLegendForm.pas:17:  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, System.IniFiles,
+/home/v1ktors/TES5Edit-linux/xEdit/xePushLikeButton.pas:16:  Windows,
+/home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+/home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:18:  Vcl.Styles.Utils.SystemMenu, Vcl.Samples.Spin, Vcl.Themes,
+/home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:19:  System.Generics.Collections, Vcl.Styles.Ext, Vcl.Styles.Preview;
+/home/v1ktors/TES5Edit-linux/xEdit/xeLODGenForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+/home/v1ktors/TES5Edit-linux/xEdit/xeModuleSelectForm.pas:16:  Windows, Messages, UITypes, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+/home/v1ktors/TES5Edit-linux/xEdit/xeModuleSelectForm.pas:18:  Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
+/home/v1ktors/TES5Edit-linux/xEdit/xeModuleSelectForm.pas:19:  wbInterface, wbLoadOrder, Vcl.ExtCtrls, System.Actions, Vcl.ActnList, Vcl.Mask;
 /home/v1ktors/TES5Edit-linux/xEdit/xeModGroupSelectForm.pas:18:  Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
 /home/v1ktors/TES5Edit-linux/xEdit/xeModGroupSelectForm.pas:19:  wbInterface, wbLoadOrder, wbModGroups, Vcl.ExtCtrls, System.Actions, Vcl.ActnList,
 /home/v1ktors/TES5Edit-linux/xEdit/xeModGroupSelectForm.pas:20:  Vcl.Mask, System.UITypes;
+/home/v1ktors/TES5Edit-linux/xEdit/xeDeveloperMessageForm.pas:16:  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+/home/v1ktors/TES5Edit-linux/xEdit/xeDeveloperMessageForm.pas:17:  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+/home/v1ktors/TES5Edit-linux/xEdit/xeDeveloperMessageForm.pas:65:  Vcl.Styles.Utils.SystemMenu;
+/home/v1ktors/TES5Edit-linux/xEdit/xeInit.pas:67:  Vcl.Themes,
+/home/v1ktors/TES5Edit-linux/xEdit/xeInit.pas:68:  Vcl.Styles,
 /home/v1ktors/TES5Edit-linux/xEdit/xeModGroupEditForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
 /home/v1ktors/TES5Edit-linux/xEdit/xeModGroupEditForm.pas:18:  Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
 /home/v1ktors/TES5Edit-linux/xEdit/xeModGroupEditForm.pas:19:  wbInterface, wbLoadOrder, wbModGroups, Vcl.ExtCtrls,
 /home/v1ktors/TES5Edit-linux/xEdit/xeModGroupEditForm.pas:20:  System.UITypes, Vcl.Mask;
-/home/v1ktors/TES5Edit-linux/xEdit/xeLegendForm.pas:16:  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-/home/v1ktors/TES5Edit-linux/xEdit/xeLegendForm.pas:17:  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, System.IniFiles,
+/home/v1ktors/TES5Edit-linux/xEdit/xeFilterOptionsForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+/home/v1ktors/TES5Edit-linux/xEdit/xeLogAnalyzerForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+/home/v1ktors/TES5Edit-linux/xEdit/xeLogAnalyzerForm.pas:18:  Vcl.Mask;
+/home/v1ktors/TES5Edit-linux/xEdit/xeFileSelectForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+/home/v1ktors/TES5Edit-linux/xEdit/xeFileSelectForm.pas:18:  Vcl.Styles.Utils.SystemMenu;
+/home/v1ktors/TES5Edit-linux/xEdit/xeElementDetailForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
 /home/v1ktors/TES5Edit-linux/xEdit/xeMainForm.pas:16:  Windows,
 /home/v1ktors/TES5Edit-linux/xEdit/xeMainForm.pas:69:  Vcl.Themes,
 /home/v1ktors/TES5Edit-linux/xEdit/xeMainForm.pas:70:  Vcl.Styles,
 /home/v1ktors/TES5Edit-linux/xEdit/xeMainForm.pas:71:  Vcl.Styles.Utils.SystemMenu,
 /home/v1ktors/TES5Edit-linux/xEdit/xeMainForm.pas:72:  Vcl.Styles.Ext,
 /home/v1ktors/TES5Edit-linux/xEdit/xeMainForm.pas:75:  SynEdit, SynMemo, SynEditKeyCmds, Vcl.Mask;
-/home/v1ktors/TES5Edit-linux/xEdit/xeLODGenForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-/home/v1ktors/TES5Edit-linux/xEdit/xeWorldspaceCellDetailsForm.pas:16:  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-/home/v1ktors/TES5Edit-linux/xEdit/xeWorldspaceCellDetailsForm.pas:17:  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Samples.Spin;
-/home/v1ktors/TES5Edit-linux/xEdit/xeWaitForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
 /home/v1ktors/TES5Edit-linux/xEdit/xeViewElementsForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-/home/v1ktors/TES5Edit-linux/xEdit/xeInit.pas:67:  Vcl.Themes,
-/home/v1ktors/TES5Edit-linux/xEdit/xeInit.pas:68:  Vcl.Styles,
-/home/v1ktors/TES5Edit-linux/xEdit/xeLogAnalyzerForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-/home/v1ktors/TES5Edit-linux/xEdit/xeLogAnalyzerForm.pas:18:  Vcl.Mask;
-/home/v1ktors/TES5Edit-linux/xEdit/xePushLikeButton.pas:16:  Windows,
-/home/v1ktors/TES5Edit-linux/xEdit/xeScriptForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-/home/v1ktors/TES5Edit-linux/xEdit/xeScriptForm.pas:17:  Dialogs, StdCtrls, ExtCtrls, IOUtils, StrUtils, Vcl.ComCtrls, System.UITypes,
-/home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-/home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:18:  Vcl.Styles.Utils.SystemMenu, Vcl.Samples.Spin, Vcl.Themes,
-/home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:19:  System.Generics.Collections, Vcl.Styles.Ext, Vcl.Styles.Preview;
-/home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas:16:  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+/home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas:16:  Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
 /home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas:17:  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, JvExStdCtrls, JvRichEdit,
 /home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas:18:  Vcl.ExtCtrls, Vcl.ComCtrls, VirtualTrees, JvExExtCtrls, JvSplitter, xePushLikeButton,
 /home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas:19:  Vcl.Mask;
 /home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas:70:  Vcl.Styles.Utils.SystemMenu;
-/home/v1ktors/TES5Edit-linux/xEdit/xeModuleSelectForm.pas:16:  Windows, Messages, UITypes, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-/home/v1ktors/TES5Edit-linux/xEdit/xeModuleSelectForm.pas:18:  Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
-/home/v1ktors/TES5Edit-linux/xEdit/xeModuleSelectForm.pas:19:  wbInterface, wbLoadOrder, Vcl.ExtCtrls, System.Actions, Vcl.ActnList, Vcl.Mask;
+/home/v1ktors/TES5Edit-linux/xEdit/xeScriptForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+/home/v1ktors/TES5Edit-linux/xEdit/xeScriptForm.pas:17:  Dialogs, StdCtrls, ExtCtrls, IOUtils, StrUtils, Vcl.ComCtrls, System.UITypes,
+/home/v1ktors/TES5Edit-linux/xEdit/xeWorldspaceCellDetailsForm.pas:16:  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+/home/v1ktors/TES5Edit-linux/xEdit/xeWorldspaceCellDetailsForm.pas:17:  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Samples.Spin;
+/home/v1ktors/TES5Edit-linux/xEdit/xeWaitForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,

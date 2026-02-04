@@ -13,7 +13,7 @@ unit xeModGroupSelectForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, CheckLst, Menus,
   Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
   wbInterface, wbLoadOrder, wbModGroups, Vcl.ExtCtrls, System.Actions, Vcl.ActnList,
@@ -118,6 +118,7 @@ implementation
 
 uses
   xeMainForm,
+  wbPlatform,
   StrUtils;
 
 procedure TfrmModGroupSelect.mniInvertSelectionClick(Sender: TObject);
@@ -900,7 +901,7 @@ end;
 
 procedure TfrmModGroupSelect.vstModGroupsNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
 begin
-  if not wbRequireCtrlForDblClick or (GetKeyState(VK_CONTROL) < 0) then
+  if not wbRequireCtrlForDblClick or wbIsVirtualKeyPressed(VK_CONTROL) then
     with HitInfo do
       if Assigned(HitNode) then
         DoSingleModGroupLoad(HitNode);

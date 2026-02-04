@@ -95,6 +95,8 @@ This document tracks what is already done for the native Linux path and what com
   - gated `JvInterpreter_Windows` registration to Windows-only in `xejviScriptAdapter.pas`
   - removed direct `Windows` imports from `xeLocalizationForm` and `xeLocalizePluginForm`
   - replaced `MessageBox` usage in `xeLocalizePluginForm` with cross-platform `MessageDlg`
+  - removed `Winapi.Windows` import from `xeRichEditForm` (retained `Messages` for `WM_KEYDOWN`)
+  - replaced direct `GetKeyState` in `xeModGroupSelectForm` with `wbIsVirtualKeyPressed` and dropped `Windows`/`Messages` imports
 
 ## Risks
 
