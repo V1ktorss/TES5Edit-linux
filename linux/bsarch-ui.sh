@@ -17,6 +17,20 @@ show_error() {
   echo "$msg" >&2
 }
 
+rotate_log() {
+  local dir
+  dir="$(dirname "$LOG_FILE")"
+  mkdir -p "$dir"
+  if [[ -f "$LOG_FILE" ]]; then
+    local size
+    size="$(stat -c%s "$LOG_FILE" 2>/dev/null || echo 0)"
+    if [[ "$size" -gt 1048576 ]]; then
+      mv -f "$LOG_FILE" "${LOG_FILE}.1" 2>/dev/null || true
+      : >"$LOG_FILE"
+    fi
+  fi
+}
+
 if [[ ! -f "$PRO_FILE" ]]; then
   show_error "UI project not found: $PRO_FILE"
   exit 1
@@ -30,6 +44,7 @@ if [[ -z "${BSARCH_BIN:-}" ]]; then
   fi
 fi
 
+rotate_log
 {
   echo "=== $(date -Iseconds) bsarch-ui.sh start ==="
   echo "BSARCH_BIN=${BSARCH_BIN}"
@@ -39,8 +54,12 @@ fi
 # Use existing binary directly for reliable GUI launch from file managers.
 if [[ -x "$UI_BIN" ]]; then
   "$UI_BIN" >>"$LOG_FILE" 2>&1
-  echo "=== $(date -Iseconds) bsarch-ui.sh exit code $? ===" >>"$LOG_FILE"
-  exit 0
+  ec=$?
+  echo "=== $(date -Iseconds) bsarch-ui.sh exit code ${ec} ===" >>"$LOG_FILE"
+  if [[ "$ec" -ne 0 ]]; then
+    show_error "BSArchSE failed to start. See log: $LOG_FILE"
+  fi
+  exit "$ec"
 fi
 
 if ! command -v qmake >/dev/null 2>&1; then
@@ -61,4 +80,9 @@ if [[ ! -x "$UI_BIN" ]]; then
 fi
 
 "$UI_BIN" >>"$LOG_FILE" 2>&1
-echo "=== $(date -Iseconds) bsarch-ui.sh exit code $? ===" >>"$LOG_FILE"
+ec=$?
+echo "=== $(date -Iseconds) bsarch-ui.sh exit code ${ec} ===" >>"$LOG_FILE"
+if [[ "$ec" -ne 0 ]]; then
+  show_error "BSArchSE failed to start. See log: $LOG_FILE"
+fi
+exit "$ec"
