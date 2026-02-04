@@ -14,6 +14,12 @@ Run:
 linux/native-port/xedit-readiness-audit.sh
 ```
 
+Enforced check:
+
+```bash
+linux/native-port/check-xedit-readiness.sh
+```
+
 Output:
 
 - `linux/native-port/reports/xedit-readiness.txt`
@@ -37,6 +43,7 @@ Note:
 
 - audit now filters legacy script namespace markers (for example `AddFunction('Windows', ...)`) to focus on actual code dependencies.
 - audit now reports core blockers and style namespaces separately to make remaining Linux blockers explicit.
+- CI gate: `.github/workflows/xedit-readiness-ci.yml` runs the readiness check on push/PR.
 
 ## Step 2: Stabilize Platform Abstraction Boundary
 
