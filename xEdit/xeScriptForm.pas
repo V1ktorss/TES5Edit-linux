@@ -13,7 +13,7 @@ unit xeScriptForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, IOUtils, StrUtils, Vcl.ComCtrls, System.UITypes,
   SynEdit, SynMemo, SynEditKeyCmds, xeMainForm, SynHighlighterPas;
 
@@ -97,6 +97,9 @@ implementation
 
 {$R *.dfm}
 
+uses
+  wbPlatform;
+
 procedure TfrmScript.btnSaveClick(Sender: TObject);
 var
   s, s2: string;
@@ -128,7 +131,7 @@ begin
 
   with TStringList.Create do try
     Text := Editor.Lines.Text.Replace(#9, #32#32);
-    CopyFile(PChar(s), PChar(s + '.backup.' + FormatDateTime('yyyy_mm_dd_hh_nn_ss', Now)), True);
+    wbCopyFile(s, s + '.backup.' + FormatDateTime('yyyy_mm_dd_hh_nn_ss', Now), True);
     SaveToFile(s);
     lblPosition.Caption := Format('Saved: %s', [ExtractFileName(s)]);
     ScriptSelectionChanged := False;
@@ -191,7 +194,7 @@ procedure TfrmScript.cmbScriptsKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   case Key of
-    VK_RETURN: begin
+    vkReturn: begin
       Key := 0;
       if ScriptSelectionChanged then
         DoScriptSelectionChange
@@ -253,7 +256,7 @@ procedure TfrmScript.edFilterKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   case Key of
-    VK_RETURN: begin
+    vkReturn: begin
       Key := 0;
       cmbScripts.SetFocus;
       cmbScripts.DroppedDown := True;
@@ -311,7 +314,7 @@ end;
 procedure TfrmScript.EditorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   case Key of
-    VK_TAB: begin
+    vkTab: begin
       Key := 0;
       if Editor.SelLength > 0 then
         if Shift = [ssShift] then
@@ -434,7 +437,7 @@ procedure TfrmScript.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftSt
 var
   i: Integer;
 begin
-  if Key = VK_ESCAPE then
+  if Key = vkEscape then
     if edFilter.Focused then begin
       edFilter.Text := '';
       edFilterChange(Sender);

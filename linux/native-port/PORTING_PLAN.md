@@ -106,6 +106,7 @@ This document tracks what is already done for the native Linux path and what com
   - routed `xeDeveloperMessageForm` window-update locking through `wbPlatform.wbLockWindowUpdate` and dropped direct WinAPI imports
   - removed `Windows`/`Messages` imports from `xeOptionsForm` and switched to `vkEscape`
   - removed `Windows`/`Messages` imports from `xeModuleSelectForm`, replaced `GetKeyState` with `wbIsVirtualKeyPressed`, and switched legacy VK constants to `vk*`
+  - removed direct `Windows` import from `xeScriptForm`, switched legacy VK constants to `vk*`, and replaced backup copy call with `wbCopyFile`
 
 ## Risks
 
