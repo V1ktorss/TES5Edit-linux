@@ -13,7 +13,7 @@ unit xeLODGenForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, CheckLst, Menus, IniFiles, wbInterface, StrUtils;
 
 type
@@ -210,7 +210,7 @@ end;
 procedure TfrmLODGen.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if Key = VK_ESCAPE then
+  if Key = vkEscape then
     ModalResult := mrCancel;
 end;
 
@@ -248,4 +248,3 @@ begin
 end;
 
 end.
-

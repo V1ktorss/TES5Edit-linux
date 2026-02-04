@@ -26,8 +26,8 @@ This report identifies:
 
 Current snapshot (latest audit in repo):
 
-- Match count reduced from `81` to `44`
-- Files with matches reduced from `25` to `18`
+- Match count reduced from `81` to `41`
+- Files with matches reduced from `25` to `15`
 - Current top hotspots:
   - `xEdit/xeMainForm.pas`
   - `xEdit/xeRichEditForm.pas`

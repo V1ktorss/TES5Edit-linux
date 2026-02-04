@@ -13,7 +13,7 @@ unit xeFilterOptionsForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, CheckLst, Menus, IniFiles, ExtCtrls, System.UITypes;
 
 const
@@ -159,7 +159,7 @@ end;
 procedure TfrmFilterOptions.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if Key = VK_ESCAPE then
+  if Key = vkEscape then
     ModalResult := mrCancel;
 end;
 
