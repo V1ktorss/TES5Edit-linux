@@ -70,6 +70,7 @@ Note:
 - CI also runs `linux/native-port/smoke-test-xedit-headless.sh` when `linux/bin/xedit-core` is present.
 - CI workflows now delegate to `linux/native-port/run-all-checks.sh` as shared check entry point.
 - CI preflight helper: `linux/native-port/ci-preflight.sh`.
+- Readiness report is uploaded as artifact in both CI workflows.
 
 ## Step 2: Stabilize Platform Abstraction Boundary
 

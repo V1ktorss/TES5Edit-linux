@@ -37,3 +37,9 @@ jobs:
         run: |
           echo "linux/bin/bsarch-core not present in this checkout."
           echo "Qt build completed, but native-port checks were skipped."
+
+      - name: Upload readiness report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bsarch-ci-xedit-readiness-report
+          path: linux/native-port/reports/xedit-readiness.txt

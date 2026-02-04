@@ -148,6 +148,7 @@ This document tracks what is already done for the native Linux path and what com
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`
 - Builds `BSArchSE` (Qt) on Ubuntu
 - Runs `linux/native-port/run-all-checks.sh` (readiness + BSArch checks + optional xEdit smoke) when `linux/bin/bsarch-core` is present
+- Uploads readiness report artifact (`bsarch-ci-xedit-readiness-report`) for each run
 
 3. Finalize launcher behavior:
 - `BSArch-linux` should remain the single entry point for users.
