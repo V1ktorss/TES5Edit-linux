@@ -16,7 +16,7 @@ uses
   UITypes, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, CheckLst, Menus,
   Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
-  wbInterface, wbLoadOrder, Vcl.ExtCtrls, System.Actions, Vcl.ActnList, Vcl.Mask;
+  wbInterface, wbLoadOrder, Vcl.ExtCtrls, System.Actions, Vcl.ActnList;
 
 const
   csPluginsTxt = '<plugins.txt>';

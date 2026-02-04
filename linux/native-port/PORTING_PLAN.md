@@ -111,6 +111,7 @@ This document tracks what is already done for the native Linux path and what com
   - replaced additional `Application.MessageBox` warnings in `xeMainForm` LOD flow with `MessageDlg`
   - removed `Windows`/`Messages` imports from `xeModGroupEditForm` and switched legacy VK constants to `vk*`
   - switched legacy VK constants to `vk*` in `xeRichEditForm` while keeping `Messages` import for `WM_KEYDOWN`
+  - removed unnecessary `Vcl.Mask` imports from `xeMainForm`, `xeRichEditForm`, `xeModGroupEditForm`, `xeModGroupSelectForm`, and `xeModuleSelectForm`
 
 ## Risks
 

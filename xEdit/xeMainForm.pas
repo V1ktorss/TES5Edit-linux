@@ -72,7 +72,7 @@ uses
   Vcl.Styles.Ext,
   JvBalloonHint, JvExStdCtrls, JvRichEdit, FileContainer, JvExControls,
   JvButton, JvTransparentButton,
-  SynEdit, SynMemo, SynEditKeyCmds, Vcl.Mask;
+  SynEdit, SynMemo, SynEditKeyCmds;
 
 type
   TMemo = class(TSynMemo);
