@@ -14,7 +14,7 @@ interface
 
 uses
   System.SysUtils, System.Variants, System.Classes, Graphics,
-  Controls, Forms, Dialogs, StdCtrls, Vcl.Samples.Spin;
+  Controls, Forms, Dialogs, StdCtrls, Spin;
 
 type
   TfrmWorldspaceCellDetails = class(TForm)

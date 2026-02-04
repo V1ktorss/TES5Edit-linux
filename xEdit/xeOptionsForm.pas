@@ -15,7 +15,7 @@ interface
 uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ExtCtrls, wbInterface,
-  Vcl.Styles.Utils.SystemMenu, Vcl.Samples.Spin, Vcl.Themes,
+  Vcl.Styles.Utils.SystemMenu, Spin, Themes,
   System.Generics.Collections, Vcl.Styles.Ext, Vcl.Styles.Preview;
 
 type

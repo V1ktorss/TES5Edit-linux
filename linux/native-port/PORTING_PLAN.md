@@ -118,6 +118,8 @@ This document tracks what is already done for the native Linux path and what com
   - replaced `LockWindowUpdate` and warning message-box usages in additional `xeMainForm` paths with platform wrappers / `MessageDlg`
   - normalized many unit-scope names from `Vcl.*` to cross-scope unit names (`Graphics`, `Controls`, `Forms`, `Dialogs`, etc.) in key xEdit forms
   - reduced readiness audit output to mostly style/theme namespaces (`Vcl.Styles.*`, `Vcl.Themes`, and `Vcl.Samples.Spin`) rather than raw WinAPI dependencies
+  - replaced `Vcl.Themes`/`Vcl.Styles` with `Themes`/`Styles` in `xeMainForm`
+  - replaced `Vcl.Samples.Spin` with `Spin` (and normalized theme unit names) in options/cell-details forms
 
 ## Risks
 
