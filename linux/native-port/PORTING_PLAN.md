@@ -81,6 +81,7 @@ This document tracks what is already done for the native Linux path and what com
   - gated clipboard adapter registration/implementation to Windows-only
   - removed remaining direct `Windows` unit import from `xejviScriptAdapterMisc.pas`
   - added `wbPlatform.*` alias registrations in script adapter for process/shell/file helpers
+  - moved script `CopyFile` implementation to `wbPlatform.wbCopyFile`
   - removed `Windows` unit dependency from `xejviScriptAdapter.pas` by replacing `Int64Rec`-based conversion
   - gated `JvInterpreter_Windows` registration to Windows-only in `xejviScriptAdapter.pas`
 

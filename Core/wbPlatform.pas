@@ -35,6 +35,10 @@ function wbTryReadRegistryString(
 ): Boolean;
 function wbTryInitializeMOHook(const aHookDll, aProfile: string): Boolean;
 function wbOpenUrl(const aUrl: string): Boolean;
+function wbCopyFile(
+  const aSource, aDestination: string;
+  const aFailIfExists: Boolean
+): Boolean;
 function wbShellExecute(
   const aVerb, aFileName, aParams, aWorkingDir: string;
   const aShowWindow: Integer
@@ -76,7 +80,8 @@ procedure wbPlatformFreeBuffer(var aView: Pointer);
 implementation
 
 uses
-  Classes
+  Classes,
+  IOUtils
   {$IFDEF MSWINDOWS}
   , Windows,
   Registry,
@@ -420,6 +425,26 @@ begin
     Result := lInit(0, PWideChar(UnicodeString(aProfile)));
   Exit;
   {$ENDIF}
+end;
+
+function wbCopyFile(
+  const aSource, aDestination: string;
+  const aFailIfExists: Boolean
+): Boolean;
+begin
+  Result := False;
+  if (aSource = '') or (aDestination = '') then
+    Exit;
+  if not FileExists(aSource) then
+    Exit;
+  if aFailIfExists and FileExists(aDestination) then
+    Exit;
+  try
+    TFile.Copy(aSource, aDestination, not aFailIfExists);
+    Result := True;
+  except
+    Result := False;
+  end;
 end;
 
 function wbGetSteamInstallFolder: string;

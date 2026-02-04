@@ -608,16 +608,11 @@ end;
 
 procedure JvInterpreter_CopyFile(var Value: Variant; Args: TJvInterpreterArgs);
 begin
-  try
-    if Boolean(Args.Values[2]) and FileExists(String(Args.Values[1])) then
-      Value := False
-    else begin
-      TFile.Copy(String(Args.Values[0]), String(Args.Values[1]), not Boolean(Args.Values[2]));
-      Value := True;
-    end;
-  except
-    Value := False;
-  end;
+  Value := wbCopyFile(
+    String(Args.Values[0]),
+    String(Args.Values[1]),
+    Boolean(Args.Values[2])
+  );
 end;
 
 procedure JvInterpreter_StringOfChar(var Value: Variant; Args: TJvInterpreterArgs);
