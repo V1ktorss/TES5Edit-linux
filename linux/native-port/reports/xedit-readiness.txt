@@ -1,34 +1,28 @@
 # xEdit Native Readiness Audit
-# generated: 2026-02-04T22:01:58+01:00
+# generated: 2026-02-04T22:03:16+01:00
 
 ## Summary
-- Match count: 10
-- Files with matches: 8
+- Core blocker matches: 0
+- Core blocker files: 0
+- Style namespace matches (informational): 10
+- Style namespace files (informational): 8
 
-## Top files by match count
-2	/home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas
-2	/home/v1ktors/TES5Edit-linux/xEdit/xeMainForm.pas
-1	/home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas
-1	/home/v1ktors/TES5Edit-linux/xEdit/xeModuleSelectForm.pas
-1	/home/v1ktors/TES5Edit-linux/xEdit/xeModGroupSelectForm.pas
-1	/home/v1ktors/TES5Edit-linux/xEdit/xeModGroupEditForm.pas
-1	/home/v1ktors/TES5Edit-linux/xEdit/xeFileSelectForm.pas
-1	/home/v1ktors/TES5Edit-linux/xEdit/xeDeveloperMessageForm.pas
+## Top files by core blocker count
 
 ## Script host hotspot (JvI adapters)
 
-## Main form hotspot
-70:  Vcl.Styles.Utils.SystemMenu,
-71:  Vcl.Styles.Ext,
+## Main form core hotspot
 
-## Raw matches
-/home/v1ktors/TES5Edit-linux/xEdit/xeDeveloperMessageForm.pas:66:  Vcl.Styles.Utils.SystemMenu;
-/home/v1ktors/TES5Edit-linux/xEdit/xeFileSelectForm.pas:18:  Vcl.Styles.Utils.SystemMenu;
+## Raw core blocker matches
+
+## Raw style namespace matches (informational)
 /home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:18:  Vcl.Styles.Utils.SystemMenu, Spin, Themes,
 /home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:19:  System.Generics.Collections, Vcl.Styles.Ext, Vcl.Styles.Preview;
+/home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas:69:  Vcl.Styles.Utils.SystemMenu;
 /home/v1ktors/TES5Edit-linux/xEdit/xeMainForm.pas:70:  Vcl.Styles.Utils.SystemMenu,
 /home/v1ktors/TES5Edit-linux/xEdit/xeMainForm.pas:71:  Vcl.Styles.Ext,
+/home/v1ktors/TES5Edit-linux/xEdit/xeFileSelectForm.pas:18:  Vcl.Styles.Utils.SystemMenu;
 /home/v1ktors/TES5Edit-linux/xEdit/xeModuleSelectForm.pas:18:  Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
-/home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas:69:  Vcl.Styles.Utils.SystemMenu;
+/home/v1ktors/TES5Edit-linux/xEdit/xeDeveloperMessageForm.pas:66:  Vcl.Styles.Utils.SystemMenu;
 /home/v1ktors/TES5Edit-linux/xEdit/xeModGroupSelectForm.pas:18:  Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
 /home/v1ktors/TES5Edit-linux/xEdit/xeModGroupEditForm.pas:18:  Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,

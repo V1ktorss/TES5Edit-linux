@@ -120,6 +120,7 @@ This document tracks what is already done for the native Linux path and what com
   - reduced readiness audit output to mostly style/theme namespaces (`Vcl.Styles.*`, `Vcl.Themes`, and `Vcl.Samples.Spin`) rather than raw WinAPI dependencies
   - replaced `Vcl.Themes`/`Vcl.Styles` with `Themes`/`Styles` in `xeMainForm`
   - replaced `Vcl.Samples.Spin` with `Spin` (and normalized theme unit names) in options/cell-details forms
+  - updated readiness audit to split core blockers (WinAPI/Registry/Shell) from style-only namespace usage for clearer Linux-port tracking
 
 ## Risks
 

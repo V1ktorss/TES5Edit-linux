@@ -26,17 +26,19 @@ This report identifies:
 
 Current snapshot (latest audit in repo):
 
-- Match count reduced from `81` to `10`
-- Files with matches reduced from `25` to `8`
+- Core blocker matches reduced from `81` to `0`
+- Core blocker files reduced from `25` to `0`
+- Style namespace matches (informational): `10` across `8` files
 - Current top hotspots:
   - `xEdit/xeMainForm.pas`
   - `xEdit/xeOptionsForm.pas`
-  - style/theme integration units (`Vcl.Styles.*`, `Vcl.Themes`, `Vcl.Samples.Spin`)
+  - style/theme integration units (`Vcl.Styles.*`)
   - remaining findings are now mostly VCL-style namespace dependencies, not direct WinAPI calls
 
 Note:
 
 - audit now filters legacy script namespace markers (for example `AddFunction('Windows', ...)`) to focus on actual code dependencies.
+- audit now reports core blockers and style namespaces separately to make remaining Linux blockers explicit.
 
 ## Step 2: Stabilize Platform Abstraction Boundary
 
