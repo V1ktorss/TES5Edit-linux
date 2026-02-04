@@ -15,7 +15,7 @@ interface
 uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, CheckLst, Menus,
-  Vcl.Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
+  Styles.Utils.SystemMenu, VirtualTrees, VirtualEditTree,
   wbInterface, wbLoadOrder, wbModGroups, ExtCtrls,
   System.UITypes;
 

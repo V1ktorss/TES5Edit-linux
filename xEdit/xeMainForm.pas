@@ -67,8 +67,8 @@ uses
   xeScriptHost,
   Themes,
   Styles,
-  Vcl.Styles.Utils.SystemMenu,
-  Vcl.Styles.Ext,
+  Styles.Utils.SystemMenu,
+  Styles.Ext,
   JvBalloonHint, JvExStdCtrls, JvRichEdit, FileContainer, JvExControls,
   JvButton, JvTransparentButton,
   SynEdit, SynMemo, SynEditKeyCmds;

@@ -28,12 +28,10 @@ Current snapshot (latest audit in repo):
 
 - Core blocker matches reduced from `81` to `0`
 - Core blocker files reduced from `25` to `0`
-- Style namespace matches (informational): `10` across `8` files
+- Style namespace matches (informational): `0` across `0` files
 - Current top hotspots:
-  - `xEdit/xeMainForm.pas`
-  - `xEdit/xeOptionsForm.pas`
-  - style/theme integration units (`Vcl.Styles.*`)
-  - remaining findings are now mostly VCL-style namespace dependencies, not direct WinAPI calls
+  - no current blocker hotspots in audit
+  - remaining native-port work is now functionality/parity validation, not namespace-level blockers
 
 Note:
 
@@ -56,9 +54,9 @@ For each file:
 
 Priority for next pass:
 
-1. evaluate how much style/theme support (`Vcl.Styles.*`) must stay for parity vs. native-first profiles
-2. isolate more message/input helpers from `xeMainForm.pas` into `wbPlatform`
-3. keep parity checks for script-host behavior while broadening Linux-safe wrappers
+1. run compile/runtime validation for native paths after namespace cleanup
+2. keep parity checks for script-host behavior while broadening Linux-safe wrappers
+3. define and test first non-UI xEdit native startup slice
 
 ## Step 3: Define First xEdit Native Milestone
 

@@ -15,7 +15,7 @@ interface
 uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, CheckLst, Menus,
-  Vcl.Styles.Utils.SystemMenu;
+  Styles.Utils.SystemMenu;
 
 type
   TCheckListBox = class(CheckLst.TCheckListbox)

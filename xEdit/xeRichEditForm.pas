@@ -66,7 +66,7 @@ uses
   wbInterface,
   TOM2,
   xeMainForm,
-  Vcl.Styles.Utils.SystemMenu;
+  Styles.Utils.SystemMenu;
 
 procedure TfrmRichEdit.btnTOCClick(Sender: TObject);
 begin

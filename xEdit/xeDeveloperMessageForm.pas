@@ -63,7 +63,7 @@ uses
   wbInterface,
   wbPlatform,
   xeMainForm,
-  Vcl.Styles.Utils.SystemMenu;
+  Styles.Utils.SystemMenu;
 
 procedure TfrmDeveloperMessage.FixZoom;
 var
