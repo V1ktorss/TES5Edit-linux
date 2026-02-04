@@ -2,6 +2,10 @@
 
 xEdit 4.0.0 by ElminsterAU. Updates since 2012 include TES5Edit/SSEEdit/FO4Edit by Hlp, Zilav and Sharlikran. LOD management by Sheson.
 
+## Linux
+
+For Linux usage via Wine launcher scripts, see [README.linux.md](README.linux.md).
+
 ## GitHub Issue Tracker
 
 Our [GitHub issue tracker](https://github.com/TES5Edit/TES5Edit/issues) offers a place to submit and discuss feature requests and bug reports. When using it, please ensure that any criticism you provide is constructive.
