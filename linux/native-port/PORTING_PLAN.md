@@ -69,6 +69,7 @@ This document tracks what is already done for the native Linux path and what com
   - removed direct `ShellAPI` usage from `xEdit/xeMainForm.pas`
   - moved async key-state checks to `wbPlatform.wbIsVirtualKeyPressed`
   - moved sync key-state checks to `wbPlatform.wbIsVirtualKeyPressed`
+  - moved direct clipboard read/write usage to `wbGetClipboardText`/`wbSetClipboardText`
 - Started `xejviScriptAdapterMisc` decoupling:
   - added `wbPlatform.OpenUrl` script API bridge
   - routed common `ShellExecute(open, URL)` path through `wbPlatform`
@@ -87,6 +88,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved clipboard read/write implementation to `wbPlatform` and added `wbPlatform` clipboard aliases
   - removed remaining `Vcl.Clipbrd` usage from `xeModGroupEditForm` by routing copy actions through `wbSetClipboardText`
   - removed unused `Windows`/`Messages` imports from `xeEditWarningForm` to reduce baseline WinAPI coupling
+  - moved `xeTipForm` no-activate show path behind `wbShowWindowNoActivate` and dropped direct `Windows` import
   - removed `Windows` unit dependency from `xejviScriptAdapter.pas` by replacing `Int64Rec`-based conversion
   - gated `JvInterpreter_Windows` registration to Windows-only in `xejviScriptAdapter.pas`
 

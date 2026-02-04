@@ -13,7 +13,7 @@ unit xeTipForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, FileContainer;
 
 type
@@ -47,13 +47,14 @@ implementation
 {$R *.dfm}
 
 uses
-  wbInterface;
+  wbInterface,
+  wbPlatform;
 
 procedure ShowTip;
 begin
   if not Assigned(frmTip) then begin
     frmTip := TfrmTip.Create(Application);
-    ShowWindow(frmTip.Handle, SW_SHOWNOACTIVATE);
+    wbShowWindowNoActivate(frmTip.Handle);
     frmTip.Visible := True;
   end;
 end;

@@ -29,7 +29,6 @@ uses
   Menus,
   Math,
   IniFiles,
-  ClipBrd,
   TypInfo,
   ActiveX,
   Buttons,
@@ -7871,7 +7870,7 @@ begin
           end;
         end;
         if s <> '' then
-          Clipboard.AsText := s;
+          wbSetClipboardText(s);
         Exit;
       end;
     else
@@ -12191,49 +12190,49 @@ procedure TfrmMain.mniCopyDisplayNameToClipboardClick(Sender: TObject);
 begin
   var Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
-    Clipboard.AsText := Element.DisplayName[True];
+    wbSetClipboardText(Element.DisplayName[True]);
 end;
 
 procedure TfrmMain.mniCopyFullPathToClipboardClick(Sender: TObject);
 begin
   var Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
-    Clipboard.AsText := Element.FullPath;
+    wbSetClipboardText(Element.FullPath);
 end;
 
 procedure TfrmMain.mniCopyIndexedPathToClipboardClick(Sender: TObject);
 begin
   var Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
-    Clipboard.AsText := Element.IndexedPath[False];
+    wbSetClipboardText(Element.IndexedPath[False]);
 end;
 
 procedure TfrmMain.mniCopyNameToClipboardClick(Sender: TObject);
 begin
   var Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
-    Clipboard.AsText := Element.Name;
+    wbSetClipboardText(Element.Name);
 end;
 
 procedure TfrmMain.mniCopyPathNameToClipboardClick(Sender: TObject);
 begin
   var Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
-    Clipboard.AsText := Element.PathName;
+    wbSetClipboardText(Element.PathName);
 end;
 
 procedure TfrmMain.mniCopyPathToClipboardClick(Sender: TObject);
 begin
   var Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
-    Clipboard.AsText := Element.Path;
+    wbSetClipboardText(Element.Path);
 end;
 
 procedure TfrmMain.mniCopyShortNameToClipboardClick(Sender: TObject);
 begin
   var Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
-    Clipboard.AsText := Element.ShortName;
+    wbSetClipboardText(Element.ShortName);
 end;
 
 procedure TfrmMain.mniCopySignatureToClipboardClick(Sender: TObject);
@@ -12244,7 +12243,7 @@ begin
 
   var SubRecord: IwbSubRecord := nil;
   if Supports(Element, IwbSubRecord, SubRecord) then
-    Clipboard.AsText := string(SubRecord.Signature);
+    wbSetClipboardText(string(SubRecord.Signature));
 end;
 
 procedure TfrmMain.mniCreateNewFileClick(Sender: TObject);
@@ -18829,9 +18828,9 @@ begin
       // Ctrl+C = Copy
       Ord('C'): begin
         if Element.EditValue = '' then
-          Clipboard.AsText := Element.Summary
+          wbSetClipboardText(Element.Summary)
         else
-          Clipboard.AsText := Element.EditValue;
+          wbSetClipboardText(Element.EditValue);
         Exit;
       end;
     end;
@@ -18849,7 +18848,7 @@ begin
         try
           if not (Element.EditValue = '') then
           begin
-            Clipboard.AsText := Element.EditValue;
+            wbSetClipboardText(Element.EditValue);
             Element.EditValue := '';
             ResetActiveTree;
             Exit;
@@ -18862,9 +18861,10 @@ begin
       Ord('V'): begin
         LockProcessMessages;
         try
-          if not (Clipboard.AsText = '') then
+          var ClipboardText := wbGetClipboardText;
+          if ClipboardText <> '' then
           begin
-            Element.EditValue := Clipboard.AsText;
+            Element.EditValue := ClipboardText;
             ResetActiveTree;
             Exit;
           end;
@@ -19958,7 +19958,7 @@ begin
         end;
 
         if s <> '' then
-          Clipboard.AsText := s;
+          wbSetClipboardText(s);
         Exit;
       end;
     else

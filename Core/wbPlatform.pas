@@ -36,6 +36,7 @@ function wbTryReadRegistryString(
 function wbTryInitializeMOHook(const aHookDll, aProfile: string): Boolean;
 function wbGetClipboardText: string;
 procedure wbSetClipboardText(const aText: string);
+function wbShowWindowNoActivate(const aHandle: THandle): Boolean;
 function wbOpenUrl(const aUrl: string): Boolean;
 function wbCopyFile(
   const aSource, aDestination: string;
@@ -446,6 +447,16 @@ begin
     Clipboard.AsText := aText
   else
     Clipboard.Clear;
+  {$ENDIF}
+end;
+
+function wbShowWindowNoActivate(const aHandle: THandle): Boolean;
+begin
+  Result := False;
+  if aHandle = 0 then
+    Exit;
+  {$IFDEF MSWINDOWS}
+  Result := ShowWindow(aHandle, SW_SHOWNOACTIVATE);
   {$ENDIF}
 end;
 
