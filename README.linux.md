@@ -102,6 +102,7 @@ Useful toggles for faster local runs:
 RUN_BSARCH_STRESS=0 linux/native-port/run-all-checks.sh
 RUN_BSARCH=0 linux/native-port/run-all-checks.sh
 RUN_XEDIT_HEADLESS=0 linux/native-port/run-all-checks.sh
+RUN_XDUMP_HEADLESS=0 linux/native-port/run-all-checks.sh
 ENFORCE_STYLE=0 linux/native-port/run-all-checks.sh
 ```
 
@@ -109,6 +110,7 @@ This runs:
 - xEdit readiness gate (`ENFORCE_STYLE=1`)
 - BSArch smoke/path/stress checks (if `linux/bin/bsarch-core` exists)
 - xEdit headless smoke (if a native xEdit binary is available)
+- xDump headless smoke (if a native xDump binary is available)
 
 Important scripts:
 - `linux/native-port/check-xedit-readiness.sh`
@@ -117,6 +119,7 @@ Important scripts:
 - `linux/native-port/regression-paths-bsarch.sh`
 - `linux/native-port/stress-large-bsarch.sh`
 - `linux/native-port/smoke-test-xedit-headless.sh`
+- `linux/native-port/smoke-test-xdump-headless.sh`
 - `linux/native-port/ci-preflight.sh`
 
 ## Optional environment variables

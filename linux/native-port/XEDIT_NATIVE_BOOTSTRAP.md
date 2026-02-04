@@ -32,6 +32,12 @@ Optional headless startup smoke:
 linux/native-port/smoke-test-xedit-headless.sh
 ```
 
+Optional xDump headless smoke:
+
+```bash
+linux/native-port/smoke-test-xdump-headless.sh
+```
+
 Combined local check runner:
 
 ```bash

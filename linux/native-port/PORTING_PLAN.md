@@ -141,14 +141,15 @@ This document tracks what is already done for the native Linux path and what com
 - Automated: core pack/list/unpack roundtrip + launcher CLI passthrough
 - Manual checklist included for GUI actions (`Unpack Selected`, `Pack Selected`, `Archiv-Info`, double-click open)
 - Added convenience runner: `linux/native-port/run-all-checks.sh` (strict readiness + BSArch checks + optional xEdit headless smoke)
-- Runner now supports toggles for quicker local loops (`RUN_BSARCH_STRESS=0`, `RUN_BSARCH=0`, `RUN_XEDIT_HEADLESS=0`)
+- Runner now supports toggles for quicker local loops (`RUN_BSARCH_STRESS=0`, `RUN_BSARCH=0`, `RUN_XEDIT_HEADLESS=0`, `RUN_XDUMP_HEADLESS=0`)
 - Runner now also supports readiness mode toggle (`ENFORCE_STYLE=1` strict, `ENFORCE_STYLE=0` core-only)
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`
 - Builds `BSArchSE` (Qt) on Ubuntu
 - Always runs `linux/native-port/ci-preflight.sh`:
-: full checks when `linux/bin/bsarch-core` exists, readiness-focused checks otherwise
+  - full checks when `linux/bin/bsarch-core` exists
+  - readiness-focused checks otherwise
 - Uploads readiness report artifact (`bsarch-ci-xedit-readiness-report`) for each run
 
 3. Finalize launcher behavior:
