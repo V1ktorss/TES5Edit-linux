@@ -26,17 +26,16 @@ jobs:
           make -C linux/.build-bsarch-ui -j"$(nproc)"
           test -x linux/.build-bsarch-ui/bsarch-ui
 
-      - name: Run BSArch Smoke Test
-        if: ${{ hashFiles('linux/bin/bsarch-core') != '' }}
+      - name: Run Native-Port Preflight
         run: |
           chmod +x linux/native-port/ci-preflight.sh
-          ENFORCE_STYLE=1 linux/native-port/ci-preflight.sh
-
-      - name: Warn When bsarch-core Is Missing
-        if: ${{ hashFiles('linux/bin/bsarch-core') == '' }}
-        run: |
-          echo "linux/bin/bsarch-core not present in this checkout."
-          echo "Qt build completed, but native-port checks were skipped."
+          if [[ -x linux/bin/bsarch-core ]]; then
+            echo "linux/bin/bsarch-core detected: running full native-port checks."
+            ENFORCE_STYLE=1 RUN_BSARCH=1 linux/native-port/ci-preflight.sh
+          else
+            echo "linux/bin/bsarch-core missing: running readiness-focused checks."
+            ENFORCE_STYLE=1 RUN_BSARCH=0 linux/native-port/ci-preflight.sh
+          fi
 
       - name: Upload readiness report
         uses: actions/upload-artifact@v4

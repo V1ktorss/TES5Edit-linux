@@ -147,7 +147,8 @@ This document tracks what is already done for the native Linux path and what com
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`
 - Builds `BSArchSE` (Qt) on Ubuntu
-- Runs `linux/native-port/run-all-checks.sh` (readiness + BSArch checks + optional xEdit smoke) when `linux/bin/bsarch-core` is present
+- Always runs `linux/native-port/ci-preflight.sh`:
+: full checks when `linux/bin/bsarch-core` exists, readiness-focused checks otherwise
 - Uploads readiness report artifact (`bsarch-ci-xedit-readiness-report`) for each run
 
 3. Finalize launcher behavior:
