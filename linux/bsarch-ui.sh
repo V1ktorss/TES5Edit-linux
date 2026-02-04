@@ -53,8 +53,10 @@ rotate_log
 
 # Use existing binary directly for reliable GUI launch from file managers.
 if [[ -x "$UI_BIN" ]]; then
+  set +e
   "$UI_BIN" >>"$LOG_FILE" 2>&1
   ec=$?
+  set -e
   echo "=== $(date -Iseconds) bsarch-ui.sh exit code ${ec} ===" >>"$LOG_FILE"
   if [[ "$ec" -ne 0 ]]; then
     show_error "BSArchSE failed to start. See log: $LOG_FILE"
@@ -79,8 +81,10 @@ if [[ ! -x "$UI_BIN" ]]; then
   fi
 fi
 
+set +e
 "$UI_BIN" >>"$LOG_FILE" 2>&1
 ec=$?
+set -e
 echo "=== $(date -Iseconds) bsarch-ui.sh exit code ${ec} ===" >>"$LOG_FILE"
 if [[ "$ec" -ne 0 ]]; then
   show_error "BSArchSE failed to start. See log: $LOG_FILE"
