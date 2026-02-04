@@ -34,6 +34,11 @@ function wbTryReadRegistryString(
   out aValue: string
 ): Boolean;
 function wbOpenUrl(const aUrl: string): Boolean;
+function wbShellExecuteWait(
+  const aVerb, aFileName, aParams, aWorkingDir: string;
+  const aShowWindow: Integer;
+  out aExitCode: Cardinal
+): Boolean;
 function wbCreateProcessWait(
   const aFileName, aParams: string;
   const aShowWindow: Integer;
@@ -41,6 +46,7 @@ function wbCreateProcessWait(
   out aExitCode: Cardinal
 ): Boolean;
 function wbGetVirtualKeyState(const aVirtualKey: Integer): SmallInt;
+procedure wbSleepMs(const aMilliseconds: Cardinal);
 function wbGetSteamInstallFolder: string;
 function wbIsAssociatedWithExtension(const aExt, aExecPath: string): Boolean;
 function wbAssociateWithExtension(const aExt, aName, aDescr, aExecPath: string): Boolean;
@@ -136,6 +142,11 @@ begin
   Result := 0;
 end;
 
+procedure wbSleepMs(const aMilliseconds: Cardinal);
+begin
+  Sleep(aMilliseconds);
+end;
+
 function wbNormalizePath(const aPath: string): string;
 var
   lResult: string;
@@ -208,6 +219,77 @@ begin
     lProc.Parameters.Add(aUrl);
     lProc.Options := [];
     lProc.Execute;
+    Result := True;
+  finally
+    lProc.Free;
+  end;
+  Exit;
+  {$ENDIF}
+  {$ENDIF}
+end;
+
+function wbShellExecuteWait(
+  const aVerb, aFileName, aParams, aWorkingDir: string;
+  const aShowWindow: Integer;
+  out aExitCode: Cardinal
+): Boolean;
+{$IFDEF MSWINDOWS}
+var
+  lExecInfo: TShellExecuteInfo;
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF LINUX}
+var
+  lProc: TProcess;
+{$ENDIF}
+{$ENDIF}
+begin
+  Result := False;
+  aExitCode := Cardinal(-1);
+
+  {$IFDEF MSWINDOWS}
+  FillChar(lExecInfo, SizeOf(lExecInfo), 0);
+  lExecInfo.cbSize := SizeOf(TShellExecuteInfo);
+  lExecInfo.fMask := SEE_MASK_NOCLOSEPROCESS;
+  lExecInfo.Wnd := 0;
+  lExecInfo.lpVerb := PWideChar(aVerb);
+  lExecInfo.lpFile := PWideChar(aFileName);
+  lExecInfo.lpParameters := PWideChar(aParams);
+  lExecInfo.lpDirectory := PWideChar(aWorkingDir);
+  lExecInfo.nShow := aShowWindow;
+
+  if not ShellExecuteEx(@lExecInfo) then
+    Exit(False);
+
+  try
+    WaitForSingleObject(lExecInfo.hProcess, INFINITE);
+    GetExitCodeProcess(lExecInfo.hProcess, aExitCode);
+    Result := True;
+  finally
+    CloseHandle(lExecInfo.hProcess);
+  end;
+  Exit;
+  {$ENDIF}
+
+  {$IFDEF FPC}
+  {$IFDEF LINUX}
+  lProc := TProcess.Create(nil);
+  try
+    if SameText(Trim(aVerb), 'open') and (Trim(aParams) = '') then begin
+      lProc.Executable := '/usr/bin/xdg-open';
+      lProc.Parameters.Add(aFileName);
+    end else begin
+      lProc.Executable := aFileName;
+      if Trim(aParams) <> '' then
+        lProc.Parameters.Add(aParams);
+      if Trim(aWorkingDir) <> '' then
+        lProc.CurrentDirectory := aWorkingDir;
+    end;
+    lProc.Options := [];
+    lProc.Execute;
+    while lProc.Running do
+      Sleep(10);
+    aExitCode := lProc.ExitStatus;
     Result := True;
   finally
     lProc.Free;

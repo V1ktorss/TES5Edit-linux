@@ -69,6 +69,7 @@ This document tracks what is already done for the native Linux path and what com
   - routed common `ShellExecute(open, URL)` path through `wbPlatform`
   - replaced script `CopyFile` binding with platform-neutral file copy logic
   - moved `CreateProcessWait` and `GetKeyState` bindings to `wbPlatform` wrappers
+  - moved `ShellExecuteWait` and `Sleep` bindings to `wbPlatform` wrappers
 
 ## Risks
 

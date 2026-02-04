@@ -638,23 +638,16 @@ end;
 // parent window, verb, file, params, dir, show window
 procedure JvInterpreter_ShellExecuteWait(var Value: Variant; Args: TJvInterpreterArgs);
 var
-  SEInfo: TShellExecuteInfo;
   ExitCode: Cardinal;
 begin
-  FillChar(SEInfo, SizeOf(SEInfo), 0);
-  SEInfo.cbSize := SizeOf(TShellExecuteInfo);
-  with SEInfo do begin
-    fMask := SEE_MASK_NOCLOSEPROCESS;
-    Wnd := Args.Values[0];
-    lpVerb := PWideChar(String(Args.Values[1]));
-    lpFile := PWideChar(String(Args.Values[2]));
-    lpParameters := PWideChar(String(Args.Values[3]));
-    lpDirectory := PWideChar(String(Args.Values[4]));
-    nShow := Args.Values[5];
-  end;
-  if ShellExecuteEx(@SEInfo) then begin
-    WaitforSingleObject(SEInfo.hProcess, INFINITE);
-    GetExitCodeProcess(SEInfo.hProcess, ExitCode);
+  if wbShellExecuteWait(
+    String(Args.Values[1]),
+    String(Args.Values[2]),
+    String(Args.Values[3]),
+    String(Args.Values[4]),
+    Integer(Args.Values[5]),
+    ExitCode
+  ) then begin
     Value := ExitCode;
   end else
     raise Exception.Create('ShellExecute failed, error code ' + IntToStr(GetLastError));
@@ -679,7 +672,7 @@ end;
 
 procedure JvInterpreter_Sleep(var Value: Variant; Args: TJvInterpreterArgs);
 begin
-  Sleep(Cardinal(Args.Values[0]));
+  wbSleepMs(Cardinal(Args.Values[0]));
 end;
 
 procedure JvInterpreter_GetKeyState(var Value: Variant; Args: TJvInterpreterArgs);
