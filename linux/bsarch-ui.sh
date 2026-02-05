@@ -15,6 +15,10 @@ show_error() {
   local msg="$1"
   if command -v kdialog >/dev/null 2>&1 && [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]]; then
     kdialog --error "$msg" 2>/dev/null || true
+  elif command -v zenity >/dev/null 2>&1 && [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]]; then
+    zenity --error --text="$msg" 2>/dev/null || true
+  elif command -v xmessage >/dev/null 2>&1 && [[ -n "${DISPLAY:-}" ]]; then
+    xmessage -center "$msg" 2>/dev/null || true
   fi
   echo "$msg" >&2
 }
@@ -26,9 +30,24 @@ rotate_log() {
   if [[ -f "$LOG_FILE" ]]; then
     local size
     size="$(stat -c%s "$LOG_FILE" 2>/dev/null || echo 0)"
-    if [[ "$size" -gt 1048576 ]]; then
+    if [[ "$size" -gt 262144 ]]; then
+      rm -f "${LOG_FILE}.1" 2>/dev/null || true
       mv -f "$LOG_FILE" "${LOG_FILE}.1" 2>/dev/null || true
       : >"$LOG_FILE"
+    fi
+  fi
+}
+
+trim_log_on_success() {
+  if [[ "$DEBUG_UI" == "1" ]]; then
+    return
+  fi
+  if [[ -f "$LOG_FILE" ]]; then
+    local size
+    size="$(stat -c%s "$LOG_FILE" 2>/dev/null || echo 0)"
+    if [[ "$size" -gt 65536 ]]; then
+      tail -n 200 "$LOG_FILE" >"${LOG_FILE}.tmp" 2>/dev/null || true
+      mv -f "${LOG_FILE}.tmp" "$LOG_FILE" 2>/dev/null || true
     fi
   fi
 }
@@ -128,6 +147,8 @@ run_ui_with_fallbacks() {
   echo "=== $(date -Iseconds) bsarch-ui.sh exit code ${ec} ===" >>"$LOG_FILE"
   if [[ "$ec" -ne 0 ]]; then
     show_error "BSArchSE failed to start. See log: $LOG_FILE\nIf this repeats, ensure Qt platform plugins are installed (e.g. qt5-wayland and/or xcb) and try QT_QPA_PLATFORM=wayland or xcb."
+  else
+    trim_log_on_success
   fi
   return "$ec"
 }

@@ -59,13 +59,15 @@ procedure xeInitStyles;
 implementation
 
 uses
+{$IFNDEF XEDIT_HEADLESS}
   System.UITypes,
-  SysUtils,
   Dialogs,
-  IOUtils,
-  IniFiles,
   Themes,
   Styles,
+{$ENDIF}
+  SysUtils,
+  IOUtils,
+  IniFiles,
   wbPlatform,
   wbHelpers,
   wbInterface,
@@ -94,6 +96,26 @@ const
   VK_CONTROL = $11;
   VK_MENU = $12;
 
+procedure xeShowMessage(const aMessage: string);
+begin
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, aMessage);
+{$ELSE}
+  ShowMessage(aMessage);
+{$ENDIF}
+end;
+
+function xeConfirmResetSettings: Boolean;
+begin
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, 'Reset ALL settings requested, skipping in headless mode.');
+  Result := False;
+{$ELSE}
+  Result := MessageDlg('Reset ALL settings? (Existing settings file will be backed up.)',
+    mtConfirmation, [mbYes, mbNo], 0, mbNo) = mrYes;
+{$ENDIF}
+end;
+
 function xeCheckForValidExtension(const aFilePath : string): Boolean;
 begin
   Result := wbIsModule(aFilePath) or wbIsSave(aFilePath);
@@ -107,8 +129,8 @@ begin
   Result := wbFindCmdLineParam(aStartIndex, SwitchChars, aValue);
   if Result and not FileExists(aValue) then
     if (aDefaultPath<>'') then
-      if FileExists(aDefaultPath+'\'+aValue) then
-        aValue := ExpandFileName(aDefaultPath+'\'+aValue)
+      if FileExists(aDefaultPath + PathDelim + aValue) then
+        aValue := ExpandFileName(aDefaultPath + PathDelim + aValue)
       else
         Result := False
     else
@@ -154,18 +176,17 @@ begin
       Ctrl := wbIsVirtualKeyPressed(VK_CONTROL);
       Alt := wbIsVirtualKeyPressed(VK_MENU);
       if Shift and Ctrl and Alt then
-        ResetSettings := MessageDlg('Reset ALL settings? (Existing settings file will be backed up.)',
-          mtConfirmation, [mbYes, mbNo], 0, mbNo) = mrYes;
+        ResetSettings := xeConfirmResetSettings;
     end;
 
     if ResetSettings then begin
       s := xeSettingsFileName + '.backup.' + FormatDateTime('yyyy_mm_dd_hh_nn_ss', Now);
 
       if not RenameFile(PChar(xeSettingsFileName), PChar(s)) then begin
-        ShowMessage(Format('Could not rename existing settings file to "%s".', [s]));
+        xeShowMessage(Format('Could not rename existing settings file to "%s".', [s]));
         Exit(False);
       end else
-        ShowMessage(Format('ALL settings have been reset. Existing settings file has been renamed to "%s".', [s]));
+        xeShowMessage(Format('ALL settings have been reset. Existing settings file has been renamed to "%s".', [s]));
     end;
   end;
 
@@ -252,7 +273,7 @@ begin
           wbAddLEncodingIfMissing(s, Settings.ReadString('cpoverride', s, ''), False);
         except
           on E:Exception do
-            ShowMessage('Could not add code page override "'+sl[i]+'" from wbSettingsFileName: ['+E.ClassName+'] ' + E.Message);
+            xeShowMessage('Could not add code page override "'+sl[i]+'" from wbSettingsFileName: ['+E.ClassName+'] ' + E.Message);
         end;
       finally
         sl.Free;
@@ -328,10 +349,12 @@ begin
 end;
 
 procedure DoInitPath(const ParamIndex: Integer);
+{$IFDEF MSWINDOWS}
 const
   sBethRegKey             = '\SOFTWARE\Bethesda Softworks\';
   sUninstallRegKey        = '\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\';
   sSureAIRegKey           = '\Software\SureAI\';
+{$ENDIF}
 
 var
   s, regPath, regKey, client, regValue: string;
@@ -351,7 +374,7 @@ begin
   isEpicNV := false;
 
   if not wbFindCmdLineParam('S', wbScriptsPath) then
-    wbScriptsPath := wbProgramPath + 'Edit Scripts\';
+    wbScriptsPath := wbProgramPath + 'Edit Scripts' + PathDelim;
 
   if not wbFindCmdLineParam('T', wbTempPath) then
     wbTempPath := IncludeTrailingPathDelimiter(TPath.GetTempPath + wbAppName + 'Edit')
@@ -374,6 +397,7 @@ begin
       regPath := '';
       regKey := '';
 
+      {$IFDEF MSWINDOWS}
       case wbGameMode of
         gmTES3, gmTES4, gmFO3, gmFNV, gmTES5, gmFO4, gmSSE, gmTES5VR, gmFO4VR: begin
           regPath := sBethRegKey + wbGameNameReg + '\';
@@ -394,14 +418,14 @@ begin
           gmEnderal, gmEnderalSE:
             if not TryReadInstallPathFromRegistry(True, regPath, regKey, regValue) then begin
               s := 'Fatal: Could not open registry key: ' + regPath;
-              ShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
+              xeShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
               wbDontSave := True;
               Exit;
             end;
         else
           if not TryReadInstallPathFromRegistry(False, regPath, regKey, regValue) then begin
             s := 'Fatal: Could not open registry key: ' + regPath;
-            ShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
+            xeShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
             wbDontSave := True;
             Exit;
           end;
@@ -411,17 +435,28 @@ begin
       wbDataPath := regValue;
       if (wbDataPath = '') then begin
         s := Format('Fatal: Could not determine %s installation path, no "%s" registry key', [wbGameName2, regKey]);
-        ShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
+        xeShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
         wbDontSave := True;
       end;
+      {$ELSE}
+      if wbDataPath = '' then begin
+        xeShowMessage(Format('Could not determine %s installation path. Pass -D "<DataPath>" or set your game path in the settings file.', [wbGameName2]));
+        wbDontSave := True;
+      end;
+      {$ENDIF}
     end;
 
     if wbDataPath <> '' then
     begin
       if wbIsOblivionR then
-        wbDataPath := IncludeTrailingPathDelimiter(wbDataPath) + 'OblivionRemastered\Content\Dev\ObvData\Data\'
+        wbDataPath := IncludeTrailingPathDelimiter(wbDataPath) +
+          'OblivionRemastered' + PathDelim +
+          'Content' + PathDelim +
+          'Dev' + PathDelim +
+          'ObvData' + PathDelim +
+          'Data' + PathDelim
       else
-        wbDataPath := IncludeTrailingPathDelimiter(wbDataPath) + DataName[wbGameMode = gmTES3] + '\';
+        wbDataPath := IncludeTrailingPathDelimiter(wbDataPath) + DataName[wbGameMode = gmTES3] + PathDelim;
     end;
   end else
     wbDataPath := IncludeTrailingPathDelimiter(wbDataPath);
@@ -436,12 +471,16 @@ begin
       //assume absolute path
       wbOutputPath := IncludeTrailingPathDelimiter(s);
 
-  wbMOHookFile := wbDataPath + '..\Mod Organizer\hook.dll';
+{$IFDEF MSWINDOWS}
+  wbMOHookFile := wbDataPath + '..' + PathDelim + 'Mod Organizer' + PathDelim + 'hook.dll';
+{$ELSE}
+  wbMOHookFile := '';
+{$ENDIF}
 
   if not wbFindCmdLineParam('M', wbMyGamesTheGamePath) then begin
     xeMyProfileName := wbGetKnownFolderPath(wkDocuments);
     if xeMyProfileName = '' then begin
-      ShowMessage('Fatal: Could not determine my documents folder');
+      xeShowMessage('Fatal: Could not determine my documents folder');
       Exit;
     end;
 
@@ -449,11 +488,11 @@ begin
       gmTES3:
         wbMyGamesTheGamePath := IncludeTrailingPathDelimiter(ExtractFilePath(ExcludeTrailingPathDelimiter(wbDataPath)));
     else
-      wbMyGamesTheGamePath := xeMyProfileName + 'My Games\' + wbGameName2 + '\';
+      wbMyGamesTheGamePath := xeMyProfileName + 'My Games' + PathDelim + wbGameName2 + PathDelim;
     end;
 
     if (wbGameMode in [gmFNV]) and FileExists(IncludeTrailingPathDelimiter(ExtractFilePath(ExcludeTrailingPathDelimiter(wbDataPath))) + 'EOSSDK-Win32-Shipping.dll') then begin
-        wbMyGamesTheGamePath := xeMyProfileName + 'My Games\FalloutNV_Epic\';
+        wbMyGamesTheGamePath := xeMyProfileName + 'My Games' + PathDelim + 'FalloutNV_Epic' + PathDelim;
         isEpicNV := true;
     end;
   end;
@@ -466,7 +505,7 @@ begin
 
     // VR games don't create ini file in My Games by default, use the one in the game folder
     if (wbGameMode in [gmTES5VR, gmFO4VR, gmSF1]) and not FileExists(wbTheGameIniFileName) then
-      wbTheGameIniFileName := ExtractFilePath(ExcludeTrailingPathDelimiter(wbDataPath)) + '\' + ExtractFileName(wbTheGameIniFileName)
+      wbTheGameIniFileName := ExtractFilePath(ExcludeTrailingPathDelimiter(wbDataPath)) + PathDelim + ExtractFileName(wbTheGameIniFileName)
     else if wbIsOblivionR and not FileExists(wbTheGameIniFileName) then
       wbTheGameIniFileName := ExtractFilePath(ExcludeTrailingPathDelimiter(wbDataPath)) + 'Oblivion.ini';
   end;
@@ -482,7 +521,7 @@ begin
     if wbMyGamesTheGamePath = '' then
       wbMyGamesTheGamePath := ExtractFilePath(wbTheGameIniFileName);
 
-    s := 'Saves\';
+    s := 'Saves' + PathDelim;
     if FileExists(wbTheGameIniFileName) then begin
       IniFile := TMemIniFile.Create(wbTheGameIniFileName);
       try
@@ -503,7 +542,7 @@ begin
 
     // Oblivion Remastered has a hard coded path and ignores ini settings
     if wbIsOblivionR then
-      s := 'Saved\SaveGames\';
+      s := 'Saved' + PathDelim + 'SaveGames' + PathDelim;
 
     wbSavePath := PathRelativeToFull(wbMyGamesTheGamePath, s);
   end;
@@ -517,18 +556,18 @@ begin
       xeParamIndex := ParamIndex;
       wbPluginsFileName := wbGetKnownFolderPath(wkLocalAppData);
       if wbPluginsFileName = '' then begin
-        ShowMessage('Fatal: Could not determine the local application data folder');
+        xeShowMessage('Fatal: Could not determine the local application data folder');
         Exit;
       end;
 
       if wbGameMode = gmFO76 then
-        wbPluginsFileName := wbPluginsFileName + wbGameName + '\Plugins.txt'
+        wbPluginsFileName := wbPluginsFileName + wbGameName + PathDelim + 'Plugins.txt'
       else if (wbGameMode = gmFNV) and isEpicNV then
-        wbPluginsFileName := wbPluginsFileName + wbGameName + '_Epic' + '\Plugins.txt'
+        wbPluginsFileName := wbPluginsFileName + wbGameName + '_Epic' + PathDelim + 'Plugins.txt'
       else if wbIsOblivionR then
         wbPluginsFileName :=  IncludeTrailingPathDelimiter(wbDataPath) + 'Plugins.txt'
       else
-        wbPluginsFileName := wbPluginsFileName + wbGameName2 + '\Plugins.txt';
+        wbPluginsFileName := wbPluginsFileName + wbGameName2 + PathDelim + 'Plugins.txt';
     end;
   if ExtractFilePath(wbPluginsFileName) = '' then
     wbPluginsFileName := ExpandFileName(wbPluginsFileName);
@@ -538,19 +577,19 @@ begin
   if not FileExists(xeSettingsFileName) then
   begin
     if wbIsOblivionR then
-      xeSettingsFileName := wbGetKnownFolderPath(wkLocalAppData) + wbGameName2 + '\Plugins.'+LowerCase(wbAppName)+'viewsettings'
+      xeSettingsFileName := wbGetKnownFolderPath(wkLocalAppData) + wbGameName2 + PathDelim + 'Plugins.'+LowerCase(wbAppName)+'viewsettings'
     else
       xeSettingsFileName := ChangeFileExt(wbPluginsFileName, '.'+LowerCase(wbAppName)+'viewsettings');
   end;
 
   wbBackupPath := '';
   if not (wbDontSave or wbFindCmdLineParam('B', wbBackupPath)) then
-    wbBackupPath := wbDataPath + wbAppName + 'Edit Backups\';
+    wbBackupPath := wbDataPath + wbAppName + 'Edit Backups' + PathDelim;
 
   wbCachePath := '';
   if not (wbDontCache or wbFindCmdLineParam('C', wbCachePath)) then
     if wbDataPath <> '' then
-      wbCachePath := wbDataPath + wbAppName + 'Edit Cache\';
+      wbCachePath := wbDataPath + wbAppName + 'Edit Cache' + PathDelim;
   if wbCachePath = '' then
     wbDontCache := True;
   if not wbDontCache then
@@ -735,7 +774,7 @@ begin
     wbToolMode    := tmEdit;
     wbToolName    := 'Edit';
   end else begin
-    ShowMessage('Application name must contain Edit, View, LODGen, OnamUpdate, MasterUpdate, MasterRestore, setESM, clearESM, sortAndCleanMasters, CheckForITM, CheckForDR or CheckForErrors to select mode.');
+    xeShowMessage('Application name must contain Edit, View, LODGen, OnamUpdate, MasterUpdate, MasterRestore, setESM, clearESM, sortAndCleanMasters, CheckForITM, CheckForDR or CheckForErrors to select mode.');
     Exit(False);
   end;
 
@@ -915,7 +954,7 @@ begin
   end
 
   else begin
-    ShowMessage('Application name must contain FNV, FO3, FO4, FO4VR, FO76, SSE, TES4, TES4R, TES5, TES5VR, Enderal, or EnderalSE, SF1 to select game.');
+    xeShowMessage('Application name must contain FNV, FO3, FO4, FO4VR, FO76, SSE, TES4, TES4R, TES5, TES5VR, Enderal, or EnderalSE, SF1 to select game.');
     Exit(False);
   end;
 
@@ -930,17 +969,17 @@ begin
   end;
 
   if not (wbToolMode in ToolModes) then begin
-    ShowMessage('Application ' + wbGameName + ' does not currently support ' + wbToolName);
+    xeShowMessage('Application ' + wbGameName + ' does not currently support ' + wbToolName);
     Exit(False);
   end;
 
   if not (wbToolSource in ToolSources) then begin
-    ShowMessage('Application ' + wbGameName + ' does not currently support ' + wbSourceName);
+    xeShowMessage('Application ' + wbGameName + ' does not currently support ' + wbSourceName);
     Exit(False);
   end;
 
   if (wbToolSource = tsSaves) and (wbToolMode = tmEdit) then begin
-    ShowMessage('Application ' + wbGameName + ' does not currently support ' + wbSourceName + ' in ' + wbToolName + ' mode.');
+    xeShowMessage('Application ' + wbGameName + ' does not currently support ' + wbSourceName + ' in ' + wbToolName + ' mode.');
     Exit(False);
   end;
 
@@ -994,7 +1033,7 @@ begin
       wbLoadBSAs            := True;
       wbAllowInternalEdit   := false;
       wbCanSortINFO         := True;
-      wbOBME                := FileExists(wbDataPath + 'OBSE\Plugins\OBME.dll');
+      wbOBME                := FileExists(wbDataPath + 'OBSE' + PathDelim + 'Plugins' + PathDelim + 'OBME.dll');
     end;
     gmTES4R: begin
       wbLoadBSAs            := False;
@@ -1006,10 +1045,10 @@ begin
       wbLoadBSAs            := True;  // localization won't work otherwise
       wbHideIgnored         := False; // to show Form Version
       wbCanSortINFO         := True;
-      wbVRESL               := (wbGameMode in [gmTES5VR]) and FileExists(wbDataPath + 'SKSE\Plugins\skyrimvresl.dll');
+      wbVRESL               := (wbGameMode in [gmTES5VR]) and FileExists(wbDataPath + 'SKSE' + PathDelim + 'Plugins' + PathDelim + 'skyrimvresl.dll');
       wbHasAddedLightSupport := wbVRESL;
       wbHasAddedUpdateSupport := wbVRESL;
-      wbCS                  := wbIsSkyrimSE and FileExists(wbDataPath + 'SKSE\Plugins\CommunityShaders.dll');
+      wbCS                  := wbIsSkyrimSE and FileExists(wbDataPath + 'SKSE' + PathDelim + 'Plugins' + PathDelim + 'CommunityShaders.dll');
     end;
     gmFO4, gmFO4VR: begin
       wbVWDInTemporary      := True;
@@ -1018,7 +1057,7 @@ begin
       wbHideIgnored         := False; // to show Form Version
       wbAlwaysSaveOnam      := True;
       wbAlwaysSaveOnamForce := True;
-      wbVRESL               := (wbGameMode in [gmFO4VR]) and FileExists(wbDataPath + 'F4SE\Plugins\falloutvresl.dll');
+      wbVRESL               := (wbGameMode in [gmFO4VR]) and FileExists(wbDataPath + 'F4SE' + PathDelim + 'Plugins' + PathDelim + 'falloutvresl.dll');
       wbHasAddedLightSupport := wbVRESL;
       wbHasAddedUpdateSupport := wbVRESL;
     end;
@@ -1041,7 +1080,7 @@ begin
       wbDecodeTextureHashes := True;
     end;
   else
-    ShowMessage('Unknown GameMode');
+    xeShowMessage('Unknown GameMode');
     Exit(False);
   end;
 
@@ -1187,7 +1226,7 @@ begin
     Inc(i);
 
   if i > 1 then begin
-    ShowMessage('Can''t activate more than one out of Quick Clean, Quick Show Conflicts, or Auto GameLink modes same time.');
+    xeShowMessage('Can''t activate more than one out of Quick Clean, Quick Show Conflicts, or Auto GameLink modes same time.');
     Exit(False);
   end;
 
@@ -1371,14 +1410,14 @@ begin
 
   if wbFindCmdLineParam('quickedit', xePluginToUse) then begin
     if not (wbToolMode = tmEdit) then
-      ShowMessage(wbToolName+' is incompatible with quickedit request!')
+      xeShowMessage(wbToolName+' is incompatible with quickedit request!')
     else
       xeQuickEdit := True;
   end;
 
   if wbToolMode in wbPluginModes then // look for the file name
     if not xeFindNextValidCmdLineModule(xeParamIndex, xePluginToUse, wbDataPath) then begin
-      ShowMessage(wbToolName+' mode requires a valid plugin name!');
+      xeShowMessage(wbToolName+' mode requires a valid plugin name!');
       Exit(False);
     end;
 
@@ -1503,7 +1542,7 @@ begin
     on E: Exception do begin
       Result := False;
       if not (E is EAbort) then
-        ShowMessage('Initialization failed: [' + E.ClassName + '] ' + E.Message);
+        xeShowMessage('Initialization failed: [' + E.ClassName + '] ' + E.Message);
     end;
   end;
 end;
@@ -1519,6 +1558,10 @@ begin
 end;
 
 procedure xeInitStyles;
+{$IFDEF XEDIT_HEADLESS}
+begin
+end;
+{$ELSE}
 begin
   var Path := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'Themes';
   if TDirectory.Exists(Path) then
@@ -1526,9 +1569,10 @@ begin
       TStyleManager.LoadFromFile(s);
     except
       on E: Exception do
-        ShowMessage(Format('Error loading theme file "%s": %s', [s, E.Message]));
+        xeShowMessage(Format('Error loading theme file "%s": %s', [s, E.Message]));
     end;
 end;
+{$ENDIF}
 
 initialization
 end.

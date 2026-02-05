@@ -105,6 +105,9 @@ Before GUI parity, target one non-UI executable path:
 - `xEdit` headless/startup path that can parse args and run a minimal non-interactive action
 - no VCL form creation in the first slice
 
+Progress:
+- Added headless entrypoint: `xEdit/xedit-core.dpr` (build-time `XEDIT_HEADLESS`).
+
 ## Exit Criteria for Bootstrap
 
 - audit report generated and tracked

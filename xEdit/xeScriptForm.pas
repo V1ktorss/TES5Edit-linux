@@ -374,7 +374,7 @@ begin
     for f in TDirectory.GetFiles(Path, '*' + sScriptExt, so) do begin
       sname := ChangeFileExt(Copy(f, Length(Path) + 1, Length(f)), '');
       if SameText(sNewScriptName, sname) then Continue;
-      if Pos('\', sname) <> 0 then
+      if (Pos(PathDelim, sname) <> 0) or (Pos('/', sname) <> 0) then
         sl1.Add(sname)
       else
         sl2.Add(sname);

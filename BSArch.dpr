@@ -30,9 +30,9 @@ uses
   Threading,
   {$ENDIF}
   Diagnostics,
-  wbBSArchive in 'Core\wbBSArchive.pas',
-  wbCommandLine in 'Core\wbCommandLine.pas',
-  wbStreams in 'Core\wbStreams.pas';
+  wbBSArchive in 'Core/wbBSArchive.pas',
+  wbCommandLine in 'Core/wbCommandLine.pas',
+  wbStreams in 'Core/wbStreams.pas';
 
 const
   IMAGE_FILE_LARGE_ADDRESS_AWARE = $0020;

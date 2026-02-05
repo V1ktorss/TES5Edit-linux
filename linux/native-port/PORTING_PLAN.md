@@ -35,7 +35,9 @@ This document tracks what is already done for the native Linux path and what com
 1. Stabilization and startup hardening
 - Verify Dolphin launch behavior across Plasma sessions.
 - Add explicit fallback dialog when GUI cannot open.
+  - Implemented in `linux/bsarch-ui.sh` (kdialog/zenity/xmessage fallback).
 - Keep startup logs minimal and rotate/clean them.
+  - Implemented log rotation + success trimming in `linux/bsarch-ui.sh`.
 
 2. Functional parity checks
 - Validate `Pack Selected` and `Unpack Selected` against large archives.

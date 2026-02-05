@@ -730,7 +730,7 @@ begin
       memoText.Lines.Add('http://www.oblivion.nexusmods.com/mods/41863');
     end;
     ltTES5Papyrus: begin
-      edLogFile.Text := lMyGamesTheGamePath + 'Logs\Script\Papyrus.0.log';
+      edLogFile.Text := lMyGamesTheGamePath + 'Logs' + PathDelim + 'Script' + PathDelim + 'Papyrus.0.log';
       ProcessLog := ReadPapyrusLog;
       vstForms.Header.Columns[2].Width := 100;
       vstForms.Header.Columns[2].Text := 'Errors';

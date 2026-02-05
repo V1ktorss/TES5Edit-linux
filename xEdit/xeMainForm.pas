@@ -34,8 +34,8 @@ uses
   ActnList,
   IOUtils,
   Actions,
-  System.Generics.Defaults,
-  System.Generics.Collections,
+  Generics.Defaults,
+  Generics.Collections,
 {$IFDEF USE_PARALLEL_BUILD_REFS}
   System.Threading,
   System.SyncObjs,
@@ -4222,7 +4222,7 @@ begin
         PostAddMessage('Skipped: ' + _File.FileName + ' doesn''t need sequence file')
       else try
         try
-          p := wbDataPath + 'Seq\';
+          p := wbDataPath + 'Seq' + PathDelim;
           if not DirectoryExists(p) then
             if not ForceDirectories(p) then
               raise Exception.Create('Unable to create SEQ directory in game''s Data');
@@ -5226,12 +5226,12 @@ begin
               gmTES5, gmEnderal, gmTES5VR, gmSSE, gmEnderalSE: begin saveExt := '.ess'; coSaveExt := '.skse'; end;
             end;
 
-            if FindFirst(ExpandFileName(wbSavePath+'\*'+saveExt), faAnyfile, R)=0 then try
+            if FindFirst(ExpandFileName(wbSavePath + PathDelim + '*'+saveExt), faAnyfile, R)=0 then try
               repeat
                 if R.Attr and faDirectory <> faDirectory then begin
                   CheckListBox1.Items.Add(R.Name);
                   s := ChangeFileExt(R.Name, coSaveExt);
-                  if (coSaveExt<>'') and FileExists(ExpandFileName(wbSavePath+'\'+s)) then
+                  if (coSaveExt<>'') and FileExists(ExpandFileName(wbSavePath + PathDelim + s)) then
                     CheckListBox1.Items.Add(s);
                 end;
               until 0 <> FindNext(R);
@@ -5239,7 +5239,7 @@ begin
               FindClose(R);
             end;
             if (coSaveExt<>'') then
-              if FindFirst(ExpandFileName(wbSavePath+'\*'+coSaveExt), faAnyfile, R)=0 then try
+              if FindFirst(ExpandFileName(wbSavePath + PathDelim + '*'+coSaveExt), faAnyfile, R)=0 then try
                 repeat
                   if R.Attr and faDirectory <> faDirectory then
                     if CheckListBox1.Items.IndexOf(R.Name) = -1 then
@@ -10943,7 +10943,11 @@ begin
         sl.Add('# !!!' + MainRecordSP.EditorID + ' -> ' + MainRecord.EditorID + ' !!!');
       sl.Add('');
     end;
+  {$IFDEF MSWINDOWS}
   sl.SaveToFile('D:\Program Files (x86)\Bethesda Softworks\Fallout 3\Data\SP_Destruction_MASTER.fo3editscript');
+  {$ELSE}
+  sl.SaveToFile(IncludeTrailingPathDelimiter(wbDataPath) + 'SP_Destruction_MASTER.fo3editscript');
+  {$ENDIF}
   sl.Free;
 
   sl := TStringList.Create;
@@ -10961,7 +10965,11 @@ begin
         sl.Add('# !!! ' + MainRecordSP.EditorID+ ' !!!');
       sl.Add('');
     end;
+  {$IFDEF MSWINDOWS}
   sl.SaveToFile('D:\Program Files (x86)\Bethesda Softworks\Fallout 3\Data\SP_Destruction - last - Lights.fo3editscript');
+  {$ELSE}
+  sl.SaveToFile(IncludeTrailingPathDelimiter(wbDataPath) + 'SP_Destruction - last - Lights.fo3editscript');
+  {$ENDIF}
   sl.Free;
 end;
 }
@@ -14901,7 +14909,7 @@ begin
     end;
   end;
 
-  mniMainPluggyLink.Visible := (wbGameMode = gmTES4) or FileExists(wbDataPath + 'xEdit\xEditLink.ini');
+  mniMainPluggyLink.Visible := (wbGameMode = gmTES4) or FileExists(wbDataPath + 'xEdit' + PathDelim + 'xEditLink.ini');
   if wbGameMode <> gmTES4 then
     mniMainPluggyLink.Caption := 'GameLink';
   mniMainPluggyLink.Checked := PluggyLinkState <> plsNone;
@@ -21789,7 +21797,7 @@ var
   LastStamp: Int64;
   CurrentStamp: Int64;
 begin
-  plFolder := wbMyGamesTheGamePath + 'Pluggy\User Files\';
+  plFolder := wbMyGamesTheGamePath + 'Pluggy' + PathDelim + 'User Files' + PathDelim;
   frmMain.PostAddMessage('[PluggyLink] Starting for: ' + plFolder);
   LastStamp := GetPluggyStamp;
   if LastStamp >= 0 then
@@ -21967,7 +21975,7 @@ var
   LastStamp: Int64;
   CurrentStamp: Int64;
 begin
-  glFolder := wbDataPath + 'xEdit\';
+  glFolder := wbDataPath + 'xEdit' + PathDelim;
   frmMain.PostAddMessage('[GameLink] Starting for: ' + glFolder);
   LastStamp := GetGameLinkStamp;
   if LastStamp >= 0 then

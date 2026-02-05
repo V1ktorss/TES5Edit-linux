@@ -14,6 +14,7 @@ interface
 
 uses
   Classes, SysUtils, StrUtils, Math,
+  {$IFDEF FPC}System.SysUtils,{$ENDIF}
   wbInterface, wbBSA;
 
 const
@@ -254,7 +255,13 @@ begin
   while (i < j) and (p[i] <> 0) do
     Inc(i);
   if i > 0 then begin
+{$IFDEF FPC}
+    SetLength(b, i);
+    if i > 0 then
+      Move(p^, b[0], i);
+{$ELSE}
     b := BytesOf(p, i);
+{$ENDIF}
     try
       Result := fEncoding[False].GetString(b);
     except
@@ -282,7 +289,13 @@ begin
   Inc(PInteger(p), 1);
   Dec(i);
   if i > 0 then begin
+{$IFDEF FPC}
+    SetLength(b, i);
+    if i > 0 then
+      Move(p^, b[0], i);
+{$ELSE}
     b := BytesOf(p, i);
+{$ENDIF}
     try
       Result := fEncoding[False].GetString(b);
     except
@@ -577,7 +590,7 @@ end;
 
 function TwbLocalizationHandler.GetStringsPath: string;
 begin
-  Result := wbDataPath + 'Strings\';
+  Result := wbDataPath + 'Strings' + PathDelim;
 end;
 
 procedure TwbLocalizationHandler.AvailableLanguages(aLanguages : TStringList);
@@ -611,8 +624,8 @@ begin
         wbContainerHandler.ContainerResourceList('', sl, 'strings');
         for i := 0 to Pred(sl.Count) do begin
           s := sl[i];
-          if s.EndsWith('strings', True) then begin
-            s := ChangeFileExt(s, '').ToLower;
+          if AnsiEndsText('strings', s) then begin
+            s := LowerCase(ChangeFileExt(s, ''));
             ParseString;
           end;
         end;
@@ -649,7 +662,7 @@ begin
         wbContainerHandler.ContainerResourceList('', sl, 'strings');
         for i := 0 to Pred(sl.Count) do begin
           s := sl[i];
-          if s.EndsWith('strings', True) then
+          if AnsiEndsText('strings', s) then
             aFiles.Add(ExtractFileName(s));
         end;
       finally
@@ -702,7 +715,7 @@ begin
     wbLocalizationExtension[ls]
   ]);
   // relative path to Data folder
-  Result := 'Strings\' + Result;
+  Result := 'Strings' + PathDelim + Result;
 end;
 
 function TwbLocalizationHandler.GetLocalizationFileNameByElement(aElement: IwbElement): string;
