@@ -193,6 +193,7 @@ This document tracks what is already done for the native Linux path and what com
   - replaced `wbDefProfiles` pointer/integer object-state hack in `xDump.dpr` with typed `TProfileState` objects and explicit cleanup to avoid pointer/ordinal portability warnings in profile tracking paths
   - normalized several pointer-arithmetic counters in `Core/wbDefinitionsTES5Saves.pas` (`ChangedForm*`, `DumpCounter`, `DataLengthRemainderCounter`) to `PtrUInt`-based math for better cross-platform portability in FPC builds
   - completed follow-up cleanup for `Core/wbDefinitionsTES5Saves.pas` pointer deltas via `NativeUInt` helper paths (`wbPtrDiffNative`, `wbSubtractConsumed`), eliminating remaining `Conversion between ordinals and pointers is not portable` hints for that unit in xDump headless builds
+  - removed unused `Math` dependency from `Core/wbDefinitionsTES5Saves.pas` to keep xDump/FPC warning surface smaller
   - moved `TxeScriptHost.Create` to public API (`reintroduce`) in `xEdit/xeScriptHost.pas` to remove FPC visibility warning while keeping dynamic host construction paths intact
   - extended compatibility wrappers used by xDump path:
     - `System.Classes`: `TFiler`/`TReader`/`TWriter`, lightweight `TDataModule`
