@@ -825,11 +825,9 @@ const
   CReadBuffer = 4096;
 var
   lProc: TProcess;
-  lBuffer: array[0..CReadBuffer - 1] of Byte;
   lBytesRead: LongInt;
   lChunk: AnsiString;
   lCarry: AnsiString;
-  i: Integer;
   procedure FlushLines(const aData: AnsiString; aFinal: Boolean);
   var
     lText: AnsiString;
@@ -878,7 +876,6 @@ begin
     lProc.Execute;
     lCarry := '';
     lChunk := '';
-    FillChar(lBuffer, SizeOf(lBuffer), 0);
 
     while lProc.Running do
     begin
@@ -894,12 +891,12 @@ begin
 
       while lProc.Output.NumBytesAvailable > 0 do
       begin
-        lBytesRead := lProc.Output.Read(lBuffer[0], CReadBuffer);
+        SetLength(lChunk, CReadBuffer);
+        lBytesRead := lProc.Output.Read(lChunk[1], CReadBuffer);
         if lBytesRead <= 0 then
           Break;
-        SetLength(lChunk, lBytesRead);
-        for i := 1 to lBytesRead do
-          lChunk[i] := AnsiChar(lBuffer[i - 1]);
+        if lBytesRead <> CReadBuffer then
+          SetLength(lChunk, lBytesRead);
         FlushLines(lChunk, False);
       end;
 
@@ -908,12 +905,12 @@ begin
 
     while lProc.Output.NumBytesAvailable > 0 do
     begin
-      lBytesRead := lProc.Output.Read(lBuffer[0], CReadBuffer);
+      SetLength(lChunk, CReadBuffer);
+      lBytesRead := lProc.Output.Read(lChunk[1], CReadBuffer);
       if lBytesRead <= 0 then
         Break;
-      SetLength(lChunk, lBytesRead);
-      for i := 1 to lBytesRead do
-        lChunk[i] := AnsiChar(lBuffer[i - 1]);
+      if lBytesRead <> CReadBuffer then
+        SetLength(lChunk, lBytesRead);
       FlushLines(lChunk, False);
     end;
     FlushLines('', True);
