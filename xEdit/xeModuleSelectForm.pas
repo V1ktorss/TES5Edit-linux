@@ -699,12 +699,14 @@ end;
 procedure TfrmModuleSelect.SimulateLoad;
 var
   Error           : string;
+  lModuleIdx      : Integer;
+  lModule         : TModuleInfo;
 begin
   Error := '';
   try
     if SelectFlag = mfActive then begin
-      for var lModuleIdx := Low(AllModules) to High(AllModules) do begin
-        var lModule := AllModules[lModuleIdx];
+      for lModuleIdx := Low(AllModules) to High(AllModules) do begin
+        lModule := AllModules[lModuleIdx];
         Exclude(lModule.miFlags, mfForceLoad);
 
         if wbAlwaysLoadGameMaster and

@@ -1800,11 +1800,14 @@ begin
 end;
 
 procedure TfrmMain.AddMessage(const s: string);
+var
+  Strs: TStringDynArray;
+  t: string;
 begin
-  var Strs := s.Split(CRLF);
+  Strs := s.Split(CRLF);
   if Length(Strs) < 1 then
     SetLength(Strs, 1);
-  for var t in Strs do begin
+  for t in Strs do begin
     mmoMessages.Lines.Add(t);
     stbMain.Panels[0].Text := t;
   end;
@@ -2005,23 +2008,29 @@ begin
 end;
 
 function TfrmMain.AddRequiredMasters(const aSourceElement: IwbElement; const aTargetFile: IwbFile; aAsNew: Boolean; aSilent: Boolean = False): Boolean;
+var
+  lRequiredMasters: TStringList;
+  lMasters: TwbFilesSet;
+  lFile: IwbFile;
+  lFindIdx: Integer;
+  lTargetMasterIdx: Integer;
+  lRequiredMasterIdx: Integer;
 begin
-  var lRequiredMasters := TStringList.Create;
+  lRequiredMasters := TStringList.Create;
   try
     lRequiredMasters.Sorted := True;
     lRequiredMasters.Duplicates := dupIgnore;
 
-    var lMasters := TwbFilesSet.Create;
+    lMasters := TwbFilesSet.Create;
     try
       aSourceElement.ReportRequiredMasters(lMasters, aAsNew);
-      for var lFile in lMasters do
+      for lFile in lMasters do
         lRequiredMasters.AddObject(lFile.FileName, Pointer(lFile));
     finally
       lMasters.Free;
     end;
 
-    var lFindIdx: Integer;
-    for var lTargetMasterIdx := 0 to Pred(aTargetFile.MasterCount[True]) do
+    for lTargetMasterIdx := 0 to Pred(aTargetFile.MasterCount[True]) do
       if lRequiredMasters.Find(aTargetFile.Masters[lTargetMasterIdx, True].FileName, lFindIdx) then
         lRequiredMasters.Delete(lFindIdx);
     if lRequiredMasters.Find(aTargetFile.FileName, lFindIdx) then
@@ -2029,7 +2038,7 @@ begin
 
     if lRequiredMasters.Count > 0 then begin
 
-      for var lRequiredMasterIdx := 0 to Pred(lRequiredMasters.Count) do
+      for lRequiredMasterIdx := 0 to Pred(lRequiredMasters.Count) do
         if IwbFile(Pointer(lRequiredMasters.Objects[lRequiredMasterIdx])).LoadOrder >= aTargetFile.LoadOrder then
           raise Exception.Create('The required master "' + lRequiredMasters[lRequiredMasterIdx] + '" can not be added to "' + aTargetFile.FileName + '" as it has a higher load order');
 
@@ -7902,6 +7911,9 @@ var
   TargetElement               : IwbElement;
   NewElement                  : IwbElement;
   Control                     : Boolean;
+  lTemplate                   : IwbElement;
+  lTemplates                  : TwbTemplateElements;
+  lTemplateIdx                : Integer;
 begin
   if not wbEditAllowed then
     Exit;
@@ -7916,10 +7928,10 @@ begin
     try
       //    vstView.BeginUpdate;
       try
-        var lTemplate: IwbElement := nil;
+        lTemplate := nil;
         if TMenuItem(Sender).Tag >= 0 then begin
-          var lTemplates := TargetElement.GetAssignTemplates(TargetIndex);
-          var lTemplateIdx := TMenuItem(Sender).Tag;
+          lTemplates := TargetElement.GetAssignTemplates(TargetIndex);
+          lTemplateIdx := TMenuItem(Sender).Tag;
           if (lTemplateIdx >= Low(lTemplates)) and (lTemplateIdx <= High(lTemplates)) then
             lTemplate := lTemplates[lTemplateIdx];
         end;
@@ -7960,6 +7972,13 @@ procedure TfrmMain.mniViewClipboardClick(Sender: TObject);
 
 var
   Element                     : IwbElement;
+  lHasSignature               : IwbHasSignature;
+  lName                       : string;
+  lDisplayName                : string;
+  lShortName                  : string;
+  lTemplates                  : TwbTemplateElements;
+  lTemplateIdx                : Integer;
+  lMenuItem                   : TMenuItem;
 begin
   Element := GetFocusedViewElementSafely;
   if not Assigned(Element) then
@@ -7970,22 +7989,21 @@ begin
   SetupCopyMni(mniCopyFullPathToClipboard, 'Copy full path', Element.FullPath);
   SetupCopyMni(mniCopyIndexedPathToClipboard, 'Copy indexed path', Element.IndexedPath[False]);
 
-  var lHasSignature: IwbHasSignature;
   if Supports(Element, IwbHasSignature, lHasSignature) then
     SetupCopyMni(mniCopySignatureToClipboard, 'Copy signature', lHasSignature.Signature)
   else
     mniCopySignatureToClipboard.Visible := False;
 
-  var lName := Element.Name;
+  lName := Element.Name;
   SetupCopyMni(mniCopyNameToClipboard, 'Copy name', lName);
 
-  var lDisplayName := Element.DisplayName[True];
+  lDisplayName := Element.DisplayName[True];
   if lName <> lDisplayName then
     SetupCopyMni(mniCopyDisplayNameToClipboard, 'Copy display name', lDisplayName)
   else
     mniCopyDisplayNameToClipboard.Visible := False;
 
-  var lShortName := Element.ShortName;
+  lShortName := Element.ShortName;
   if lName <> lShortName then
     SetupCopyMni(mniCopyShortNameToClipboard, 'Copy short name', lShortName)
   else
@@ -15433,10 +15451,10 @@ begin
       mniViewAdd.Items[Pred(mniViewAdd.Count)].Free;
     mniViewAdd.OnClick := mniViewAddClick;
 
-    var lTemplates := TargetElement.GetAssignTemplates(TargetIndex);
+    lTemplates := TargetElement.GetAssignTemplates(TargetIndex);
     if Length(lTemplates) > 1 then begin
-      for var lTemplateIdx := Low(lTemplates) to High(lTemplates) do begin
-        var lMenuItem := mniViewAdd.GetParentMenu.CreateMenuItem;
+      for lTemplateIdx := Low(lTemplates) to High(lTemplates) do begin
+        lMenuItem := mniViewAdd.GetParentMenu.CreateMenuItem;
         lMenuItem.Caption := lTemplates[lTemplateIdx].Name;
         lMenuItem.Tag := lTemplateIdx;
         lMenuItem.OnClick := mniViewAddClick;
