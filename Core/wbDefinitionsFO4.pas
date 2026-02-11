@@ -3709,6 +3709,22 @@ end;
 {$ENDIF}
 
 procedure DefineFO4;
+var
+  wbVMADVersion: IwbValueDef;
+  wbVMADObjectFormat: IwbValueDef;
+  wbVMADScripts: IwbRecordMemberDef;
+  wbConditionParameters: array of IwbValueDef;
+  wbBoneDataItem: IwbRecordMemberDef;
+  wbArmorAddonBoneDataItem: IwbRecordMemberDef;
+  wbEffect: IwbRecordMemberDef;
+  wbFactionRank: IwbRecordMemberDef;
+  wbPerkConditions: IwbRecordMemberDef;
+  wbPerkEffect: IwbRecordMemberDef;
+  wbMenuButton: IwbRecordMemberDef;
+  wbFilterKeywordChances: IwbRecordMemberDef;
+  wbEquipSlot: IwbRecordMemberDef;
+  wbBodyParts: IwbRecordMemberDef;
+  wbStaticPart: IwbRecordMemberDef;
 begin
   DefineCommon;
 
@@ -4419,13 +4435,13 @@ begin
 
   {>>> http://www.uesp.net/wiki/Tes5Mod:Mod_File_Format/VMAD_Field <<<}
 
-  var wbVMADVersion :=
+  wbVMADVersion :=
     wbInteger('Version', itS16, nil, cpIgnore).SetDefaultNativeValue(6);
 
-  var wbVMADObjectFormat :=
+  wbVMADObjectFormat :=
     wbInteger('Object Format', itS16, nil, cpIgnore).SetDefaultNativeValue(2);
 
-  var wbVMADScripts :=
+  wbVMADScripts :=
     wbArrayS('Scripts', wbScriptEntry, -2, cpNormal, False, nil, nil, nil, wbCanAddScripts)
     .SetSummaryPassthroughMaxLength(100);
 
@@ -5539,7 +5555,7 @@ begin
       wbInteger('Duration', itU32)
     ], cpNormal, True, nil, -1, wbEFITAfterLoad);
 
-  var wbConditionParameters := [
+  wbConditionParameters := [
     //Misc
     {0} wbByteArray('Unknown', 4).IncludeFlag(dfZeroSortKey),
     {1} wbByteArray('None', 4, cpIgnore).IncludeFlag(dfZeroSortKey),
@@ -5948,7 +5964,7 @@ begin
   ]);
 
   // Sorting these where applicable, as I cannot reproduce any issues that arise from doing so
-  var wbBoneDataItem :=
+  wbBoneDataItem :=
       wbRStruct('Bone Data Set', [
         wbRStruct('Bone Weight Scale Data', [
           wbInteger(BSMP, 'Weight Scale Target Gender', itU32, wbSexEnum),
@@ -5996,7 +6012,7 @@ begin
         ])
       ]);
 
-  var wbArmorAddonBoneDataItem :=
+  wbArmorAddonBoneDataItem :=
       wbRStruct('Bone Scale Modifier Set', [
         wbInteger(BSMP, 'Target Gender', itU32, wbSexEnum),
         wbRArrayS('Bone Scale Modifiers',
@@ -6014,7 +6030,7 @@ begin
 
   wbArmorAddonBSMPSequence := wbRArray('Sculpt Data', wbArmorAddonBoneDataItem);
 
-  var wbEffect :=
+  wbEffect :=
     wbRStruct('Effect', [
       wbEFID,
       wbEFIT,
@@ -7173,7 +7189,7 @@ begin
     ]), cpNormal, True).IncludeFlag(dfCollapsed, wbCollapseFlags)
   ]);
 
-  var wbFactionRank :=
+  wbFactionRank :=
     wbRStructSK([0], 'Rank', [
       wbInteger(RNAM, 'Rank#', itU32),
       wbLString(MNAM, 'Male Title', 0, cpTranslate),
@@ -7970,13 +7986,13 @@ begin
     wbRArrayS('FormIDs', wbFormID(LNAM, 'FormID'), cpNormal, False, nil, nil, nil, wbFLSTLNAMIsSorted)
   ]);
 
-  var wbPerkConditions :=
+  wbPerkConditions :=
     wbRStructSK([0], 'Perk Condition', [
       wbInteger(PRKC, 'Run On (Tab Index)', itS8{, wbPRKCToStr, wbPRKCToInt}),
       wbConditions.SetRequired
     ], [], cpNormal, False{, nil, nil, wbPERKPRKCDontShow});
 
-  var wbPerkEffect :=
+  wbPerkEffect :=
     wbRStructSK([0, 1], 'Effect', [
     wbStructSK(PRKE, [1, 2, 0], 'Header', [
       wbPerkEffectType(wbPERKPRKETypeAfterSet),
@@ -8575,7 +8591,7 @@ begin
     wbByteRGBA(CNAM)
   ]);
 
-  var wbMenuButton :=
+  wbMenuButton :=
     wbRStruct('Menu Button', [
       wbLStringKC(ITXT, 'Button Text', 0, cpTranslate),
       wbConditions
@@ -10369,7 +10385,7 @@ begin
     wbRArray('Grasses', wbFormIDCk(GNAM, 'Grass', [GRAS]))
   ]);
 
-  var wbFilterKeywordChances :=
+  wbFilterKeywordChances :=
     wbArrayS(LLKC, 'Filter Keyword Chances',
       wbStructSK([0], 'Filter', [
         wbFormIDCk('Keyword', [KYWD]),
@@ -11447,7 +11463,7 @@ begin
       ]))
     ]);}
 
-  var wbEquipSlot :=
+  wbEquipSlot :=
     wbRStruct('Equip Slot', [
       wbFormIDCk(QNAM, 'Equip Slot', [EQUP]),
       wbString(ZNAM, 'Node')
@@ -11457,7 +11473,7 @@ begin
     .IncludeFlag(dfSummaryMembersNoName)
     .IncludeFlag(dfCollapsed, wbCollapseEquipSlots);
 
-  var wbBodyParts :=
+  wbBodyParts :=
     wbRArrayS('Parts',
       wbRStructSK([0], 'Part', [
         wbUnused(INDX, 0),
@@ -13030,7 +13046,7 @@ begin
     wbUnknown(VNAM, cpNormal, True)
   ]);
 
-  var wbStaticPart :=
+  wbStaticPart :=
     wbRStructSK([0], 'Part', [
       wbFormIDCk(ONAM, 'Static', [ACTI, ALCH, AMMO, BOOK, CONT, DOOR, FURN, MISC, MSTT, STAT, TERM, WEAP, FLOR]),
       wbStaticPartPlacements
