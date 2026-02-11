@@ -2714,6 +2714,11 @@ function wbResolveSnapTemplateNodeFromReference(const aReference    : IwbMainRec
                                                   out aSnapTemplate : IwbMainRecord;
                                                   out aSnapNode     : IwbMainRecord)
                                                                     : IwbElement; {node element on the snap template}
+var
+  lNodes  : IwbContainerElementRef;
+  lNodeIdx: Integer;
+  lNode   : IwbContainerElementRef;
+  lNodeID : Variant;
 begin
   Result := nil;
   aBaseRecord := nil;
@@ -2730,15 +2735,13 @@ begin
   if not Supports(aBaseRecord.ElementLinksTo[SNTP], IwbMainRecord, aSnapTemplate) then
     Exit;
 
-  var lNodes: IwbContainerElementRef;
   if not Supports(aSnapTemplate.ElementByName['Nodes'], IwbContainerElementRef, lNodes) then
     Exit;
 
-  for var lNodeIdx := 0 to Pred(lNodes.ElementCount) do begin
-    var lNode: IwbContainerElementRef;
+  for lNodeIdx := 0 to Pred(lNodes.ElementCount) do begin
     if not Supports(lNodes.Elements[lNodeIdx], IwbContainerElementRef, lNode) then
       Continue;
-    var lNodeID := lNode.ElementNativeValues['Node ID'];
+    lNodeID := lNode.ElementNativeValues['Node ID'];
     if VarIsOrdinal(lNodeID) and (lNodeID = aNodeID) then
     begin
       Supports(lNode.ElementLinksTo['Node'], IwbMainRecord, aSnapNode);
@@ -2751,10 +2754,16 @@ function wbLinksToNodeId(const aReferencePath: string = '...'): TwbLinksToCallba
 begin
   Result :=
     function(const aElement: IwbElement): IwbElement
+    var
+      lMainRecord   : IwbMainRecord;
+      lContainer    : IwbContainerElementRef;
+      lNodeID       : Variant;
+      lBaseRecord   : IwbMainRecord;
+      lSnapTemplate : IwbMainRecord;
+      lSnapNode     : IwbMainRecord;
     begin
       Result := nil;
 
-      var lMainRecord: IwbMainRecord;
       if aReferencePath = '...' then begin
         if not wbTryGetContainingMainRecord(aElement, lMainRecord) then
           Exit;
@@ -2762,7 +2771,6 @@ begin
         if not Assigned(aElement) then
           Exit;
 
-        var lContainer: IwbContainerElementRef;
         if not Supports(aElement.Container, IwbContainerElementRef, lContainer) then
           Exit;
 
@@ -2770,13 +2778,9 @@ begin
           Exit;
       end;
 
-      var lNodeID := aElement.NativeValue;
-        if not VarIsOrdinal(lNodeID) then
-          Exit;
-
-      var lBaseRecord: IwbMainRecord;
-      var lSnapTemplate: IwbMainRecord;
-      var lSnapNode: IwbMainRecord;
+      lNodeID := aElement.NativeValue;
+      if not VarIsOrdinal(lNodeID) then
+        Exit;
 
       Result := wbResolveSnapTemplateNodeFromReference(lMainRecord, lNodeID, lBaseRecord, lSnapTemplate, lSnapNode);
     end;
@@ -2789,6 +2793,12 @@ var
   wbWwiseGuidEditInfo       : TwbStringArray;
 {------------------------------------------------------------------------------}
 procedure wbWwiseGuidToStr(var aValue:string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType);
+var
+  lGUID       : TGUID;
+  lObject     : TJsonObject;
+  lName       : string;
+  lObjectPath : string;
+  lPos        : Integer;
 begin
   if not Assigned(wbWwiseGUIDs) then
     Exit;
@@ -2803,13 +2813,12 @@ begin
         Exit;
       end;
 
-      var lGUID := StringToGUID(aValue);
+      lGUID := StringToGUID(aValue);
 
-      var lObject: TJsonObject;
       if not wbWwiseGUIDs.TryGetValue(lGUID, lObject) then
         Exit;
 
-      var lName := lObject.S['Name'];
+      lName := lObject.S['Name'];
       if lName <> '' then
         if aType = ctToSummary then begin
           aValue := lName;
@@ -2817,7 +2826,7 @@ begin
         end else
           aValue := lName + ' ' + aValue;
 
-      var lObjectPath := lObject.S['ObjectPath'];
+      lObjectPath := lObject.S['ObjectPath'];
       if lObjectPath <> '' then begin
         if (aType = ctToEditValue) and (Length(lObjectPath) > 64) then begin
           SetLength(lObjectPath, 61);
@@ -2831,7 +2840,7 @@ begin
       if aValue = '' then
         Exit;
 
-      var lPos := Pos('{', aValue);
+      lPos := Pos('{', aValue);
       if lPos < 1 then Exit;
       if lPos > 1 then
         Delete(aValue, 1, Pred(lPos));
