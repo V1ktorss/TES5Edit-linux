@@ -2394,6 +2394,7 @@ var
   lFixedFormID: TwbFormID;
   lFileID: TwbFileID;
 begin
+  i := 0;
   if not Assigned(aRecord) then
     Exit;
 
@@ -3068,7 +3069,8 @@ begin
         MasterFiles[i].SortOrder := i;
       end;
 
-      FillChar(UsedMasters, SizeOf(UsedMasters), 0);
+      for i := Low(UsedMasters) to High(UsedMasters) do
+        UsedMasters[i] := False;
       FindUsedMasters(@UsedMasters);
       //!!! SF1 support
       Old := nil;
@@ -4009,6 +4011,7 @@ var
   FileID     : TwbFileID;
 begin
   Result := nil;
+  i := 0;
 
   FileID :=  LoadOrderToFile(aFormID.FileID);
   if not FileID.IsValid then
@@ -4766,6 +4769,7 @@ function TwbFile.GetRecordByFormID(aFormID: TwbFormID; aAllowInjected, aNewMaste
 var
   i: Integer;
 begin
+  i := 0;
   if FindFormID(aFormID, i, aNewMasters) then begin
     Result := flRecords[i];
     Exit;
@@ -4904,6 +4908,7 @@ procedure TwbFile.InjectMainRecord(const aRecord: IwbMainRecord);
 var
   i: Integer;
 begin
+  i := 0;
   if Length(flInjectedRecords) > 0 then begin
     if FindInjectedID(aRecord.FixedFormID, i) then begin
       if wbHasProgressCallback then
@@ -5180,6 +5185,7 @@ var
   lMaster: IwbFile;
   lFileFileID: TwbFileID;
 begin
+  Groups := nil;
   Assert(not (fsMastersUpdating in flStates));
 
   SelfRef := Self as IwbContainerElementRef;
@@ -5562,6 +5568,7 @@ procedure TwbFile.RemoveInjectedMainRecord(const aRecord: IwbMainRecord);
 var
   i: Integer;
 begin
+  i := 0;
   if (Length(flInjectedRecords) > 0) and FindInjectedID(aRecord.FormID, i) then begin
 
     Assert( (aRecord as IwbElement) = (flInjectedRecords[i] as IwbElement) );
@@ -5585,6 +5592,7 @@ var
   lFileID: TwbFileID;
   lMaster: IwbMainRecord;
 begin
+  lFoundIdx := -1;
   if not Assigned(aRecord) then
     Exit;
 
@@ -6372,6 +6380,8 @@ var
   SortEntryPtrs : TwbRecordSortEntryPtrs;
   i             : Integer;
 begin
+  SortEntries := nil;
+  SortEntryPtrs := nil;
   i := Length(flRecords);
   if i > 0 then begin
     SetLength(SortEntries, i);
@@ -6665,6 +6675,7 @@ var
   OurSize         : Integer;
 begin
   Result := nil;
+  lResolvedDef := nil;
 
   if not wbIsInternalEdit then begin
     if not wbEditAllowed then
@@ -8487,6 +8498,7 @@ var
   SelfRef : IwbContainerElementRef;
 begin
   SelfRef := Self as IwbContainerElementRef;
+  Temp := nil;
   SetLength(Temp, Length(cntElements));
   for i := Low(cntElements) to High(cntElements) do
     Temp[High(cntElements)-i] := cntElements[i];
@@ -10354,6 +10366,10 @@ var
   {$ENDIF}
 
 begin
+  LastElementForMember := nil;
+  {$IFDEF DBGSUBREC}
+  lSubRecords := nil;
+  {$ENDIF}
   RequiredRecords := [];
   PresentRecords := [];
 
@@ -15304,6 +15320,8 @@ begin
             dcDataEndPtr := @EmptyPtr;
             Exclude(dcFlags, dcfStorageInvalid);
             lSize := lDataContainer.DataSize;
+            p := nil;
+            q := nil;
             RequestStorageChange(p, q, lSize);
             Move(lDataContainer.DataBasePtr^, dcDataBasePtr^, lSize);
             DoReset(True);
@@ -18689,6 +18707,7 @@ var
         end;
     end;
 
+    Groups := nil;
     SetLength(Groups, Length(MainRecords));
     i := 0;
     for j := Low(MainRecords) to High(MainRecords) do begin
@@ -18762,6 +18781,7 @@ var
         if aOnlyMasters then begin
           Assert(mreHeader.mrehCount = Length(cntElements), '[TwbGroupRecord.Sort] mreHeader.mrehCount <> Length(cntElements)');
 
+          NewElements := nil;
           SetLength(NewElements, Length(cntElements));
           k := High(NewElements);
           TargetRecord := IwbMainRecordEntry(mreHeader.mrehTail);
@@ -21712,6 +21732,7 @@ var
   FoundMembers  : IwbElements;
 begin
   srcDef := aDef as IwbRecordDef;
+  FoundMembers := nil;
   LastDef := nil;
   LastElement := nil;
 
@@ -22376,6 +22397,8 @@ begin
       Exclude(dcFlags, dcfStorageInvalid);
       if ArrayDef.ElementCount < 0 then
         if aElement.DataSize > 0 then begin
+          p := nil;
+          q := nil;
           RequestStorageChange(p, q, aElement.DataSize);
           if Supports(aElement, IwbDataContainer, DataContainer) then begin
             q := DataContainer.DataBasePtr;
@@ -24473,6 +24496,7 @@ begin
   if not (dcfStorageInvalid in dcFlags) then
     Exit;
 
+  NewStorage := nil;
   SelfRef := Self as IwbContainerElementRef;
 
   for i := Low(cntElements) to High(cntElements) do
@@ -24621,6 +24645,7 @@ var
   EndPtr  : Pointer;
 begin
   BasePtr := nil;
+  EndPtr := nil;
   Create(aContainer, BasePtr, nil, aValueDef, aNameSuffix);
   if Assigned(aSource) then try
     RequestStorageChange(BasePtr, EndPtr, GetDataSize);
