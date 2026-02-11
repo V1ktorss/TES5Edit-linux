@@ -200,6 +200,9 @@ var
   wbXLCM: IwbSubRecordDef;
   wbXEED: IwbSubRecordWithStructDef;
   wbNVNM: IwbSubRecordWithStructDef;
+  wbHeadtracking: IwbSubRecordStructDef;
+  wbVatsValueFunctionEnum: IwbEnumDef;
+  wbActorValueEnum: IwbEnumDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -5037,7 +5040,7 @@ begin
       wbUnknown(2)
     ]);
 
-  var wbHeadtracking := wbRStruct('Head Tracking', [
+  wbHeadtracking := wbRStruct('Head Tracking', [
     wbMarker(HNAM).SetRequired,
     wbArray(HTID, ' Actors',
       wbInteger('Actor ID', itS32, wbSceneAliasToStr, wbAliasToInt)
@@ -5048,7 +5051,7 @@ begin
     wbMarker(HNAM).SetRequired
   ]).IncludeFlag(dfTemplate);
 
-  var wbVatsValueFunctionEnum :=
+  wbVatsValueFunctionEnum :=
     wbEnum([
       { 0} 'Weapon Is',
       { 1} 'Weapon In List',
@@ -5073,7 +5076,7 @@ begin
       {20} 'Casting Type Is'
     ]);
 
-  var wbActorValueEnum :=
+  wbActorValueEnum :=
     wbEnum([
     {00} 'Aggression',
     {01} 'Confidence',
