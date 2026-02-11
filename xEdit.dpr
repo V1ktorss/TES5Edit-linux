@@ -23,9 +23,6 @@ uses
   {$IFDEF EXCEPTION_LOGGING_ENABLED}
   nxExceptionHook,
   {$ENDIF }
-  {$IFDEF MSWINDOWS}
-  Winapi.Windows,
-  {$ENDIF}
   Forms,
   Dialogs,
   SysUtils,
@@ -118,11 +115,6 @@ const
 {$SetPEFlags IMAGE_FILE_LARGE_ADDRESS_AWARE}
 {$ENDIF}
 
-var
-  {$IFDEF MSWINDOWS}
-  lIconHandle: HICON;
-  {$ENDIF}
-
 begin
   UseLatestCommonDialogs := True;
   SysUtils.FormatSettings.DecimalSeparator := '.';
@@ -139,9 +131,11 @@ begin
 
   {$IFDEF MSWINDOWS}
   if xeIconResource <> '' then begin
-    lIconHandle := LoadIcon(HInstance, PChar(xeIconResource));
-    if lIconHandle <> 0 then
-      Application.Icon.Handle := lIconHandle;
+    try
+      Application.Icon.LoadFromResourceName(HInstance, xeIconResource);
+    except
+      // Ignore invalid icon resource names and keep default icon.
+    end;
   end;
   {$ENDIF}
 
