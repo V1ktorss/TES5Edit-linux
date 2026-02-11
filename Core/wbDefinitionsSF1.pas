@@ -79,6 +79,10 @@ var
   wbObjectModProperties: IwbArrayDef;
   wbObjectTemplate: IwbSubRecordStructDef;
   wbOBTSReq: IwbSubRecordDef;
+  wbTypeEnum: IwbEnumDef;
+  wbRSGDBiomeDataCommon: function(aName: string = 'Unknown'): IwbStructDef;
+  wbRSGDBiomeDataNotcommon: function(aName: string = 'Unknown'): IwbStructDef;
+  wbRSGDBCellData: function(aName: string = 'Unknown'): IwbStructDef;
   wbAVMDMNAMReq: IwbSubRecordDef;
   wbXLKRs: IwbRecordMemberDef;
   wbLinkedReferences: IwbRecordMemberDef;
@@ -16238,7 +16242,7 @@ begin
     wbSoundReference(FHLS, 'Harvest Looping Sound')
   ], False, nil, cpNormal, False, nil, nil);
 
-  var wbTypeEnum := wbEnum([
+  wbTypeEnum := wbEnum([
     { 0} 'Unarmed',
     { 1} 'One Hand Sword',
     { 2} 'One Hand Dagger',
@@ -19234,7 +19238,7 @@ begin
     wbEDID
   ]);
 
-  var wbRSGDBiomeDataCommon := function(aName: string = 'Unknown'): IwbStructDef
+  wbRSGDBiomeDataCommon := function(aName: string = 'Unknown'): IwbStructDef
   begin
     Result := wbStruct(aName, [
       wbFloat('Vein Nodes Min'),
@@ -19250,7 +19254,7 @@ begin
     ]);
   end;
 
-  var wbRSGDBiomeDataNotcommon := function(aName: string = 'Unknown'): IwbStructDef
+  wbRSGDBiomeDataNotcommon := function(aName: string = 'Unknown'): IwbStructDef
   begin
     Result := wbStruct(aName, [
       wbFloat('Vein Nodes Min'),
@@ -19266,7 +19270,7 @@ begin
     ]);
   end;
 
-  var wbRSGDBCellData := function(aName: string = 'Unknown'): IwbStructDef
+  wbRSGDBCellData := function(aName: string = 'Unknown'): IwbStructDef
   begin
     Result := wbStruct(aName, [
       wbFloat('Vein Nodes Min'),
