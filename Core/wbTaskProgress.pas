@@ -11,7 +11,7 @@ unit wbTaskProgress;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ExtCtrls, SyncObjs, wbPlatform;
 
 const
@@ -100,23 +100,25 @@ implementation
 {$R *.dfm}
 
 uses
+{$IFDEF MSWINDOWS}
   ComObj, ShlObj;
+{$ENDIF}
 
+{$IFDEF MSWINDOWS}
 var
   TaskbarList: ITaskbarList;
   TaskbarList2: ITaskbarList2;
   TaskbarList3: ITaskbarList3;
   TaskbarList4: ITaskbarList4;
+{$ENDIF}
 
 
 //============================================================================
 procedure TProgressBarWithText.WMPaint(var Message: TWMPaint);
 var
-  DC: HDC;
-  prevfont: HGDIOBJ;
-  prevbkmode: Integer;
   R: TRect;
   s: string;
+  x, y: Integer;
 begin
   inherited;
 
@@ -125,13 +127,15 @@ begin
     s := Format('%d/%d', [Position, Max]);
 
   R := ClientRect;
-  DC := GetWindowDC(Handle);
-  prevbkmode := SetBkMode(DC, TRANSPARENT);
-  prevfont := SelectObject(DC, Font.Handle);
-  DrawText(DC, PChar(s), Length(s), R, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
-  SelectObject(DC, prevfont);
-  SetBkMode(DC, prevbkmode);
-  ReleaseDC(Handle, DC);
+  Canvas.Brush.Style := bsClear;
+  Canvas.Font.Assign(Font);
+  x := (R.Width - Canvas.TextWidth(s)) div 2;
+  y := (R.Height - Canvas.TextHeight(s)) div 2;
+  if x < 0 then
+    x := 0;
+  if y < 0 then
+    y := 0;
+  Canvas.TextRect(R, x, y, s);
 end;
 
 //============================================================================
@@ -187,6 +191,7 @@ end;
 //============================================================================
 procedure InitializeTaskbars;
 begin
+{$IFDEF MSWINDOWS}
   if Win32MajorVersion < 6 then
     Exit;
 
@@ -203,34 +208,41 @@ begin
   Supports(TaskbarList, IID_ITaskbarList2, TaskbarList2);
   Supports(TaskbarList, IID_ITaskbarList3, TaskbarList3);
   Supports(TaskbarList, IID_ITaskbarList4, TaskbarList4);
+{$ENDIF}
 end;
 
 //============================================================================
 procedure TaskbarShowProgress(Handle: THandle; ProgressPos, ProgressMax: Integer);
 begin
+{$IFDEF MSWINDOWS}
   if not Assigned(TaskbarList3) then
     Exit;
 
   TaskbarList3.SetProgressState(Handle, TBPF_NORMAL);
   TaskbarList3.SetProgressValue(Handle, ProgressPos, ProgressMax);
+{$ENDIF}
 end;
 
 //============================================================================
 procedure TaskbarErrorProgress(Handle: THandle);
 begin
+{$IFDEF MSWINDOWS}
   if not Assigned(TaskbarList3) then
     Exit;
 
   TaskbarList3.SetProgressState(Handle, TBPF_ERROR);
+{$ENDIF}
 end;
 
 //============================================================================
 procedure TaskbarHideProgress(Handle: THandle);
 begin
+{$IFDEF MSWINDOWS}
   if not Assigned(TaskbarList3) then
     Exit;
 
   TaskbarList3.SetProgressState(Handle, TBPF_NOPROGRESS);
+{$ENDIF}
 end;
 
 //============================================================================
