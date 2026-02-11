@@ -151,10 +151,12 @@ function wbTaskProgressExecute(
   out aExceptionMessage: string;
   aThreads: Integer = 0
 ): TModalResult;
+var
+  Count: Integer;
 begin
   Result := mrCancel;
 
-  var Count := aHighIndex - aLowIndex + 1;
+  Count := aHighIndex - aLowIndex + 1;
   if Count <= 0 then
     Exit;
 

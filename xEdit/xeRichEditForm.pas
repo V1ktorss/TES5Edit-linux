@@ -91,6 +91,7 @@ var
   LastTR   : ITextRange;
   NewNode : PVirtualNode;
   NewTR   : ITextRange;
+  lText   : string;
 begin
   vstTOC.BeginUpdate;
   try
@@ -111,7 +112,7 @@ begin
     while TR.End_ > LastEnd do begin
       LastEnd := TR.End_;
 
-      var lText := Trim(TR.Text);
+      lText := Trim(TR.Text);
       if (lText <> '') and not lText.StartsWith('HYPERLINK') then
         if TR.Font.Bold = tomTRUE then begin
           NewTR := TR.Duplicate;

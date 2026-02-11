@@ -1753,10 +1753,13 @@ procedure xeInitStyles;
 begin
 end;
 {$ELSE}
+var
+  Path: string;
+  s: string;
 begin
-  var Path := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'Themes';
+  Path := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'Themes';
   if TDirectory.Exists(Path) then
-    for var s in TDirectory.GetFiles(Path, '*.vsf' ) do try
+    for s in TDirectory.GetFiles(Path, '*.vsf' ) do try
       TStyleManager.LoadFromFile(s);
     except
       on E: Exception do
