@@ -79,6 +79,7 @@ var
   wbObjectModProperties: IwbArrayDef;
   wbObjectTemplate: IwbSubRecordStructDef;
   wbOBTSReq: IwbSubRecordDef;
+  wbAVMDMNAMReq: IwbSubRecordDef;
   wbXLKRs: IwbRecordMemberDef;
   wbLinkedReferences: IwbRecordMemberDef;
   wbXPCS: IwbRecordMemberDef;
@@ -7900,7 +7901,7 @@ begin
     ]).IncludeFlag(dfCollapsed, wbCollapseSounds)
   ], False, nil, cpNormal, False).SetIgnoreList([FLLD, XFLG]);
 
-  var wbAVMDMNAMReq :=
+  wbAVMDMNAMReq :=
     wbInteger(MNAM, 'AVM Group Type', itU32, wbEnumSummary([
       'None'          , 'None',  // None - Cannot be set in CK
       'Simple Group'  , 'Simple',
