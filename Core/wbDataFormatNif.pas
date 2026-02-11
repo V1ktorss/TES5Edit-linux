@@ -1526,15 +1526,17 @@ function TwbNifBlock.ApplyTransform(aRecursive: Boolean = False; aOptions: TwbAp
   end;
 
   procedure UpdateRotation(entries: TdfElement; var t: TTransform);
+  var
+    i: Integer;
+    lv: TVector3;
   begin
     if not Assigned(entries) then
       Exit;
 
-    for var i := 0 to Pred(Entries.Count) do begin
-      var v: TVector3;
-      wbGetVector3(v, entries[i]);
-      v := v * t.Rotation;
-      wbSetVector3(v, entries[i]);
+    for i := 0 to Pred(Entries.Count) do begin
+      wbGetVector3(lv, entries[i]);
+      lv := lv * t.Rotation;
+      wbSetVector3(lv, entries[i]);
     end;
   end;
 
@@ -1543,6 +1545,17 @@ var
   t: TTransform;
   s: TBoundSphere;
   tanbin: TBytes;
+  data: TwbNifBlock;
+  verts: TdfElement;
+  exdata: TwbNifBlock;
+  i, j: Integer;
+  HasVertex, HasNormal, HasTangent: Variant;
+  e: TdfElement;
+  bCanApplyTransform, bChildTransformed: Boolean;
+  children: TdfElement;
+  child: TwbNifBlock;
+  childt: TTransform;
+  sv: PSingleVector3;
 begin
   Result := False;
 
@@ -1552,16 +1565,16 @@ begin
     if not CanTransform(Self) then
       Exit;
 
-    var data := TwbNifBlock(Elements['Data'].LinksTo);
+    data := TwbNifBlock(Elements['Data'].LinksTo);
     if not Assigned(data) then
       Exit;
 
     if not GetTransform(t) or t.IsNone then
       Exit;
 
-    var verts := data.Elements['Vertices'];
+    verts := data.Elements['Vertices'];
     if Assigned(verts) then
-      for var i := 0 to Pred(verts.Count) do begin
+      for i := 0 to Pred(verts.Count) do begin
         wbGetVector3(v, verts[i]);
         v := v * t;
         wbSetVector3(v, verts[i]);
@@ -1572,11 +1585,11 @@ begin
       UpdateRotation(data.Elements['Tangents'], t);
       UpdateRotation(data.Elements['Bitangents'], t);
       // Oblivion tangents and binormals in extradata
-      var exdata := ExtraDataByName(sTES4TangentsExtraDataName);
+      exdata := ExtraDataByName(sTES4TangentsExtraDataName);
       if Assigned(exdata) then begin
         tanbin := exdata.NativeValues['Data'];
-        for var j := 0 to Pred(Length(tanbin) div SizeOf(TSingleVector3)) do begin
-          var sv := PSingleVector3(@tanbin[SizeOf(TSingleVector3) * j]);
+        for j := 0 to Pred(Length(tanbin) div SizeOf(TSingleVector3)) do begin
+          sv := PSingleVector3(@tanbin[SizeOf(TSingleVector3) * j]);
           v.x := sv.x; v.y := sv.y; v.z := sv.z;
           v := v * t.Rotation;
           sv.x := v.x; sv.y := v.y; sv.z := v.z;
@@ -1611,15 +1624,15 @@ begin
     if not GetTransform(t) or t.IsNone then
       Exit;
 
-    var verts := Elements['Vertex Data'];
+    verts := Elements['Vertex Data'];
     if not Assigned(verts) then
       Exit;
 
-    var HasVertex := NativeValues['VertexDesc\VF\VF_NORMAL'];
-    var HasNormal := NativeValues['VertexDesc\VF\VF_NORMAL'];
-    var HasTangent := NativeValues['VertexDesc\VF\VF_TANGENT'];
-    for var i := 0 to Pred(verts.Count) do begin
-      var e := verts[i];
+    HasVertex := NativeValues['VertexDesc\VF\VF_NORMAL'];
+    HasNormal := NativeValues['VertexDesc\VF\VF_NORMAL'];
+    HasTangent := NativeValues['VertexDesc\VF\VF_TANGENT'];
+    for i := 0 to Pred(verts.Count) do begin
+      e := verts[i];
       if HasVertex then begin
         wbGetVector3(v, e.Elements['Vertex'], True);
         v := v * t;
@@ -1668,14 +1681,14 @@ begin
     if not GetTransform(t) then
       Exit;
 
-    var bCanApplyTransform := CanTransform(Self);
-    var bChildTransformed := False;
-    var children := Elements['Children'];
+    bCanApplyTransform := CanTransform(Self);
+    bChildTransformed := False;
+    children := Elements['Children'];
 
     // check if any child node is animated, can't apply transform on such parent node
     if bCanApplyTransform and not (atrAnimated in aOptions) then
-      for var i := 0 to Pred(children.Count) do begin
-        var child := TwbNifBlock(children[i].LinksTo);
+      for i := 0 to Pred(children.Count) do begin
+        child := TwbNifBlock(children[i].LinksTo);
         if not Assigned(child) then
           Continue;
 
@@ -1685,14 +1698,14 @@ begin
       end;
 
     // iterating children
-    for var i := 0 to Pred(children.Count) do begin
-      var child := TwbNifBlock(children[i].LinksTo);
+    for i := 0 to Pred(children.Count) do begin
+      child := TwbNifBlock(children[i].LinksTo);
       if not Assigned(child) then
         Continue;
 
       // allowed to transform and there is non-zero transform to apply
       if bCanApplyTransform and not t.IsNone then begin
-        var childt: TTransform;
+        // childt declared in function var section
         if child.GetTransform(childt) then begin
           childt := t * childt;
           child.SetTransform(childt);
