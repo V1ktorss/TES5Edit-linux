@@ -2137,8 +2137,8 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
   EasC      : IwbDataContainer;
-  Origin    : Cardinal;
-  Consumed  : Cardinal;
+  Origin    : PtrUInt;
+  Consumed  : PtrUInt;
 begin
   Result := 0;
   if not Assigned(aElement) then Exit;
@@ -2163,9 +2163,9 @@ begin
     Assert(Element.BaseName='Changed Form Data');
 
     if Supports(Element, IwbDataContainer, Container) then begin
-      Origin := Cardinal(Container.DataBasePtr);
-      Consumed := Cardinal(aBasePtr) - Origin;
-      Result := Result - Consumed;
+      Origin := PtrUInt(Container.DataBasePtr);
+      Consumed := PtrUInt(aBasePtr) - Origin;
+      Result := Result - Cardinal(Consumed);
     end;
   end;
 end;
@@ -2175,8 +2175,8 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
   EasC      : IwbDataContainer;
-  Origin    : Cardinal;
-  Consumed  : Cardinal;
+  Origin    : PtrUInt;
+  Consumed  : PtrUInt;
 begin
   Result := 0;
   if not Assigned(aElement) then Exit;
@@ -2201,11 +2201,11 @@ begin
     Assert(Element.BaseName='Changed Form Data');
 
     if Supports(Element, IwbDataContainer, Container) and (Container.ElementCount = 3) then begin
-      Origin := Cardinal(Container.DataBasePtr);
+      Origin := PtrUInt(Container.DataBasePtr);
       Element := Container.Elements[2];
       if Assigned(Element) and Supports(Element, IwbDataContainer, EasC) then begin
-        Consumed := Cardinal(EasC.DataBasePtr) - Origin;
-        Result := Result - Consumed;
+        Consumed := PtrUInt(EasC.DataBasePtr) - Origin;
+        Result := Result - Cardinal(Consumed);
       end;
     end;
   end;
@@ -2248,7 +2248,7 @@ end;
 function DumpCounter(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Cardinal;
 begin
   if wbBytesToDump = $FFFFFFFF then
-    Result := ( Cardinal(aEndPtr) - Cardinal(aBasePtr) ) div wbBytesToGroup + 1
+    Result := Cardinal(( PtrUInt(aEndPtr) - PtrUInt(aBasePtr) ) div wbBytesToGroup + 1)
   else
     Result := wbBytesToDump div wbBytesToGroup + 1;
 end;
@@ -2281,8 +2281,8 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
   EasC      : IwbDataContainer;
-  Origin    : Cardinal;
-  Consumed   : Cardinal;
+  Origin    : PtrUInt;
+  Consumed  : PtrUInt;
 begin
   Result := 0;
   if not Assigned(aElement) then Exit;
@@ -2293,11 +2293,11 @@ begin
     Element := Container.ElementByName['DataLength'];
     if Assigned(Element) and Supports(Element, IwbDataContainer, EasC) then begin
       Result := Element.NativeValue + SizeOf(Cardinal);
-      Origin := Cardinal(EasC.DataBasePtr);
+      Origin := PtrUInt(EasC.DataBasePtr);
       Element := Container.ElementByName['Remainder'];
       if Assigned(Element) and Supports(Element, IwbDataContainer, EasC) then begin
-        Consumed := Cardinal(EasC.DataBasePtr) - Origin;
-        Result := Result - Consumed;
+        Consumed := PtrUInt(EasC.DataBasePtr) - Origin;
+        Result := Result - Cardinal(Consumed);
         case aModifier of
           1: Result := Result div wbBytesToGroup;
           2: Result := Result mod wbBytesToGroup;
