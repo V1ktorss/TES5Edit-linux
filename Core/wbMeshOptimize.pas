@@ -903,6 +903,19 @@ end;
 function meshopt_optimizeOverdraw(const indices: TTriIndices; const vertices: TVector3Array; aThreshold: Single = 1.05): TTriIndices;
 var
   index_count, vertex_count: Cardinal;
+  cache_size: Cardinal;
+  cache_timestamps: array of Cardinal;
+  hard_clusters: array of Cardinal;
+  hard_cluster_count: Integer;
+  clusters: array of Cardinal;
+  cluster_count: Integer;
+  sort_data: array of Double;
+  sort_keys: array of Word;
+  sort_order: array of Cardinal;
+  offset: Cardinal;
+  it: Integer;
+  cluster: Cardinal;
+  cluster_begin, cluster_end: Cardinal;
 
 
   function updateCache(a, b, c, cache_size: Cardinal; var cache_timestamps: array of Cardinal; var timestamp: Cardinal): Cardinal;
@@ -1177,46 +1190,40 @@ begin
   if (index_count = 0) or (vertex_count = 0) then
     Exit;
 
-  var cache_size := 16;
+  cache_size := 16;
 
-  var cache_timestamps: array of Cardinal;
   SetLength(cache_timestamps, vertex_count);
 
   // generate hard boundaries from full-triangle cache misses
-  var hard_clusters: array of Cardinal;
   SetLength(hard_clusters, index_count div 3);
 
-  var hard_cluster_count := generateHardBoundaries(hard_clusters, cache_size, cache_timestamps);
+  hard_cluster_count := generateHardBoundaries(hard_clusters, cache_size, cache_timestamps);
 
   // generate soft boundaries
-  var clusters: array of Cardinal;
   SetLength(clusters, index_count div 3 + 1);
 
-  var cluster_count := generateSoftBoundaries(clusters, hard_clusters, hard_cluster_count, cache_size, cache_timestamps);
+  cluster_count := generateSoftBoundaries(clusters, hard_clusters, hard_cluster_count, cache_size, cache_timestamps);
 
   // fill sort data
-  var sort_data: array of Double;
   SetLength(sort_data, cluster_count);
   calculateSortData(sort_data, clusters, cluster_count);
 
   // sort clusters using sort data
-  var sort_keys: array of Word;
   SetLength(sort_keys, cluster_count);
-  var sort_order: array of Cardinal;
   SetLength(sort_order, cluster_count);
 
   calculateSortOrderRadix(sort_order, sort_data, sort_keys, cluster_count);
 
   // fill output buffer
-  var offset := 0;
+  offset := 0;
   SetLength(Result, index_count);
 
-  for var it := 0 to Pred(cluster_count) do begin
-    var cluster := sort_order[it];
+  for it := 0 to Pred(cluster_count) do begin
+    cluster := sort_order[it];
     Assert(cluster < Cardinal(cluster_count));
 
-    var cluster_begin := clusters[cluster] * 3;
-    var cluster_end := IfThen(cluster + 1 < Cardinal(cluster_count), clusters[cluster + 1] * 3, index_count);
+    cluster_begin := clusters[cluster] * 3;
+    cluster_end := IfThen(cluster + 1 < Cardinal(cluster_count), clusters[cluster + 1] * 3, index_count);
     Assert(cluster_begin < cluster_end);
 
     System.Move(indices[cluster_begin], Result[offset], (cluster_end - cluster_begin) * SizeOf(indices[0]));
@@ -1229,21 +1236,26 @@ end;
 
 
 function meshopt_optimizeVertexFetchRemap(const indices: TTriIndices): TTriIndices;
+var
+  index_count: Integer;
+  vertex_count: Cardinal;
+  next_vertex: Cardinal;
+  index: Cardinal;
 begin
   Assert(Length(indices) mod 3 = 0);
 
-  var index_count := Length(indices);
+  index_count := Length(indices);
   if index_count = 0 then
     Exit;
 
-  var vertex_count := GetVertexCount(indices);
+  vertex_count := GetVertexCount(indices);
 
   SetLength(Result, vertex_count);
   FillChar(Result[0], SizeOf(Result[0]) * Length(Result), $FF);
 
-  var next_vertex: Cardinal := 0;
+  next_vertex := 0;
 
-  for var index in indices do
+  for index in indices do
     if Result[index] = High(Cardinal) then begin
       Result[index] := next_vertex;
       Inc(next_vertex);
@@ -1253,12 +1265,15 @@ begin
 end;
 
 function meshopt_remapIndices(const indices: TTriIndices; const remap: TTriIndices): TTriIndices;
+var
+  i: Integer;
+  index: Cardinal;
 begin
   Assert(Length(indices) mod 3 = 0);
   SetLength(Result, Length(indices));
 
-  for var i := Low(indices) to High(indices) do begin
-    var index := indices[i];
+  for i := Low(indices) to High(indices) do begin
+    index := indices[i];
     Assert(remap[index] <> High(Cardinal));
 
     Result[i] := remap[index];
