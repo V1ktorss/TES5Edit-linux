@@ -186,6 +186,7 @@ This document tracks what is already done for the native Linux path and what com
   - made `xDump.dpr` FPC-friendly in key startup paths (removed inline-var usage, removed `ToLowerInvariant`/`Contains` dependence, guarded debug-only `DebugHook` usage)
   - made Linux resource inclusion optional for xDump (`{$R *.res}` guarded to Windows)
   - removed unused xDump entrypoint dependencies (`ZlibEx`, `lz4`, `wbPlatform`) and dead helpers (`isMode`, unused `ProgramPath`, unused profile alias) to keep headless/native build path cleaner
+  - gated xDump `{$MAXSTACKSIZE}` directive to Windows to avoid Linux-target warning noise in headless builds
   - extended compatibility wrappers used by xDump path:
     - `System.Classes`: `TFiler`/`TReader`/`TWriter`, lightweight `TDataModule`
     - `System.SysUtils`: `FileExists`

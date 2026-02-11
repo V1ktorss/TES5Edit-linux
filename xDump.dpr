@@ -57,8 +57,8 @@ uses
 
 {$IFDEF MSWINDOWS}
 {$R *.res}
-{$ENDIF}
 {$MAXSTACKSIZE 2097152}
+{$ENDIF}
 
 {$IFDEF MSWINDOWS}
 const
