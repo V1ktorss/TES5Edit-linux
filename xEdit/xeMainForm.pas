@@ -16691,6 +16691,9 @@ var
   i                           : Integer;
   ViewLabel: string;
   lCurrentPage: TTabSheet;
+  lElement                    : IwbElement;
+  lFile                       : IwbFile;
+  lFileName                   : string;
 begin
   PendingContainer := nil;
   PendingMainRecords := nil;
@@ -16760,11 +16763,11 @@ begin
             end;
             for I := Low(ActiveRecords) to High(ActiveRecords) do
               with Add do begin
-                var lElement := ActiveRecords[i].Element;
+                lElement := ActiveRecords[i].Element;
                 if Assigned(lElement) then begin
-                  var lFile := lElement._File;
+                  lFile := lElement._File;
                   if Assigned(lFile) then begin
-                    var lFileName := lFile.Name;
+                    lFileName := lFile.Name;
                     Text := lFileName;
                     Hint := lFileName;
                   end;
@@ -18335,6 +18338,11 @@ end;
 procedure TfrmMain.vstViewDrawText(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; const Text: string; var CellRect: TRect; var DefaultDraw: Boolean);
 var
   Colors : TArray<TColor>;
+  OldBrushColor               : TColor;
+  r                           : TRect;
+  Width                       : Integer;
+  i                           : Integer;
+  NodeDatas                   : PViewNodeDatas;
 begin
   Dec(Column);
   if InRange(Column, Low(ActiveRecords), High(ActiveRecords)) then begin
@@ -18342,13 +18350,13 @@ begin
       if wbDontDrawColorText then
         DefaultDraw := False;
 
-      var OldBrushColor := TargetCanvas.Brush.Color;
+      OldBrushColor := TargetCanvas.Brush.Color;
       try
-        var r := CellRect;
-        var Width := Min(CellRect.Width div Length(Colors), Node.NodeHeight);
+        r := CellRect;
+        Width := Min(CellRect.Width div Length(Colors), Node.NodeHeight);
         r.Width := Width;
         InflateRect(r, 0, -vstView.TextMargin);
-        for var i := Low(Colors) to High(Colors) do begin
+        for i := Low(Colors) to High(Colors) do begin
           if r.Right > CellRect.Right then
             r.Right := CellRect.Right;
           TargetCanvas.Brush.Color := Colors[i];
@@ -18372,7 +18380,7 @@ begin
     end;
 
     if DefaultDraw then begin
-      var NodeDatas : PViewNodeDatas := vstView.GetNodeData(Node);
+      NodeDatas := vstView.GetNodeData(Node);
       with NodeDatas[Column] do
         if Assigned(Element) and (dfHideText in Element.Def.DefFlags) then
           DefaultDraw := False;
@@ -18381,6 +18389,13 @@ begin
 end;
 
 procedure TfrmMain.vstViewEditing(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+var
+  lColumn                     : Integer;
+  NodeDatas                   : PViewNodeDatas;
+  Element                     : IwbElement;
+  lChildNode                  : PVirtualNode;
+  lAllowed                    : Boolean;
+  lDef                        : IwbDef;
 begin
   Allowed := False;
 
@@ -18389,16 +18404,16 @@ begin
 
   if Column < 1 then
     Exit;
-  var lColumn := Pred(Column);
+  lColumn := Pred(Column);
 
   if lColumn > High(ActiveRecords) then
     Exit;
 
-  var NodeDatas: PViewNodeDatas := vstView.GetNodeData(Node);
+  NodeDatas := vstView.GetNodeData(Node);
   if not Assigned(NodeDatas) then
     Exit;
 
-  var Element := NodeDatas[lColumn].Element;
+  Element := NodeDatas[lColumn].Element;
 
   if not Assigned(Element) then begin
     if not EditFocusedViewElement then begin
@@ -18427,8 +18442,8 @@ begin
   if Element.IsEditable then begin
     Allowed := EditWarn;
   end else begin
-    for var lChildNode in vstView.ChildNodes(Node) do begin
-      var lAllowed := False;
+    for lChildNode in vstView.ChildNodes(Node) do begin
+      lAllowed := False;
       vstViewEditing(Sender, lChildNode, Column, lAllowed);
       if EditFocusedViewElement then
         Exit;
@@ -18441,7 +18456,7 @@ begin
         if not Assigned(Element) then
           Continue;
 
-        var lDef := Element.Def;
+        lDef := Element.Def;
         if not Assigned(lDef) then
           Continue;
 
