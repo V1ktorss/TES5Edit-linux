@@ -54,6 +54,14 @@ var
   wbCUSH: IwbRecordMemberDef;
   wbPUSH: IwbRecordMemberDef;
   wbPDSH: IwbRecordMemberDef;
+  wbBipedObjectEnum: IwbEnumDef;
+  wbBipedObjectFlags: IwbFlagsDef;
+  wbFirstPersonFlagsU64: IwbIntegerDef;
+  wbBO64: IwbSubRecordWithStructDef;
+  wbDODT: IwbSubRecordWithStructDef;
+  wbXFLG: IwbSubRecordDef;
+  wbSoundLevelEnum: IwbEnumDef;
+  wbEntryPointsEnum: IwbEnumDef;
 begin
   DefineCommon;
 end;
@@ -3186,7 +3194,7 @@ begin
   wbXLRD := wbLightRoundnessData(XLRD);
 
   {>>> When NAME is user defined these will be incorrect <<<}
-  var wbBipedObjectEnum := wbEnum([
+  wbBipedObjectEnum := wbEnum([
     '0 - Hide Hair',
     '1 - Morph Hair',
     '2 - Hide Head',
@@ -3255,7 +3263,7 @@ begin
     -1, 'None'
   ]);
 
-  var wbBipedObjectFlags := wbFlags([
+  wbBipedObjectFlags := wbFlags([
     {0x000000000000001} '0 - Hide Hair',
     {0x000000000000002} '1 - Morph Hair',
     {0x000000000000004} '2 - Hide Head',
@@ -3322,9 +3330,9 @@ begin
     {0x800000000000000} '63 - FaceLights'
   ], True);
 
-  var wbFirstPersonFlagsU64 := wbInteger('First Person Flags', itU64, wbBipedObjectFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
+  wbFirstPersonFlagsU64 := wbInteger('First Person Flags', itU64, wbBipedObjectFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
 
-  var wbBO64 :=
+  wbBO64 :=
     wbStruct(BO64, 'Biped Object Template', [
       wbFirstPersonFlagsU64
     ], cpNormal, False)
@@ -3332,7 +3340,7 @@ begin
       .SetSummaryPrefixSuffixOnValue(0, '(', ')')
       .IncludeFlag(dfSummaryMembersNoName);
 
-  var wbDODT :=
+  wbDODT :=
     wbStruct(DODT, 'Decal Data', [
       wbFloat('Min Width'),
       wbFloat('Max Width'),
@@ -3344,7 +3352,7 @@ begin
 
   wbIgnoreRecords.Add(XXXX);
 
-  var wbXFLG :=
+  wbXFLG :=
     wbInteger(XFLG, 'Extra Flags', itU32, wbFlags([
       {0x01} '',
       {0x02} '',
@@ -3355,7 +3363,7 @@ begin
       {0x40} 'Unknown 6'
     ])).IncludeFlag(dfCollapsed, wbCollapseFlags);
 
-  var wbSoundLevelEnum := wbEnum([
+  wbSoundLevelEnum := wbEnum([
      'None',
      'Silent',
      'Quiet',
@@ -3364,7 +3372,7 @@ begin
      'Very Loud'
     ]);
 
-  var wbEntryPointsEnum := wbEnum([
+  wbEntryPointsEnum := wbEnum([
     {000} 'Mod Breath Timer',
     {001} 'Mod My Critical Hit Chance',
     {002} 'Mod My Critical Hit Damage Mult',
