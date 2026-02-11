@@ -103,6 +103,12 @@ uses
 const
   EmptyPtr: AnsiChar = #0;
 
+procedure wbIgnoreUnused(const aParam: Pointer); inline;
+begin
+  if aParam <> nil then
+    Exit;
+end;
+
 Type
   EFileNoSlotExecption = class(Exception);  // helper type, to ignore this exception during debugging sessions.
 
@@ -11204,6 +11210,8 @@ var
   _File       : IwbFile;
   GridCell    : TwbGridCell;
 begin
+  wbIgnoreUnused(@aUseSuffix);
+
   if mrLGeneration <> wbLocalizationHandler.Generation then
     mrInvalidateNameCache;
 
@@ -12449,6 +12457,7 @@ end;
 
 function TwbMainRecord.GetSortKeyInternal(aExtended: Boolean): string;
 begin
+  wbIgnoreUnused(@aExtended);
   Result := GetFormID.ToString(False)
 end;
 
@@ -12515,6 +12524,8 @@ end;
 
 procedure TwbMainRecord.InformStorage(var aBasePtr: Pointer; aEndPtr: Pointer);
 begin
+  wbIgnoreUnused(@aBasePtr);
+  wbIgnoreUnused(@aEndPtr);
   Assert(False);
 end;
 
@@ -13181,6 +13192,8 @@ end;
 
 procedure TwbMainRecord.MergeStorageInternal(var aBasePtr: Pointer; aEndPtr: Pointer);
 begin
+  wbIgnoreUnused(@aBasePtr);
+  wbIgnoreUnused(@aEndPtr);
   Assert(False);
 end;
 
@@ -18045,6 +18058,7 @@ end;
 
 function TwbGroupRecord.GetSortKeyInternal(aExtended: Boolean): string;
 begin
+  wbIgnoreUnused(@aExtended);
   Result := IntToHex64(GetGroupType, 2);
 
   case grStruct.grsGroupType of
@@ -20007,6 +20021,7 @@ end;
 
 function TwbElement.GetSortKeyInternal(aExtended: Boolean): string;
 begin
+  wbIgnoreUnused(@aExtended);
   Result := '';
 end;
 
@@ -20111,6 +20126,8 @@ end;
 
 procedure TwbElement.InformStorage(var aBasePtr: Pointer; aEndPtr: Pointer);
 begin
+  wbIgnoreUnused(@aBasePtr);
+  wbIgnoreUnused(@aEndPtr);
   {can be overriden}
 end;
 
@@ -20204,6 +20221,8 @@ end;
 
 procedure TwbElement.MergeStorageInternal(var aBasePtr: Pointer; aEndPtr: Pointer);
 begin
+  wbIgnoreUnused(@aBasePtr);
+  wbIgnoreUnused(@aEndPtr);
   {can be overriden}
 end;
 
@@ -20351,6 +20370,9 @@ end;
 
 procedure TwbElement.RequestStorageChange(var aBasePtr, aEndPtr: Pointer; aNewSize: Cardinal);
 begin
+  wbIgnoreUnused(@aBasePtr);
+  wbIgnoreUnused(@aEndPtr);
+  wbIgnoreUnused(@aNewSize);
   raise Exception.Create(GetName + ' is not editable');
 end;
 
