@@ -2193,23 +2193,27 @@ begin
 end;
 
 function wbREFRRecordFlagsDecider(const aElement: IwbElement): Integer;
+var
+  lMainRecord : IwbMainRecord;
+  lNAME       : IwbElement;
+  lSig        : TwbSignature;
 begin
   Result := 0;
   if not Assigned(aElement) then
     Exit;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
-  var lNAME := lMainRecord.ElementBySignature[NAME];
+  lNAME := lMainRecord.ElementBySignature[NAME];
   if not Assigned(lNAME) then
     Exit;
 
   if not Supports(lNAME.LinksTo, IwbMainRecord, lMainRecord) then
     Exit;
 
-  var lSig := lMainRecord.Signature;
+  lSig := lMainRecord.Signature;
   if lSig = ACTI then
     Result := 1
   else if (lSig = ADDN) or
@@ -2419,6 +2423,9 @@ begin
 end;
 
 procedure wbLIGHDataFlagsAfterSet(const aElement: IwbElement; const aOldValue, aNewValue: Variant);
+var
+  lMainRecord : IwbMainRecord;
+  lFNAMValue  : Variant;
 begin
   if not Assigned(aElement) then
     Exit;
@@ -2429,13 +2436,13 @@ begin
   if not wbCS then
     Exit;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
   if wbBeginInternalEdit then try
     if ((aOldValue and $4000) <> (aNewValue and $4000)) then begin
-      var lFNAMValue := lMainRecord.ElementNativeValues['FNAM'];
+      lFNAMValue := lMainRecord.ElementNativeValues['FNAM'];
       lMainRecord.RemoveElement('FNAM');
       lMainRecord.Add('FNAM', True);
       lMainRecord.ElementBySignature[FNAM].NativeValue := lFNAMValue;
@@ -2446,6 +2453,10 @@ begin
 end;
 
 function wbLIGHInverseSquareDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
+var
+  lMainRecord : IwbMainRecord;
+  lDATA       : IwbContainerElementRef;
+  lFlags      : IwbElement;
 begin
   Result := 0;
   if not Assigned(aElement) then
@@ -2454,15 +2465,15 @@ begin
   if not wbCS then
     Exit;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
-  var lDATA := lMainRecord.ElementBySignature[DATA] as IwbContainerElementRef;
+  lDATA := lMainRecord.ElementBySignature[DATA] as IwbContainerElementRef;
   if not Assigned(lDATA) then
     Exit;
 
-  var lFlags := lDATA.ElementByName['Flags'];
+  lFlags := lDATA.ElementByName['Flags'];
   if not Assigned(lFlags) then
     Exit;
 
