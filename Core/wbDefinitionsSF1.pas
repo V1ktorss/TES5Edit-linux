@@ -1024,6 +1024,10 @@ begin
 end;
 
 function wbREFLStringToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  lSubRecord   : IwbSubRecord;
+  lStringTable : IwbDataContainer;
+  lBasePtr     : PAnsiChar;
 begin
   if not Assigned(aElement) then
     Exit('');
@@ -1053,20 +1057,27 @@ begin
     else
       Exit('<Warning: Unknown Type>');
     end else begin
-      var lSubRecord := aElement.ContainingSubRecord;
+      lSubRecord := aElement.ContainingSubRecord;
       if not Assigned(lSubRecord) then
         Exit('');
 
-      var lStringTable := lSubRecord.ElementByPath['String Table\Strings'] as IwbDataContainer;
+      lStringTable := lSubRecord.ElementByPath['String Table\Strings'] as IwbDataContainer;
       if not Assigned(lStringTable) then
         Exit('');
 
-      var lBasePtr : PAnsiChar := lStringTable.DataBasePtr;
-        Result := PAnsiChar(@lBasePtr[aInt]);
+      lBasePtr := lStringTable.DataBasePtr;
+      Result := PAnsiChar(@lBasePtr[aInt]);
     end;
 end;
 
 function wbREFLStringToInt(const aString: string; const aElement: IwbElement): Int64;
+var
+  lSubRecord   : IwbSubRecord;
+  lStringTable : IwbContainerElementRef;
+  lTablePtr    : Pointer;
+  i            : Integer;
+  lString      : IwbElement;
+  lStringPtr   : Pointer;
 begin
   Result := 0;
   if aString = '' then
@@ -1094,19 +1105,19 @@ begin
   if aString = 'Diff'   then Exit($FFFFFF13) else
 
   begin
-    var lSubRecord := aElement.ContainingSubRecord;
+    lSubRecord := aElement.ContainingSubRecord;
     if not Assigned(lSubRecord) then
       Exit;
 
-    var lStringTable := lSubRecord.ElementByPath['String Table\Strings'] as IwbContainerElementRef;
+    lStringTable := lSubRecord.ElementByPath['String Table\Strings'] as IwbContainerElementRef;
     if not Assigned(lStringTable) then
       Exit;
 
-    var lTablePtr := (lStringTable as IwbDataContainer).DataBasePtr;
-    for var i := 0 to Pred(lStringTable.ElementCount) do begin
-      var lString := lStringTable.Elements[i];
+    lTablePtr := (lStringTable as IwbDataContainer).DataBasePtr;
+    for i := 0 to Pred(lStringTable.ElementCount) do begin
+      lString := lStringTable.Elements[i];
       if aString = lString.EditValue then begin
-        var lStringPtr := (lString as IwbDataContainer).DataBasePtr;
+        lStringPtr := (lString as IwbDataContainer).DataBasePtr;
         Result := Int64(lStringPtr) - Int64(lTablePtr);
         Exit;
       end;
@@ -1115,12 +1126,13 @@ begin
 end;
 
 function wbREFLDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
+var
+  lContainer : IwbContainer;
 begin
   Result := 0;
   if not Assigned(aElement) then
     Exit;
 
-  var lContainer : IwbContainer;
   if not wbTryGetContainerFromUnion(aElement, lContainer) then
     Exit;
 
@@ -1201,6 +1213,15 @@ function wbQuestStageToStr(aStageIndex : Int64;
                      const aQuest      : IwbMainRecord;
                            aAllowNone  : Boolean)
                                        : string;
+var
+  lEditInfos       : TStringList;
+  lStages          : IwbContainerElementRef;
+  lStage           : IwbContainerElementRef;
+  lStageElementIdx : Integer;
+  lStageIndexValue : Variant;
+  lStageIndex      : Integer;
+  lIndexString     : string;
+  lLogEntry        : string;
 begin;
   case aType of
     ctToStr, ctToSummary: begin
@@ -1258,7 +1279,7 @@ begin;
     Exit;
   end;
 
-  var lEditInfos: TStringList := nil;
+  lEditInfos := nil;
 
   case aType of
     ctEditType: begin
@@ -1273,25 +1294,22 @@ begin;
     if aAllowNone and Assigned(lEditInfos) then
       lEditInfos.AddObject('-1 NONE', TObject(-1));
 
-    var lStages : IwbContainerElementRef;
-    var lStage  : IwbContainerElementRef;
-
     if Supports(aQuest.ElementByName['Stages'], IwbContainerElementRef, lStages) then begin
-      for var lStageElementIdx := 0 to Pred(lStages.ElementCount) do
+      for lStageElementIdx := 0 to Pred(lStages.ElementCount) do
         if Supports(lStages.Elements[lStageElementIdx], IwbContainerElementRef, lStage) then begin
-          var lStageIndexValue := lStage.ElementNativeValues['INDX\Stage Index'];
+          lStageIndexValue := lStage.ElementNativeValues['INDX\Stage Index'];
 
           if not VarIsOrdinal(lStageIndexValue) then
             Continue;
-          var lStageIndex := Integer(lStageIndexValue);
+          lStageIndex := Integer(lStageIndexValue);
 
           if Assigned(lEditInfos) or (lStageIndex = aStageIndex) then begin
 
-            var lIndexString := IntToStr(lStageIndex);
+            lIndexString := IntToStr(lStageIndex);
             while Length(lIndexString) < 3 do
               lIndexString := '0' + lIndexString;
 
-            var lLogEntry := Trim(lStage.ElementValues['Log Entries\Log Entry\NAM2']);
+            lLogEntry := Trim(lStage.ElementValues['Log Entries\Log Entry\NAM2']);
             if lLogEntry <> '' then
               lIndexString := lIndexString + ' ' + lLogEntry;
 
@@ -1326,11 +1344,13 @@ begin;
 end;
 
 function wbConditionQuestStageToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  lMainRecord : IwbMainRecord;
+  lContainer  : IwbContainerElementRef;
+  lElement    : IwbElement;
 begin
-  var lMainRecord: IwbMainRecord;
-  var lContainer: IwbContainerElementRef;
   if wbTryGetContainerRefFromUnionOrValue(aElement, lContainer) then begin
-    var lElement := lContainer.ElementByName['Parameter #1'];
+    lElement := lContainer.ElementByName['Parameter #1'];
     if not wbTryGetMainRecord(lElement, lMainRecord) then
       lMainRecord := nil;
   end else
@@ -1361,6 +1381,8 @@ end;
 function wbLGDIFiltersLinksTo(const aElement: IwbElement): IwbElement;
 var
   LegendaryIndex : Integer;
+  iStarIndex     : Integer;
+  i              : Integer;
   Filter         : IwbContainerElementRef;
   MainRecord     : IwbMainRecord;
   LegendaryMods  : IwbContainerElementRef;
@@ -1388,8 +1410,8 @@ begin
 
   LegendaryIndex := -1;
 
-  var iStarIndex := -1;
-  for var i := 0 to Pred(LegendaryMods.ElementCount) do
+  iStarIndex := -1;
+  for i := 0 to Pred(LegendaryMods.ElementCount) do
   begin
     LegendaryMod := LegendaryMods.Elements[i] as IwbContainerElementRef;
     if LegendaryMod[0].NativeValue = BaseStarSlot then
@@ -1412,6 +1434,7 @@ end;
 function wbScriptObjectAliasLinksTo(const aElement: IwbElement): IwbElement;
 var
   Container  : IwbContainerElementRef;
+  lAlias     : Variant;
 begin
   Result := nil;
 
@@ -1421,7 +1444,7 @@ begin
   if not wbTryGetContainerRefFromUnionOrValue(aElement, Container) then
     Exit;
 
-  var lAlias := aElement.NativeValue;
+  lAlias := aElement.NativeValue;
   if not VarIsOrdinal(lAlias) then
     Exit;
 
@@ -1431,6 +1454,7 @@ end;
 function wbQuestAliasExternalAliasLinksTo(const aElement: IwbElement): IwbElement;
 var
   Container  : IwbContainer;
+  lAlias     : Variant;
 begin
   Result := nil;
 
@@ -1439,7 +1463,7 @@ begin
 
   Container := aElement.Container;
 
-  var lAlias := aElement.NativeValue;
+  lAlias := aElement.NativeValue;
   if not VarIsOrdinal(lAlias) then
     Exit;
 
@@ -1447,13 +1471,15 @@ begin
 end;
 
 function wbSameQuestAliasLinksTo(const aElement: IwbElement): IwbElement;
+var
+  lAlias : Variant;
 begin
   Result := nil;
 
   if not wbResolveAlias then
     Exit;
 
-  var lAlias := aElement.NativeValue;
+  lAlias := aElement.NativeValue;
   if not VarIsOrdinal(lAlias) then
     Exit;
 
