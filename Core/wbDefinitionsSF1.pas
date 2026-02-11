@@ -13518,8 +13518,23 @@ begin
       wbRStructSK([0], 'Face Dial Position', [
         wbInteger(FMSI, 'Index', itU32,
           function(aFaceDialIndex: Int64; const aElement: IwbElement; aType: TwbCallbackType): string
+          var
+            lContainer: IwbContainer;
+            lRace: IwbElement;
+            lRaceMainRecord: IwbMainRecord;
+            lIsFemale: Boolean;
+            lGender: string;
+            lRaceFaceDials: IwbElement;
+            lRaceFaceDialsContainer: IwbContainerElementRef;
+            lEditInfos: TStringList;
+            lRaceFaceDialsIdx: Integer;
+            lRaceFaceDial: IwbElement;
+            lRaceFaceDialContainer: IwbContainerElementRef;
+            lSkinIndexValue: Variant;
+            lSkinIndex: Integer;
+            lIndexString: string;
+            lLabel: string;
           begin
-            var lContainer: IwbContainer;
             if not Supports(aElement, IwbContainer, lContainer) then
               Exit;
 
@@ -13543,8 +13558,7 @@ begin
               ctEditInfo: Result := '';
             end;
 
-            var lRace := lContainer.ElementLinksTo['...\RNAM'];
-            var lRaceMainRecord : IwbMainRecord;
+            lRace := lContainer.ElementLinksTo['...\RNAM'];
             if not Supports(lRace, IwbMainRecord, lRaceMainRecord) then
               Exit;
 
@@ -13556,14 +13570,13 @@ begin
               Exit;
             end;
 
-            var lIsFemale := lContainer.ElementExists['...\ACBS\Flags\Female'];
-            var lGender := 'Male';
+            lIsFemale := lContainer.ElementExists['...\ACBS\Flags\Female'];
+            lGender := 'Male';
             if lIsFemale then
               lGender := 'Female';
 
-            var lRaceFaceDials := lRaceMainRecord.ElementByPath['Chargen and Skintones\' + lGender + '\Chargen\Face Dials'];
+            lRaceFaceDials := lRaceMainRecord.ElementByPath['Chargen and Skintones\' + lGender + '\Chargen\Face Dials'];
 
-            var lRaceFaceDialsContainer: IwbContainerElementRef;
             if not Supports(lRaceFaceDials, IwbContainerElementRef, lRaceFaceDialsContainer) then begin
               case aType of
                 ctToStr: Result := aFaceDialIndex.ToString + ' <Warning: "' + lRaceMainRecord.ShortName + '" does not contain ' + lGender + ' Chargen Face Dials>';
@@ -13572,28 +13585,25 @@ begin
               Exit;
             end;
 
-            var lEditInfos: TStringList := nil;
+            lEditInfos := nil;
             if aType = ctEditInfo then
               lEditInfos := TStringList.Create;
             try
-              for var lRaceFaceDialsIdx := 0 to Pred(lRaceFaceDialsContainer.ElementCount) do begin
-                var lRaceFaceDial := lRaceFaceDialsContainer.Elements[lRaceFaceDialsIdx];
-
-                var lRaceFaceDialContainer: IwbContainerElementRef;
+              for lRaceFaceDialsIdx := 0 to Pred(lRaceFaceDialsContainer.ElementCount) do begin
+                lRaceFaceDial := lRaceFaceDialsContainer.Elements[lRaceFaceDialsIdx];
                 if not Supports(lRaceFaceDial, IwbContainerElementRef, lRaceFaceDialContainer) then
                   Continue;
 
-                var lSkinIndexValue := lRaceFaceDialContainer.ElementNativeValues[FDSI];
+                lSkinIndexValue := lRaceFaceDialContainer.ElementNativeValues[FDSI];
                 if not VarIsOrdinal(lSkinIndexValue) then
                   Continue;
-                var lSkinIndex: Integer := lSkinIndexValue;
+                lSkinIndex := lSkinIndexValue;
 
                 if (lSkinIndex = aFaceDialIndex) or Assigned(lEditInfos) then begin
-                  var lIndexString := IntToStr(lSkinIndex);
+                  lIndexString := IntToStr(lSkinIndex);
                   while Length(lIndexString) < 3 do
                     lIndexString := '0' + lIndexString;
 
-                  var lLabel: string;
                   case aType of
                     ctToSummary: lLabel := lRaceFaceDialContainer.ElementSummaries[FDSL];
                     ctToEditValue, ctEditInfo: lLabel := lRaceFaceDialContainer.ElementValues[FDSL];
