@@ -4368,6 +4368,9 @@ end;
 {$ENDIF}
 
 function wbFlagDecider(aFlag: Byte): TwbUnionDecider;
+var
+  lFlags: IwbElement;
+  lFlagBits: Int64;
 begin
 {$IFDEF FPC}
   Result := wbFpcDefaultUnionDecider;
@@ -4384,11 +4387,11 @@ begin
         if not wbTryGetContainerRefFromUnionOrValue(aElement, lContainer) then
           Exit(0);
 
-        var lFlags := lContainer.ElementByPath['Flags'];
+        lFlags := lContainer.ElementByPath['Flags'];
         if not Assigned(lFlags) then
           Exit(0);
 
-        var lFlagBits: Int64 := lFlags.NativeValue;
+        lFlagBits := lFlags.NativeValue;
         if (lFlagBits and (1 shl aFlag)) <> 0 then
           Exit(1);
 
@@ -5779,6 +5782,11 @@ end;
 function wbModelInfo(aSignature: TwbSignature; aName: string = ''): IwbRecordMemberDef;
 var
   TextureFile: IwbValueDef;
+  CreateFileEntry: function(const aName: string): IwbValueDef;
+  MaterialFile: IwbValueDef;
+  NewModelInfo: IwbValueDef;
+  lAddonNodeIndex: Variant;
+  lFile: IwbFile;
 begin
   if wbGameMode < gmTES5 then begin
     if aName = '' then
@@ -5811,7 +5819,7 @@ begin
     if not wbDecodeTextureHashes then
       Exit(wbByteArray(aSignature, aName, 0, cpIgnore).SetDontShow(wbNeverShow));
 
-    var CreateFileEntry := function(const aName: string): IwbValueDef begin
+    CreateFileEntry := function(const aName: string): IwbValueDef begin
       Result := wbStruct(aName, [
         wbInteger('File Hash', itU32, wbFileHashCallback),
         wbString('Extension', 4),
@@ -5824,10 +5832,10 @@ begin
         .IncludeFlag(dfSummaryMembersNoName);
     end;
 
-    var TextureFile := CreateFileEntry('Texture').IncludeFlag(dfCollapsed, wbCollapseModelInfoTexture);
-    var MaterialFile := CreateFileEntry('Material').IncludeFlag(dfCollapsed, wbCollapseModelInfoMaterial);
+    TextureFile := CreateFileEntry('Texture').IncludeFlag(dfCollapsed, wbCollapseModelInfoTexture);
+    MaterialFile := CreateFileEntry('Material').IncludeFlag(dfCollapsed, wbCollapseModelInfoMaterial);
 
-    var NewModelInfo :=
+    NewModelInfo :=
       wbStruct('', [
         IsTES5(
           wbArray('Counters',
@@ -5854,11 +5862,11 @@ begin
               if not Assigned(aElement) then
                 Exit;
 
-              var lAddonNodeIndex := aElement.NativeValue;
+              lAddonNodeIndex := aElement.NativeValue;
               if not VarIsOrdinal(lAddonNodeIndex) then
                 Exit;
 
-              var lFile := aElement._File;
+              lFile := aElement._File;
               if not Assigned(lFile) then
                 Exit;
 
