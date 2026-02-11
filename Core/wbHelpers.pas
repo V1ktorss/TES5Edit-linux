@@ -14,7 +14,6 @@ interface
 
 uses
   Classes,
-  {$IFDEF MSWINDOWS}Windows,{$ENDIF}
   System.UITypes,
   System.AnsiStrings,
   {$IFDEF FPC}System.SysUtils,{$ENDIF}
