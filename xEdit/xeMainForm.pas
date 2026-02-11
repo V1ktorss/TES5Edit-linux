@@ -16686,6 +16686,7 @@ procedure TfrmMain.DoSetActiveRecord(const aMainRecord: IwbMainRecord; aForce: B
 var
   i                           : Integer;
   ViewLabel: string;
+  lCurrentPage: TTabSheet;
 begin
   PendingContainer := nil;
   PendingMainRecords := nil;
@@ -16840,7 +16841,7 @@ begin
     end else
       lvReferencedBy.Tag := 0;
 
-    var lCurrentPage := pgMain.ActivePage;
+    lCurrentPage := pgMain.ActivePage;
     tbsReferencedBy.TabVisible := wbLoaderDone and (lvReferencedBy.Tag > 0);
     if lCurrentPage = tbsReferencedBy then
       pgMain.ActivePage := tbsReferencedBy;
@@ -17277,10 +17278,12 @@ begin
 end;
 
 procedure TfrmMain.tbsViewShow(Sender: TObject);
+var
+  lNode: PVirtualNode;
 begin
   tbsView.TabVisible := True;
   pnlNav.Show;
-  var lNode := vstNav.FocusedNode;
+  lNode := vstNav.FocusedNode;
   if vstNavLastChangeNode <> lNode then
     vstNavChange(vstNav, lNode);
 end;
@@ -17938,6 +17941,7 @@ procedure TfrmMain.vstViewCheckHotTrack(Sender: TBaseVirtualTree;
 var
   NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
+  lLinksTo                    : IwbElement;
 begin
   Allow := False;
 
@@ -17959,7 +17963,7 @@ begin
   if not Assigned(Element) then
     Exit;
 
-  var lLinksTo := Element.LinksTo;
+  lLinksTo := Element.LinksTo;
   if not Assigned(lLinksTo) then
     lLinksTo := Element.SummaryLinksTo;
 
@@ -17970,6 +17974,7 @@ procedure TfrmMain.vstViewClick(Sender: TObject);
 var
   NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
+  lLinksTo                    : IwbElement;
 begin
   if vstView.HotColumn < 1 then
     Exit;
@@ -17989,7 +17994,7 @@ begin
   if not Assigned(Element) then
     Exit;
 
-  var lLinksTo := Element.LinksTo;
+  lLinksTo := Element.LinksTo;
   if not Assigned(lLinksTo) then
     lLinksTo := Element.SummaryLinksTo;
 
