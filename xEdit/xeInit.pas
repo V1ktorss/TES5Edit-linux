@@ -332,6 +332,91 @@ begin
   end;
 end;
 
+{$IFNDEF MSWINDOWS}
+function TryFindLinuxSteamInstallPath: string;
+var
+  lDocs: string;
+  lHome: string;
+  lSearchRoot: string;
+  lSearchRec: TSearchRec;
+  lFolder: string;
+
+  function IsValidGameRoot(const aRoot: string): Boolean;
+  var
+    lRoot: string;
+  begin
+    lRoot := IncludeTrailingPathDelimiter(aRoot);
+    Result :=
+      FileExists(lRoot + wbGameExeName) and
+      DirectoryExists(lRoot + DataName[wbGameMode = gmTES3]);
+  end;
+
+  function TryFindInSteamCommon(const aCommonPath: string): string;
+  var
+    lCommonPath: string;
+  begin
+    Result := '';
+    lCommonPath := IncludeTrailingPathDelimiter(aCommonPath);
+    if not DirectoryExists(lCommonPath) then
+      Exit;
+
+    if IsValidGameRoot(lCommonPath) then begin
+      Result := lCommonPath;
+      Exit;
+    end;
+
+    if FindFirst(lCommonPath + '*', faDirectory, lSearchRec) = 0 then
+      try
+        repeat
+          if (lSearchRec.Name = '.') or (lSearchRec.Name = '..') then
+            Continue;
+          if (lSearchRec.Attr and faDirectory) = 0 then
+            Continue;
+
+          lFolder := lCommonPath + lSearchRec.Name;
+          if IsValidGameRoot(lFolder) then begin
+            Result := IncludeTrailingPathDelimiter(lFolder);
+            Exit;
+          end;
+        until FindNext(lSearchRec) <> 0;
+      finally
+        FindClose(lSearchRec);
+      end;
+  end;
+
+begin
+  Result := '';
+
+  lDocs := ExcludeTrailingPathDelimiter(wbGetKnownFolderPath(wkDocuments));
+  lHome := '';
+  if lDocs <> '' then
+    lHome := ExcludeTrailingPathDelimiter(ExtractFilePath(lDocs));
+  if lHome = '' then
+    lHome := ExcludeTrailingPathDelimiter(GetEnvironmentVariable('HOME'));
+
+  if lHome = '' then
+    Exit;
+
+  lSearchRoot := TryFindInSteamCommon(lHome + PathDelim + '.steam' + PathDelim + 'steam' + PathDelim + 'steamapps' + PathDelim + 'common');
+  if lSearchRoot <> '' then begin
+    Result := lSearchRoot;
+    Exit;
+  end;
+
+  lSearchRoot := TryFindInSteamCommon(lHome + PathDelim + '.local' + PathDelim + 'share' + PathDelim + 'Steam' + PathDelim + 'steamapps' + PathDelim + 'common');
+  if lSearchRoot <> '' then begin
+    Result := lSearchRoot;
+    Exit;
+  end;
+
+  lSearchRoot := TryFindInSteamCommon(lHome + PathDelim + '.var' + PathDelim + 'app' + PathDelim + 'com.valvesoftware.Steam' + PathDelim + '.local' + PathDelim + 'share' + PathDelim + 'Steam' + PathDelim + 'steamapps' + PathDelim + 'common');
+  if lSearchRoot <> '' then begin
+    Result := lSearchRoot;
+    Exit;
+  end;
+end;
+{$ENDIF}
+
 function PathRelativeToFull(const BasePath: string; const AddPath: string) : string;
 var CDir : string;
 begin
@@ -409,6 +494,11 @@ begin
         lIDs.Free;
       end;
     end;
+
+    {$IFNDEF MSWINDOWS}
+    if wbDataPath = '' then
+      wbDataPath := TryFindLinuxSteamInstallPath;
+    {$ENDIF}
 
     if (wbDataPath = '') then begin
       client := 'Steam';
