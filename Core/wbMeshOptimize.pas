@@ -285,38 +285,50 @@ function meshopt_analyzeVertexFetch(const indices: TTriIndices; vertex_size: Car
 const
   kCacheLine = 64;
   kCacheSize = 128 * 1024;
+var
+  index_count: Integer;
+  vertex_count: Cardinal;
+  vertex_visited: array of Byte;
+  cache: array of Cardinal;
+  i: Integer;
+  index: Cardinal;
+  start_address: Cardinal;
+  end_address: Cardinal;
+  start_tag: Cardinal;
+  end_tag: Cardinal;
+  tag: Cardinal;
+  line: Cardinal;
+  unique_vertex_count: Cardinal;
 begin
   Assert(Length(indices) mod 3 = 0);
   Assert( (vertex_size > 0) and (vertex_size <= 256) );
 
   Result.bytes_fetched := 0;
 
-  var index_count := Length(indices);
-  var vertex_count := GetVertexCount(indices);
+  index_count := Length(indices);
+  vertex_count := GetVertexCount(indices);
 
-  var vertex_visited: array of Byte;
   SetLength(vertex_visited, vertex_count);
 
   // simple direct mapped cache; on typical mesh data this is close to 4-way cache, and this model is a gross approximation anyway
-  var cache: array of Cardinal;
   SetLength(cache, kCacheSize div kCacheLine);
 
-  for var i := 0 to Pred(index_count) do begin
-    var index := indices[i];
+  for i := 0 to Pred(index_count) do begin
+    index := indices[i];
     Assert(index < vertex_count);
 
     vertex_visited[index] := 1;
 
-    var start_address := index * vertex_size;
-    var end_address := start_address + vertex_size;
+    start_address := index * vertex_size;
+    end_address := start_address + vertex_size;
 
-    var start_tag := start_address div kCacheLine;
-    var end_tag := (end_address + kCacheLine - 1) div kCacheLine;
+    start_tag := start_address div kCacheLine;
+    end_tag := (end_address + kCacheLine - 1) div kCacheLine;
 
     Assert(start_tag < end_tag);
 
-    for var tag := start_tag to Pred(end_tag) do begin
-      var line := tag mod Length(cache);
+    for tag := start_tag to Pred(end_tag) do begin
+      line := tag mod Length(cache);
 
       // we store +1 since cache is filled with 0 by default
       if cache[line] <> tag + 1 then
@@ -326,9 +338,9 @@ begin
     end;
   end;
 
-  var unique_vertex_count: Cardinal := 0;
+  unique_vertex_count := 0;
 
-  for var i := 0 to Pred(vertex_count) do
+  for i := 0 to Pred(vertex_count) do
     Inc(unique_vertex_count, vertex_visited[i]);
 
   if unique_vertex_count <> 0 then
