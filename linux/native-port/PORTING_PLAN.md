@@ -217,6 +217,7 @@ This document tracks what is already done for the native Linux path and what com
     - `smoke-test-xdump-headless.sh` now detects `linux/bin/xDump` fallback
     - `smoke-test-xdump-headless.sh` now supports multi-case runs (`XDUMP_HEADLESS_CASES`, default `-h|-dummy`) and fails on non-zero exit codes
     - `build-xdump.sh` now normalizes FPC default `xDump` output to `linux/bin/xdump-core`
+  - added consolidated headless loop runner: `linux/native-port/headless-build-smoke.sh` (`RUN_XEDIT`/`RUN_XDUMP`/`BUILD_ONLY` toggles) for faster xEdit/xDump decoupling verification
   - verified:
     - `linux/native-port/build-xdump.sh` succeeds and produces `linux/bin/xdump-core`
     - `linux/native-port/smoke-test-xdump-headless.sh` passes (`-h`)
