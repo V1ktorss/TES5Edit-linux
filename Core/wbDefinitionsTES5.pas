@@ -6462,11 +6462,13 @@ begin
       ]))
     ], cpNormal, True)
   ]).SetBuildIndexKeys(procedure(const aMainRecord: IwbMainRecord; var aIndexKeys: TwbIndexKeys)
+    var
+      lDATA : Variant;
     begin
       if not Assigned(aMainRecord) then
         Exit;
 
-      var lDATA := aMainRecord.ElementNativeValues[DATA];
+      lDATA := aMainRecord.ElementNativeValues[DATA];
       if not VarIsOrdinal(lDATA) then
         Exit;
 
@@ -6498,11 +6500,15 @@ begin
         wbInteger(FNAM, 'Parent Required', itU32, wbBoolEnum, cpNormal, True)
           .SetDefaultNativeValue(1)
           .SetDontShow(function(const aElement: IwbElement): Boolean
+            var
+              lContainer : IwbContainerElementRef;
             begin
               if not Assigned(aElement) then
                 Exit(True);
 
-              var lContainer := aElement.Container;
+              if not Supports(aElement.Container, IwbContainerElementRef, lContainer) then
+                Exit(True);
+
               // only worry about the root array node where the INAM index is 0 and the PNAM is NULL
               Result := (lContainer.Container.Elements[0].Equals(lContainer)) and (lContainer.ElementByPath['PNAM'].NativeValue = 0) and (lContainer.ElementByPath['INAM'].NativeValue = 0);
             end),
@@ -7985,11 +7991,13 @@ begin
     wbInteger(INTV, 'Interactables Count', itU32, nil, cpNormal, True),
     wbArrayS(CNAM, 'Collides With', wbFormIDCk('Forms', [COLL]), 0, cpNormal, False)
   ]).SetBuildIndexKeys(procedure(const aMainRecord: IwbMainRecord; var aIndexKeys: TwbIndexKeys)
+    var
+      lBNAM : Variant;
     begin
       if not Assigned(aMainRecord) then
         Exit;
 
-      var lBNAM := aMainRecord.ElementNativeValues[BNAM];
+      lBNAM := aMainRecord.ElementNativeValues[BNAM];
       if not VarIsOrdinal(lBNAM) then
         Exit;
 
@@ -10177,16 +10185,19 @@ begin
     {>>> COLL form Index value <<<}
     wbInteger(XTRI, 'Collision Layer', itU32)
       .SetLinksToCallbackOnValue(function(const aElement: IwbElement): IwbElement
+        var
+          lCollisionLayerIndex : Variant;
+          lFile                : IwbFile;
       begin
         Result := nil;
         if not Assigned(aElement) then
           Exit;
 
-        var lCollisionLayerIndex := aElement.NativeValue;
+        lCollisionLayerIndex := aElement.NativeValue;
         if not VarIsOrdinal(lCollisionLayerIndex) then
           Exit;
 
-        var lFile := aElement._File;
+        lFile := aElement._File;
         if not Assigned(lFile) then
           Exit;
 
