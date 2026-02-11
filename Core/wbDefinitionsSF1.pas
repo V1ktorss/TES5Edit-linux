@@ -126,6 +126,16 @@ var
   wbObjectModPropertiesARMOEnum: IwbEnumDef;
   wbObjectModPropertiesNPCEnum: IwbEnumDef;
   wbObjectModPropertiesEnum: IwbEnumDef;
+  wbEDID: IwbSubRecordWithBaseStringDef;
+  wbNLDT: IwbSubRecordWithBaseStringDef;
+  wbFULL: IwbSubRecordWithBaseStringDef;
+  wbFULLReq: IwbSubRecordWithBaseStringDef;
+  wbXSCL: IwbSubRecordDef;
+  wbXALGFlags: IwbFlagsDef;
+  wbXALG: IwbSubRecordDef;
+  wbPropTypeEnum: IwbEnumDef;
+  wbScriptFlags: IwbIntegerDef;
+  wbScriptPropertyObject: IwbValueDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -4014,10 +4024,10 @@ begin
 
   ]);
 
-  var wbEDID := wbStringKC(EDID, 'Editor ID', 0, cpOverride);
-  var wbNLDT := wbString(NLDT, 'Context Notes'); // localization note, explanation of variable, etc.
-  var wbFULL := wbLStringKC(FULL, 'Name', 0, cpTranslate);
-  var wbFULLReq := wbLStringKC(FULL, 'Name', 0, cpTranslate, True);
+  wbEDID := wbStringKC(EDID, 'Editor ID', 0, cpOverride);
+  wbNLDT := wbString(NLDT, 'Context Notes'); // localization note, explanation of variable, etc.
+  wbFULL := wbLStringKC(FULL, 'Name', 0, cpTranslate);
+  wbFULLReq := wbLStringKC(FULL, 'Name', 0, cpTranslate, True);
   wbDESC := function(aName: string = 'Description'):IwbSubRecordWithBaseStringDef
   begin
     Result := wbLStringKC(DESC, aName, 0, cpTranslate);
@@ -4026,8 +4036,8 @@ begin
   begin
     Result := wbLStringKC(DESC, aName, 0, cpTranslate, True);
   end;
-  var wbXSCL := wbFloat(XSCL, 'Scale');
-  var wbXALGFlags := wbFlags([ //copied from FO76, probably wrong
+  wbXSCL := wbFloat(XSCL, 'Scale');
+  wbXALGFlags := wbFlags([ //copied from FO76, probably wrong
     {0x00000001} 'Disallow Permanent Projected Decals',
     {0x00000002} 'Unknown 1',
     {0x00000004} 'Unknown 2',
@@ -4062,9 +4072,9 @@ begin
     {0x80000000} 'Unknown 31'  //Unused
   ]);
 
-  var wbXALG := wbInteger(XALG, 'Flags', itU64, wbXALGFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
+  wbXALG := wbInteger(XALG, 'Flags', itU64, wbXALGFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
 
-  var wbPropTypeEnum := wbEnum([
+  wbPropTypeEnum := wbEnum([
     {00} 'None',
     {01} 'Object',
     {02} 'String',
@@ -4085,14 +4095,14 @@ begin
     {17} 'Array of Struct'
   ]);
 
-  var wbScriptFlags := wbInteger('Flags', itU8, wbEnum([
+  wbScriptFlags := wbInteger('Flags', itU8, wbEnum([
     {0x00} 'Local',
     {0x01} 'Inherited',
     {0x02} 'Removed',
     {0x03} 'Inherited and Removed'
   ]));
 
-  var wbScriptPropertyObject := wbUnion('Object Union', wbScriptObjFormatDecider, [
+  wbScriptPropertyObject := wbUnion('Object Union', wbScriptObjFormatDecider, [
     wbStructSK([1], 'Object v2', [
       wbUnused(2),
       wbInteger('Alias', itS16, wbScriptObjectAliasToStr, wbAliasToInt)
