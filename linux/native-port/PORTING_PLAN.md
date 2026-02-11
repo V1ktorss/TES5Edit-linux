@@ -197,6 +197,7 @@ This document tracks what is already done for the native Linux path and what com
   - hardened local `IOUtils` compatibility shims (`IOUtils.pas`, `System.IOUtils.pas`) to use explicit local result buffers in `GetFiles`, removing managed-result initialization warnings from xEdit/xDump FPC headless builds
   - cleaned `System.*` shim import warnings by gating `System.IOUtils`'s `IOUtils` dependency to non-FPC and adding explicit `System.Diagnostics` type aliases (`TTimeSpan`, `TStopwatch`)
   - removed additional low-risk unused-unit warnings in common shim/core units (`System.Types`, `Graphics`, `Core/wbSteamVDFParser.pas`, `Core/wbStreams.pas`) to keep headless build output cleaner while preserving behavior
+  - removed redundant `SyncObjs` import from `System.SyncObjs.pas` wrapper to silence shim warning noise in xEdit/xDump headless builds
   - moved `TxeScriptHost.Create` to public API (`reintroduce`) in `xEdit/xeScriptHost.pas` to remove FPC visibility warning while keeping dynamic host construction paths intact
   - extended compatibility wrappers used by xDump path:
     - `System.Classes`: `TFiler`/`TReader`/`TWriter`, lightweight `TDataModule`
