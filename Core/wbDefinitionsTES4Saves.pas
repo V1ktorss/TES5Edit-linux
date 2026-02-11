@@ -16,7 +16,6 @@ procedure SwitchToTES4CoSave;
 implementation
 
 uses
-  Types,
   Classes,
   SysUtils,
   Variants,

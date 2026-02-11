@@ -70,7 +70,6 @@ uses
   Classes,
   SysUtils,
   Variants,
-  IOUtils,
   wbHelpers,
   wbDefinitionsCommon,
   wbDefinitionsSignatures;
