@@ -6021,6 +6021,7 @@ begin
   if wbIsSkyrim or wbIsFallout3 or wbIsFallout4 or wbIsFallout76 or wbIsStarfield then begin
     IsInternal := not GetIsEditable and wbBeginInternalEdit(True);
     try
+      Groups := nil;
       SetLength(Groups, wbGroupOrder.Count);
       for i := High(cntElements) downto Succ(Low(cntElements)) do begin
         if not Supports(cntElements[i], IwbGroupRecord, GroupRecord) then begin
@@ -12892,6 +12893,10 @@ var
 begin
   Assert(wbGameMode > gmTES3);
 
+  FillChar(lFormID, SizeOf(lFormID), 0);
+  i := 0;
+  b := False;
+
   Assert(Length(mrReferences)=0);
   aStream.Read(lFormID, SizeOf(TwbFormID));
   Assert(lFormID = mrStruct.mrsFormID^);
@@ -13721,6 +13726,7 @@ procedure TwbMainRecord.RemoveReferencedBy(const aMainRecord: IwbMainRecord);
 var
   i: Integer;
 begin
+  i := 0;
   if Assigned(mrMaster) then begin
     IwbMainRecord(mrMasteR).RemoveReferencedBy(aMainRecord);
     Exit;
