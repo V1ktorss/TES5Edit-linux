@@ -499,7 +499,7 @@ implementation
 
 uses
   TypInfo,
-  zlibEx,
+  ZlibEx,
   lz4io;
 
 const

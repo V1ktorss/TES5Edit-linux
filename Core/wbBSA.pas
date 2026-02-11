@@ -19,7 +19,6 @@ uses
   SysUtils,
   {$ENDIF}
   System.SysUtils,
-  System.Diagnostics,
   {$IFDEF FPC}
   Generics.Defaults,
   Generics.Collections,
@@ -28,8 +27,6 @@ uses
   Generics.Collections,
   {$ENDIF}
   ImagingDds,
-  lz4io,
-  ZlibEx,
   wbBSArchive,
   wbInterface,
   wbSort,
