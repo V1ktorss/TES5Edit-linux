@@ -33,7 +33,7 @@ uses
 {$IFDEF USE_PARALLEL_BUILD_REFS}
   System.SyncObjs,
 {$ENDIF}
-  Zlibex,
+  ZlibEx,
   lz4;
 
 const

@@ -203,6 +203,7 @@ This document tracks what is already done for the native Linux path and what com
   - removed unused `Types`/`Generics.Collections` imports from `Core/wbLoadOrder.pas` (interface + implementation) to reduce warning noise in headless builds
   - removed unused `System.Types` import from `Core/wbDefinitionsCommon.pas`
   - removed additional unused imports from definition units (`Types` in `Core/wbDefinitionsTES4Saves.pas`, `IOUtils` in `Core/wbDefinitionsFO76.pas`) while keeping xEdit/xDump headless smokes green
+  - removed unused `wbBSA`/`WideStrUtils` imports from `Core/wbLocalization.pas`; normalized `Core/wbImplementation.pas` zlib unit reference to `ZlibEx` for Linux/FPC file-case compatibility
   - moved `TxeScriptHost.Create` to public API (`reintroduce`) in `xEdit/xeScriptHost.pas` to remove FPC visibility warning while keeping dynamic host construction paths intact
   - extended compatibility wrappers used by xDump path:
     - `System.Classes`: `TFiler`/`TReader`/`TWriter`, lightweight `TDataModule`

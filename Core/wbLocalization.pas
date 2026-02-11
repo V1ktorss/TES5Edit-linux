@@ -15,7 +15,7 @@ interface
 uses
   Classes, SysUtils, StrUtils, Math,
   {$IFDEF FPC}System.SysUtils,{$ENDIF}
-  wbInterface, wbBSA;
+  wbInterface;
 
 const
   sStringID = 'STRINGID:';
@@ -109,9 +109,6 @@ var
   wbLocalizationHandler: TwbLocalizationHandler;
 
 implementation
-
-uses
-  WideStrUtils;
 
 constructor TwbLocalizationFile.Create(const aFileName: string);
 var
