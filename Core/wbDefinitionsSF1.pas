@@ -76,6 +76,9 @@ const
 var
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
+  lDOBJUsesVarRecs1: TwbVarRecs;
+  lDOBJUsesVarRecs2: TwbVarRecs;
+  lDOBJUsesVarRecs3: TwbVarRecs;
 
 type
   TwbWwiseGUIDsDicationary = TDictionary<TGUID, TJSONObject>;
@@ -10839,7 +10842,7 @@ begin
     wbRArray('Menu Buttons', wbMenuButton)
   ], False, nil, cpNormal, False);
 
-  var lDOBJUsesVarRecs1 := wbMakeVarRecs([
+  lDOBJUsesVarRecs1 := wbMakeVarRecs([
                   0, 'None',
     Sig2Int('AAAC'), 'Action Activate',
     Sig2Int('AAB1'), 'Action Bleedout Start',
@@ -11055,7 +11058,7 @@ begin
     Sig2Int('FTRF'), 'Female Face Texture Set: Eyes'
   ]);
 
-  var lDOBJUsesVarRecs2 := wbMakeVarRecs([
+  lDOBJUsesVarRecs2 := wbMakeVarRecs([
     Sig2Int('GCK1'), 'Keyword Generic Craftable Keyword 01',
     Sig2Int('GCK2'), 'Keyword Generic Craftable Keyword 02',
     Sig2Int('GCK3'), 'Keyword Generic Craftable Keyword 03',
@@ -11262,7 +11265,7 @@ begin
     Sig2Int('AEM2'), 'Action Electromagnetic Shock Stop'
   ]);
 
-  var lDOBJUsesVarRecs3 := wbCombineVarRecs(lDOBJUsesVarRecs1, lDOBJUsesVarRecs2);
+  lDOBJUsesVarRecs3 := wbCombineVarRecs(lDOBJUsesVarRecs1, lDOBJUsesVarRecs2);
 
   {subrecords checked against Starfield.esm}
   wbRecord(DOBJ, 'Default Object Manager', [
