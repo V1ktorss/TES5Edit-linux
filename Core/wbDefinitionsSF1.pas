@@ -16633,9 +16633,9 @@ begin
   var wbStarSlot :=
     wbInteger('Star Slot', itU32, wbLGDIStarSlot)
     .SetSetToDefault(function(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Boolean
+      var
+        lContainer: IwbContainerElementRef;
       begin
-        var lContainer: IwbContainerElementRef;
-
         if not Assigned(aBasePtr) or
            not Assigned(aEndPtr) or
            ((IntPtr(aEndPtr) - IntPtr(aBasePtr)) < SizeOf(Integer)) or
@@ -16669,16 +16669,19 @@ begin
 
   var wbLGDIStarSlotArray :=
     function(aSignature: TwbSignature; const aElement: IwbValueDef; aSorted: Boolean): IwbRecordMemberDef
+    var
+      lInnerArray: IwbArrayDef;
+      lPluralName: string;
+      lElementDef: IwbDef;
     begin
-      var lInnerArray: IwbArrayDef;
       if aSorted then
         lInnerArray := wbArrayS('', aElement)
       else
         lInnerArray := wbArray('', aElement);
 
-      var lPluralName: string := aElement.Name + 's';
+      lPluralName := aElement.Name + 's';
 
-      var lElementDef := lInnerArray
+      lElementDef := lInnerArray
         .SetShouldInclude(wbArrayShouldIncludeStarSlotMatchesMemoryOrder)
         .IncludeFlag(dfArrayCanBeEmpty)
         .SetSummaryName(lPluralName);
@@ -16698,6 +16701,21 @@ begin
 
   var wbLGDIFiltersToStr: TwbIntToStrCallback :=
     function(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string
+    var
+      lFilter: IwbContainerElementRef;
+      lMainRecord: IwbMainRecord;
+      lStarSlots: IwbContainerElementRef;
+      lStarSlotValue: Variant;
+      lStarSlotIndex: Integer;
+      lStarSlot: IwbContainerElementRef;
+      lModIdx: Integer;
+      lInfoMod: IwbContainerElementRef;
+      lIndexString: string;
+      lModIndexValue: Variant;
+      lModIndex: Integer;
+      lMod: IwbContainerElementRef;
+      lModName: string;
+      lOMOD: IwbMainRecord;
     begin
       Result := '';
       case aType of
@@ -16723,34 +16741,30 @@ begin
       if not Assigned(aElement) then
         Exit;
 
-      var lFilter: IwbContainerElementRef;
-
       if not Supports(aElement.Container, IwbContainerElementRef, lFilter) then
         Exit;
 
-      var lMainRecord := aElement.ContainingMainRecord;
+      lMainRecord := aElement.ContainingMainRecord;
 
-      var lStarSlots: IwbContainerElementRef;
       if not Supports(lMainRecord.ElementBySignature[BNAM], IwbContainerElementRef, lStarSlots) then
         Exit;
 
-      var lStarSlotValue := lFilter.Elements[0].NativeValue;
+      lStarSlotValue := lFilter.Elements[0].NativeValue;
       if not VarIsOrdinal(lStarSlotValue) then
         Exit;
-      var lStarSlotIndex: Integer := lStarSlotValue;
+      lStarSlotIndex := lStarSlotValue;
 
       if (lStarSlotIndex < 0) or (lStarSlotIndex >= lStarSlots.ElementCount) then
         Exit;
 
-      var lStarSlot: IwbContainerElementRef;
       if not Supports(lStarSlots.Elements[lStarSlotIndex], IwbContainerElementRef, lStarSlot) then
         Exit;
 
       if aType = ctEditInfo then
         with TwbFastStringListIC.Create do try
-          for var lModIdx := 0 to Pred(lStarSlot.ElementCount) do begin
-            var lInfoMod := lStarSlot.Elements[lModIdx] as IwbContainerElementRef;
-            var lIndexString := IntToStr(lModIdx);
+          for lModIdx := 0 to Pred(lStarSlot.ElementCount) do begin
+            lInfoMod := lStarSlot.Elements[lModIdx] as IwbContainerElementRef;
+            lIndexString := IntToStr(lModIdx);
             while Length(lIndexString) < 2 do
               lIndexString := '0' + lIndexString;
             Add(lIndexString + ' ' + lInfoMod[1].EditValue);
@@ -16761,23 +16775,22 @@ begin
           Free;
         end;
 
-      var lModIndexValue := aElement.NativeValue;
+      lModIndexValue := aElement.NativeValue;
       if not VarIsOrdinal(lModIndexValue) then
         Exit;
-      var lModIndex: Integer := lModIndexValue;
+      lModIndex := lModIndexValue;
 
       if (lModIndex < 0) or (lModIndex >= lStarSlot.ElementCount) then
         Exit;
 
-      var lMod := lStarSlot.Elements[lModIndex] as IwbContainerElementRef;
-      var lModName := lMod[1].EditValue;
+      lMod := lStarSlot.Elements[lModIndex] as IwbContainerElementRef;
+      lModName := lMod[1].EditValue;
       if lModName = '' then
         Exit;
 
       case aType of
         ctCheck: Exit('');
         ctToSummary: begin
-          var lOMOD: IwbMainRecord;
           if Supports(lMod.Elements[1].LinksTo, IwbMainRecord, lOMOD) then begin
             lModName := lOMOD.EditorID;
             if lModName = '' then
