@@ -72,9 +72,11 @@ begin
 end;}
 
 function TStringList_IndexStr(const AText: String; const AValues: TStringList): Integer;
+var
+  i: Integer;
 begin
   Result := -1;
-  for var i := 0 to Pred(AValues.Count) do
+  for i := 0 to Pred(AValues.Count) do
     if SameStr(AText, AValues[i]) then
     begin
       Result := i;
@@ -319,34 +321,48 @@ begin
 end;
 
 procedure JvInterpreter_Lerp(var Value: Variant; Args: TJvInterpreterArgs);
+var
+  a: Double;
+  b: Double;
+  t: Double;
 begin
-  var a := Args.Values[0];
-  var b := Args.Values[1];
-  var t := Args.Values[2];
+  a := Args.Values[0];
+  b := Args.Values[1];
+  t := Args.Values[2];
 
   Value := a + (b - a) * EnsureRange(t, 0.000000, 1.000000);
 end;
 
 procedure JvInterpreter_LerpInverse(var Value: Variant; Args: TJvInterpreterArgs);
+var
+  a: Double;
+  b: Double;
+  v: Double;
+  x: Double;
+  y: Double;
 begin
-  var a := Args.Values[0];
-  var b := Args.Values[1];
-  var v := Args.Values[2];
+  a := Args.Values[0];
+  b := Args.Values[1];
+  v := Args.Values[2];
 
   if SameValue(a, b) then
     Value := 0.000000
   else begin
-    var x := v - a;
-    var y := b - a;
+    x := v - a;
+    y := b - a;
     Value := EnsureRange(x / y, 0.000000, 1.000000);
   end;
 end;
 
 procedure JvInterpreter_LerpUnclamped(var Value: Variant; Args: TJvInterpreterArgs);
+var
+  a: Double;
+  b: Double;
+  t: Double;
 begin
-  var a := Args.Values[0];
-  var b := Args.Values[1];
-  var t := Args.Values[2];
+  a := Args.Values[0];
+  b := Args.Values[1];
+  t := Args.Values[2];
 
   Value := a + (b - a) * t;
 end;
@@ -428,33 +444,41 @@ end;
 { TStringList }
 
 procedure StringSetOp_Difference(const aSetListA: TStringList; const aSetListB: TStringList; const aLH: TStringList);
+var
+  i: Integer;
 begin
-  for var i := 0 to Pred(aSetListA.Count) do
+  for i := 0 to Pred(aSetListA.Count) do
     if aSetListB.IndexOf(aSetListA[i]) = -1 then
       aLH.Append(aSetListA[i]);
 end;
 
 procedure StringSetOp_Intersection(const aSetListA: TStringList; const aSetListB: TStringList; const aLH: TStringList);
+var
+  i: Integer;
 begin
-  for var i := 0 to Pred(aSetListA.Count) do
+  for i := 0 to Pred(aSetListA.Count) do
     if aSetListB.IndexOf(aSetListA[i]) > -1 then
       aLH.Append(aSetListA[i]);
 end;
 
 procedure StringSetOp_SymmetricDifference(const aSetListA: TStringList; const aSetListB: TStringList; const aLH: TStringList);
+var
+  Intersection: TStringList;
+  i: Integer;
+  j: Integer;
 begin
   aLH.AddStrings(aSetListA);
   aLH.AddStrings(aSetListB);
 
-  var Intersection: TStringList := TStringList.Create;
+  Intersection := TStringList.Create;
 
-  for var i := 0 to Pred(aSetListA.Count) do
+  for i := 0 to Pred(aSetListA.Count) do
     if aSetListB.IndexOf(aSetListA[i]) > -1 then
       Intersection.Append(aSetListA[i]);
 
-  for var i := 0 to Pred(Intersection.Count) do
+  for i := 0 to Pred(Intersection.Count) do
   begin
-    var j := aLH.IndexOf(Intersection[i]);
+    j := aLH.IndexOf(Intersection[i]);
     if j > -1 then
       aLH.Delete(j);
   end;
@@ -472,18 +496,21 @@ type
    TSetOperation = (D, I, S, U);
 
 procedure StringSetOp(const aOperation: TSetOperation; const aLH: TStringList; const aRH: TStringList);
+var
+  SetListA: TStringList;
+  SetListB: TStringList;
 begin
   { Executes set operations on TStringList objects and modifies aListA in-place }
 
   aLH.Duplicates := dupIgnore;
   aLH.Sorted := True;
 
-  var SetListA: TStringList := TStringList.Create;
+  SetListA := TStringList.Create;
   SetListA.Duplicates := dupIgnore;
   SetListA.Sorted := True;
   SetListA.AddStrings(aLH);
 
-  var SetListB: TStringList := TStringList.Create;
+  SetListB := TStringList.Create;
   SetListB.Duplicates := dupIgnore;
   SetListB.Sorted := True;
   SetListB.AddStrings(aRH);

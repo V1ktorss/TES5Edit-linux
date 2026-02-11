@@ -82,6 +82,7 @@ var
   Silent              : Boolean;
   Node                : PVirtualNode;
   NodeData            : PNavNodeData;
+  Nodes               : TNodeArray;
 begin
   with frmMain do
   if SameText(Identifier, 'wbGameMode') and (Args.Count = 0) then begin
@@ -514,10 +515,10 @@ begin
   else if SameText(Identifier, 'wbSelectedFilesToFileNames') then begin
     if (Args.Count = 1) then
     begin
-      var Nodes: TNodeArray := vstNav.GetSortedSelection(True);
+      Nodes := vstNav.GetSortedSelection(True);
 
       for i := Low(Nodes) to High(Nodes) do begin
-        var NodeData: PNavNodeData := vstNav.GetNodeData(Nodes[i]);
+        NodeData := vstNav.GetNodeData(Nodes[i]);
         if not Assigned(NodeData) then
           Continue;
         Element := NodeData.Element;
