@@ -1559,7 +1559,7 @@ begin
       if hasScriptHostSwitch then
         raise
       else
-        WriteLn(ErrOutput, '[headless] ScriptHost "' + s + '" unavailable, continuing without scripting support.');
+        ;
   end;
 {$ELSE}
   TxeScriptHost.Init(s);

@@ -27,6 +27,7 @@ This document tracks what is already done for the native Linux path and what com
   - keeps `xedit-core -dummy` stable for headless smoke checks
   - FPC branch now completes through `wbWorldVisibleCellsData` without early `DefineCommon` exit
   - `wbDATAPosRot` uses a headless FPC fallback (`DATA` byte-array) to avoid `wbVec3PosRot` init crash
+  - default headless startup no longer emits a script-host warning unless `-scripthost` is explicitly requested
 
 ## Completed Milestones
 
