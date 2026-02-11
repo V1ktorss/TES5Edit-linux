@@ -15602,15 +15602,18 @@ begin
     wbStruct(XCOL, 'Collision', [
     { 0} wbInteger('Collision Layer', itU32)
            .SetLinksToCallback(function(const aElement: IwbElement): IwbElement
+           var
+             lCollisionLayerIndex: Variant;
+             lFile: IwbFile;
            begin
              Result := nil;
              if not Assigned(aElement) then
                Exit;
-             var lCollisionLayerIndex := aElement.NativeValue;
+             lCollisionLayerIndex := aElement.NativeValue;
              if not VarIsOrdinal(lCollisionLayerIndex) then
                Exit;
 
-             var lFile := aElement._File;
+             lFile := aElement._File;
              if not Assigned(lFile) then
                Exit;
 
