@@ -269,6 +269,12 @@ var
   wbQUSTReferenceAliasFlags: IwbSubRecordDef;
   wbRACEDAT2UnknownStruct: IwbStructDef;
   wbStaticPart: IwbSubRecordStructDef;
+  wbStarSlot: IwbIntegerDef;
+  wbArrayShouldIncludeStarSlotMatchesMemoryOrder: TwbShouldIncludeCallback;
+  wbLGDIStarSlotArray: function(aSignature: TwbSignature; const aElement: IwbValueDef; aSorted: Boolean): IwbRecordMemberDef;
+  wbLGDIFiltersToStr: TwbIntToStrCallback;
+  wbStrToLGDIFilter: TwbStrToIntCallback;
+  wbLGDIFilter: function(aSignature: TwbSignature; const aName: string): IwbRecordMemberDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -16937,7 +16943,7 @@ begin
     )
   ]);
 
-  var wbStarSlot :=
+  wbStarSlot :=
     wbInteger('Star Slot', itU32, wbLGDIStarSlot)
     .SetSetToDefault(function(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Boolean
       var
@@ -16961,7 +16967,7 @@ begin
     .SetDontShow(wbNeverShow)
     .IncludeFlag(dfInternalEditOnly);
 
-  var wbArrayShouldIncludeStarSlotMatchesMemoryOrder: TwbShouldIncludeCallback :=
+  wbArrayShouldIncludeStarSlotMatchesMemoryOrder :=
     function(aBasePtr: Pointer; aEndPtr: Pointer; const aArray: IwbElement): Boolean
       begin
         if not Assigned(aArray) or
@@ -16974,7 +16980,7 @@ begin
         Result := PInteger(aBasePtr)^ = aArray.MemoryOrder;
       end;
 
-  var wbLGDIStarSlotArray :=
+  wbLGDIStarSlotArray :=
     function(aSignature: TwbSignature; const aElement: IwbValueDef; aSorted: Boolean): IwbRecordMemberDef
     var
       lInnerArray: IwbArrayDef;
@@ -17006,7 +17012,7 @@ begin
         .IncludeFlag(dfNoMove)
     end;
 
-  var wbLGDIFiltersToStr: TwbIntToStrCallback :=
+  wbLGDIFiltersToStr :=
     function(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string
     var
       lFilter: IwbContainerElementRef;
@@ -17116,7 +17122,7 @@ begin
     end;
 
 
-  var wbStrToLGDIFilter: TwbStrToIntCallback :=
+  wbStrToLGDIFilter :=
     function(const aString: string; const aElement: IwbElement): Int64
     var
       i    : Integer;
@@ -17131,7 +17137,7 @@ begin
       Result := StrToIntDef(s, 0);
     end;
 
-  var wbLGDIFilter :=
+  wbLGDIFilter :=
     function(aSignature: TwbSignature; const aName: string): IwbRecordMemberDef
     begin
       Result :=
