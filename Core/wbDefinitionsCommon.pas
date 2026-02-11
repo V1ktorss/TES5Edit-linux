@@ -7920,8 +7920,7 @@ begin
 {$ENDIF}
 {$IFDEF FPC}
 {$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbLandLayers.');
-  Exit;
+  WriteLn(ErrOutput, '[headless] DefineCommon: passed wbLandLayers.');
 {$ENDIF}
 {$ENDIF}
 
@@ -8012,6 +8011,12 @@ Can't properly represent that with current record definition methods.
           wbUnknown(ANAM),
           nil)
       ]));
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbRegionAreas.');
+  Exit;
+{$ENDIF}
 {$ENDIF}
 
 {>>>Weather Common Defs<<<}
