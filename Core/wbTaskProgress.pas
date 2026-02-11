@@ -12,7 +12,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls, ExtCtrls, SyncObjs;
+  Dialogs, StdCtrls, ComCtrls, ExtCtrls, SyncObjs, wbPlatform;
 
 const
   WM_PROGRESS_UPDATE = WM_USER;
@@ -315,7 +315,7 @@ begin
 
   // poll threads until all have finished
   repeat
-    Sleep(200);
+    wbSleepMs(200);
     j := Poll;
 
     // if Cancel is pressed or exception occured
