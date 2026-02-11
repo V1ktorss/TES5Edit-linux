@@ -598,19 +598,23 @@ end;
 procedure IwbElement_TemplateAssign(var Value: Variant; Args: TJvInterpreterArgs);
 var
   Element: IwbElement;
+  TemplateName: string;
+  TargetIndex: Integer;
+  lTemplates: TwbTemplateElements;
+  i: Integer;
+  TemplateElement: IwbTemplateElement;
+  NewElement: IwbElement;
 begin
   if Supports(IInterface(Args.Values[0]), IwbElement, Element) then begin
-    var TemplateName := String(Args.Values[1]);
+    TemplateName := String(Args.Values[1]);
+    TargetIndex := High(Integer);
+    lTemplates := Element.GetAssignTemplates(TargetIndex);
 
-    var TargetIndex := High(Integer);
-
-    var lTemplates := Element.GetAssignTemplates(TargetIndex);
-
-    for var i := Low(lTemplates) to High(lTemplates) do begin
-      var TemplateElement: IwbTemplateElement := lTemplates[i];
+    for i := Low(lTemplates) to High(lTemplates) do begin
+      TemplateElement := lTemplates[i];
 
       if SameText(TemplateName, TemplateElement.Name) then begin
-        var NewElement: IwbElement := Element.Assign(TargetIndex, TemplateElement, False);
+        NewElement := Element.Assign(TargetIndex, TemplateElement, False);
 
         if Assigned(NewElement) then
           NewElement.SetToDefaultIfAsCreatedEmpty;
@@ -679,13 +683,16 @@ end;
 procedure IwbElement_ReportRequiredMasters(var Value: Variant; Args: TJvInterpreterArgs);
 var
   Element: IwbElement;
+  lStrings: TStrings;
+  lMasters: TwbFilesSet;
+  lFile: IwbFile;
 begin
   if Supports(IInterface(Args.Values[0]), IwbElement, Element) then begin
-    var lStrings := TStrings(V2O(Args.Values[1]));
-    var lMasters := TwbFilesSet.Create;
+    lStrings := TStrings(V2O(Args.Values[1]));
+    lMasters := TwbFilesSet.Create;
     try
       Element.ReportRequiredMasters(lMasters, Args.Values[2], Args.Values[3]);
-      for var lFile in lMasters do
+      for lFile in lMasters do
         lStrings.AddObject(lFile.FileName, Pointer(lFile));
     finally
       lMasters.Free;
@@ -744,11 +751,13 @@ end;
 procedure IwbElement_AssignTemplateCount(var Value: Variant; Args: TJvInterpreterArgs);
 var
   Element: IwbElement;
+  elementIdx: Integer;
+  templates: TwbTemplateElements;
 begin
-  var elementIdx := Integer(Args.Values[1]);
+  elementIdx := Integer(Args.Values[1]);
   if Supports(IInterface(Args.Values[0]), IwbElement, Element) then
   begin
-    var templates := Element.GetAssignTemplates(elementIdx);
+    templates := Element.GetAssignTemplates(elementIdx);
     Value := Length(templates);
   end;
 end;
@@ -756,12 +765,15 @@ end;
 procedure IwbElement_AssignTemplateByIndex(var Value: Variant; Args: TJvInterpreterArgs);
 var
   Element: IwbElement;
+  elementIdx: Integer;
+  templateIdx: Integer;
+  templates: TwbTemplateElements;
 begin
-  var elementIdx := Integer(Args.Values[1]);
-  var templateIdx := Integer(Args.Values[2]);
+  elementIdx := Integer(Args.Values[1]);
+  templateIdx := Integer(Args.Values[2]);
   if Supports(IInterface(Args.Values[0]), IwbElement, Element) then
   begin
-    var templates := Element.GetAssignTemplates(elementIdx);
+    templates := Element.GetAssignTemplates(elementIdx);
 
     if (templateIdx >= Low(templates)) and (templateIdx <= High(templates)) then
       Value := IInterface(templates[templateIdx]);
@@ -771,16 +783,21 @@ end;
 procedure IwbElement_AssignTemplateByName(var Value: Variant; Args: TJvInterpreterArgs);
 var
   Element: IwbElement;
+  elementIdx: Integer;
+  templateName: string;
+  templates: TwbTemplateElements;
+  i: Integer;
+  tEl: IwbTemplateElement;
 begin
-  var elementIdx := Integer(Args.Values[1]);
-  var templateName := String(Args.Values[2]);
+  elementIdx := Integer(Args.Values[1]);
+  templateName := String(Args.Values[2]);
   if Supports(IInterface(Args.Values[0]), IwbElement, Element) then
   begin
-    var templates := Element.GetAssignTemplates(elementIdx);
+    templates := Element.GetAssignTemplates(elementIdx);
 
-    for var i := Low(templates) to High(templates) do
+    for i := Low(templates) to High(templates) do
     begin
-      var tEl := templates[i];
+      tEl := templates[i];
       if SameText(tEl.Name, templateName) then
       begin
         Value := IInterface(tEl);
