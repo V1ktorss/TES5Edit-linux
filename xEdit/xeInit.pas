@@ -1520,7 +1520,7 @@ begin
         'Define stage failed (game=' + IntToStr(Integer(wbGameMode)) +
         ', source=' + IntToStr(Integer(wbToolSource)) + '): [' +
         E.ClassName + '] ' + E.Message + ' @ ' +
-        IntToHex(PtrUInt(ExceptAddr), SizeOf(Pointer) * 2)
+        Format('%p', [ExceptAddr])
       );
       raise;
     end;
@@ -1732,7 +1732,7 @@ begin
       if not (E is EAbort) then
         xeShowMessage(
           'Initialization failed: [' + E.ClassName + '] ' + E.Message +
-          ' @ ' + IntToHex(PtrUInt(ExceptAddr), SizeOf(Pointer) * 2)
+          ' @ ' + Format('%p', [ExceptAddr])
         );
     end;
   end;
