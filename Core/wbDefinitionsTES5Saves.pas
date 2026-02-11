@@ -2603,16 +2603,13 @@ var
   wbChangedREFR           : IwbStructDef;
   wbChangedActor          : IwbStructDef;
   wbChangedCharacter      : IwbStructDef;
-  wbChangedProjectile     : IwbStructDef;
   wbChangedExtraData      : IwbArrayDef;
   wbChangedInventory      : IwbArrayDef;
   wbPosition              : IwbArrayDef;
   wbRotation              : IwbArrayDef;
 
   wbUnionCHANGE_FORM_FLAGS : IwbUnionDef;
-  wbUnionCHANGE_REFR_MOVE : IwbUnionDef;
   wbUnionCHANGE_REFR_HAVOK_MOVE : IwbUnionDef;
-  wbUnionCHANGE_REFR_CELL_CHANGED : IwbUnionDef;
   wbUnionCHANGE_REFR_SCALE : IwbUnionDef;
   wbUnionCHANGE_REFR_INVENTORY : IwbUnionDef;
 //  wbUnionCHANGE_REFR_EXTRA_OWNERSHIP : IwbUnionDef;
@@ -2622,30 +2619,19 @@ var
 //  wbUnionCHANGE_OBJECT_EXTRA_LOCK : IwbUnionDef;
 //  wbUnionCHANGE_OBJECT_EMPTY : IwbUnionDef;
 //  wbUnionCHANGE_OBJECT_OPEN_DEFAULT_STATE : IwbUnionDef;
-  wbUnionCHANGE_OBJECT_OPEN_STATE : IwbUnionDef;
 //  wbUnionCHANGE_REFR_PROMOTED : IwbUnionDef;
 //  wbUnionCHANGE_REFR_EXTRA_ACTIVATING_CHILDREN : IwbUnionDef;
 //  wbUnionCHANGE_REFR_LEVELED_INVENTORY : IwbUnionDef;
   wbUnionCHANGE_REFR_ANIMATION : IwbUnionDef;
 //  wbUnionCHANGE_REFR_EXTRA_ENCOUNTER_ZONE : IwbUnionDef;
-  wbUnionCHANGE_REFR_EXTRA_CREATED_ONLY : IwbUnionDef;
 //  wbUnionCHANGE_REFR_EXTRA_GAME_ONLY : IwbUnionDef;
-  wbUnionCHANGE_ACTOR_LIFESTATE : IwbUnionDef;
 //  wbUnionCHANGE_ACTOR_EXTRA_PACKAGE_DATA : IwbUnionDef;
 //  wbUnionCHANGE_ACTOR_EXTRA_MERCHANT_CONTAINER : IwbUnionDef;
 //  wbUnionCHANGE_ACTOR_EXTRA_DISMEMBERED_LIMBS : IwbUnionDef;
 //  wbUnionCHANGE_ACTOR_LEVELED_ACTOR : IwbUnionDef;
-  wbUnionCHANGE_ACTOR_DISPOSITION_MODIFIERS : IwbUnionDef;
-  wbUnionCHANGE_ACTOR_TEMP_MODIFIERS : IwbUnionDef;
-  wbUnionCHANGE_ACTOR_DAMAGE_MODIFIERS : IwbUnionDef;
-  wbUnionCHANGE_ACTOR_OVERRIDE_MODIFIERS : IwbUnionDef;
-  wbUnionCHANGE_ACTOR_PERMANENT_MODIFIERS : IwbUnionDef;
   wbUnionCHANGE_CELL_FLAGS : IwbUnionDef;
   wbUnionCHANGE_CELL_FULLNAME : IwbUnionDef;
   wbUnionCHANGE_CELL_OWNERSHIP : IwbUnionDef;
-  wbUnionCHANGE_CELL_EXTERIOR_SHORT : IwbUnionDef;
-  wbUnionCHANGE_CELL_EXTERIOR_CHAR : IwbUnionDef;
-  wbUnionCHANGE_CELL_DETACHTIME : IwbUnionDef;
   wbUnionCHANGE_CELL_SEENDATA : IwbUnionDef;
   wbUnionCHANGE_TOPIC_SAIDONCE : IwbUnionDef;
   wbUnionCHANGE_QUEST_FLAGS : IwbUnionDef;
@@ -2657,7 +2643,6 @@ var
   wbUnionCHANGE_QUEST_SCRIPT : IwbUnionDef;
   wbUnionCHANGE_QUEST_STAGES : IwbUnionDef;
   wbUnionCHANGE_ACTOR_BASE_DATA : IwbUnionDef;
-  wbUnionCHANGE_ACTOR_BASE_ATTRIBUTES : IwbUnionDef;
   wbUnionCHANGE_ACTOR_BASE_AIDATA : IwbUnionDef;
   wbUnionCHANGE_ACTOR_BASE_SPELLLIST : IwbUnionDef;
   wbUnionCHANGE_ACTOR_BASE_FULLNAME : IwbUnionDef;
@@ -5358,14 +5343,12 @@ begin
     ])
   ]);
 
-  wbUnionCHANGE_REFR_MOVE := wbUnion('Moved', ChangedFlag01Decider, [wbNull, wbNull]);
   wbUnionCHANGE_REFR_HAVOK_MOVE := wbUnion('Havok Moved', ChangedFlag02Decider, [wbNull,
     wbStruct('Havok Moved SubBuffer', [
       wbInteger('Length', itU6to30),
       wbByteArray('Data', ChangedFormHavokMovedSubBufferCounter)
     ])
   ]);
-  wbUnionCHANGE_REFR_CELL_CHANGED := wbUnion('Cell Changed', ChangedFlag03Decider, [wbNull, wbNull]);
 
   wbUnionCHANGE_REFR_SCALE := wbUnion('Scale', ChangedFlag04Decider, [wbNull,
     wbUnion('Change Scale', SaveFormVersion55Decider, [
@@ -5384,7 +5367,6 @@ begin
 
 // no actual data  wbUnionCHANGE_OBJECT_EMPTY := wbUnion('Empty', ChangedFlag21Decider, [wbNull, wbNull]);
 // no actual data  wbUnionCHANGE_OBJECT_OPEN_DEFAULT_STATE := wbUnion('Open Default State', ChangedFlag22Decider, [wbNull, wbNull]);
-  wbUnionCHANGE_OBJECT_OPEN_STATE := wbUnion('Open State', ChangedFlag23Decider, [wbNull, wbNull]);
 
 // no actual data  wbUnionCHANGE_REFR_PROMOTED := wbUnion('Promoted', ChangedFlag25Decider, [wbNull, wbNull]);
 // included in ExtraDataList  wbUnionCHANGE_REFR_EXTRA_ACTIVATING_CHILDREN := wbUnion('Activating Children', ChangedFlag26Decider, [wbNull, wbNull]);
@@ -5398,22 +5380,15 @@ begin
 
 // included in ExtraDataList  wbUnionCHANGE_REFR_EXTRA_ENCOUNTER_ZONE := wbUnion('Enc Zone Extra', ChangedFlag29Decider, [wbNull, wbNull]);
 
-  wbUnionCHANGE_REFR_EXTRA_CREATED_ONLY := wbUnion('Created Only Extra', ChangedFlag30Decider, [wbNull, wbNull]);
 
 // included in ExtraDataList  wbUnionCHANGE_REFR_EXTRA_GAME_ONLY := wbUnion('Game Only Extra', ChangedFlag31Decider, [wbNull, wbNull]);
 
-  wbUnionCHANGE_ACTOR_LIFESTATE := wbUnion('Life State', ChangedFlag10Decider, [wbNull, wbNull]);
 
 // included in ExtraDataList  wbUnionCHANGE_ACTOR_EXTRA_PACKAGE_DATA := wbUnion('Package Data Extra', ChangedFlag11Decider, [wbNull, wbNull]);
 // included in ExtraDataList  wbUnionCHANGE_ACTOR_EXTRA_MERCHANT_CONTAINER := wbUnion('Merchant Container', ChangedFlag12Decider, [wbNull, wbNull]);
 // included in ExtraDataList  wbUnionCHANGE_ACTOR_EXTRA_DISMEMBERED_LIMBS := wbUnion('Dismembered Limbs', ChangedFlag17Decider, [wbNull, wbNull]);
 // included in ExtraDataList  wbUnionCHANGE_ACTOR_LEVELED_ACTOR := wbUnion('Leveled Actor', ChangedFlag18Decider, [wbNull, wbNull]);
 
-  wbUnionCHANGE_ACTOR_DISPOSITION_MODIFIERS := wbUnion('Disp Modifiers', ChangedFlag19Decider, [wbNull, wbNull]);
-  wbUnionCHANGE_ACTOR_TEMP_MODIFIERS := wbUnion('Temp Modifiers', ChangedFlag20Decider, [wbNull, wbNull]);
-  wbUnionCHANGE_ACTOR_DAMAGE_MODIFIERS := wbUnion('Damage Modifiers', ChangedFlag21Decider, [wbNull, wbNull]);
-  wbUnionCHANGE_ACTOR_OVERRIDE_MODIFIERS := wbUnion('Override Modifiers', ChangedFlag22Decider, [wbNull, wbNull]);
-  wbUnionCHANGE_ACTOR_PERMANENT_MODIFIERS := wbUnion('Permanent Modifiers', ChangedFlag23Decider, [wbNull, wbNull]);
 
   wbUnionCHANGE_CELL_FLAGS := wbUnion('Flags', ChangedFlag01Decider, [wbNull, wbInteger('Flags', itU16)]);
 
@@ -5421,9 +5396,6 @@ begin
 
   wbUnionCHANGE_CELL_OWNERSHIP := wbUnion('Ownership', ChangedFlag03Decider, [wbNull, wbRefID('Change Owner')]);
 
-  wbUnionCHANGE_CELL_EXTERIOR_SHORT := wbUnion('Exterior Short', ChangedFlag28Decider, [wbNull, wbNull]);
-  wbUnionCHANGE_CELL_EXTERIOR_CHAR := wbUnion('Exterior Char', ChangedFlag29Decider, [wbNull, wbNull]);
-  wbUnionCHANGE_CELL_DETACHTIME := wbUnion('Detach Time', ChangedFlag30Decider, [wbNull, wbNull]);
 
   wbUnionCHANGE_CELL_SEENDATA := wbUnion('Seen Data', ChangedFlag31Decider, [wbNull,
     wbUnion('Change Seen Data', ChangedFormCellIsInteriorDecider, [
@@ -5531,8 +5503,6 @@ begin
   ]);
 
   wbUnionCHANGE_ACTOR_BASE_DATA := wbUnion('Base Data', ChangedFlag01Decider, [wbNull, wbByteArray('Change Actor Base Data ACBS', 24)]);
-
-  wbUnionCHANGE_ACTOR_BASE_ATTRIBUTES := wbUnion('Attributes', ChangedFlag02Decider, [wbNull, wbNull]);
 
   wbUnionCHANGE_ACTOR_BASE_AIDATA := wbUnion('AI Data', ChangedFlag03Decider, [wbNull, wbByteArray('Change Actor AI Data AIDT', 20)]);
 
@@ -5831,63 +5801,6 @@ begin
 
   wbChangedCharacter := wbStruct('Changed Character', [
     wbChangedActor
-  ]);
-
-  wbChangedProjectile := wbStruct('Changed Projectile', [
-    wbChangedREFR,
-    wbInteger('Unknown', itU32),  // 138
-    wbInteger('Unknown', itU32),  // 0FC
-    wbInteger('Unknown', itU32),  // 104
-    wbInteger('Unknown', itU32),  // 100
-    wbInteger('Unknown', itU32),  // 108
-    wbInteger('Unknown', itU32),  // 10C
-    wbInteger('Unknown', itU32),  // 110
-    wbInteger('Unknown', itU32),  // 114
-    wbInteger('Unknown', itU32),  // 118
-    wbRefID('Weapon'),            // 124
-    wbRefID('Ammo'),              // 128
-    wbRefID('Reference'),         // 0B8
-    wbRefID('Reference'),         // 0BC
-    wbInteger('Unknown', itU32),  // 094
-    wbInteger('Unknown', itU32),  // 12C
-    wbInteger('Unknown', itU32),  // 130
-    wbStruct('Unknown', [         // 05C
-      wbFloat('Unknown'),
-      wbFloat('Unknown'),
-      wbFloat('Unknown'),
-      wbFloat('Unknown')
-    ]),
-    wbInteger('Unknown', itU32),  // 080
-    wbInteger('Unknown', itU32),  // 08C
-    wbInteger('Unknown', itU32),  // 11C
-    wbInteger('Unknown', itU32),  // 120
-    wbInteger('Unknown', itU32),  // key in some array
-    wbInteger('Has Inventory', itU8),
-    wbUnion('Inventory', ChangedFormProjectileHasInventoryDecider, [ wbNull, wbChangedInventory]), // OBC
-    wbArray('Unknown', wbStruct('Unknown', [    //
-      wbPosition,
-      wbRotation,
-      wbRefID('Material Type'),
-      wbInteger('Unknown', itU32),
-      wbInteger('Unknown', itU8),
-      wbInteger('Unknown', itU16),
-      wbInteger('Unknown', itU16),
-      wbRefID('Reference'),
-      wbInteger('Unknown', itU32),
-      wbInteger('Unknown', itU32),
-      wbInteger('Unknown', itU8)
-    ]), -254),
-    wbByteArray('Unknown', 12),   // 0A0
-    wbRefID('Explosion'),         // OE0
-    wbInteger('Unknown', itU32),  // 134
-    wbRefID('Magic Item'),        // 0E4
-    wbUnion('Unknown', SaveFormVersionGreaterThan10Decider, [
-      wbInteger('Unknown', itU32),      // 0E8
-      wbStruct('Unknown', [
-        wbInteger('Uknown', itU32),     // 0E8
-        wbRefID('Reference')            // Seems lost !
-      ])
-    ])
   ]);
 
   wbChangedFormData := wbStruct('Changed Form Data', [
