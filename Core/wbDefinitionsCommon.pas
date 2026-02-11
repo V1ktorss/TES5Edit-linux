@@ -7584,11 +7584,6 @@ begin
             ])))
       ]).SetToStr(wbFactionRelationToStr)
         .IncludeFlag(dfCollapsed, wbCollapseFactionRelations)));
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
-
   wbMDOB := wbFormID(MDOB, 'Menu Display Object');
 
   wbNextSpeaker :=
@@ -7622,10 +7617,6 @@ begin
         .IncludeFlag(dfSummaryMembersNoName)
         .IncludeFlag(dfSummaryNoSortKey)
       )).SetCountPath(CS2H);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbMagicEffectSounds :=
     wbArrayS(SNDD, 'Sounds',
@@ -7699,17 +7690,9 @@ begin
       ]).SetSummaryKeyOnValue([0, 1])
         .IncludeFlag(dfCollapsed, wbCollapseMaxHeightData));
 {$ENDIF}
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbMODT := wbModelInfo(MODT);
   wbDMDT := wbModelInfo(DMDT);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbStaticPartPlacements :=
     wbArrayS(DATA, 'Placements',
@@ -7722,10 +7705,6 @@ begin
         .IncludeFlag(dfSummaryMembersNoName)
         .IncludeFlag(dfCollapsed, wbCollapsePlacement))
     ).SetRequired;
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbINOM :=
     IwbRecordMemberDef(wbArray(INOM, 'INFO Order (Masters only)',
@@ -7733,10 +7712,6 @@ begin
     ).IncludeFlag(dfInternalEditOnly)
      .IncludeFlag(dfDontSave)
      .IncludeFlag(dfDontAssign));
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbINOA :=
     IwbRecordMemberDef(wbArray(INOA, 'INFO Order (All previous modules)',
@@ -7744,10 +7719,6 @@ begin
     ).IncludeFlag(dfInternalEditOnly)
      .IncludeFlag(dfDontSave)
      .IncludeFlag(dfDontAssign));
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbQSTI :=
     wbRArrayS('Associated Quests',
@@ -7756,10 +7727,6 @@ begin
   wbQSTR :=
     wbRArrayS('Removed Quests',
       wbFormIDCkNoReach(QSTR, 'Removed Quest', [QUST], False, cpBenign));
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 {>>>Multiple Record Defs<<<}
   //TES4,FO3,FNV
   wbFaceGen :=
