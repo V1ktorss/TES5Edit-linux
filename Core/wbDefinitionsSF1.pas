@@ -122,6 +122,10 @@ var
   wbPronounEnum: IwbEnumDef;
   wbLearnMethodEnum: IwbEnumDef;
   wbPhotoModeEnum: IwbEnumDef;
+  wbObjectModPropertiesWEAPEnum: IwbEnumDef;
+  wbObjectModPropertiesARMOEnum: IwbEnumDef;
+  wbObjectModPropertiesNPCEnum: IwbEnumDef;
+  wbObjectModPropertiesEnum: IwbEnumDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -3810,20 +3814,20 @@ begin
     {2} 'Filter'
   ]);
 
-  var wbObjectModPropertiesWEAPEnum := wbEnum([],[
+  wbObjectModPropertiesWEAPEnum := wbEnum([],[
                  28, 'Physical Weapon Damage',                    //Applied directly to WEAP records
                  29, 'Unknown 29',                    //Applied directly to WEAP records
                  71, 'Damage Type Value',                    //Applied directly to WEAP records
                  85, 'Layered Material Swap 85'                    //Applied directly to WEAP records
   ]);
-  var wbObjectModPropertiesARMOEnum := wbEnum([],[
+  wbObjectModPropertiesARMOEnum := wbEnum([],[
                  14, 'Layered Material Swap 14'      //applied directly to ARMO records
   ]);
-  var wbObjectModPropertiesNPCEnum := wbEnum([],[
+  wbObjectModPropertiesNPCEnum := wbEnum([],[
                   6, 'Layered Material Swap 6'       //Applied directly to NPC_ records
   ]);
 
-  var wbObjectModPropertiesEnum := wbEnum([],[
+  wbObjectModPropertiesEnum := wbEnum([],[
     Sig2Int('AACT'), 'Armor - Actor Value',
     Sig2Int('ADMG'), 'Armor - Damage Resistance',
     Sig2Int('AENC'), 'Armor - Enchantment',
