@@ -158,6 +158,9 @@ This document tracks what is already done for the native Linux path and what com
   - added `wbPlatform` class aliases for `TCustomIniFile`/`TIniFile`/`TMemIniFile` in `xejviScriptAdapterMisc` to support namespace-neutral script migration
   - extended readiness audit core blocker patterns to flag regressions to global API `SendMessage(...)` / `PostMessage(...)` usage (while allowing method calls like `Self.PostMessage(...)`)
   - extended readiness audit core blocker patterns to also catch global API `MessageBox(...)`, `GetKeyState(...)`, `ShellExecute(...)`, and `CreateProcess(...)` regressions
+  - replaced direct `GetKeyState` usage in `Core/wbHelpers.pas` console-capture terminate checks with `wbPlatform.wbIsVirtualKeyPressed(vkEscape)`
+  - removed unused `Windows` unit import from `Core/wbLOD.pas`
+  - replaced global `PostMessage(...)` calls in `Core/wbTaskProgress.pas` with `Self.PostMessage(...)`
   - updated readiness audit to split core blockers (WinAPI/Registry/Shell) from style-only namespace usage for clearer Linux-port tracking
   - replaced remaining `Vcl.Styles.*` namespace usages with `Styles.*` equivalents across key forms; readiness audit now reports zero core blockers and zero style-namespace matches
   - added readiness gate script `linux/native-port/check-xedit-readiness.sh` and CI workflow `.github/workflows/xedit-readiness-ci.yml` to enforce zero core blockers on push/PR
