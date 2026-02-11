@@ -7625,12 +7625,6 @@ begin
         .IncludeFlag(dfSummaryMembersNoName)
         .IncludeFlag(dfSummaryNoSortKey)
       )).SetCountPath(CS2H);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbActorSounds.');
-  Exit;
-{$ENDIF}
-{$ENDIF}
 
   wbMagicEffectSounds :=
     wbArrayS(SNDD, 'Sounds',
@@ -7688,6 +7682,12 @@ begin
     )).SetRequired;
 
   wbXLOD := wbArray(XLOD, 'Distant LOD Data', wbFloat('Unknown'), 3);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbXLOD.');
+  Exit;
+{$ENDIF}
+{$ENDIF}
 {$IFDEF FPC}
   wbMHDTCELL := wbByteArray(MHDT, 'Max Height Data');
 {$ELSE}
