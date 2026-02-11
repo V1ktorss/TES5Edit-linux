@@ -269,7 +269,7 @@ begin
 
   // Succ() proactive progress update to 100% fill progress bar
   // for the last objects in queue
-  PostMessage(Handle, WM_PROGRESS_UPDATE, Succ(CurIndex) - fLowIndex, 0);
+  Self.PostMessage(WM_PROGRESS_UPDATE, Succ(CurIndex) - fLowIndex, 0);
 
   try
     fProcessProc(CurIndex);
@@ -334,14 +334,14 @@ begin
 
   // do not autoclose window if error has occured
   if fExceptionMessage <> '' then begin
-    PostMessage(Handle, WM_PROGRESS_ERROR, 0, 0);
+    Self.PostMessage(WM_PROGRESS_ERROR, 0, 0);
     ProgressBar.State := pbsError;
     // Cancel button will close the window
     fError := True;
   end
   else begin
     // close progress window
-    PostMessage(Handle, WM_CLOSE, 0, 0);
+    Self.PostMessage(WM_CLOSE, 0, 0);
 
     if fCancel then
       ModalResult := mrCancel
