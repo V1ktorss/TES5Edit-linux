@@ -269,6 +269,11 @@ var
   wbQUSTReferenceAliasFlags: IwbSubRecordDef;
   wbRACEDAT2UnknownStruct: IwbStructDef;
   wbStaticPart: IwbSubRecordStructDef;
+  wbBlendOperationEnum: IwbEnumDef;
+  wbTintTemplateGroups: function(const aName: string): IwbSubRecordArrayDef;
+  wbMorphGroups: function(const aName: string): IwbSubRecordArrayDef;
+  wbFaceMorphs: function(const aName: string): IwbSubRecordArrayDef;
+  wbUNAMs: IwbSubRecordArrayDef;
   wbStarSlot: IwbIntegerDef;
   wbArrayShouldIncludeStarSlotMatchesMemoryOrder: TwbShouldIncludeCallback;
   wbLGDIStarSlotArray: function(aSignature: TwbSignature; const aElement: IwbValueDef; aSorted: Boolean): IwbRecordMemberDef;
@@ -14337,10 +14342,8 @@ begin
     {0x8000} 'Unknown 16'
   ]); // // CK has no facility to set or view these flags [13, 14, 15, 16] appears to be garbage data leftover from memory re-use and isn't cleared or read by CK
 
-  var wbBlendOperationEnum: IwbEnumDef;
-
-  var wbTintTemplateGroups :=
-  function(const aName: string): IwbSubRecordArrayDef
+  wbTintTemplateGroups :=
+    function(const aName: string): IwbSubRecordArrayDef
   var
     wbTintTemplateGroup: IwbSubRecordStructDef;
     wbTintTemplateOption: IwbSubRecordStructDef;
@@ -14406,8 +14409,8 @@ begin
     Result := wbRArray(aName, wbTintTemplateGroup);
   end;
 
-  var wbMorphGroups :=
-  function(const aName: string): IwbSubRecordArrayDef
+  wbMorphGroups :=
+    function(const aName: string): IwbSubRecordArrayDef
   begin
     Result :=
       wbRArray(aName,
@@ -14431,8 +14434,8 @@ begin
       );
   end;
 
-  var wbFaceMorphs :=
-  function (const aName: string): IwbSubRecordArrayDef
+  wbFaceMorphs :=
+    function (const aName: string): IwbSubRecordArrayDef
   begin
     Result :=
       wbRArray(aName,
@@ -14458,7 +14461,7 @@ begin
             'Hard Light'
           ]);
 
-  var wbUNAMs := wbRArray('Data Inputs', wbRStruct('Data Input', [
+  wbUNAMs := wbRArray('Data Inputs', wbRStruct('Data Input', [
     wbInteger(UNAM, 'Index', itS8),
     wbString(BNAM, 'Name'),
     wbInteger(PNAM, 'Flags', itU32, wbFlags([
