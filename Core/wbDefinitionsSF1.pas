@@ -269,6 +269,10 @@ var
   wbQUSTReferenceAliasFlags: IwbSubRecordDef;
   wbRACEDAT2UnknownStruct: IwbStructDef;
   wbStaticPart: IwbSubRecordStructDef;
+  ReferenceRecord: procedure(aSignature: TwbSignature; const aName: string);
+  lReferenceAlias: IwbSubRecordStructDef;
+  lLocationAlias: IwbSubRecordStructDef;
+  lRefCollectionAlias: IwbSubRecordStructDef;
   wbBlendOperationEnum: IwbEnumDef;
   wbTintTemplateGroups: function(const aName: string): IwbSubRecordArrayDef;
   wbMorphGroups: function(const aName: string): IwbSubRecordArrayDef;
@@ -8322,7 +8326,7 @@ begin
       ]))
     ]));
 
-  var ReferenceRecord :=
+  ReferenceRecord :=
     procedure(aSignature: TwbSignature; const aName: string)
     begin
       {subrecords checked against Starfield.esm}
@@ -14817,7 +14821,7 @@ begin
       {0x80000000} 'Consumable'
     ]), cpNormal, True).IncludeFlag(dfCollapsed, wbCollapseFlags); *)
 
-  var lReferenceAlias :=
+  lReferenceAlias :=
     wbRStructSK([0], 'Reference Alias', [
       wbInteger(ALST, 'Reference Alias ID', itU32, nil, cpNormal, True),
       wbString(ALID, 'Alias Name', 0, cpNormal, True),
@@ -14936,7 +14940,7 @@ begin
       .IncludeFlag(dfSummaryMembersNoName)
       .IncludeFlag(dfCollapsed, wbCollapseAliases);
 
-  var lLocationAlias :=
+  lLocationAlias :=
     wbRStructSK([0], 'Location Alias', [
       wbInteger(ALLS, 'Location Alias ID', itU32),
       wbString(ALID, 'Alias Name'),
@@ -14996,7 +15000,7 @@ begin
       .IncludeFlag(dfSummaryMembersNoName)
       .IncludeFlag(dfCollapsed, wbCollapseAliases);
 
-  var lRefCollectionAlias :=
+  lRefCollectionAlias :=
     wbRStructSK([0], 'Collection Alias', [
       wbInteger(ALCS, 'Collection Alias ID', itU32),
       wbInteger(ALMI, 'Max Initial Fill Count', itU8).SetRequired,
