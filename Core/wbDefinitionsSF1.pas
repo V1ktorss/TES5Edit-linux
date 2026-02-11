@@ -112,6 +112,9 @@ var
   wbSPEDRotationSpeedAngles: function(aName: string = 'Unknown'): IwbStructDef;
   wbSPEDMovementSpeeds: function(aName: string = 'Unknown'): IwbStructDef;
   wbSPED: IwbRecordMemberDef;
+  wbLightRoundnessData: function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef;
+  wbLightAreaLightData: function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef;
+  wbLightGoboData: function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef;
   wbLongitudeDouble: IwbFloatDef;
   wbLatitudeDouble: IwbFloatDef;
   lDOBJUsesVarRecs1: TwbVarRecs;
@@ -3076,7 +3079,7 @@ begin
   var wbPUSH := wbSoundReference(PUSH, 'Pickup Sound');
   var wbPDSH := wbSoundReference(PDSH, 'Putdown Sound');
 
-  var wbLightRoundnessData := function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef
+  wbLightRoundnessData := function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef
   begin
     Result := wbStruct(aSignature, 'Roundness', [
       { 0} wbFloat('Width'),
@@ -3088,7 +3091,7 @@ begin
     ], cpNormal, aRequired);
   end;
 
-  var wbLightAreaLightData := function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef
+  wbLightAreaLightData := function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef
   begin
     Result := wbStruct(aSignature, 'Area Light', [
       { 0} wbFloat('Width'),
@@ -3108,7 +3111,7 @@ begin
   end;
 
 
-  var wbLightGoboData := function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef
+  wbLightGoboData := function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef
   begin
     Result := wbStruct(aSignature, 'Gobo Animated Properties', [
       { 0} wbFloat('Static Offset U'),
