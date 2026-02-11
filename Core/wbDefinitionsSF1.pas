@@ -12114,11 +12114,13 @@ begin
 //    wbInteger(INTV, 'Interactables Count', itU32, nil, cpNormal, True),
     wbArrayS(CNAM, 'Collides With', wbFormIDCk('Forms', [COLL]), 0, cpNormal, False)
   ]).SetBuildIndexKeys(procedure(const aMainRecord: IwbMainRecord; var aIndexKeys: TwbIndexKeys)
+     var
+       lBNAM: Variant;
      begin
        if not Assigned(aMainRecord) then
          Exit;
 
-       var lBNAM := aMainRecord.ElementNativeValues[BNAM];
+       lBNAM := aMainRecord.ElementNativeValues[BNAM];
        if not VarIsOrdinal(lBNAM) then
          Exit;
 
@@ -13126,17 +13128,20 @@ begin
     begin
       Result :=
         function(const aElement: IwbElement): Boolean
+        var
+          lContainer: IwbContainerElementRef;
+          lActiveOverridesValue: Variant;
+          lActiveOverrides: Int64;
         begin
           Result := False;
-          var lContainer: IwbContainerElementRef;
           if not Supports(aElement, IwbContainerElementRef, lContainer) then
             Exit;
 
-          var lActiveOverridesValue := lContainer.ElementNativeValues['...\ONA2\General\General\Active Overrides']; //Unknown 6 double because of union
+          lActiveOverridesValue := lContainer.ElementNativeValues['...\ONA2\General\General\Active Overrides']; //Unknown 6 double because of union
           if not VarIsOrdinal(lActiveOverridesValue) then
             Exit;
 
-          var lActiveOverrides: Int64 := lActiveOverridesValue;
+          lActiveOverrides := lActiveOverridesValue;
 
           Result := (lActiveOverrides and (1 shl aFlag)) = 0;
         end;
@@ -17244,9 +17249,8 @@ begin
   ]);
 
   // load terminal theme list from external file if present
-  var s := ExtractFilePath(ParamStr(0)) + wbAppName + 'TerminalArtThemes.txt';
-  if FileExists(s) then try
-    wbTerminalArtThemeEnum := wbEnum(TFile.ReadAllLines(s));
+  if FileExists(ExtractFilePath(ParamStr(0)) + wbAppName + 'TerminalArtThemes.txt') then try
+    wbTerminalArtThemeEnum := wbEnum(TFile.ReadAllLines(ExtractFilePath(ParamStr(0)) + wbAppName + 'TerminalArtThemes.txt'));
   except end;
 
   if not Assigned(wbTerminalArtThemeEnum) then
