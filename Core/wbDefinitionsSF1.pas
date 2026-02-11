@@ -224,6 +224,30 @@ var
   wbRaceSizeEnum: IwbEnumDef;
   wbPKDTInterruptFlags: IwbFlagsDef;
   wbBoneModAxisEnum: IwbEnumDef;
+  wbICON: IwbSubRecordDef;
+  wbMICO: IwbSubRecordDef;
+  wbPTRN: IwbSubRecordDef;
+  wbSTCP: IwbSubRecordDef;
+  wbNTRM: IwbSubRecordDef;
+  wbINRD: IwbSubRecordDef;
+  wbObjectProperty: IwbSubRecordStructDef;
+  wbPRPS: IwbSubRecordArrayDef;
+  wbCrowdProperty: IwbSubRecordStructDef;
+  wbCrowdPRPS: IwbSubRecordArrayDef;
+  wbFLTR: IwbSubRecordDef;
+  wbAPPR: IwbSubRecordArrayDef;
+  wbFTYP: IwbSubRecordArrayDef;
+  wbATTX: IwbSubRecordWithBaseStringDef;
+  wbBNAMAnimation: IwbSubRecordStructDef;
+  wbREFLOperationEnum: IwbEnumDef;
+  wbREFLBETH: IwbStructDef;
+  wbREFLSTRT: IwbStructDef;
+  wbREFLTYPE: IwbStructDef;
+  wbREFLCLAS: IwbArrayDef;
+  wbREFLOBJT: IwbStructDef;
+  wbREFLDIFF: IwbStructDef;
+  wbREFL: IwbSubRecordWithStructDef;
+  wbRDIF: IwbSubRecordWithStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -6035,37 +6059,37 @@ begin
       .SetRequired
   ]);
 
-  var wbICON := wbString(ICON, 'Inventory Image');
-  var wbMICO := wbString(MICO, 'Message Icon');
-  var wbPTRN := wbFormIDCk(PTRN, 'Preview Transform', [TRNS]);
-  var wbSTCP := wbFormIDCk(STCP, 'Animation Sound', [STAG]);
-  var wbNTRM := wbFormIDCk(NTRM, 'Native Terminal', [TMLM]);
-  var wbINRD := wbFormIDCk(INRD, 'Instance Naming', [INNR]);
+  wbICON := wbString(ICON, 'Inventory Image');
+  wbMICO := wbString(MICO, 'Message Icon');
+  wbPTRN := wbFormIDCk(PTRN, 'Preview Transform', [TRNS]);
+  wbSTCP := wbFormIDCk(STCP, 'Animation Sound', [STAG]);
+  wbNTRM := wbFormIDCk(NTRM, 'Native Terminal', [TMLM]);
+  wbINRD := wbFormIDCk(INRD, 'Instance Naming', [INNR]);
 
-  var wbObjectProperty :=
+  wbObjectProperty :=
     wbStructSK([0], 'Property', [
       wbActorValue(),
       wbFloat('Value'),
       wbFromVersion(152, wbFormIDCk('Curve Table', [CURV, NULL]))
     ]).SetToStr(wbObjectPropertyToStr).IncludeFlag(dfCollapsed, wbCollapseObjectProperties);
 
-  var wbPRPS := wbArrayS(PRPS, 'Properties', wbObjectProperty);
+  wbPRPS := wbArrayS(PRPS, 'Properties', wbObjectProperty);
 
-  var wbCrowdProperty :=
+  wbCrowdProperty :=
     wbStructSK([0], 'Actor Data', [
       wbFormIDCk('Actor', [NPC_]),
       wbFloat('Value'),
       wbFromVersion(152, wbFormIDCk('Curve Table', [CURV, NULL]))
     ]).SetToStr(wbCrowdPropertyToStr).IncludeFlag(dfCollapsed, wbCollapseObjectProperties);
 
-  var wbCrowdPRPS := wbArrayS(PRPS, 'Proportions', wbCrowdProperty);
+  wbCrowdPRPS := wbArrayS(PRPS, 'Proportions', wbCrowdProperty);
 
-  var wbFLTR := wbString(FLTR, 'Filter');
-  var wbAPPR := wbArrayS(APPR, 'Attach Parent Slots', wbFormIDCk('Keyword', [KYWD]));
-  var wbFTYP := wbArray(FTYP, 'Forced Location Ref Types', wbFormIDCk('Forced Location Ref Type', [LCRT]));
-  var wbATTX := wbLStringKC(ATTX, 'Activate Text Override', 0, cpTranslate);
+  wbFLTR := wbString(FLTR, 'Filter');
+  wbAPPR := wbArrayS(APPR, 'Attach Parent Slots', wbFormIDCk('Keyword', [KYWD]));
+  wbFTYP := wbArray(FTYP, 'Forced Location Ref Types', wbFormIDCk('Forced Location Ref Type', [LCRT]));
+  wbATTX := wbLStringKC(ATTX, 'Activate Text Override', 0, cpTranslate);
 
-  var wbBNAMAnimation := wbRStruct('Animation', [
+  wbBNAMAnimation := wbRStruct('Animation', [
     wbFormIDCk(BNAM, 'NPC Anim', [NULL, IDLE]).SetRequired,             //BNAM  uint32 // +0x28 array; repeated; allocates new item for the array; value set to item+0x28 probably formid; kicks off component-style read
     wbString(STRV, 'Animation Subgraph'),                               //STRV  string
     wbFormIDCk(VCLR, 'Anim Body Archetype', [NULL, KYWD]).SetRequired,  //VCLR  uint32 // +0x30  probably formid
@@ -6102,7 +6126,7 @@ begin
     {2} 'Blend Amount'
     ]);
 
-  var wbREFLOperationEnum :=
+  wbREFLOperationEnum :=
     wbStringEnum([
     {0} 'Add',
     {1} 'Greater',
@@ -6110,7 +6134,7 @@ begin
     {4} 'Replace'
     ]);
 
-  var wbREFLBETH :=
+  wbREFLBETH :=
     wbStruct('Reflection Header', [
       wbString('Signature', 4),
       wbInteger('Data Size', itU32),
@@ -6118,7 +6142,7 @@ begin
       wbInteger('Chunk Count', itU32)
     ]);
 
-  var wbREFLSTRT :=
+  wbREFLSTRT :=
     wbStruct('String Table', [
       wbString('Signature', 4),
       wbInteger('Data Size', itU32),
@@ -6131,7 +6155,7 @@ begin
     ]).SetSummaryKey([2])
       .IncludeFlag(dfCollapsed);
 
-  var wbREFLTYPE :=
+  wbREFLTYPE :=
     wbStruct('Type', [
       wbString('Signature', 4),
       wbInteger('Data Size', itU32),
@@ -6140,7 +6164,7 @@ begin
       .SetSummaryMemberPrefixSuffix(2, 'Class Cout: ', '')
       .IncludeFlag(dfCollapsed);
 
-  var wbREFLCLAS :=
+  wbREFLCLAS :=
     wbArray('Classes',
       wbStruct('Class', [
         wbString('Signature', 4),
@@ -6167,7 +6191,7 @@ begin
     ).SetCountPath('Type\Class Count', True)
      .IncludeFlag(dfCollapsed);
 
-  var wbREFLOBJT :=
+  wbREFLOBJT :=
     wbStruct('Object Data', [
       wbString('Signature', 4),
       wbInteger('Data Size', itU32),
@@ -6175,7 +6199,7 @@ begin
       wbUnknown
     ]);
 
-  var wbREFLDIFF :=
+  wbREFLDIFF :=
     wbStruct('Diff', [
       wbString('Signature', 4),
       wbInteger('Data Size', itU32),
@@ -6183,7 +6207,7 @@ begin
       wbUnknown
     ]);
 
-  var wbREFL :=
+  wbREFL :=
     wbStruct(REFL, 'Reflection', [
       wbREFLBETH,
       wbREFLSTRT,
@@ -6198,7 +6222,7 @@ begin
       .IncludeFlag(dfIsReflection)
       .IncludeFlag(dfNoReport);
 
-  var wbRDIF :=
+  wbRDIF :=
     wbStruct(RDIF, 'Reflection Diff', [
       wbREFLBETH,
       wbREFLSTRT,
