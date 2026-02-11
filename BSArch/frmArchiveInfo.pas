@@ -84,14 +84,17 @@ end;
 //============================================================================
 procedure TFormArchiveInfo.vtTextKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
+var
+  s: string;
+  Node: PVirtualNode;
 begin
   if (Shift = [ssCtrl]) and (Key = Ord('C')) then begin
     {if vtText.SelectedCount > 100000 then begin
       Clipboard.AsText := 'Selection is too large';
       Exit;
     end;}
-    var s: string := '';
-    for var Node in vtText.SelectedNodes do begin
+    s := '';
+    for Node in vtText.SelectedNodes do begin
       if s <> '' then s := s + #13#10;
       s := s + slText[Node.Index];
     end;
@@ -128,12 +131,15 @@ end;
 
 //============================================================================
 procedure TFormArchiveInfo.FormShow(Sender: TObject);
+var
+  bFound: Boolean;
+  i: Cardinal;
+  n: PVirtualNode;
 begin
   vtText.RootNodeCount := slText.Count;
 
   if aSearch <> '' then begin
-    var bFound := False;
-    var i: Cardinal;
+    bFound := False;
     for i := 0 to Pred(slText.Count) do
       if ContainsText(slText[i], aSearch) then begin
         bFound := True;
@@ -141,7 +147,7 @@ begin
       end;
 
     if bFound then
-      for var n in vtText.Nodes do
+      for n in vtText.Nodes do
         if n.Index = i then begin
           vtText.Selected[n] := True;
           vtText.ScrollIntoView(n, True);
