@@ -161,6 +161,9 @@ This document tracks what is already done for the native Linux path and what com
   - replaced direct `GetKeyState` usage in `Core/wbHelpers.pas` console-capture terminate checks with `wbPlatform.wbIsVirtualKeyPressed(vkEscape)`
   - removed unused `Windows` unit import from `Core/wbLOD.pas`
   - replaced global `PostMessage(...)` calls in `Core/wbTaskProgress.pas` with `Self.PostMessage(...)`
+  - removed unused `Windows` unit import from `Core/wbInterface.pas`
+  - routed `Core/wbTaskProgress.pas` polling sleep through `wbPlatform.wbSleepMs`
+  - gated `Core/wbTaskProgress.pas` taskbar COM integration under `MSWINDOWS` and replaced progress-text painting with `Canvas` drawing
   - updated readiness audit to split core blockers (WinAPI/Registry/Shell) from style-only namespace usage for clearer Linux-port tracking
   - replaced remaining `Vcl.Styles.*` namespace usages with `Styles.*` equivalents across key forms; readiness audit now reports zero core blockers and zero style-namespace matches
   - added readiness gate script `linux/native-port/check-xedit-readiness.sh` and CI workflow `.github/workflows/xedit-readiness-ci.yml` to enforce zero core blockers on push/PR
