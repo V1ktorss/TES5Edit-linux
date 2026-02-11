@@ -54,28 +54,48 @@ const
 implementation
 
 function TwbBaseCachedFileStream.ReadCardinal: Cardinal;
+var
+  lValue: Cardinal;
 begin
-  ReadBuffer(Result, SizeOf(Result));
+  lValue := 0;
+  ReadBuffer(lValue, SizeOf(lValue));
+  Result := lValue;
 end;
 
 function TwbBaseCachedFileStream.ReadInt64: Int64;
+var
+  lValue: Int64;
 begin
-  ReadBuffer(Result, SizeOf(Result));
+  lValue := 0;
+  ReadBuffer(lValue, SizeOf(lValue));
+  Result := lValue;
 end;
 
 function TwbBaseCachedFileStream.ReadUInt64: UInt64;
+var
+  lValue: UInt64;
 begin
-  ReadBuffer(Result, SizeOf(Result));
+  lValue := 0;
+  ReadBuffer(lValue, SizeOf(lValue));
+  Result := lValue;
 end;
 
 function TwbBaseCachedFileStream.ReadByte: Byte;
+var
+  lValue: Byte;
 begin
-  ReadBuffer(Result, SizeOf(Result));
+  lValue := 0;
+  ReadBuffer(lValue, SizeOf(lValue));
+  Result := lValue;
 end;
 
 function TwbBaseCachedFileStream.ReadWord: Word;
+var
+  lValue: Word;
 begin
-  ReadBuffer(Result, SizeOf(Result));
+  lValue := 0;
+  ReadBuffer(lValue, SizeOf(lValue));
+  Result := lValue;
 end;
 
 function TwbBaseCachedFileStream.ReadStringLen(Term: Boolean = True): string;
@@ -83,6 +103,8 @@ var
   Len : Byte;
   s   : AnsiString;
 begin
+  Len := 0;
+  s := '';
   ReadBuffer(Len, 1);
   SetLength(s, Len);
   if Len > 0 then begin
@@ -98,6 +120,8 @@ var
   Len : Word;
   s   : AnsiString;
 begin
+  Len := 0;
+  s := '';
   ReadBuffer(Len, 2);
   SetLength(s, Len);
   if Len > 0 then
@@ -110,6 +134,7 @@ var
   i: Integer;
   s: AnsiString;
 begin
+  s := '';
   SetLength(s, 256);
   i := 0;
   repeat
