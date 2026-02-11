@@ -15,6 +15,11 @@ This document tracks what is already done for the native Linux path and what com
   - pack selected
   - archive info dialog
   - double-click open via `Tmp` extraction
+- xEdit headless FPC build chain currently advances through:
+  - `wbDefinitionsFO4.pas` (passes)
+  - `wbDefinitionsFO76.pas` (passes)
+  - `wbDefinitionsTES3.pas` (passes after FPC-guarded definition body)
+- `xedit-core` headless build now links successfully via `linux/native-port/build-xedit-headless.sh`
 
 ## Completed Milestones
 

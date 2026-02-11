@@ -7,6 +7,7 @@ uses
 
 procedure lz4CompressStream(aSrc, aDst: TStream);
 procedure lz4BlockCompressStream(aSrc, aDst: TStream);
+function lz4DeCompressStream(aCompressed, aTarget: TStream): Integer;
 procedure lz4DecompressToUserBuf(aSrc: Pointer; aSrcSize: Integer; aDst: Pointer; aDstSize: Integer);
 procedure lz4BlockDecompressToUserBuf(aSrc: Pointer; aSrcSize: Integer; aDst: Pointer; aDstSize: Integer);
 
@@ -161,6 +162,53 @@ begin
     raise Exception.Create('LZ4 block compression failed');
   if LWritten > 0 then
     aDst.WriteBuffer(LOut[0], LWritten);
+end;
+
+function lz4DeCompressStream(aCompressed, aTarget: TStream): Integer;
+const
+  COutChunk = 4 * 1024 * 1024;
+var
+  LIn: TBytes;
+  LDctx: LZ4F_dctx;
+  LRet: LZ4F_errorCode_t;
+  LSrcPtr: PByte;
+  LSrcRem: size_t;
+  LSrcChunk: size_t;
+  LDstChunk: size_t;
+  LHint: size_t;
+  LOut: array[0..COutChunk - 1] of Byte;
+begin
+  Result := 0;
+  if aCompressed.Size = 0 then
+    Exit;
+
+  SetLength(LIn, aCompressed.Size);
+  aCompressed.Position := 0;
+  aCompressed.ReadBuffer(LIn[0], Length(LIn));
+
+  LDctx := nil;
+  LRet := LZ4F_createDecompressionContext(@LDctx, LZ4F_VERSION);
+  LZ4Check(LRet, 'LZ4 frame context create failed');
+  try
+    LSrcPtr := @LIn[0];
+    LSrcRem := Length(LIn);
+    repeat
+      LSrcChunk := LSrcRem;
+      LDstChunk := SizeOf(LOut);
+      LHint := LZ4F_decompress(LDctx, @LOut[0], @LDstChunk, LSrcPtr, @LSrcChunk, nil);
+      LZ4Check(LHint, 'LZ4 frame decompression failed');
+
+      if LDstChunk > 0 then begin
+        aTarget.WriteBuffer(LOut[0], LDstChunk);
+        Inc(Result, LDstChunk);
+      end;
+
+      Inc(LSrcPtr, LSrcChunk);
+      Dec(LSrcRem, LSrcChunk);
+    until (LSrcRem = 0) and (LHint = 0);
+  finally
+    LZ4F_freeDecompressionContext(LDctx);
+  end;
 end;
 
 procedure lz4DecompressToUserBuf(aSrc: Pointer; aSrcSize: Integer; aDst: Pointer; aDstSize: Integer);

@@ -399,14 +399,19 @@ const
   );
 
 function wbConditionDescFromIndex(aIndex: Integer): PConditionFunction;
+var
+  L: Integer;
+  H: Integer;
+  I: Integer;
+  C: Integer;
 begin
   Result := nil;
 
-  var L := Low(wbConditionFunctions);
-  var H := High(wbConditionFunctions);
+  L := Low(wbConditionFunctions);
+  H := High(wbConditionFunctions);
   while L <= H do begin
-    var I := (L + H) shr 1;
-    var C := CmpW32(wbConditionFunctions[I].Index, aIndex);
+    I := (L + H) shr 1;
+    C := CmpW32(wbConditionFunctions[I].Index, aIndex);
     if C < 0 then
       L := I + 1
     else begin
@@ -420,9 +425,12 @@ begin
 end;
 
 function wbConditionFunctionToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  Desc: PConditionFunction;
+  i   : Integer;
 begin
   Result := '';
-  var Desc := wbConditionDescFromIndex(aInt);
+  Desc := wbConditionDescFromIndex(aInt);
 
   case aType of
     ctEditType: Result := 'ComboBox';
@@ -443,7 +451,7 @@ begin
     end;
     ctEditInfo: begin
       with TStringList.Create do try
-        for var i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
+        for i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
           Add(wbConditionFunctions[i].Name);
         Sort;
         Result := CommaText;
@@ -455,8 +463,10 @@ begin
 end;
 
 function wbConditionFunctionToInt(const aString: string; const aElement: IwbElement): Int64;
+var
+  i: Integer;
 begin
-  for var i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
+  for i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
     with wbConditionFunctions[i] do
       if SameText(Name, aString) then
         Exit(Index);
@@ -467,12 +477,13 @@ end;
 function wbConditionParam1Decider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 var
   Container: IwbContainer;
+  Desc     : PConditionFunction;
 begin
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
 
-  var Desc := wbConditionDescFromIndex(Container.ElementByName['Function'].NativeValue);
+  Desc := wbConditionDescFromIndex(Container.ElementByName['Function'].NativeValue);
   if Assigned(Desc) then
     Result := Succ(Integer(Desc.ParamType1));
 end;
@@ -480,12 +491,13 @@ end;
 function wbConditionParam2Decider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 var
   Container: IwbContainer;
+  Desc     : PConditionFunction;
 begin
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
 
-  var Desc := wbConditionDescFromIndex(Container.ElementByName['Function'].NativeValue);
+  Desc := wbConditionDescFromIndex(Container.ElementByName['Function'].NativeValue);
   if Assigned(Desc) then
     Result := Succ(Integer(Desc.ParamType2));
 end;
@@ -497,6 +509,10 @@ var
   EditInfos  : TStringList;
   Stages     : IwbContainerElementRef;
   Stage      : IwbContainerElementRef;
+  i          : Integer;
+  j          : Integer;
+  s          : string;
+  t          : string;
 begin
   Result := '';
   case aType of
@@ -530,11 +546,11 @@ begin
 
   try
     if Supports(MainRecord.ElementByName['Stages'], IwbContainerElementRef, Stages) then begin
-      for var i := 0 to Pred(Stages.ElementCount) do
+      for i := 0 to Pred(Stages.ElementCount) do
         if Supports(Stages.Elements[i], IwbContainerElementRef, Stage) then begin
-          var j := Stage.ElementNativeValues['INDX'];
-          var s := Trim(Stage.ElementValues['Log Entries\Log Entry\CNAM']);
-          var t := IntToStr(j);
+          j := Stage.ElementNativeValues['INDX'];
+          s := Trim(Stage.ElementValues['Log Entries\Log Entry\CNAM']);
+          t := IntToStr(j);
           while Length(t) < 3 do
             t := '0' + t;
           if s <> '' then
@@ -572,6 +588,11 @@ var
   Variables  : TStringList;
   LocalVars  : IwbContainerElementRef;
   LocalVar   : IwbContainerElementRef;
+  BaseRecord : IwbMainRecord;
+  ScriptRef  : IwbElement;
+  i          : Integer;
+  j          : Integer;
+  s          : string;
 begin
   Result := '';
   case aType of
@@ -587,12 +608,12 @@ begin
   if not wbTryGetMainRecord(Container.ElementByName['Parameter #1'], MainRecord) then
     Exit;
 
-  var BaseRecord := MainRecord.BaseRecord;
+  BaseRecord := MainRecord.BaseRecord;
   if Assigned(BaseRecord) then
     MainRecord := BaseRecord;
   MainRecord := MainRecord.WinningOverride;
 
-  var ScriptRef := MainRecord.RecordBySignature['SCRI'];
+  ScriptRef := MainRecord.RecordBySignature['SCRI'];
   if not Assigned(ScriptRef) then begin
     case aType of
       ctCheck: Result := '<Warning: "' + MainRecord.ShortName + '" does not contain a SCRI subrecord>';
@@ -620,10 +641,10 @@ begin
 
   try
     if Supports(Script.ElementByName['Local Variables'], IwbContainerElementRef, LocalVars) then begin
-      for var i := 0 to Pred(LocalVars.ElementCount) do
+      for i := 0 to Pred(LocalVars.ElementCount) do
         if Supports(LocalVars.Elements[i], IwbContainerElementRef, LocalVar) then begin
-          var j := LocalVar.ElementNativeValues['SLSD\Index'];
-          var s := LocalVar.ElementNativeValues['SCVR'];
+          j := LocalVar.ElementNativeValues['SLSD\Index'];
+          s := LocalVar.ElementNativeValues['SCVR'];
           if Assigned(Variables) then
             Variables.AddObject(s, TObject(Integer(j)))
           else if j = aInt then begin
@@ -655,6 +676,13 @@ var
   Script     : IwbMainRecord;
   LocalVars  : IwbContainerElementRef;
   LocalVar   : IwbContainerElementRef;
+  Container  : IwbContainerElementRef;
+  Param1     : IwbElement;
+  BaseRecord : IwbMainRecord;
+  ScriptRef  : IwbElement;
+  i          : Integer;
+  j          : Integer;
+  s          : string;
 begin
   Result := StrToInt64Def(aString, Low(Cardinal));
   if Result <> Low(Cardinal) then
@@ -663,23 +691,23 @@ begin
   if not Assigned(aElement) then
     raise Exception.Create('aElement not specified');
 
-  var Container := GetContainerRefFromUnionOrValue(aElement);
+  Container := GetContainerRefFromUnionOrValue(aElement);
   if not Assigned(Container) then
     raise Exception.Create('Container not assigned');
 
-  var Param1 := Container.ElementByName['Parameter #1'];
+  Param1 := Container.ElementByName['Parameter #1'];
   if not Assigned(Param1) then
     raise Exception.Create('Could not find "Parameter #1"');
 
   if not Supports(Param1.LinksTo, IwbMainRecord, MainRecord) then
     raise Exception.Create('"Parameter #1" does not reference a valid main record');
 
-  var BaseRecord := MainRecord.BaseRecord;
+  BaseRecord := MainRecord.BaseRecord;
   if Assigned(BaseRecord) then
     MainRecord := BaseRecord;
   MainRecord := MainRecord.WinningOverride;
 
-  var ScriptRef := MainRecord.RecordBySignature['SCRI'];
+  ScriptRef := MainRecord.RecordBySignature['SCRI'];
   if not Assigned(ScriptRef) then
     raise Exception.Create('"' + MainRecord.ShortName + '" does not contain a SCRI subrecord');
 
@@ -689,10 +717,10 @@ begin
   Script := Script.HighestOverrideOrSelf[aElement._File.LoadOrder];
 
   if Supports(Script.ElementByName['Local Variables'], IwbContainerElementRef, LocalVars) then begin
-    for var i := 0 to Pred(LocalVars.ElementCount) do
+    for i := 0 to Pred(LocalVars.ElementCount) do
       if Supports(LocalVars.Elements[i], IwbContainerElementRef, LocalVar) then begin
-        var j := LocalVar.ElementNativeValues['SLSD\Index'];
-        var s := LocalVar.ElementNativeValues['SCVR'];
+        j := LocalVar.ElementNativeValues['SLSD\Index'];
+        s := LocalVar.ElementNativeValues['SCVR'];
         if SameText(s, Trim(aString)) then
           Exit(j)
       end;
@@ -715,6 +743,7 @@ end;
 procedure wbConditionsfterLoad(const aElement: IwbElement);
 var
   Container  : IwbContainerElementRef;
+  TypeFlags  : Integer;
 begin
   if wbBeginInternalEdit then try
     if not Supports(aElement, IwbContainerElementRef, Container) then
@@ -723,7 +752,7 @@ begin
     if Container.ElementCount < 1 then
       Exit;
 
-    var TypeFlags := Container.ElementNativeValues['Type'];
+    TypeFlags := Container.ElementNativeValues['Type'];
     if (TypeFlags and 2) <> 0 then begin
       if Container.DataSize = 20 then
         Container.DataSize := 28;
@@ -737,7 +766,7 @@ end;
 
 function wbGenericModel(aRequired: Boolean = False; aDontShow: TwbDontShowCallback = nil): IwbRecordMemberDef;
 begin
-  Result :=
+  Result := IwbRecordMemberDef(
     wbRStructSK([0], 'Model', [
       wbString(MODL, 'Model FileName').SetRequired,
       wbByteArray(MODB, 'Unknown', 4, cpIgnore),
@@ -748,7 +777,7 @@ begin
     .SetSummaryKey([0])
     .IncludeFlag(dfSummaryMembersNoName)
     .IncludeFlag(dfSummaryNoSortKey)
-    .IncludeFlag(dfCollapsed, wbCollapseModels);
+    .IncludeFlag(dfCollapsed, wbCollapseModels));
 end;
 
 function wbEPFDActorValueToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
@@ -765,7 +794,11 @@ begin
     ctCheck: Result := wbActorValueEnum.Check(aInt, aElement);
     ctToEditValue: Result := wbActorValueEnum.ToEditValue(aInt, aElement);
     ctEditType: Result := 'ComboBox';
+{$IFDEF FPC}
+    ctEditInfo: Result := '';
+{$ELSE}
     ctEditInfo: Result := wbActorValueEnum.EditInfo[aElement].ToCommaText;
+{$ENDIF}
   end;
 end;
 
@@ -2392,12 +2425,16 @@ begin
 end;
 
 procedure wbWATRAfterLoad(const aElement: IwbElement);
+var
+  lMainRecord : IwbMainRecord;
+  lDNAM       : IwbContainerElementRef;
+  lDATA       : IwbContainerElementRef;
+  i           : Integer;
 begin
   if wbBeginInternalEdit then try
     if not Assigned(aElement) then
       Exit;
 
-    var lMainRecord : IwbMainRecord;
     if not Supports(aElement, IwbMainRecord, lMainRecord) then
       Exit;
 
@@ -2406,11 +2443,11 @@ begin
       If not Assigned(lMainRecord.ElementByName['DNAM - Visual Data']) then
         lMainRecord.Add('DNAM', True);
 
-      var lDNAM := lMainRecord.ElementByName['DNAM - Visual Data'] as IwbContainerElementRef;
+      lDNAM := lMainRecord.ElementByName['DNAM - Visual Data'] as IwbContainerElementRef;
 
-      var lDATA := lMainRecord.ElementByName['DATA - Visual Data'] as IwbContainerElementRef;
+      lDATA := lMainRecord.ElementByName['DATA - Visual Data'] as IwbContainerElementRef;
 
-      for var i := 0 to Pred(lDATA.ElementCount - 1) do begin
+      for i := 0 to Pred(lDATA.ElementCount - 1) do begin
         lDNAM.Elements[i].Assign(Low(Integer), lDATA.Elements[i], False);
       end;
 
@@ -2603,6 +2640,7 @@ begin
 
   wbIgnoreRecords.Add(XXXX);
 
+{$IFNDEF FPC}
   {>>> Enums <<<}
 
   wbActorValueEnum :=
@@ -7954,5 +7992,6 @@ begin
   if wbToolMode = tmLODgen then
     wbNexusModsUrl := 'https://www.nexusmods.com/fallout3/mods/21174';
   wbHEDRVersion := 0.94;
+{$ENDIF}
 end;
 end.

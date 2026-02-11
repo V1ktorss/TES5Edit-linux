@@ -22,6 +22,16 @@ procedure DefineSF1;
 
 implementation
 
+{$IFDEF FPC}
+uses
+  wbDefinitionsCommon;
+
+procedure DefineSF1;
+begin
+  DefineCommon;
+end;
+{$ELSE}
+
 uses
   System.Types,
   System.Classes,
@@ -30,8 +40,13 @@ uses
   System.StrUtils,
   System.Variants,
   System.IOUtils,
-  System.Generics.Defaults,
-  System.Generics.Collections,
+  {$IFDEF FPC}
+  Generics.Defaults,
+  Generics.Collections,
+  {$ELSE}
+  Generics.Defaults,
+  Generics.Collections,
+  {$ENDIF}
   JsonDataObjects,
   wbHelpers,
   wbDefinitionsCommon,
@@ -20575,4 +20590,5 @@ begin
 
 end;
 
+{$ENDIF}
 end.

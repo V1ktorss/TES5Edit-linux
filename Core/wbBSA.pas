@@ -15,13 +15,21 @@ interface
 uses
   System.Classes,
   System.IOUtils,
+  {$IFDEF FPC}
+  SysUtils,
+  {$ENDIF}
   System.SysUtils,
   System.Diagnostics,
-  System.Generics.Defaults,
-  System.Generics.Collections,
+  {$IFDEF FPC}
+  Generics.Defaults,
+  Generics.Collections,
+  {$ELSE}
+  Generics.Defaults,
+  Generics.Collections,
+  {$ENDIF}
   ImagingDds,
   lz4io,
-  zlibEx,
+  ZlibEx,
   wbBSArchive,
   wbInterface,
   wbSort,
@@ -228,6 +236,18 @@ const
   _OtherCount = 500000;
 
 procedure TwbContainerHandler.BuildCache;
+{$IFDEF FPC}
+var
+  lPath: string;
+  lHashSeedName: string;
+  lHashSeedIdx: Integer;
+  lHashSeed: string;
+  lFullName: string;
+  lFolder: string;
+  lFolderHash: Int64;
+  lFile: string;
+  lFileHash: Int64;
+{$ENDIF}
 begin
   InvalidateCache;
   with chCache do begin
@@ -240,6 +260,23 @@ begin
 
     ContainerResourceDict('', ccAll, '');
 
+{$IFDEF FPC}
+    lPath := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0)));
+    lHashSeedName := lPath + wbGameName + '.HashSeed.txt';
+
+    if FileExists(lHashSeedName) then
+    with TStringList.Create do try
+      LoadFromFile(lHashSeedName);
+      for lHashSeedIdx := Pred(Count) downto 0 do begin
+        lHashSeed := StringReplace(LowerCase(Strings[lHashSeedIdx]), '/', '\', [rfReplaceAll]);
+        if not ccAll.TryAdd(lHashSeed, wbNothing) then
+          Delete(lHashSeedIdx);
+      end;
+      SaveToFile(lHashSeedName + '2');
+    finally
+      Free;
+    end;
+{$ELSE}
     var lPath :=  IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0)));
     var lHashSeedName := lPath + wbGameName + '.HashSeed.txt';
 
@@ -255,7 +292,43 @@ begin
     finally
       Free;
     end;
+{$ENDIF}
 
+{$IFDEF FPC}
+    for lFullName in ccAll.Keys do begin
+      lFolder := StringReplace(LowerCase(ExcludeTrailingBackslash(ExtractFilePath(lFullName))), '/', '\', [rfReplaceAll]);
+      if ccFolders.TryAdd(lFolder, wbNothing) then begin
+        if wbGameMode >= gmTES5 then
+          lFolderHash := CreateHashFO4(lFolder)
+        else
+          lFolderHash := CreateHashTES4(lFolder);
+        ccFolderHashes.TryAdd(lFolderHash, lFolder);
+      end;
+
+      lFile := LowerCase(ExtractFileName(lFullName));
+      if wbGameMode >= gmTES5 then
+        lFile := ChangeFileExt(lFile, '');
+
+      if ccFiles.TryAdd(lFile, wbNothing) then begin
+        if wbGameMode >= gmTES5 then
+          lFileHash := CreateHashFO4(lFile)
+        else
+          lFileHash := CreateHashTES4(lFile);
+        ccFileHashes.TryAdd(lFileHash, lFile);
+
+        if wbGameMode < gmTES5 then
+          if ExtractFileExt(lFile) = '.dds' then
+            lFile := ChangeFileExt(lFile, '.ddx');
+            if ccFiles.TryAdd(lFile, wbNothing) then begin
+              if wbGameMode >= gmTES5 then
+                lFileHash := CreateHashFO4(lFile)
+              else
+                lFileHash := CreateHashTES4(lFile);
+              ccFileHashes.TryAdd(lFileHash, lFile);
+            end;
+      end;
+    end;
+{$ELSE}
     for var lFullName in ccAll.Keys do begin
       var lFolder := ExcludeTrailingBackslash(ExtractFilePath(lFullName)).ToLowerInvariant.Replace('/', '\');
       if ccFolders.TryAdd(lFolder, wbNothing) then begin
@@ -291,6 +364,7 @@ begin
             end;
       end;
     end;
+{$ENDIF}
   end;
 end;
 
@@ -337,8 +411,10 @@ begin
 end;
 
 procedure TwbContainerHandler.ContainerResourceDict(const aContainerName: string; const aDict: TwbResourceDict; const aFolder: string);
+var
+  i: Integer;
 begin
-  for var i := Low(chContainers) to High(chContainers) do
+  for i := Low(chContainers) to High(chContainers) do
     if (aContainerName = '') or SameText(chContainers[i].Name, aContainerName) then begin
       chContainers[i].ResourceDict(aDict, aFolder);
       if aContainerName <> '' then
@@ -347,8 +423,10 @@ begin
 end;
 
 procedure TwbContainerHandler.ContainerResourceList(const aContainerName: string; const aList: TStrings; const aFolder: string = '');
+var
+  i: Integer;
 begin
-  for var i := Low(chContainers) to High(chContainers) do
+  for i := Low(chContainers) to High(chContainers) do
     if (aContainerName = '') or SameText(chContainers[i].Name, aContainerName) then begin
       chContainers[i].ResourceList(aList, aFolder);
       if aContainerName <> '' then
@@ -572,14 +650,24 @@ end;
 procedure TwbFolder.ResourceDict(const aDict: TwbResourceDict; aFolder: string);
 var
   FileName: string;
+  lFileName: string;
 begin
   if not Assigned(aDict) then
     Exit;
+{$IFDEF FPC}
+  aFolder := StringReplace(aFolder, '/', '\', [rfReplaceAll]);
+{$ELSE}
   aFolder := aFolder.Replace('/', '\');
+{$ENDIF}
   if TDirectory.Exists(fPath + aFolder) then
     for FileName in TDirectory.GetFiles(fPath + aFolder, '*.*', TSearchOption.soAllDirectories) do begin
+{$IFDEF FPC}
+      lFileName := LowerCase(Copy(FileName, Length(fPath) + 1, Length(FileName)));
+      aDict.TryAdd(lFileName, wbNothing);
+{$ELSE}
       var lFileName := LowerCase(Copy(FileName, Length(fPath) + 1, Length(FileName)));
       aDict.TryAdd(lFileName, wbNothing);
+{$ENDIF}
     end;
 end;
 
@@ -594,7 +682,11 @@ var
 begin
   if not Assigned(aList) then
     Exit;
+{$IFDEF FPC}
+  aFolder := StringReplace(aFolder, '/', '\', [rfReplaceAll]);
+{$ELSE}
   aFolder := aFolder.Replace('/', '\');
+{$ENDIF}
   if TDirectory.Exists(fPath + aFolder) then
     for FileName in TDirectory.GetFiles(fPath + aFolder, '*.*', TSearchOption.soAllDirectories) do
       aList.Add(LowerCase(Copy(FileName, Length(fPath) + 1, Length(FileName))));

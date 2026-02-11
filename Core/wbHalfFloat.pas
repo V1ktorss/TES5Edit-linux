@@ -438,6 +438,7 @@ function FloatToHalf(const AValue: Double): THalfFloat;
 var
   Bits: UInt64 absolute AValue;
   Exp: Int32;
+  SingleValue: Single;
 begin
   Exp := ((Bits shr 52) and $07FF) - 1023;
   if (Exp < -126) then
@@ -456,7 +457,10 @@ begin
       Result := HalfNegInf
   end
   else
-    Result := FloatToHalf(Single(AValue));
+  begin
+    SingleValue := AValue;
+    Result := FloatToHalf(SingleValue);
+  end;
 end;
 
 function FloatToHalf(const AValue: Single): THalfFloat;

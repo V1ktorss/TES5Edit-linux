@@ -19,8 +19,28 @@ uses
   xeInit in 'xEdit/xeInit.pas',
   wbInterface in 'Core/wbInterface.pas';
 
+function HasHelpSwitch: Boolean;
+var
+  i: Integer;
+  s: string;
+begin
+  Result := False;
+  for i := 1 to ParamCount do begin
+    s := LowerCase(ParamStr(i));
+    if (s = '-h') or (s = '--help') or (s = '/?') then
+      Exit(True);
+  end;
+end;
+
 begin
   SysUtils.FormatSettings.DecimalSeparator := '.';
+
+  if HasHelpSwitch then begin
+    WriteLn('xedit-core (headless)');
+    WriteLn('Usage: xedit-core [options]');
+    WriteLn('  -h, --help   Show this help');
+    Halt(0);
+  end;
 
   xeInitStyles;
   if not xeDoInit then

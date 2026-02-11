@@ -9,7 +9,11 @@
 unit xeInit;
 
 {$I xeDefines.inc}
+{$IFDEF FPC}
+{$R 'xeIcons.res'}
+{$ELSE}
 {$R 'xEdit\xeIcons.res'}
+{$ENDIF}
 
 interface
 
@@ -360,6 +364,9 @@ var
   s, regPath, regKey, client, regValue: string;
   isEpicNV : Boolean;
   IniFile : TMemIniFile;
+  lIDs: TStringList;
+  lIdx: Integer;
+  lID: string;
 
   function TryReadInstallPathFromRegistry(
     const aCurrentUser: Boolean;
@@ -377,20 +384,31 @@ begin
     wbScriptsPath := wbProgramPath + 'Edit Scripts' + PathDelim;
 
   if not wbFindCmdLineParam('T', wbTempPath) then
-    wbTempPath := IncludeTrailingPathDelimiter(TPath.GetTempPath + wbAppName + 'Edit')
+    wbTempPath := IncludeTrailingPathDelimiter(GetTempDir + wbAppName + 'Edit')
   else
     xeRemoveTempPath := not DirectoryExists(wbTempPath);
 
   if not wbFindCmdLineParam('D', wbDataPath) then begin
     wbDataPath := CheckAppPath;
 
-    if (wbDataPath = '') then
-      for var lID in wbGameSteamID.Split([',']) do
-        begin
+    if (wbDataPath = '') then begin
+      lIDs := TStringList.Create;
+      try
+        lIDs.StrictDelimiter := True;
+        lIDs.Delimiter := ',';
+        lIDs.DelimitedText := wbGameSteamID;
+        for lIdx := 0 to Pred(lIDs.Count) do begin
+          lID := Trim(lIDs[lIdx]);
+          if lID = '' then
+            Continue;
           wbDataPath := GetInstallPathBySteamID(lID);
           if wbDataPath <> '' then
-            break;
+            Break;
         end;
+      finally
+        lIDs.Free;
+      end;
+    end;
 
     if (wbDataPath = '') then begin
       client := 'Steam';
@@ -703,8 +721,29 @@ var
   ToolSources: TwbSetOfSource;
   i: Integer;
   ExeName: string;
+
+  procedure AddCommaSeparatedTrimmed(const aCSV: string; aTarget: TStrings);
+  var
+    lList: TStringList;
+    lIdx: Integer;
+    lItem: string;
+  begin
+    lList := TStringList.Create;
+    try
+      lList.StrictDelimiter := True;
+      lList.Delimiter := ',';
+      lList.DelimitedText := aCSV;
+      for lIdx := 0 to Pred(lList.Count) do begin
+        lItem := Trim(lList[lIdx]);
+        if lItem <> '' then
+          aTarget.Add(lItem);
+      end;
+    finally
+      lList.Free;
+    end;
+  end;
 begin
-  ExeName := ChangeFileExt(ExtractFileName(ParamStr(0)), '').ToLowerInvariant;
+  ExeName := LowerCase(ChangeFileExt(ExtractFileName(ParamStr(0)), ''));
 
   if not wbIsAeroEnabled then
     wbThemesSupported := False;
@@ -1125,7 +1164,7 @@ begin
     wbAllowDirectSaveFor := TStringList.Create;
     wbAllowDirectSaveFor.Sorted := True;
     wbAllowDirectSaveFor.Duplicates := dupIgnore;
-    wbAllowDirectSaveFor.AddStrings(s.Split([',']).ForEach(Trim).RemoveEmpty);
+    AddCommaSeparatedTrimmed(s, wbAllowDirectSaveFor);
     if wbAllowDirectSaveFor.Count < 1 then begin
       FreeAndNil(wbAllowDirectSaveFor);
       wbAllowDirectSave := True;
@@ -1157,7 +1196,7 @@ begin
       wbStripMastersFileNames := TStringList.Create;
       wbStripMastersFileNames.Sorted := True;
       wbStripMastersFileNames.Duplicates := dupIgnore;
-      wbStripMastersFileNames.AddStrings(s.Split([',']).ForEach(Trim).RemoveEmpty);
+      AddCommaSeparatedTrimmed(s, wbStripMastersFileNames);
 
       if wbStripMastersFileNames.Count < 1 then
       begin
@@ -1320,39 +1359,47 @@ begin
     wbEncodingTrans :=  wbMBCSEncoding(s);
 
   // definitions
-  case wbGameMode of
-    gmFNV: case wbToolSource of
-      tsSaves:   DefineFNVSaves;
-      tsPlugins: DefineFNV;
+  try
+    case wbGameMode of
+      gmFNV: case wbToolSource of
+        tsSaves:   DefineFNVSaves;
+        tsPlugins: DefineFNV;
+      end;
+      gmFO3: case wbToolSource of
+        tsSaves:   DefineFO3Saves;
+        tsPlugins: DefineFO3;
+      end;
+      gmFO4, gmFO4VR: case wbToolSource of
+        tsSaves:   DefineFO4Saves;
+        tsPlugins: DefineFO4;
+      end;
+      gmFO76: case wbToolSource of
+        tsPlugins: DefineFO76;
+      end;
+      gmTES3: case wbToolSource of
+        tsPlugins: DefineTES3;
+      end;
+      gmTES4: case wbToolSource of
+        tsSaves:   DefineTES4Saves;
+        tsPlugins: DefineTES4;
+      end;
+      gmTES4R: case wbToolSource of
+        tsPlugins: DefineTES4;
+      end;
+      gmTES5, gmTES5VR, gmEnderal, gmSSE, gmEnderalSE: case wbToolSource of
+        tsSaves:   DefineTES5Saves;
+        tsPlugins: DefineTES5;
+      end;
+      gmSF1: case wbToolSource of
+        tsPlugins: DefineSF1;
+      end;
     end;
-    gmFO3: case wbToolSource of
-      tsSaves:   DefineFO3Saves;
-      tsPlugins: DefineFO3;
-    end;
-    gmFO4, gmFO4VR: case wbToolSource of
-      tsSaves:   DefineFO4Saves;
-      tsPlugins: DefineFO4;
-    end;
-    gmFO76: case wbToolSource of
-      tsPlugins: DefineFO76;
-    end;
-    gmTES3: case wbToolSource of
-      tsPlugins: DefineTES3;
-    end;
-    gmTES4: case wbToolSource of
-      tsSaves:   DefineTES4Saves;
-      tsPlugins: DefineTES4;
-    end;
-    gmTES4R: case wbToolSource of
-      tsPlugins: DefineTES4;           
-    end;
-    gmTES5, gmTES5VR, gmEnderal, gmSSE, gmEnderalSE: case wbToolSource of
-      tsSaves:   DefineTES5Saves;
-      tsPlugins: DefineTES5;
-    end;
-    gmSF1: case wbToolSource of
-      tsPlugins: DefineSF1;
-    end;
+  except
+    on E: Exception do
+      raise Exception.Create(
+        'Define stage failed (game=' + IntToStr(Integer(wbGameMode)) +
+        ', source=' + IntToStr(Integer(wbToolSource)) + '): ' + E.Message
+      );
   end;
 
   if FindCmdLineSwitch('reportinjected') then
@@ -1366,7 +1413,11 @@ begin
     wbSpeedOverMemory := False;
 
   if FindCmdLineSwitch('report') then
+{$IFDEF FPC}
+    wbReportMode := True;
+{$ELSE}
     wbReportMode := (DebugHook <> 0);
+{$ENDIF}
   if FindCmdLineSwitch('MoreInfoForIndex') then
     wbMoreInfoForIndex := true;
 
@@ -1492,7 +1543,7 @@ begin
     s := xeDefaultScriptHost;
   TxeScriptHost.Init(s);
 
-  wbApplicationTitle := wbAppName + wbToolName + ' ' + VersionString;
+  wbApplicationTitle := wbAppName + wbToolName + ' ' + VersionString.ToString;
   {$IFDEF LiteVersion}
   wbApplicationTitle := wbApplicationTitle + ' Lite';
   {$ENDIF}
@@ -1542,7 +1593,10 @@ begin
     on E: Exception do begin
       Result := False;
       if not (E is EAbort) then
-        xeShowMessage('Initialization failed: [' + E.ClassName + '] ' + E.Message);
+        xeShowMessage(
+          'Initialization failed: [' + E.ClassName + '] ' + E.Message +
+          ' @ ' + IntToHex(PtrUInt(ExceptAddr), SizeOf(Pointer) * 2)
+        );
     end;
   end;
 end;

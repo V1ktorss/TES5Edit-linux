@@ -13,9 +13,15 @@ unit wbLoadOrder;
 interface
 
 uses
+{$IFDEF FPC}
+  Types,
+  Classes,
+  SysUtils,
+{$ELSE}
   System.Types,
   System.Classes,
   System.SysUtils,
+{$ENDIF}
   wbInterface;
 
 type
@@ -117,6 +123,10 @@ type
     function GetCRC32(out aCRC32: TwbCRC32): Boolean;
   end;
 
+{$IFDEF FPC}
+  TwbModuleInfoPredicate = function(const aInfo: PwbModuleInfo): Boolean;
+{$ENDIF}
+
   TwbModuleInfosHelper = record helper for TwbModuleInfos
     function ToStrings(aInclDesc: Boolean = False): TDynStrings;
     procedure DeactivateAll;
@@ -126,7 +136,7 @@ type
     function SimulateLoad: TwbModuleInfos;
     procedure DisableSimulatedLoad;
     function FilteredByFlag(aFlag: TwbModuleFlag; aHasFlag: Boolean = True): TwbModuleInfos;
-    function FilteredBy(const aFunc: TFunc<PwbModuleInfo, Boolean>): TwbModuleInfos;
+    function FilteredBy(const aFunc: {$IFDEF FPC}TwbModuleInfoPredicate{$ELSE}TFunc<PwbModuleInfo, Boolean>{$ENDIF}): TwbModuleInfos;
   end;
 
 procedure wbLoadModules;
@@ -137,8 +147,13 @@ implementation
 
 uses
   System.IOUtils,
-  System.Generics.Defaults,
-  System.Generics.Collections,
+  {$IFDEF FPC}
+  Generics.Defaults,
+  Generics.Collections,
+  {$ELSE}
+  Generics.Defaults,
+  Generics.Collections,
+  {$ENDIF}
   wbHelpers,
   wbImplementation,
   wbSort;
@@ -288,7 +303,7 @@ begin
     _UpdateIndex := Pred(High(Integer));
 
   if wbDataPath <> '' then begin
-    Files := TDirectory.GetFiles(wbDataPath);
+    Files := TDirectory.GetFiles(wbDataPath, '*', TSearchOption.soTopDirectoryOnly);
     i := Length(Files);
     if i > 1 then
       wbMergeSortPtr(@Files[0], i, TListSortCompare(@CompareText));
@@ -906,7 +921,7 @@ begin
       Exclude(miFlags, aFlag);
 end;
 
-function TwbModuleInfosHelper.FilteredBy(const aFunc: TFunc<PwbModuleInfo, Boolean>): TwbModuleInfos;
+function TwbModuleInfosHelper.FilteredBy(const aFunc: {$IFDEF FPC}TwbModuleInfoPredicate{$ELSE}TFunc<PwbModuleInfo, Boolean>{$ENDIF}): TwbModuleInfos;
 var
   i, j: Integer;
 begin
@@ -947,6 +962,10 @@ function TwbModuleInfosHelper.SimulateLoad: TwbModuleInfos;
 var
   NewLoadOrder      : TwbModuleInfos;
   NewLoadOrderCount : Integer;
+  lModuleIdx        : Integer;
+  lSelfIdx          : Integer;
+  lActiveCount      : Integer;
+  lNewLoadOrderIdx  : Integer;
 
   procedure Load(aModule: PwbModuleInfo);
   var
@@ -997,7 +1016,7 @@ begin
   if _SimulatedLoadDisabled then
     raise Exception.Create('Simulated Load has been disabled');
 
-  for var lModuleIdx := Low(_Modules) to High(_Modules) do
+  for lModuleIdx := Low(_Modules) to High(_Modules) do
     with _Modules[lModuleIdx] do begin
       Exclude(miFlags, mfLoaded);
       Exclude(miFlags, mfLoading);
@@ -1009,14 +1028,14 @@ begin
   _NextLightSlot := 0;
   SetLength(NewLoadOrder, Length(_Modules));
   NewLoadOrderCount := 0;
-  for var lSelfIdx := Low(Self) to High(Self) do
+  for lSelfIdx := Low(Self) to High(Self) do
     with Self[lSelfIdx]^ do
       if miFlags * [mfActive, mfForceLoad] <> [] then
         Load(Self[lSelfIdx]);
   SetLength(NewLoadOrder, NewLoadOrderCount);
 
-  var lActiveCount := 0;
-  for var lNewLoadOrderIdx := Low(NewLoadOrder) to High(NewLoadOrder) do
+  lActiveCount := 0;
+  for lNewLoadOrderIdx := Low(NewLoadOrder) to High(NewLoadOrder) do
     with NewLoadOrder[lNewLoadOrderIdx]^ do
       if miFlags * [mfActive] <> [] then
         Inc(lActiveCount);
@@ -1050,4 +1069,3 @@ finalization
   FreeAllocatedModules(_TemplateModules);
   FreeAllocatedModules(_AdditionalModules);
 end.
-

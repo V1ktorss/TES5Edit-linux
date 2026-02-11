@@ -639,6 +639,7 @@ const
     (Index: 1028; Name: 'ClearInvalidRegistrations'; )
   );
 
+{$IFNDEF FPC}
 function wbConditionDescFromIndex(aIndex: Integer): PConditionFunction;
 begin
   Result := nil;
@@ -2491,6 +2492,7 @@ end;
       wbDataPosRot
     ], True).SetAddInfo(wbPlacedAddInfo);
   end;
+{$ENDIF}
 
 procedure DefineTES5;
 begin
@@ -2501,6 +2503,8 @@ begin
   wbMainRecordHeader := wbRecordHeader(wbRecordFlags);
 
   wbSizeOfMainRecordStruct := 24;
+
+{$IFNDEF FPC}
 
   wbNull := wbUnused(-255);
   wbLLCT := wbInteger(LLCT, 'Count', itU8, nil, cpBenign);
@@ -11243,6 +11247,7 @@ begin
   wbHEDRVersion := 1.7;
   if wbGameMode in [gmSSE, gmEnderalSE] then
     wbHEDRVersion := 1.71;
+{$ENDIF}
 end;
 
 end.

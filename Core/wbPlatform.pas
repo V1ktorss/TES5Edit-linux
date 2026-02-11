@@ -20,9 +20,15 @@ uses
   ;
 
 type
+{$IFDEF FPC}
+  TwbPlatformOutputProc = procedure(const aLine: string);
+  TwbPlatformProc = procedure;
+  TwbPlatformTerminateFunc = function: Boolean;
+{$ELSE}
   TwbPlatformOutputProc = reference to procedure(const aLine: string);
   TwbPlatformProc = reference to procedure;
   TwbPlatformTerminateFunc = reference to function: Boolean;
+{$ENDIF}
   TwbKnownFolder = (wkDocuments, wkLocalAppData);
 
 function wbPathCombine(const aBase, aChild: string): string;
@@ -472,6 +478,11 @@ function wbCopyFile(
   const aSource, aDestination: string;
   const aFailIfExists: Boolean
 ): Boolean;
+{$IFDEF FPC}
+var
+  lSrc: TFileStream;
+  lDst: TFileStream;
+{$ENDIF}
 begin
   Result := False;
   if (aSource = '') or (aDestination = '') then
@@ -481,8 +492,23 @@ begin
   if aFailIfExists and FileExists(aDestination) then
     Exit;
   try
+    {$IFDEF FPC}
+    lSrc := TFileStream.Create(aSource, fmOpenRead or fmShareDenyNone);
+    try
+      lDst := TFileStream.Create(aDestination, fmCreate);
+      try
+        lDst.CopyFrom(lSrc, 0);
+      finally
+        lDst.Free;
+      end;
+    finally
+      lSrc.Free;
+    end;
+    Result := True;
+    {$ELSE}
     TFile.Copy(aSource, aDestination, not aFailIfExists);
     Result := True;
+    {$ENDIF}
   except
     Result := False;
   end;

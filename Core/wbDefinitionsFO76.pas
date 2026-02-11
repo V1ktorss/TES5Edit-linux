@@ -1013,14 +1013,19 @@ const
   );
 
 function wbConditionDescFromIndex(aIndex: Integer): PConditionFunction;
+var
+  L: Integer;
+  H: Integer;
+  I: Integer;
+  C: Integer;
 begin
   Result := nil;
 
-  var L := Low(wbConditionFunctions);
-  var H := High(wbConditionFunctions);
+  L := Low(wbConditionFunctions);
+  H := High(wbConditionFunctions);
   while L <= H do begin
-    var I := (L + H) shr 1;
-    var C := CmpW32(wbConditionFunctions[I].Index, aIndex);
+    I := (L + H) shr 1;
+    C := CmpW32(wbConditionFunctions[I].Index, aIndex);
     if C < 0 then
       L := I + 1
     else begin
@@ -1034,16 +1039,19 @@ begin
 end;
 
 function wbConditionFunctionToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  Desc: PConditionFunction;
+  i: Integer;
 begin
   Result := '';
-  var Desc := wbConditionDescFromIndex(aInt);
+  Desc := wbConditionDescFromIndex(aInt);
   case aType of
     ctEditType: Result := 'ComboBox';
     ctToSortKey: Result := IntToHex(aInt, 8);
     ctCheck: if not Assigned(Desc) then Result := '<Unknown: '+aInt.ToString+'>';
     ctEditInfo: begin
       with TStringList.Create do try
-        for var i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
+        for i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
           Add(wbConditionFunctions[i].Name);
         Sort;
         Result := CommaText;
@@ -1066,8 +1074,10 @@ begin
 end;
 
 function wbConditionFunctionToInt(const aString: string; const aElement: IwbElement): Int64;
+var
+  i: Integer;
 begin
-  for var i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
+  for i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
     with wbConditionFunctions[i] do
       if SameText(Name, aString) then
         Exit(Index);
@@ -1078,60 +1088,74 @@ end;
 function wbConditionParam1Decider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 var
   Container: IwbContainer;
+  Desc: PConditionFunction;
+  ParamType: Integer;
+  ParamFlag: Int64;
 begin
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
 
-  var Desc := wbConditionDescFromIndex(Container.ElementByName['Function'].NativeValue);
+  Desc := wbConditionDescFromIndex(Container.ElementByName['Function'].NativeValue);
   if not Assigned(Desc) then
     Exit;
 
-  var ParamType := Desc.ParamType1;
-  var ParamFlag := Container.ElementByName['Type'].NativeValue;
+  ParamType := Integer(Desc.ParamType1);
+  ParamFlag := Container.ElementByName['Type'].NativeValue;
 
-  if ParamType in [ptReference, ptActor, ptPackage] then begin
+  if ParamType in [Integer(ptReference), Integer(ptActor), Integer(ptPackage)] then begin
     if ParamFlag and $02 > 0 then begin
       // except for this func when Run On = Quest Alias, then alias is param3 and package is param1
       // [INFO:00020D3C]
       if not ((Container.ElementByName['Run On'].NativeValue = 5) and (Desc.Name = 'GetIsCurrentPackage')) then
-        ParamType := ptAlias    {>>> 'use aliases' is set <<<}
+        ParamType := Integer(ptAlias)    {>>> 'use aliases' is set <<<}
     end
     else if ParamFlag and $08 > 0 then
-      ParamType := ptPackdata;  {>>> 'use packdata' is set <<<}
+      ParamType := Integer(ptPackdata);  {>>> 'use packdata' is set <<<}
   end;
 
-  Result := Succ(Integer(ParamType));
+  Result := Succ(ParamType);
 end;
 
 function wbConditionParam2Decider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 var
   Container: IwbContainer;
+  Desc: PConditionFunction;
+  ParamType: Integer;
+  ParamFlag: Int64;
 begin
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
 
-  var Desc := wbConditionDescFromIndex(Container.ElementByName['Function'].NativeValue);
+  Desc := wbConditionDescFromIndex(Container.ElementByName['Function'].NativeValue);
   if not Assigned(Desc) then
     Exit;
 
-  var ParamType := Desc.ParamType2;
-  var ParamFlag := Container.ElementByName['Type'].NativeValue;
+  ParamType := Integer(Desc.ParamType2);
+  ParamFlag := Container.ElementByName['Type'].NativeValue;
 
-  if ParamType in [ptReference, ptActor, ptPackage] then begin
-    if ParamFlag and $02 > 0 then ParamType := ptAlias else {>>> 'use aliases' is set <<<}
-    if ParamFlag and $08 > 0 then ParamType := ptPackdata;  {>>> 'use packdata' is set <<<}
+  if ParamType in [Integer(ptReference), Integer(ptActor), Integer(ptPackage)] then begin
+    if ParamFlag and $02 > 0 then ParamType := Integer(ptAlias) else {>>> 'use aliases' is set <<<}
+    if ParamFlag and $08 > 0 then ParamType := Integer(ptPackdata);  {>>> 'use packdata' is set <<<}
   end;
 
-  Result := Succ(Integer(ParamType));
+  Result := Succ(ParamType);
 end;
 
 function wbConditionEventToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  EventFunction: Int64;
+  EventMember: Int64;
+  s1: string;
+  s2: string;
+  slMember: TStringList;
+  i: Integer;
+  j: Integer;
 begin
   Result := '';
-  var EventFunction := aInt and $FFFF;
-  var EventMember := aInt shr 16;
+  EventFunction := aInt and $FFFF;
+  EventMember := aInt shr 16;
   case aType of
     ctEditType: Result := 'ComboBox';
     ctToSortKey: Result := IntToHex(aInt, 8);
@@ -1140,21 +1164,21 @@ begin
       Result := Result + ':' + wbEventMemberEnum.ToEditValue(EventMember, nil);
     end;
     ctCheck: begin
-      var s1 := wbEventFunctionEnum.Check(EventFunction, nil);
+      s1 := wbEventFunctionEnum.Check(EventFunction, nil);
       if s1 <> '' then
         s1 := 'EventFunction' + s1;
-      var s2 := wbEventMemberEnum.Check(EventMember, nil);
+      s2 := wbEventMemberEnum.Check(EventMember, nil);
       if s2 <> '' then
         s2 := 'EventMember' + s2;
       if (s1 <> '') or (s2 <> '') then
         Result := s1 + ':' + s2;
     end;
     ctEditInfo: begin
-      var slMember := TStringList.Create;
+      slMember := TStringList.Create;
       slMember.AddStrings(wbEventMemberEnum.EditInfo[nil]);
       with TStringList.Create do try
-        for var i := 0 to Pred(wbEventFunctionEnum.NameCount) do
-          for var j := 0 to Pred(slMember.Count) do
+        for i := 0 to Pred(wbEventFunctionEnum.NameCount) do
+          for j := 0 to Pred(slMember.Count) do
             Add(wbEventFunctionEnum.Names[i] + ':' + slMember[j]);
         Sort;
         Result := CommaText;
@@ -1168,8 +1192,9 @@ end;
 function wbConditionEventToInt(const aString: string; const aElement: IwbElement): Int64;
 var
   EventFunction, EventMember: Integer;
+  i: Integer;
 begin
-  var i := Pos(':', aString);
+  i := Pos(':', aString);
   if i > 0 then begin
     EventFunction := wbEventFunctionEnum.FromEditValue(Copy(aString, 1, i-1), nil);
     EventMember := wbEventMemberEnum.FromEditValue(Copy(aString, i+1, Length(aString)), nil);
@@ -1185,13 +1210,14 @@ function wbConditionQuestOverlay(aInt: Int64; const aElement: IwbElement; aType:
 var
   GroupRecord: IwbGroupRecord;
   Element    : IwbElement;
+  MainRecord : IwbMainRecord;
 begin
   Result := aInt;
   if (aInt = 0) and (aType in [ctCheck, ctToStr, ctToSummary, ctToSortKey, ctLinksTo]) then begin
     if not Assigned(aElement) then
       Exit;
 
-    var MainRecord := aElement.ContainingMainRecord;
+    MainRecord := aElement.ContainingMainRecord;
     if not Assigned(MainRecord) then
       Exit;
 
@@ -1229,6 +1255,11 @@ var
   Stage      : IwbContainerElementRef;
   GroupRecord: IwbGroupRecord;
   Element    : IwbElement;
+  MainRecord : IwbMainRecord;
+  i          : Integer;
+  j          : Integer;
+  s          : string;
+  t          : string;
 begin
   Result := '';
   case aType of
@@ -1241,7 +1272,7 @@ begin
   if not Assigned(aElement) then
     Exit;
 
-  var MainRecord := aElement.ContainingMainRecord;
+  MainRecord := aElement.ContainingMainRecord;
   if not Assigned(MainRecord) then
     Exit;
 
@@ -1280,11 +1311,11 @@ begin
 
   try
     if Supports(MainRecord.ElementByName['Stages'], IwbContainerElementRef, Stages) then begin
-      for var i := 0 to Pred(Stages.ElementCount) do
+      for i := 0 to Pred(Stages.ElementCount) do
         if Supports(Stages.Elements[i], IwbContainerElementRef, Stage) then begin
-          var j := Stage.ElementNativeValues['INDX\Stage Index'];
-          var s := Trim(Stage.ElementValues['Log Entries\Log Entry\CNAM']);
-          var t := IntToStr(j);
+          j := Stage.ElementNativeValues['INDX\Stage Index'];
+          s := Trim(Stage.ElementValues['Log Entries\Log Entry\CNAM']);
+          t := IntToStr(j);
           while Length(t) < 3 do
             t := '0' + t;
           if s <> '' then
@@ -1321,6 +1352,10 @@ var
   EditInfos  : TStringList;
   Stages     : IwbContainerElementRef;
   Stage      : IwbContainerElementRef;
+  i          : Integer;
+  j          : Integer;
+  s          : string;
+  t          : string;
 begin
   Result := '';
   case aType of
@@ -1359,11 +1394,11 @@ begin
 
   try
     if Supports(MainRecord.ElementByName['Stages'], IwbContainerElementRef, Stages) then begin
-      for var i := 0 to Pred(Stages.ElementCount) do
+      for i := 0 to Pred(Stages.ElementCount) do
         if Supports(Stages.Elements[i], IwbContainerElementRef, Stage) then begin
-          var j := Stage.ElementNativeValues['INDX\Stage Index'];
-          var s := Trim(Stage.ElementValues['Log Entries\Log Entry\CNAM']);
-          var t := IntToStr(j);
+          j := Stage.ElementNativeValues['INDX\Stage Index'];
+          s := Trim(Stage.ElementValues['Log Entries\Log Entry\CNAM']);
+          t := IntToStr(j);
           while Length(t) < 3 do
             t := '0' + t;
           if s <> '' then
@@ -1395,7 +1430,7 @@ end;
 
 function wbGenericModel(aRequired: Boolean = False; aDontShow: TwbDontShowCallback = nil): IwbRecordMemberDef;
 begin
-  Result :=
+  Result := IwbRecordMemberDef(
     wbRStructSK([0], 'Model', [
       wbString(MODL, 'Model FileName'),
       wbMODT,
@@ -1413,7 +1448,8 @@ begin
     .IncludeFlag(dfSummaryMembersNoName)
     .IncludeFlag(dfSummaryNoSortKey)
     .IncludeFlag(dfCollapsed, wbCollapseModels)
-    .IncludeFlag(dfAllowAnyMember);
+    .IncludeFlag(dfAllowAnyMember)
+  );
 end;
 
 { function wbACTIBase(aRequired: Boolean = False; aDontShow: TwbDontShowCallback = nil): IwbRecordMemberDef;
@@ -1453,7 +1489,13 @@ begin
     ctCheck: Result := wbActorValueEnum.Check(aInt, aElement);
     ctToEditValue: Result := wbActorValueEnum.ToEditValue(aInt, aElement);
     ctEditType: Result := 'ComboBox';
-    ctEditInfo: Result := wbActorValueEnum.EditInfo[aElement].ToCommaText;
+    ctEditInfo: begin
+{$IFDEF FPC}
+      Result := '';
+{$ELSE}
+      Result := wbActorValueEnum.EditInfo[aElement].ToCommaText;
+{$ENDIF}
+    end;
   end;
 end;
 
@@ -1669,6 +1711,7 @@ var
   BaseStarSlot   : Integer;
   ModIndex       : Integer;
   ModBase        : IwbContainerElementRef;
+  i              : Integer;
 begin
   Result := nil;
   if not Assigned(aElement) then
@@ -1689,7 +1732,7 @@ begin
   ModIndex := aElement.NativeValue;
   LegendaryIndex := -1;
 
-  for var i := 0 to Pred(LegendaryMods.ElementCount) do
+  for i := 0 to Pred(LegendaryMods.ElementCount) do
   begin
     LegendaryMod := LegendaryMods.Elements[i] as IwbContainerElementRef;
     if LegendaryMod[0].NativeValue = BaseStarSlot then
@@ -1717,6 +1760,7 @@ var
   LegendaryMod   : IwbContainerElementRef;
   BaseStarSlot   : Integer;
   ModIndex       : Integer;
+  i              : Integer;
 begin
   Result := 'Unknown Ref';
   if not Assigned(aElement) then
@@ -1737,7 +1781,7 @@ begin
   ModIndex := aElement.NativeValue;
   LegendaryIndex := -1;
 
-  for var i := 0 to Pred(LegendaryMods.ElementCount) do
+  for i := 0 to Pred(LegendaryMods.ElementCount) do
   begin
     LegendaryMod := LegendaryMods.Elements[i] as IwbContainerElementRef;
     if LegendaryMod[0].NativeValue = BaseStarSlot then
@@ -3489,7 +3533,13 @@ begin
     ctCheck: Result := PropEnum.Check(aInt, aElement);
     ctToEditValue: Result := PropEnum.ToEditValue(aInt, aElement);
     ctEditType: Result := 'ComboBox';
-    ctEditInfo: Result := PropEnum.EditInfo[aElement].ToCommaText;
+    ctEditInfo: begin
+{$IFDEF FPC}
+      Result := '';
+{$ELSE}
+      Result := PropEnum.EditInfo[aElement].ToCommaText;
+{$ENDIF}
+    end;
   end;
 end;
 
@@ -4218,6 +4268,7 @@ begin
   end;
 end;
 
+{$IFNDEF FPC}
   function wbTintTemplateGroups(const aName: string): IwbSubRecordArrayDef;
   var
     wbTintTemplateGroup: IwbSubRecordStructDef;
@@ -4464,6 +4515,7 @@ end;
       wbString(MNAM, 'Comments')
     ], True).SetAddInfo(wbPlacedAddInfo);
   end;
+{$ENDIF}
 
 procedure DefineFO76;
 begin
@@ -4474,6 +4526,8 @@ begin
   wbMainRecordHeader := wbRecordHeader(wbRecordFlags);
 
   wbSizeOfMainRecordStruct := 24;
+
+{$IFNDEF FPC}
 
   wbNull := wbUnused(-255);
   wbLLCT := wbInteger(LLCT, 'Count', itU8, nil, cpBenign);
@@ -17921,6 +17975,6 @@ begin
   {if wbToolMode = tmLODgen then
     wbNexusModsUrl := '';}
   wbHEDRVersion := 244.0;
+{$ENDIF}
 end;
 end.
-

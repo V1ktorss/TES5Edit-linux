@@ -276,12 +276,12 @@ begin
   Result := wbCallback(TwbVMTypeFormaterToString, nil);
 end;
 
-function wbVMHandle : IwbIntegerDefFormater; overload;
+function wbVMHandle : IwbIntegerDefFormater;
 begin
   Result := wbCallback(TwbHandleFormaterToString, nil);
 end;
 
-function wbVMObjectHandle : IwbIntegerDefFormater; overload;
+function wbVMObjectHandle : IwbIntegerDefFormater;
 begin
   Result := wbCallback(TwbObjectHandleFormaterToString, nil);
 end;

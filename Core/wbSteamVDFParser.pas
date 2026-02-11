@@ -13,9 +13,13 @@ interface
 uses
   System.SysUtils,
   System.Classes,
-  System.Generics.Collections;
+  {$IFDEF FPC}
+  Generics.Collections
+  {$ELSE}
+  Generics.Collections
+  {$ENDIF};
 
-type
+ type
   TSteamVDFNode = class
   private
     FName: string;
@@ -52,6 +56,8 @@ type
 implementation
 
 Uses
+  SysUtils,
+  StrUtils,
   wbPlatform;
 
 { TSteamVDFParser }
@@ -128,19 +134,36 @@ begin
 end;
 
 function TSteamVDFNode.FindChildByName(const aName: string): TSteamVDFNode;
+var
+  i: Integer;
 begin
-  for var Node in Children do
-    if SameText(Node.Name, aName) then
-      Exit(Node);
+  for i := 0 to Pred(Children.Count) do
+    if SameText(Children[i].Name, aName) then
+      Exit(Children[i]);
   Result := nil;
 end;
 
 function TSteamVDFNode.FindNodeByPath(const KeyPath: string): TSteamVDFNode;
+var
+  Rest: string;
+  Key: string;
+  p: Integer;
 begin
-  Result := nil;
-  for var Key in KeyPath.Split(['\']) do begin
-    if not Assigned(Result) then
-      Result := Self;
+  Result := Self;
+  Rest := KeyPath;
+  while Rest <> '' do begin
+    p := Pos('\', Rest);
+    if p > 0 then begin
+      Key := Copy(Rest, 1, p - 1);
+      Delete(Rest, 1, p);
+    end else begin
+      Key := Rest;
+      Rest := '';
+    end;
+
+    if Key = '' then
+      Continue;
+
     Result := Result.FindChildByName(Key);
     if not Assigned(Result) then
       Exit;
@@ -212,6 +235,14 @@ var
   SteamParser: TSteamVDFParser;
   LibraryFolder: string;
   LibraryFile: string;
+  lRootNode: TSteamVDFNode;
+  Node: TSteamVDFNode;
+  lMatch: TSteamVDFNode;
+  i: Integer;
+  lAppsFolder: string;
+  lManifestFile: string;
+  lFolder: string;
+  lFullPath: string;
 begin
   Result := '';
   LibraryFolder := '';
@@ -226,12 +257,12 @@ begin
   SteamParser := TSteamVDFParser.Create;
   try
     SteamParser.LoadFromFile(LibraryFile);
-    var lRootNode := SteamParser.FindNodeByPath('libraryfolders');
+    lRootNode := SteamParser.FindNodeByPath('libraryfolders');
     if not Assigned(lRootNode) then
       Exit; // this should only happen if the library file is corrupted
-    for var Node in lRootNode.Children do
-    begin
-      var lMatch := Node.FindNodeByPath('apps\'+SteamID);
+    for i := 0 to Pred(lRootNode.Children.Count) do begin
+      Node := lRootNode.Children[i];
+      lMatch := Node.FindNodeByPath('apps\' + SteamID);
       if Assigned(lMatch) then
       begin
         LibraryFolder := lMatch.Parent.Parent.GetValueByPath('path');
@@ -246,17 +277,17 @@ begin
     Exit;
 
   LibraryFolder := wbNormalizePath(LibraryFolder);
-  var lAppsFolder := wbPathCombine(LibraryFolder, 'steamapps');
-  var lManifestFile := wbPathCombine(lAppsFolder, 'appmanifest_' + SteamID + '.acf');
+  lAppsFolder := wbPathCombine(LibraryFolder, 'steamapps');
+  lManifestFile := wbPathCombine(lAppsFolder, 'appmanifest_' + SteamID + '.acf');
   if not FileExists(lManifestFile) then
     Exit;
   SteamParser := TSteamVDFParser.Create;
   try
     SteamParser.LoadFromFile(lManifestFile);
-    var lFolder := SteamParser.GetValueByPath('AppState\installdir');
+    lFolder := SteamParser.GetValueByPath('AppState\installdir');
     if lFolder <> '' then
     begin
-      var lFullPath := wbPathCombine(wbPathCombine(lAppsFolder, 'common'), lFolder);
+      lFullPath := wbPathCombine(wbPathCombine(lAppsFolder, 'common'), lFolder);
       if DirectoryExists(lFullPath) then
         Result := lFullPath;
     end;

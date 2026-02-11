@@ -25,6 +25,16 @@ procedure wbMergeSort32(aList: Pointer; aCount: Integer; aCompare: TListSortComp
 procedure wbMergeSort64(aList: Pointer; aCount: Integer; aCompare: TListSortCompare64);
 
 type
+{$IFDEF FPC}
+  TwbMergeSort<T> = class
+  public
+  type
+    TPtr = ^T;
+    TListSortCompareTPtr = function(Item1, Item2: TPtr): Integer;
+  public
+    class procedure Sort(aList: Pointer; aCount: Integer; aCompare: TListSortCompareTPtr); static;
+  end;
+{$ELSE}
   TwbMergeSort<T> = class
   public
   type
@@ -41,6 +51,7 @@ type
   public
     class procedure Sort(aList: Pointer; aCount: Integer; aCompare: TListSortCompareTPtr); static;
   end;
+{$ENDIF}
 
 implementation
 
@@ -213,6 +224,14 @@ end;
 
 {$R-} //range checking must be off
 
+{$IFDEF FPC}
+class procedure TwbMergeSort<T>.Sort(aList: Pointer; aCount: Integer; aCompare: TListSortCompareTPtr);
+begin
+  wbMergeSortPtr(aList, aCount, TListSortComparePtr(aCompare));
+end;
+{$ENDIF}
+
+{$IFNDEF FPC}
 class procedure TwbMergeSort<T>.InsertionSort(aList: PArray; left, right: integer; aCompare: TListSortCompareTPtr);
 var
   i: Integer;
@@ -274,18 +293,44 @@ begin
 end;
 
 class procedure TwbMergeSort<T>.UseStackBufferLarge(aList: Pointer; aCount: Integer; aCompare: TListSortCompareTPtr);
+{$IFDEF FPC}
+var
+  Buffer: Pointer;
+begin
+  GetMem(Buffer, (4 * 512) * SizeOf(T));
+  try
+    MergeSort(aList, 0, Pred(aCount), aCompare, Buffer);
+  finally
+    FreeMem(Buffer);
+  end;
+end;
+{$ELSE}
 var
   Buffer: array[0..Pred(4 * 512)] of T;
 begin
   MergeSort(aList, 0, Pred(aCount), aCompare, @Buffer);
 end;
+{$ENDIF}
 
 class procedure TwbMergeSort<T>.UseStackBufferSmall(aList: Pointer; aCount: Integer; aCompare: TListSortCompareTPtr);
+{$IFDEF FPC}
+var
+  Buffer: Pointer;
+begin
+  GetMem(Buffer, 512 * SizeOf(T));
+  try
+    MergeSort(aList, 0, Pred(aCount), aCompare, Buffer);
+  finally
+    FreeMem(Buffer);
+  end;
+end;
+{$ELSE}
 var
   Buffer: array[0..Pred(512)] of T;
 begin
   MergeSort(aList, 0, Pred(aCount), aCompare, @Buffer);
 end;
+{$ENDIF}
 
 class procedure TwbMergeSort<T>.Sort(aList: Pointer; aCount: Integer; aCompare: TListSortCompareTPtr);
 
@@ -306,9 +351,9 @@ begin
   else
     UseStackBufferSmall(aList, aCount, aCompare);
 end;
+{$ENDIF}
 
 initialization
   wbMove := @Move;
 finalization
 end.
-

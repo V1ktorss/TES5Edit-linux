@@ -20,13 +20,23 @@ mkdir -p "$OUT_DIR"
 UNIT_PATHS=(
   "${ROOT_DIR}"
   "${ROOT_DIR}/Core"
+  "${ROOT_DIR}/xDump"
   "${ROOT_DIR}/External/lz4/lib/delphi"
   "${ROOT_DIR}/External/lz4/common"
+  "${ROOT_DIR}/External/ImagingLib/Source"
+  "${ROOT_DIR}/External/ImagingLib/Source/ZLib"
+  "${ROOT_DIR}/External/TForge/Source"
+  "${ROOT_DIR}/External/TForge/Source/Shared"
+  "${ROOT_DIR}/External/TForge/Source/Engine"
+  "${ROOT_DIR}/External/TForge/Source/Engine/Forge"
+  "${ROOT_DIR}/External/TForge/Source/Include"
+  "${ROOT_DIR}/External/TForge/Source/Engine/Hashes"
 )
 
 FPC_FLAGS=(
   -Mdelphi
   -Sc
+  -B
   -O2
   -g
   -vewnhi
@@ -40,7 +50,13 @@ done
 
 log "Building xDump (output: ${OUT_BIN})"
 log "Unit paths: ${UNIT_PATHS[*]}"
-"$FPC_BIN" "${FPC_FLAGS[@]}" "${UNIT_ARGS[@]}" "${ROOT_DIR}/xDump.dpr"
+"$FPC_BIN" "${FPC_FLAGS[@]}" "${UNIT_ARGS[@]}" \
+  "-Fu${ROOT_DIR}/xDump" \
+  -Fi"${ROOT_DIR}/xDump" \
+  -Fi"${ROOT_DIR}/Core" \
+  -Fi"${ROOT_DIR}/External/ImagingLib/Source" \
+  -Fi"${ROOT_DIR}/External/TForge/Source/Include" \
+  "${ROOT_DIR}/xDump.dpr"
 
 if [[ -x "$OUT_BIN" ]]; then
   log "Build ok: ${OUT_BIN}"

@@ -16,7 +16,7 @@ uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ExtCtrls, wbInterface,
   Styles.Utils.SystemMenu, Spin, Themes,
-  System.Generics.Collections, Styles.Ext, Styles.Preview;
+  Generics.Collections, Styles.Ext, Styles.Preview;
 
 type
   TfrmOptions = class(TForm)

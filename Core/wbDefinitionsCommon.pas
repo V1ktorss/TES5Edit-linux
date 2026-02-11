@@ -518,7 +518,7 @@ function wbByteColors(const aSignature : TwbSignature;
                       const aDefaultR  : Byte = 0;
                       const aDefaultG  : Byte = 0;
                       const aDefaultB  : Byte = 0)
-                                       : IwbRecordMemberDef; overload
+                                       : IwbRecordMemberDef; overload;
 
 function wbByteColors(const aName     : string = 'Color';
                       const aDefaultR : Byte = 0;
@@ -585,7 +585,7 @@ function wbFloatColors(const aName     : string = 'Color';
                                        : IwbValueDef; overload;
 
 function wbRFloatColors(const aName     : string = 'Color';
-                        const aSigs     : TwbSignatures = [];
+                        const aSigs     : TwbSignatures = nil;
                         const aDefaultR : Single = 0;
                         const aDefaultG : Single = 0;
                         const aDefaultB : Single = 0)
@@ -663,6 +663,9 @@ uses
 {>>> Add Info Callbacks <<<} //10
 
 function wbCellAddInfo(const aMainRecord: IwbMainRecord): string;
+var
+  lRecord: IwbRecord;
+  lContainer: IwbContainerElementRef;
 begin
   if not Assigned(aMainRecord) then
     Exit;
@@ -672,9 +675,9 @@ begin
     Result := ' in ' + Result;
 
   if not aMainRecord.IsPersistent then begin
-    var lRecord := aMainRecord.RecordBySignature['XCLC'];
-    if Assigned(lRecord) then
-      Result := Result + ' at ' + lRecord.Elements[0].Value + ',' + lRecord.Elements[1].Value;
+    lRecord := aMainRecord.RecordBySignature['XCLC'];
+    if Supports(lRecord, IwbContainerElementRef, lContainer) then
+      Result := Result + ' at ' + lContainer.Elements[0].Value + ',' + lContainer.Elements[1].Value;
   end;
 end;
 
@@ -707,6 +710,8 @@ begin
 end;
 
 function wbINFOAddInfo(const aMainRecord: IwbMainRecord): string;
+var
+  Response: string;
 begin
   if not Assigned(aMainRecord) then
     Exit;
@@ -719,7 +724,7 @@ begin
     Result := Result + ' in ' + aMainRecord.ElementEditValues['QSTI'];
 
   if Result <> '' then begin
-    var Response := Trim(aMainRecord.ElementValues['Responses\Response\NAM1']);
+    Response := Trim(aMainRecord.ElementValues['Responses\Response\NAM1']);
     if Response <> '' then
       Result := '''''' + Response + '''''' + Result;
   end;
@@ -756,6 +761,11 @@ begin
 end;
 
 function wbPlacedAddInfo(const aMainRecord: IwbMainRecord): string;
+var
+  lCell: IwbMainRecord;
+  lGroupRecord: IwbGroupRecord;
+  lPosition: TwbVector;
+  lGrid: TwbGridCell;
 begin
   if not Assigned(aMainRecord) then
     Exit;
@@ -767,14 +777,11 @@ begin
   if not aMainRecord.IsDeleted then begin
     Result := 'Places ' + Trim(aMainRecord.RecordBySignature['NAME'].Value) + Result;
 
-    var lCell        : IwbMainRecord;
-    var lGroupRecord : IwbGroupRecord;
     if Supports(aMainRecord.Container, IwbGroupRecord, lGroupRecord) then
       lCell := lGroupRecord.ChildrenOf;
 
-    var lPosition : TwbVector;
     if Assigned(lCell) and lCell.IsPersistent and aMainRecord.GetPosition(lPosition) then begin
-      var lGrid := wbPositionToGridCell(lPosition);
+      lGrid := wbPositionToGridCell(lPosition);
       Result := Result + ' at ' + IntToStr(lGrid.X) + ',' + IntToStr(lGrid.Y);
     end;
 
@@ -855,19 +862,21 @@ begin
 end;
 
 procedure wbDOBJObjectsAfterLoad(const aElement: IwbElement);
+var
+  lArray: IwbContainerElementRef;
+  lEntry: IwbContainerElementRef;
+  i: Integer;
 begin
   if not Assigned(aElement) then
     Exit;
 
   if wbBeginInternalEdit then try
-    var lArray : IwbContainerElementRef;
     if not Supports(aElement, IwbContainerElementRef, lArray) then
       Exit;
 
     lArray.BeginUpdate;
     try
-      var lEntry : IwbContainerElementRef;
-      for var i := Pred(lArray.ElementCount) downto 0 do
+      for i := Pred(lArray.ElementCount) downto 0 do
         if Supports(lArray.Elements[i], IwbContainerElementRef, lEntry) then
           if lEntry.ElementNativeValues['Use'] = 0 then
             lArray.RemoveElement(i, True);
@@ -880,16 +889,18 @@ begin
 end;
 
 procedure wbLANDLayerAfterLoad(const aElement: IwbElement);
+var
+  lContainer: IwbContainerElementRef;
+  lTexture: IwbElement;
 begin
   if not Assigned(aElement) then
     Exit;
 
   if wbBeginInternalEdit then try
-    var lContainer : IwbContainerElementRef;
     if not Supports(aElement, IwbContainerElementRef, lContainer) then
       Exit;
 
-    var lTexture := lContainer.Elements[0];
+    lTexture := lContainer.Elements[0];
     if not Assigned(lTexture) then
       Exit;
 
@@ -910,13 +921,15 @@ begin
 end;
 
 procedure wbPACKDateAfterLoad(const aElement: IwbElement);
+var
+  lMonth: IwbElement;
+  lMaxDate: Cardinal;
 begin
   if not Assigned(aElement) then
     Exit;
 
   if wbBeginInternalEdit then try
-    var lMonth := aElement.Container.ElementByName['Month'];
-    var lMaxDate : Cardinal;
+    lMonth := aElement.Container.ElementByName['Month'];
     case lMonth.NativeValue of
       1: lMaxDate := 28;
       3,5,8,10: lMaxDate := 30;
@@ -934,24 +947,29 @@ begin
 end;
 
 procedure wbPNDTAfterLoad(const aElement: IwbElement);
+var
+  lMainRecord: IwbMainRecord;
+  lCNAM: IwbContainerElementRef;
+  lEOVR: IwbContainerElementRef;
+  lWorldspace: IwbContainerElementRef;
+  i: Integer;
 begin
   if not Assigned(aElement) then
     Exit;
 
   if wbBeginInternalEdit then try
-    var lMainRecord : IwbMainRecord;
     if not Supports(aElement, IwbMainRecord, lMainRecord) then
       Exit;
 
-    var lCNAM := lMainRecord.ElementBySignature['CNAM'] as IwbContainerElementRef;
-    var lEOVR := lMainRecord.ElementBySignature['EOVR'] as IwbContainerElementRef;
+    lCNAM := lMainRecord.ElementBySignature['CNAM'] as IwbContainerElementRef;
+    lEOVR := lMainRecord.ElementBySignature['EOVR'] as IwbContainerElementRef;
 
     if lMainRecord.IsMaster then begin
       if not Assigned(lCNAM) then
         lCNAM := lMainRecord.Add('CNAM', True) as IwbContainerElementRef;
 
-      for var i := Pred(lCNAM.ElementCount) downto 0 do begin
-        var lWorldspace := lCNAM.Elements[i] as IwbContainerElementRef;
+      for i := Pred(lCNAM.ElementCount) downto 0 do begin
+        lWorldspace := lCNAM.Elements[i] as IwbContainerElementRef;
         if lWorldspace.Elements[1].NativeValue = 0 then
           lCNAM.Elements[i].Remove
       end;
@@ -962,8 +980,8 @@ begin
       if not Assigned(lEOVR) then
         lEOVR := lMainRecord.Add('EOVR', True) as IwbContainerElementRef;
 
-      for var i := Pred(lEOVR.ElementCount) downto 0 do begin
-        var lWorldspace := lEOVR.Elements[i] as IwbContainerElementRef;
+      for i := Pred(lEOVR.ElementCount) downto 0 do begin
+        lWorldspace := lEOVR.Elements[i] as IwbContainerElementRef;
         if lWorldspace.Elements[1].NativeValue = 0 then
           lEOVR.Elements[i].Remove;
       end;
@@ -977,20 +995,25 @@ begin
 end;
 
 procedure wbRPLDAfterLoad(const aElement: IwbElement);
+var
+  lContainerElementRef: IwbContainerElementRef;
+  NeedsFlip: Boolean;
+  lCount: Integer;
+  a: Extended;
+  b: Extended;
 begin
   if not Assigned(aElement) then
     Exit;
 
   if wbBeginInternalEdit then try
-    var lContainerElementRef : IwbContainerElementRef;
     if not Supports(aElement, IwbContainerElementRef, lContainerElementRef) then
       Exit;
 
-    var NeedsFlip := False;
-    var lCount := lContainerElementRef.ElementCount;
+    NeedsFlip := False;
+    lCount := lContainerElementRef.ElementCount;
     if lCount > 1 then begin
-      var a := StrToFloat((lContainerElementRef.Elements[0] as IwbContainerElementRef).Elements[0].Value);
-      var b := StrToFloat((lContainerElementRef.Elements[Pred(lCount)] as IwbContainerElementRef).Elements[0].Value);
+      a := StrToFloat((lContainerElementRef.Elements[0] as IwbContainerElementRef).Elements[0].Value);
+      b := StrToFloat((lContainerElementRef.Elements[Pred(lCount)] as IwbContainerElementRef).Elements[0].Value);
       case CompareValue(a, b) of
         EqualsValue: begin
           a := StrToFloat((lContainerElementRef.Elements[0] as IwbContainerElementRef).Elements[1].Value);
@@ -1035,12 +1058,16 @@ begin
 end;
 
 procedure wbSOUNAfterLoad(const aElement: IwbElement);
+var
+  lMainRecord: IwbMainRecord;
+  lSNDX: IwbContainerElementRef;
+  lSNDD: IwbContainerElementRef;
+  i: Integer;
 begin
   if wbBeginInternalEdit then try
     if not Assigned(aElement) then
       Exit;
 
-    var lMainRecord : IwbMainRecord;
     if not Supports(aElement, IwbMainRecord, lMainRecord) then
       Exit;
 
@@ -1049,10 +1076,10 @@ begin
       If not Assigned(lMainRecord.ElementBySignature['SNDX']) then
         lMainRecord.Add('SNDX', True);
 
-      var lSNDX := lMainRecord.ElementBySignature['SNDX'] as IwbContainerElementRef;
-      var lSNDD := lMainRecord.ElementBySignature['SNDD'] as IwbContainerElementRef;
+      lSNDX := lMainRecord.ElementBySignature['SNDX'] as IwbContainerElementRef;
+      lSNDD := lMainRecord.ElementBySignature['SNDD'] as IwbContainerElementRef;
 
-      for var i := 0 to Pred(lSNDD.ElementCount) do begin
+      for i := 0 to Pred(lSNDD.ElementCount) do begin
         lSNDX.Elements[i].Assign(Low(Integer), lSNDD.Elements[i], False);
       end;
 
@@ -1064,6 +1091,9 @@ begin
 end;
 
 procedure wbWorldAfterLoad(const aElement: IwbElement);
+var
+  lMainRecord: IwbMainRecord;
+  lContainerElementRef: IwbContainerElementRef;
 
   function OutOfRange(aValue: Integer; aRange: Integer = 256): Boolean;
   begin
@@ -1077,7 +1107,6 @@ begin
   wbWorldAfterSet(aElement, 0, 1);
 
   if wbBeginInternalEdit then try
-    var lMainRecord : IwbMainRecord;
     if not Supports(aElement, IwbMainRecord, lMainRecord) then
       Exit;
 
@@ -1096,7 +1125,6 @@ begin
 
     // large values in worldspace bounds cause stutter and performance issues in game (reported by Arthmoor)
     // CK can occasionally set them wrong, so make a warning
-    var lContainerElementRef : IwbContainerElementRef;
     if Supports(lMainRecord.ElementByName['Worldspace Bounds'], IwbContainerElementRef, lContainerElementRef) then
       if OutOfRange(StrToIntDef(lContainerElementRef.ElementEditValues['NAM0\X'], 0)) or
          OutOfRange(StrToIntDef(lContainerElementRef.ElementEditValues['NAM0\Y'], 0)) or
@@ -1133,6 +1161,10 @@ begin
 end;
 
 procedure wbConditionTypeAfterSet(const aElement: IwbElement; const aOldValue, aNewValue: Variant);
+var
+  lContainerElementRef: IwbContainerElementRef;
+  OldValue: Variant;
+  NewValue: Variant;
 begin
   if not Assigned(aElement) then
     Exit;
@@ -1141,13 +1173,12 @@ begin
     Exit;
 
   if wbBeginInternalEdit then try
-    var lContainerElementRef : IwbContainerElementRef;
     if not Supports(aElement, IwbContainerElementRef, lContainerElementRef) then
       Exit;
 
     // reset value if "use global" has changed
-    var OldValue := aOldValue and 4;
-    var NewValue := aNewValue and 4;
+    OldValue := aOldValue and 4;
+    NewValue := aNewValue and 4;
     if OldValue <> NewValue then
       lContainerElementRef.ElementNativeValues['..\Comparison Value'] := 0;
 
@@ -1229,6 +1260,9 @@ begin
 end;
 
 procedure wbPACKDateAfterSet(const aElement: IwbElement; const aOldValue, aNewValue: Variant);
+var
+  lMonth: IwbElement;
+  lMaxDate: Cardinal;
 begin
   if not Assigned(aElement) then
     Exit;
@@ -1237,8 +1271,7 @@ begin
     Exit;
 
   if wbBeginInternalEdit then try
-    var lMonth := aElement.Container.ElementByName['Month'];
-    var lMaxDate : Cardinal;
+    lMonth := aElement.Container.ElementByName['Month'];
     case lMonth.NativeValue of
       1: lMaxDate := 28;
       3,5,8,10: lMaxDate := 30;
@@ -1256,6 +1289,8 @@ begin
 end;
 
 procedure wbPERKPRKETypeAfterSet(const aElement: IwbElement; const aOldValue, aNewValue: Variant);
+var
+  lContainerElementRef: IwbContainerElementRef;
 begin
   if not Assigned(aElement) then
     Exit;
@@ -1264,7 +1299,6 @@ begin
     Exit;
 
   if wbBeginInternalEdit then try
-    var lContainerElementRef : IwbContainerElementRef;
     if not Supports(aElement.Container, IwbContainerElementRef, lContainerElementRef) then
       Exit;
 
@@ -1287,6 +1321,9 @@ begin
 end;
 
 procedure wbSceneActionTypeAfterSet(const aElement: IwbElement; const aOldValue, aNewValue: Variant);
+var
+  lContainer: IwbContainerElementRef;
+  lDataElement: IwbElement;
 begin
   if not Assigned(aElement) then
     Exit;
@@ -1297,16 +1334,19 @@ begin
   if VarSameValue(aOldValue, aNewValue) then
     Exit;
 
-  var lContainer: IwbContainerElementRef;
   if not Supports(aElement.Container, IwbContainerElementRef, lContainer) then
     Exit;
 
-  var lDataElement := lContainer.ElementBySortOrder[8]; //'Type Specific Action'
+  lDataElement := lContainer.ElementBySortOrder[8]; //'Type Specific Action'
   if Assigned(lDataElement) and (lDataElement.Name <> aElement.Value) then
     lDataElement.Remove;
 end;
 
 procedure wbUpdateSameParentUnions(const aElement: IwbElement; const aOldValue, aNewValue: Variant);
+var
+  lContainerElementRef: IwbContainerElementRef;
+  lElementIdx: Integer;
+  lResolvedDef: IwbValueDef;
 begin
   if not Assigned(aElement) then
     Exit;
@@ -1315,19 +1355,21 @@ begin
     Exit;
 
   if wbBeginInternalEdit then try
-    var lContainerElementRef : IwbContainerElementRef;
     if not Supports(aElement.Container, IwbContainerElementRef, lContainerElementRef) then
       Exit;
 
-    for var lElementIdx := 0 to Pred(lContainerElementRef.ElementCount) do
+    for lElementIdx := 0 to Pred(lContainerElementRef.ElementCount) do
       //will trigger Unions to re-evaluate their type and fix themselves
-      var lResolvedDef := lContainerElementRef.Elements[lElementIdx].ResolvedValueDef;
+      lResolvedDef := lContainerElementRef.Elements[lElementIdx].ResolvedValueDef;
   finally
     wbEndInternalEdit;
   end;
 end;
 
 procedure wbWorldAfterSet(const aElement: IwbElement; const aOldValue, aNewValue: Variant);
+var
+  lContainerElementRef: IwbContainerElementRef;
+  lFlags: Variant;
 begin
   if not Assigned(aElement) then
     Exit;
@@ -1336,7 +1378,6 @@ begin
     Exit;
 
   if wbBeginInternalEdit then try
-    var lContainerElementRef : IwbContainerElementRef;
     if not Supports(aElement, IwbContainerElementRef, lContainerElementRef) then
       Exit;
 
@@ -1353,7 +1394,7 @@ begin
 	    end
     else
       if Assigned(lContainerElementRef.ElementByName['Parent Worldspace']) then begin
-        var lFlags := lContainerElementRef.ElementNativeValues['Parent Worldspace\PNAM'];
+        lFlags := lContainerElementRef.ElementNativeValues['Parent Worldspace\PNAM'];
         if lFlags and $01 = 1 then
           lContainerElementRef.RemoveElement(DNAM)
         else
@@ -1404,6 +1445,8 @@ begin
 end;
 
 procedure wbWwiseKeywordMappingTemplateAfterSet(const aElement: IwbElement; const aOldValue, aNewValue: Variant);
+var
+  lSounds: IwbElement;
 begin
   if not Assigned(aElement) then
     Exit;
@@ -1412,7 +1455,7 @@ begin
     Exit;
 
   if wbBeginInternalEdit then try
-    var lSounds := aElement.Container.ElementByPath['Sound Mappings'];
+    lSounds := aElement.Container.ElementByPath['Sound Mappings'];
     if Assigned(lSounds) then
       lSounds.Remove;
   finally
@@ -1454,16 +1497,20 @@ begin
 end;
 
 function wbNavmeshGridCounter(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Cardinal;
+var
+  lContainer: IwbContainer;
+  lGridSizeElement: IwbElement;
+  lGridSize: Integer;
 begin
-  var lContainer := aElement.Container;
+  lContainer := aElement.Container;
   if not Assigned(lContainer) then
     Exit(0);
 
-  var lGridSizeElement := lContainer.ElementByName['Divisor'];
+  lGridSizeElement := lContainer.ElementByName['Divisor'];
   if not Assigned(lGridSizeElement) then
     Exit(0);
 
-  var lGridSize: Integer := lGridSizeElement.NativeValue;
+  lGridSize := lGridSizeElement.NativeValue;
   if (lGridSize < 0) or (lGridSize > 12) then
     Exit(0);
 
@@ -1561,16 +1608,19 @@ end;
 {>>> Flag Don't Show Callbacks <<<} //7
 
 function wbFlagREFRInteriorDontShow(const aElement: IwbElement): Boolean;
+var
+  lMainRecord: IwbMainRecord;
+  lCell: IwbMainRecord;
 begin
   Result := False;
   if not Assigned(aElement) then
     Exit;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
-  var lCell := lMainRecord.ElementLinksTo['Cell'] as IwbMainRecord;
+  lCell := lMainRecord.ElementLinksTo['Cell'] as IwbMainRecord;
   if not Assigned(lCell) then
     Exit;
 
@@ -1619,11 +1669,13 @@ begin
 end;
 
 function wbFlagPartialFormDontShow(const aElement: IwbElement): Boolean;
+var
+  lMainRecord: IwbMainRecord;
 begin
   Result := False;
   if not Assigned(aElement) then
     Exit;
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
   if lMainRecord.IsPartialForm then
@@ -1632,16 +1684,19 @@ begin
 end;
 
 function wbFlagREFRSkyMarkerDontShow(const aElement: IwbElement): Boolean;
+var
+  lMainRecord: IwbMainRecord;
+  lNAME: IwbMainRecord;
 begin
   Result := False;
   if not Assigned(aElement) then
     Exit;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
-  var lNAME := lMainRecord.ElementLinksTo['NAME'] as IwbMainRecord;
+  lNAME := lMainRecord.ElementLinksTo['NAME'] as IwbMainRecord;
   if not Assigned(lNAME) then
     Exit;
 
@@ -1677,20 +1732,24 @@ begin
 end;
 
 function wbLIGHCarryDontShow(const aElement: IwbElement): Boolean;
+var
+  lMainRecord: IwbMainRecord;
+  lDATA: IwbContainerElementRef;
+  lFlags: IwbElement;
 begin
   Result := False;
   if not Assigned(aElement) then
     Exit;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
-  var lDATA := lMainRecord.ElementBySignature[DATA] as IwbContainerElementRef;
+  lDATA := lMainRecord.ElementBySignature[DATA] as IwbContainerElementRef;
   if not Assigned(lData) then
     Exit;
 
-  var lFlags := lDATA.ElementByName['Flags'];
+  lFlags := lDATA.ElementByName['Flags'];
   if not Assigned(lFlags) then
     Exit;
 
@@ -1700,24 +1759,29 @@ begin
 end;
 
 function wbLIGHFalloffDontShow(const aElement: IwbElement): Boolean;
+var
+  lMainRecord: IwbMainRecord;
+  lDATA: IwbContainerElementRef;
+  lFlags: IwbElement;
+  lFlagsValue: Cardinal;
 begin
   Result := False;
   if not Assigned(aElement) then
     Exit;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
-  var lDATA := lMainRecord.ElementBySignature[DATA] as IwbContainerElementRef;
+  lDATA := lMainRecord.ElementBySignature[DATA] as IwbContainerElementRef;
   if not Assigned(lData) then
     Exit;
 
-  var lFlags := lDATA.ElementByName['Flags'];
+  lFlags := lDATA.ElementByName['Flags'];
   if not Assigned(lFlags) then
     Exit;
 
-  var lFlagsValue := lFlags.NativeValue;
+  lFlagsValue := lFlags.NativeValue;
       {Shadow Spotlight}              {Shadow Hemisphere}
   if (((lFlagsValue and $400) = 0) and ((lFlagsValue and $800) = 0)) then
     if ((wbCS = False) or ((lFlagsValue and $4000) = 0)) then
@@ -1725,24 +1789,29 @@ begin
 end;
 
 function wbLIGHFlickerDontShow(const aElement: IwbElement): Boolean;
+var
+  lMainRecord: IwbMainRecord;
+  lDATA: IwbContainerElementRef;
+  lFlags: IwbElement;
+  lFlagsValue: Cardinal;
 begin
   Result := False;
   if not Assigned(aElement) then
     Exit;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
-  var lDATA := lMainRecord.ElementBySignature[DATA] as IwbContainerElementRef;
+  lDATA := lMainRecord.ElementBySignature[DATA] as IwbContainerElementRef;
   if not Assigned(lData) then
     Exit;
 
-  var lFlags := lDATA.ElementByName['Flags'];
+  lFlags := lDATA.ElementByName['Flags'];
   if not Assigned(lFlags) then
     Exit;
 
-  var lFlagsValue := lFlags.NativeValue;
+  lFlagsValue := lFlags.NativeValue;
   if ((lFlagsValue and   $8) = 0) and
      ((lFlagsValue and  $40) = 0) and
      ((lFlagsValue and  $80) = 0) and
@@ -1752,24 +1821,29 @@ begin
 end;
 
 function wbLIGHShadowSpotDontShow(const aElement: IwbElement): Boolean;
+var
+  lMainRecord: IwbMainRecord;
+  lDATA: IwbContainerElementRef;
+  lFlags: IwbElement;
+  lFlagsValue: Cardinal;
 begin
   Result := False;
   if not Assigned(aElement) then
     Exit;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
-  var lDATA := lMainRecord.ElementBySignature[DATA] as IwbContainerElementRef;
+  lDATA := lMainRecord.ElementBySignature[DATA] as IwbContainerElementRef;
   if not Assigned(lData) then
     Exit;
 
-  var lFlags := lDATA.ElementByName['Flags'];
+  lFlags := lDATA.ElementByName['Flags'];
   if not Assigned(lFlags) then
     Exit;
 
-  var lFlagsValue := lFlags.NativeValue;
+  lFlagsValue := lFlags.NativeValue;
      {Shadow Spotlight}
   if (lFlagsValue and $400) = 0 then
     if ((wbCS = False) or ((lFlagsValue and $4000) = 0)) then
@@ -1777,6 +1851,8 @@ begin
 end;
 
 function wbModelInfoDontShow(const aElement: IwbElement): Boolean;
+var
+  MainRecord: IwbMainRecord;
 begin
   if wbGameMode < gmTES5 then
     Exit(False);
@@ -1786,7 +1862,7 @@ begin
   if not Assigned(aElement) then
     Exit;
 
-  var MainRecord := aElement.GetContainingMainRecord;
+  MainRecord := aElement.GetContainingMainRecord;
 
   if not Assigned(MainRecord) then
     Exit;
@@ -1795,20 +1871,24 @@ begin
 end;
 
 function wbLCTNCellDontShow(const aElement: IwbElement): Boolean;
+var
+  lContainer: IwbContainer;
+  lLocation: IwbElement;
+  lMainRecord: IwbMainRecord;
 begin
   Result := False;
   if not Assigned(aElement) then
     Exit;
 
-  var lContainer := aElement.Container;
+  lContainer := aElement.Container;
   if not Assigned(lContainer) then
     Exit;
 
-  var lLocation := lContainer.ElementByName['World/Cell'];
+  lLocation := lContainer.ElementByName['World/Cell'];
   if not Assigned(lLocation) then
     Exit;
 
-  var lMainRecord := lLocation.LinksTo as IwbMainRecord;
+  lMainRecord := lLocation.LinksTo as IwbMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
@@ -1816,12 +1896,14 @@ begin
 end;
 
 function wbPACKTemplateDontShow(const aElement: IwbElement): Boolean;
+var
+  lMainRecord: IwbMainRecord;
 begin
   Result := False;
   if not Assigned(aElement) then
     Exit;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
@@ -1865,26 +1947,31 @@ begin
 end;
 
 function wbTemplateActorDontShow(const aElement: IwbElement): Boolean;
+var
+  lSubRecord: IwbContainerElementRef;
+  lMainRecord: IwbMainRecord;
+  lTemplateFlags: Cardinal;
+  shrInt: Integer;
+  lIdx: Integer;
 begin
   Result := False;
 
   if not Assigned(aElement) then
     Exit;
 
-  var lSubRecord: IwbContainerElementRef;
   if not Supports(aElement.ContainingSubRecord, IwbContainerElementRef, lSubRecord) then
     Exit;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
-  var lTemplateFlags := Cardinal(lMainRecord.ElementNativeValues['ACBS\Template Flags']);
+  lTemplateFlags := Cardinal(lMainRecord.ElementNativeValues['ACBS\Template Flags']);
   if lTemplateFlags = 0 then
     Exit(True);
 
-  var shrInt := -1;
-  for var lIdx := 0 to Pred(lSubRecord.ElementCount) do
+  shrInt := -1;
+  for lIdx := 0 to Pred(lSubRecord.ElementCount) do
     if aElement.Equals(lSubRecord.Elements[lIdx]) then
     begin
       shrInt := lIdx;
@@ -1898,10 +1985,12 @@ begin
 end;
 
 function wbTemplateActorsDontShow(const aElement: IwbElement): Boolean;
+var
+  lMainRecord: IwbMainRecord;
 begin
   Result := False;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
@@ -1917,6 +2006,9 @@ end;
 
 function wbNormalizeToRange(aMin, aMax: Extended): TwbFloatNormalizer;
 begin
+{$IFDEF FPC}
+  Result := nil;
+{$ELSE}
   Result := function(const aElement: IwbElement; aFloat: Extended): Extended
   begin
     if aFloat < aMin then
@@ -1926,17 +2018,20 @@ begin
     else
       Result := aFloat;
   end;
+{$ENDIF}
 end;
 
 {>>> Get Conflict Priority Callbacks <<<} //2
 
 procedure wbLandNormalsGetCP(const aElement: IwbElement; var aConflictPriority: TwbConflictPriority);
+var
+  MainRecord: IwbMainRecord;
 begin
   aConflictPriority := cpBenign;
   if not Assigned(aElement) then
     Exit;
 
-  var MainRecord := aElement.ContainingMainRecord;
+  MainRecord := aElement.ContainingMainRecord;
   if not Assigned(MainRecord) then
     Exit;
 
@@ -1945,6 +2040,8 @@ begin
 end;
 
 procedure wbModelInfoGetCP(const aElement: IwbElement; var aConflictPriority: TwbConflictPriority);
+var
+  MainRecord: IwbMainRecord;
 begin
   aConflictPriority := cpNormal;
 
@@ -1954,7 +2051,7 @@ begin
   if not Assigned(aElement) then
     Exit;
 
-  var MainRecord := aElement.GetContainingMainRecord;
+  MainRecord := aElement.GetContainingMainRecord;
 
   if not Assigned(MainRecord) then
     Exit;
@@ -1971,14 +2068,16 @@ end;
 function wbGetItemStr(const aContainer: IwbContainerElementRef): string;
 var
   MainRecord: IwbMainRecord;
+  FormID: IwbElement;
+  Count: IwbElement;
 begin
   Result := '';
 
-  var FormID := aContainer.Elements[0];
+  FormID := aContainer.Elements[0];
   if not wbTryGetMainRecord(FormID, MainRecord) then
     Exit;
 
-  var Count := aContainer.Elements[1];
+  Count := aContainer.Elements[1];
 
   Result := Count.Value + 'x ' + MainRecord.ShortName;
 end;
@@ -1990,17 +2089,24 @@ function wbGetPropertyValueArrayItems(const aContainer: IwbContainerElementRef):
 var
   ItemName   : string;
   MainRecord : IwbMainRecord;
+  Items: TStringList;
+  i: Integer;
+  ObjectUnion: IwbContainerElementRef;
+  ObjectVersion: string;
+  FormID: IwbElement;
+  Alias: IwbElement;
+  AliasValue: string;
 begin
-  var Items := TStringList.Create;
+  Items := TStringList.Create;
 
   if CompareStr(aContainer.Name, 'Array of Object') = 0 then
-    for var i := 0 to Pred(aContainer.ElementCount) do begin
-      var ObjectUnion := aContainer.Elements[i] as IwbContainerElementRef;
-      var ObjectVersion := IfThen(wbGetScriptObjFormat(ObjectUnion) = 0, 'v2', 'v1');
+    for i := 0 to Pred(aContainer.ElementCount) do begin
+      ObjectUnion := aContainer.Elements[i] as IwbContainerElementRef;
+      ObjectVersion := IfThen(wbGetScriptObjFormat(ObjectUnion) = 0, 'v2', 'v1');
 
-      var FormID := ObjectUnion.ElementByPath['Object ' + ObjectVersion + '\FormID'];
-      var Alias := ObjectUnion.ElementByPath['Object ' + ObjectVersion + '\Alias'];
-      var AliasValue := Alias.Value;
+      FormID := ObjectUnion.ElementByPath['Object ' + ObjectVersion + '\FormID'];
+      Alias := ObjectUnion.ElementByPath['Object ' + ObjectVersion + '\Alias'];
+      AliasValue := Alias.Value;
 
       if Supports(FormID.LinksTo, IwbMainRecord, MainRecord) then
         if MainRecord <> nil then
@@ -2017,7 +2123,7 @@ begin
           Items.Add('NULL');
     end
   else
-    for var i := 0 to Pred(aContainer.ElementCount) do
+    for i := 0 to Pred(aContainer.ElementCount) do
       Items.Add(aContainer.Elements[i].Value);
 
   Result := Items.CommaText;
@@ -2050,6 +2156,7 @@ end;
 function wbGetScriptObjFormat(const aElement: IwbElement): Integer;
 var
   Container: IwbContainer;
+  ObjFormat: Variant;
 begin
   Result := 0;
 
@@ -2063,7 +2170,7 @@ begin
   if Container = nil then
     Exit;
 
-  var ObjFormat := Container.ElementNativeValues['Object Format'];
+  ObjFormat := Container.ElementNativeValues['Object Format'];
 
   if ObjFormat = 1 then
     Result := 1;
@@ -2135,6 +2242,14 @@ end;
 {>>> Links To Callbacks <<<} //10
 
 function wbAliasLinksTo(aInt: Int64; const aQuestRef: IwbElement): IwbElement;
+var
+  lMainRecord: IwbMainRecord;
+  lAliases: IwbContainerElementRef;
+  i: Integer;
+  lAlias: IwbContainerElementRef;
+  lHasSignature: IwbHasSignature;
+  lALST: IwbElement;
+  j: Variant;
 begin
   Result := nil;
 
@@ -2145,7 +2260,6 @@ begin
     Exit;
 
   // aQuestRef can be a QUST record or reference to QUST record
-  var lMainRecord : IwbMainRecord;
   if not Supports(aQuestRef, IwbMainRecord, lMainRecord) then
     if not Supports(aQuestRef.LinksTo, IwbMainRecord, lMainRecord) then
       Exit;
@@ -2162,19 +2276,16 @@ begin
   if lMainRecord.Signature <> QUST then
     Exit;
 
-  var lAliases : IwbContainerElementRef;
   if Supports(lMainRecord.ElementByName['Aliases'], IwbContainerElementRef, lAliases) then
-    for var i := 0 to Pred(lAliases.ElementCount) do begin
-      var lAlias : IwbContainerElementRef;
+    for i := 0 to Pred(lAliases.ElementCount) do begin
       if Supports(lAliases.Elements[i], IwbContainerElementRef, lAlias) then begin
-        var lHasSignature: IwbHasSignature;
         if Supports(lAlias, IwbHasSignature, lHasSignature) and (lHasSignature.Signature = ALCS) then begin
-          var lALST := lAlias.ElementBySignature[ALST];
+          lALST := lAlias.ElementBySignature[ALST];
           if Assigned(lALST) then
             if not Supports(lALST, IwbContainerElementRef, lAlias) then
               Continue;
         end;
-        var j := lAlias.Elements[0].NativeValue;
+        j := lAlias.Elements[0].NativeValue;
         if j = aInt then
           Exit(lAlias);
       end;
@@ -2315,16 +2426,19 @@ begin
 end;
 
 function wbSCENAliasLinksTo(const aElement: IwbElement): IwbElement;
+var
+  lMainRecord: IwbMainRecord;
+  lAlias: Variant;
 begin
   Result := nil;
   if not wbResolveAlias then
     Exit;
 
-  var lMainRecord := aElement.ContainingMainRecord;
+  lMainRecord := aElement.ContainingMainRecord;
   if not Assigned(lMainRecord) then
     Exit;
 
-  var lAlias := aElement.NativeValue;
+  lAlias := aElement.NativeValue;
   if not VarIsOrdinal(lAlias) then
     Exit;
 
@@ -2492,6 +2606,9 @@ begin
 end;
 
 function wbAliasToInt(const aString: string; const aElement: IwbElement): Int64;
+var
+  i: Integer;
+  s: string;
 begin
   Result := -1;
 
@@ -2518,8 +2635,8 @@ begin
     Exit;
   end;
 
-  var i := 1;
-  var s := Trim(aString);
+  i := 1;
+  s := Trim(aString);
   while (i <= Length(s)) and (ANSIChar(s[i]) in ['-', '0'..'9']) do
     Inc(i);
   s := Copy(s, 1, Pred(i));
@@ -2528,13 +2645,15 @@ begin
 end;
 
 function wbConditionStringToInt(const aString: string; const aElement: IwbElement): Int64;
+var
+  lContainer: IwbContainerElementRef;
 begin
   Result := 0;
 
   if not Assigned(aElement) then
     Exit;
 
-  var lContainer := GetContainerFromUnion(aElement) as IwbContainerElementRef;
+  lContainer := GetContainerFromUnion(aElement) as IwbContainerElementRef;
   if not Assigned(lContainer) then
     Exit;
 
@@ -2597,9 +2716,12 @@ begin
 end;
 
 function wbQuestStageToInt(const aString: string; const aElement: IwbElement): Int64;
+var
+  i: Integer;
+  s: string;
 begin
-  var i := 1;
-  var s := Trim(aString);
+  i := 1;
+  s := Trim(aString);
   while (i <= Length(s)) and (s[i] in ['0'..'9']) do
     Inc(i);
   s := Copy(s, 1, Pred(i));
@@ -2706,6 +2828,12 @@ var
   EditInfos  : TStringList;
   Aliases    : IwbContainerElementRef;
   Alias      : IwbContainerElementRef;
+  i: Integer;
+  lHasSignature: IwbHasSignature;
+  lALST: IwbElement;
+  j: Variant;
+  s: string;
+  t: string;
 begin
   Result := '';
   case aType of
@@ -2788,20 +2916,19 @@ begin
 
   try
     if Supports(MainRecord.ElementByName['Aliases'], IwbContainerElementRef, Aliases) then begin
-      for var i := 0 to Pred(Aliases.ElementCount) do
+      for i := 0 to Pred(Aliases.ElementCount) do
         if Supports(Aliases.Elements[i], IwbContainerElementRef, Alias) then begin
-          var lHasSignature: IwbHasSignature;
           if Supports(Alias, IwbHasSignature, lHasSignature) and (lHasSignature.Signature = ALCS) then begin
-            var lALST := Alias.ElementBySignature[ALST];
+            lALST := Alias.ElementBySignature[ALST];
             if Assigned(lALST) then
               if not Supports(lALST, IwbContainerElementRef, Alias) then
                 Continue;
           end;
 
-          var j := Alias.Elements[0].NativeValue;
+          j := Alias.Elements[0].NativeValue;
           if Assigned(EditInfos) or (j = aInt) then begin
-            var s := Alias.ElementEditValues['ALID'];
-            var t := IntToStr(j);
+            s := Alias.ElementEditValues['ALID'];
+            t := IntToStr(j);
 
             while Length(t) < 3 do
               t := '0' + t;
@@ -2882,16 +3009,20 @@ begin
 end;
 
 function wbConditionAliasToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  lMainRecord: IwbMainRecord;
+  lSig: TwbSignature;
+  lTopic: IwbMainRecord;
 begin
   Result := '';
   if not Assigned(aElement) then
     Exit;
   if wbResolveAlias then begin
-    var lMainRecord := aElement.ContainingMainRecord;
+    lMainRecord := aElement.ContainingMainRecord;
     if not Assigned(lMainRecord) then
       Exit;
 
-    var lSig := lMainRecord.Signature;
+    lSig := lMainRecord.Signature;
     if lSig = QUST then
       Result := wbAliasToStr(aInt, lMainRecord, aType)
     else if lSig = SCEN then
@@ -2900,7 +3031,7 @@ begin
       Result := wbAliasToStr(aInt, lMainRecord.ElementBySignature['QNAM'], aType)
     else if lSig = INFO then begin
       // get DIAL for INFO
-      var lTopic := (lMainRecord.ElementByName['Topic'].LinksTo as IwbMainRecord).HighestOverrideVisibleForFile[aElement._File];
+      lTopic := (lMainRecord.ElementByName['Topic'].LinksTo as IwbMainRecord).HighestOverrideVisibleForFile[aElement._File];
       Result := wbAliasToStr(aInt, lTopic.ElementBySignature['QNAM'], aType);
     end;
   end else begin
@@ -2912,12 +3043,14 @@ begin
 end;
 
 function wbConditionStringToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  lContainer: IwbContainerElementRef;
 begin
   Result := '';
   if not Assigned(aElement) then
     Exit;
 
-  var lContainer := GetContainerFromUnion(aElement) as IwbContainerElementRef;
+  lContainer := GetContainerFromUnion(aElement) as IwbContainerElementRef;
   if not Assigned(lContainer) then
     Exit;
 
@@ -3190,17 +3323,20 @@ begin
 end;
 
 function wbINFOAliasToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  lMainRecord: IwbMainRecord;
+  lTopic: IwbMainRecord;
 begin
   Result := '';
   if not Assigned(aElement) then
     Exit;
 
   if wbResolveAlias then begin
-    var lMainRecord := aElement.ContainingMainRecord;
+    lMainRecord := aElement.ContainingMainRecord;
     if not Assigned(lMainRecord) then
       Exit;
 
-    var lTopic := lMainRecord.ElementByName['Topic'].LinksTo as IwbMainRecord;
+    lTopic := lMainRecord.ElementByName['Topic'].LinksTo as IwbMainRecord;
     if not Assigned(lTopic) then
       Exit;
 
@@ -3260,13 +3396,15 @@ begin
 end;
 
 function wbPackageLocationAliasToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  lMainRecord: IwbMainRecord;
 begin
   Result := '';
   if not Assigned(aElement) then
     Exit;
 
   if wbResolveAlias then begin
-    var lMainRecord := aElement.ContainingMainRecord;
+    lMainRecord := aElement.ContainingMainRecord;
     if not Assigned(lMainRecord) then
       Exit;
 
@@ -3280,13 +3418,15 @@ begin
 end;
 
 function wbQuestAliasToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  lMainRecord: IwbMainRecord;
 begin
   Result := '';
   if not Assigned(aElement) then
     Exit;
 
   if wbResolveAlias then begin
-    var lMainRecord := aElement.ContainingMainRecord;
+    lMainRecord := aElement.ContainingMainRecord;
     if not Assigned(lMainRecord) then
       Exit;
 
@@ -3300,14 +3440,15 @@ begin
 end;
 
 function wbQuestExternalAliasToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  lCER: IwbContainerElementRef;
 begin
   Result := '';
   if not Assigned(aElement) then
     Exit;
 
   if wbResolveAlias then begin
-    var lCER : IwbContainerElementRef;
-    if not Assigned(lCER) then
+    if not Supports(aElement.Container, IwbContainerElementRef, lCER) then
       Exit;
 
     Result := wbAliasToStr(aInt, lCER.ElementBySignature['ALEQ'] , aType);
@@ -3386,13 +3527,15 @@ begin
 end;
 
 function wbSceneAliasToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  lMainRecord: IwbMainRecord;
 begin
   Result := '';
   if not Assigned(aElement) then
     Exit;
 
   if wbResolveAlias then begin
-    var lMainRecord := aElement.ContainingMainRecord;
+    lMainRecord := aElement.ContainingMainRecord;
     if not Assigned(lMainRecord) then
       Exit;
 
@@ -3406,13 +3549,15 @@ begin
 end;
 
 function wbScriptObjectAliasToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  lCER: IwbContainerElementRef;
 begin
   Result := '';
   if not Assigned(aElement) then
     Exit;
 
   if wbResolveAlias then begin
-    var lCER := aElement.Container as IwbContainerElementRef;
+    lCER := aElement.Container as IwbContainerElementRef;
     if not Assigned(lCER) then
       Exit;
 
@@ -3605,6 +3750,15 @@ procedure wbConditionToStr(var aValue: string; aBasePtr: Pointer; aEndPtr: Point
 var
   Container : IwbContainerElementRef;
   cerCTDA   : IwbContainerElementRef;
+  Typ       : Byte;
+  Func      : IwbElement;
+  RunOn     : IwbElement;
+  RunOnInt  : Integer;
+  FuncInt   : Integer;
+  Param1    : IwbElement;
+  Param2    : IwbElement;
+  Conditions: IwbContainerElementRef;
+  l         : Integer;
 begin
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
@@ -3615,18 +3769,18 @@ begin
   end else
     cerCTDA := Container;
 
-  var Typ : Byte := cerCTDA.Elements[0].NativeValue;
-  var Func := cerCTDA.Elements[3];
+  Typ := cerCTDA.Elements[0].NativeValue;
+  Func := cerCTDA.Elements[3];
 
   if (cerCTDA.ElementCount >= 9)
   and (cerCTDA.Elements[7].Def.DefType <> dtEmpty)
   and (cerCTDA.Elements[8].Def.DefType <> dtEmpty) then begin
-    var RunOn := cerCTDA.Elements[7];
+    RunOn := cerCTDA.Elements[7];
 
-    var RunOnInt: Integer := RunOn.NativeValue;
+    RunOnInt := RunOn.NativeValue;
 
     if wbIsFalloutNV then begin
-      var FuncInt: Integer := Func.NativeValue;
+      FuncInt := Func.NativeValue;
       if (FuncInt = 106) or (FuncInt = 285) then
         RunOnInt := 0;
     end;
@@ -3644,11 +3798,11 @@ begin
 
   aValue := aValue + '.' + Func.Summary;
 
-  var Param1 := cerCTDA.Elements[5];
+  Param1 := cerCTDA.Elements[5];
   if Param1.ConflictPriority <> cpIgnore then begin
     aValue := aValue + '(' {+ Param1.Name + ': '} + Param1.Summary;
 
-    var Param2 := cerCTDA.Elements[6];
+    Param2 := cerCTDA.Elements[6];
     if Param2.ConflictPriority <> cpIgnore then
       aValue := aValue + ', ' {+ Param2.Name + ': '} + Param2.Summary;
 
@@ -3666,10 +3820,9 @@ begin
 
   aValue := aValue + cerCTDA.Elements[2].Summary;
 
-  var Conditions: IwbContainerElementRef;
   if Supports(Container.Container, IwbContainerElementRef, Conditions) then
   begin
-    var l := Conditions.ElementCount;
+    l := Conditions.ElementCount;
     if (l < 2) or Container.Equals(Conditions.Elements[Pred(l)]) then
       Exit;
   end;
@@ -3684,26 +3837,30 @@ procedure wbCrowdPropertyToStr(var aValue: string; aBasePtr: Pointer; aEndPtr: P
 var
   Container: IwbContainerElementRef;
   MainRecord: IwbMainRecord;
+  ActorForm: IwbElement;
+  ActorValueData: IwbElement;
+  CurveTable: IwbContainerElementRef;
+  CurveTableForm: IwbElement;
 begin
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
-  var ActorForm := Container.ElementByName['Actor'];
+  ActorForm := Container.ElementByName['Actor'];
   if not wbTryGetMainRecord(ActorForm, MainRecord) then
     Exit;
 
-  var ActorValueData := Container.ElementByName['Value'];
+  ActorValueData := Container.ElementByName['Value'];
 
   aValue := MainRecord.EditorID + ' = ' + Format('%.*g', [5, StrToFloat(ActorValueData.Value)]);
 
   if not (wbGameMode in [gmFO76, gmSF1]) then
     Exit;
 
-  var CurveTable := Container.ElementByName['Curve Table'] as IwbContainerElementRef;
+  CurveTable := Container.ElementByName['Curve Table'] as IwbContainerElementRef;
   if not Assigned(CurveTable) then
     Exit;
 
-  var CurveTableForm := CurveTable.ElementByName['Curve Table'];
+  CurveTableForm := CurveTable.ElementByName['Curve Table'];
   if not wbTryGetMainRecord(CurveTableForm, MainRecord) then
     Exit;
 
@@ -3713,20 +3870,23 @@ end;
 procedure wbFactionRelationToStr(var aValue: string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType);
 var
   Container: IwbContainerElementRef;
+  Faction: IwbElement;
+  Reaction: IwbElement;
+  NativeReaction: Variant;
 begin
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
-  var Faction := Container.Elements[0];
+  Faction := Container.Elements[0];
   if not Assigned(Faction.LinksTo) then
     Exit;
 
-  var Reaction := Container.Elements[1];
+  Reaction := Container.Elements[1];
 
   aValue := Faction.Value;
 
   if wbIsOblivion then begin
-    var NativeReaction := Reaction.NativeValue;
+    NativeReaction := Reaction.NativeValue;
 
     aValue := IntToStr(NativeReaction) + ' ' + aValue;
 
@@ -3760,19 +3920,21 @@ begin
 end;
 
 procedure wbNPCPackageToStr(var aValue: string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType);
+var
+  lPACKRecord: IwbMainRecord;
+  lQNAM: IwbElement;
+  lQUSTRecord: IwbMainRecord;
 begin
   if not Assigned(aElement) then
     Exit;
 
-  var lPACKRecord : IwbMainRecord;
   if not Supports(aElement.LinksTo, IwbMainRecord, lPACKRecord) then
     Exit;
 
-  var lQNAM := lPACKRecord.ElementBySignature[QNAM];
+  lQNAM := lPACKRecord.ElementBySignature[QNAM];
   if not Assigned(lQNAM) then
     Exit;
 
-  var lQUSTRecord : IwbMainRecord;
   if not Supports(lQNAM.LinksTo, IwbMainRecord, lQUSTRecord) then
     Exit;
 
@@ -3786,26 +3948,30 @@ procedure wbObjectPropertyToStr(var aValue: string; aBasePtr: Pointer; aEndPtr: 
 var
   Container  : IwbContainerElementRef;
   MainRecord : IwbMainRecord;
+  ActorValueForm: IwbElement;
+  ActorValueData: IwbElement;
+  CurveTable: IwbContainerElementRef;
+  CurveTableForm: IwbElement;
 begin
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
-  var ActorValueForm := Container.ElementByName['Actor Value'];
+  ActorValueForm := Container.ElementByName['Actor Value'];
   if not wbTryGetMainRecord(ActorValueForm, MainRecord) then
     Exit;
 
-  var ActorValueData := Container.ElementByName['Value'];
+  ActorValueData := Container.ElementByName['Value'];
 
   aValue := MainRecord.EditorID + ' = ' + Format('%.*g', [5, StrToFloat(ActorValueData.Value)]);
 
   if not (wbGameMode in [gmFO76, gmSF1]) then
     Exit;
 
-  var CurveTable := Container.ElementByName['Curve Table'] as IwbContainerElementRef;
+  CurveTable := Container.ElementByName['Curve Table'] as IwbContainerElementRef;
   if not Assigned(CurveTable) then
     Exit;
 
-  var CurveTableForm := CurveTable.ElementByName['Curve Table'];
+  CurveTableForm := CurveTable.ElementByName['Curve Table'];
   if not wbTryGetMainRecord(CurveTableForm, MainRecord) then
     Exit;
 
@@ -3846,31 +4012,35 @@ end;
 procedure wbScriptToStr(var aValue: string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType);
 var
   CER: IwbContainerElementRef;
+  SCDAEl: IwbElement;
+  SCTXEl: IwbElement;
+  i: Integer;
+  s: string;
 begin
   if not wbTrySetContainer(aElement, aType, CER) then
     Exit;
 
-  var SCDA := CER.ElementBySignature[SCDA];
+  SCDAEl := CER.ElementBySignature[SCDA];
   if wbIsMorrowind then
-    SCDA := CER.ElementBySignature[SCDT];
-  var SCTX := CER.ElementBySignature[SCTX];
+    SCDAEl := CER.ElementBySignature[SCDT];
+  SCTXEl := CER.ElementBySignature[SCTX];
 
-  if not Assigned(SCDA) then begin
-    aValue := IfThen(Assigned(SCTX), '<Source not compiled>', '<Empty>');
+  if not Assigned(SCDAEl) then begin
+    aValue := IfThen(Assigned(SCTXEl), '<Source not compiled>', '<Empty>');
     Exit;
   end;
 
-  if not Assigned(SCTX) then begin
+  if not Assigned(SCTXEl) then begin
     aValue := '<Source missing>';
     Exit;
   end;
 
   with TStringList.Create do
   try
-    Text := SCTX.Value;
+    Text := SCTXEl.Value;
 
-    for var i := Pred(Count) downto 0 do begin
-      var s := Strings[i].Trim;
+    for i := Pred(Count) downto 0 do begin
+      s := Strings[i].Trim;
 
       if s.StartsWith(';') then
         s := '';
@@ -3895,22 +4065,25 @@ procedure wbScriptPropertyToStr(var aValue: string; aBasePtr: Pointer; aEndPtr: 
 var
   Container: IwbContainerElementRef;
   PropertyValue: string;
+  PropertyTypeElement: IwbElement;
+  PropertyName: string;
+  PropertyType: string;
 begin
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
-  var PropertyTypeElement := Container.ElementByName['Type'];
+  PropertyTypeElement := Container.ElementByName['Type'];
 
   // 0 = None
   if PropertyTypeElement.NativeValue = 0 then
     Exit;
 
-  var PropertyName := Container.ElementByName['propertyName'].Value;
+  PropertyName := Container.ElementByName['propertyName'].Value;
 
   if Length(PropertyName) = 0 then
     Exit;
 
-  var PropertyType := PropertyTypeElement.Value;
+  PropertyType := PropertyTypeElement.Value;
 
   // 1 = Object
   if PropertyTypeElement.NativeValue = 1 then
@@ -3943,8 +4116,10 @@ end;
 
 /// <summary>Fills PropertyType and PropertyValue from array assigned to property</summary>
 procedure wbScriptPropertyArrayToStr(const aContainer: IwbContainerElementRef; var PropertyType: string; var PropertyValue: string);
+var
+  ArrayContainer: IwbContainerElementRef;
 begin
-  var ArrayContainer := aContainer.ElementByPath['Value\' + PropertyType] as IwbContainerElementRef;
+  ArrayContainer := aContainer.ElementByPath['Value\' + PropertyType] as IwbContainerElementRef;
 
   if not (ArrayContainer.ElementCount > 0) then
     Exit;
@@ -3957,17 +4132,22 @@ end;
 procedure wbScriptPropertyObjectToStr(const aContainer: IwbContainerElementRef; var PropertyName: string; var PropertyType: string; var PropertyValue: string);
 var
   MainRecord: IwbMainRecord;
+  ObjectUnion: IwbContainerElementRef;
+  Version: string;
+  FormID: IwbElement;
+  Alias: IwbElement;
+  AliasValue: string;
 begin
   PropertyValue := 'NULL';
 
-  var ObjectUnion := aContainer.ElementByPath['Value\Object Union'] as IwbContainerElementRef;
+  ObjectUnion := aContainer.ElementByPath['Value\Object Union'] as IwbContainerElementRef;
 
-  var Version := IfThen(wbGetScriptObjFormat(ObjectUnion) = 0, 'v2', 'v1');
+  Version := IfThen(wbGetScriptObjFormat(ObjectUnion) = 0, 'v2', 'v1');
 
-  var FormID := ObjectUnion.ElementByPath['Object ' + Version + '\FormID'];
-  var Alias := ObjectUnion.ElementByPath['Object ' + Version + '\Alias'];
+  FormID := ObjectUnion.ElementByPath['Object ' + Version + '\FormID'];
+  Alias := ObjectUnion.ElementByPath['Object ' + Version + '\Alias'];
 
-  var AliasValue := Alias.Value;
+  AliasValue := Alias.Value;
 
   // compare length, too, because v1 doesn't default to 'None'
   if not (CompareStr(AliasValue, 'None') = 0) and not (Length(AliasValue) = 0) then begin
@@ -3982,21 +4162,25 @@ begin
 end;
 
 procedure wbToStringFromLinksToSummary(var aValue:string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType);
+var
+  lLinksTo: IwbElement;
+  lSummary: string;
+  lMainRecord: IwbMainRecord;
+  lRecordName: string;
 begin
   case aType of
     ctToStr:
     begin
       if Assigned(aElement) then begin
-        var lLinksTo := aElement.LinksTo;
+        lLinksTo := aElement.LinksTo;
         if Assigned(lLinksTo) then begin
-          var lSummary := lLinksTo.Summary;
+          lSummary := lLinksTo.Summary;
           if lSummary <> '' then begin
             aValue := lSummary;
-            var lMainRecord: IwbMainRecord;
             if not Supports(lLinksTo, IwbMainRecord) and
                    wbTryGetContainingMainRecord(lLinksTo, lMainRecord)
             then begin
-              var lRecordName := lMainRecord.Name;
+              lRecordName := lMainRecord.Name;
               if lRecordName <> '' then
                 aValue := aValue + ' on ' + lRecordName;
             end;
@@ -4008,6 +4192,10 @@ begin
 end;
 
 procedure wbToStringFromLinksToMainRecordName(var aValue: string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType);
+var
+  lLinksTo: IwbElement;
+  lMainRecord: IwbMainRecord;
+  lRecordName: string;
 begin
   case aType of
     ctToStr:
@@ -4020,15 +4208,14 @@ begin
       if not Assigned(aElement) then
         Exit;
 
-      var lLinksTo := aElement.LinksTo;
+      lLinksTo := aElement.LinksTo;
       if not Assigned(lLinksTo) then
         Exit;
 
-      var lMainRecord: IwbMainRecord;
       if not Supports(lLinksTo, IwbMainRecord, lMainRecord) then
         Exit;
 
-      var lRecordName := lMainRecord.Name;
+      lRecordName := lMainRecord.Name;
       if lRecordName <> '' then
         aValue := aValue + ' ' + lRecordName;
     end;
@@ -4039,13 +4226,16 @@ end;
 procedure wbVec3ToStr(var aValue: string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType);
 var
   Container: IwbContainerElementRef;
+  X: string;
+  Y: string;
+  Z: string;
 begin
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
-  var X := Container.Elements[0].Summary;
-  var Y := Container.Elements[1].Summary;
-  var Z := Container.Elements[2].Summary;
+  X := Container.Elements[0].Summary;
+  Y := Container.Elements[1].Summary;
+  Z := Container.Elements[2].Summary;
 
   aValue := '' + '(' + X + ', ' + Y + ', ' + Z + ')';
 end;
@@ -4053,12 +4243,14 @@ end;
 {>>> RUnion Deciders <<<} //2
 
 function wbSceneActionTypeDecider(const aContainer: IwbContainerElementRef): Integer;
+var
+  lType: Variant;
 begin
   Result := -1;
   if not Assigned(aContainer) then
     Exit;
 
-  var lType := aContainer.ElementNativeValues[ANAM];
+  lType := aContainer.ElementNativeValues[ANAM];
   if not VarIsOrdinal(lType) then
     Exit;
 
@@ -4066,12 +4258,14 @@ begin
 end;
 
 function wbSceneTimelineTypeDecider(const aContainer: IwbContainerElementRef): Integer;
+var
+  lType: Variant;
 begin
   Result := -1;
   if not Assigned(aContainer) then
     Exit;
 
-  var lType := aContainer.ElementNativeValues[TNAM];
+  lType := aContainer.ElementNativeValues[TNAM];
   if not VarIsOrdinal(lType) then
     Exit;
 
@@ -4134,19 +4328,22 @@ begin
 end;
 
 function wbConditionParam3Decider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
+var
+  lContainer : IwbContainer;
+  lRunOn     : Integer;
 begin
-   Result := 0;
-   var lContainer : IwbContainer;
-   if not wbTryGetContainerFromUnion(aElement, lContainer) then
-     Exit;
+  Result := 0;
+  if not wbTryGetContainerFromUnion(aElement, lContainer) then
+    Exit;
 
-   var lRunOn := lContainer.ElementByName['Run On'].NativeValue;
-   Result := lRunOn;
+  lRunOn := lContainer.ElementByName['Run On'].NativeValue;
+  Result := lRunOn;
 end;
 
 function wbConditionReferenceDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 var
   Container: IwbContainer;
+  i        : Integer;
 begin
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
@@ -4154,7 +4351,7 @@ begin
 
   if wbIsFalloutNV then begin
     // IsFacingUp, IsLeftUp
-    var i := Container.ElementNativeValues['Function'];
+    i := Container.ElementNativeValues['Function'];
     if (i = 106) or (i = 285) then
       Exit;
   end;
@@ -4163,8 +4360,18 @@ begin
     Result := 1;
 end;
 
+{$IFDEF FPC}
+function wbFpcDefaultUnionDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
+begin
+  Result := 0;
+end;
+{$ENDIF}
+
 function wbFlagDecider(aFlag: Byte): TwbUnionDecider;
 begin
+{$IFDEF FPC}
+  Result := wbFpcDefaultUnionDecider;
+{$ELSE}
   if aFlag > High(_FlagDeciders) then
     SetLength(_FlagDeciders, Succ(aFlag));
 
@@ -4189,10 +4396,14 @@ begin
       end;
 
   Result := _FlagDeciders[aFlag];
+{$ENDIF}
 end;
 
 function wbFormVersionDecider(aVersion: Integer): TwbUnionDecider;
 begin
+{$IFDEF FPC}
+  Result := wbFpcDefaultUnionDecider;
+{$ELSE}
   if aVersion > High(_FormVersionDeciders) then
     SetLength(_FormVersionDeciders, Succ(aVersion));
 
@@ -4216,10 +4427,14 @@ begin
       end;
 
   Result := _FormVersionDeciders[aVersion];
+{$ENDIF}
 end;
 
 function wbFormVersionDecider(aMinVersion, aMaxVersion: Integer): TwbUnionDecider; overload;
 begin
+{$IFDEF FPC}
+  Result := wbFpcDefaultUnionDecider;
+{$ELSE}
   Result :=
     function(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer
     var
@@ -4237,20 +4452,27 @@ begin
 
       Exit(0);
     end;
+{$ENDIF}
 end;
 
 function wbFormVersionDecider(const aVersions: array of Integer): TwbUnionDecider; overload;
 var
   Versions : TArray<Integer>;
+  i        : Integer;
 begin
+{$IFDEF FPC}
+  Result := wbFpcDefaultUnionDecider;
+{$ELSE}
   SetLength(Versions, Length(aVersions));
-  for var i := Low(aVersions) to High(aVersions) do
+  for i := Low(aVersions) to High(aVersions) do
     Versions[i] := aVersions[i];
 
   Result :=
     function(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer
     var
       MainRecord : IwbMainRecord;
+      FormVersion: Integer;
+      i          : Integer;
     begin
       if not Assigned(aElement) then
         Exit(0);
@@ -4259,23 +4481,27 @@ begin
       if not Assigned(MainRecord) then
         Exit(0);
 
-      var FormVersion := MainRecord.Version;
+      FormVersion := MainRecord.Version;
 
-      for var i := Low(Versions) to High(Versions) do
+      for i := Low(Versions) to High(Versions) do
         if FormVersion < Versions[i] then
           Exit(i);
 
       Exit(Length(Versions));
     end;
+{$ENDIF}
 end;
 
 function wbGMSTUnionDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
+var
+  lEDID     : IwbElement;
+  lEditorID : string;
 begin
   Result := 1; //IntS32 is the most "harmless"
   if Assigned(aElement) then begin;
-    var lEDID := aElement.Container.RecordBySignature['EDID'];
+    lEDID := aElement.Container.RecordBySignature['EDID'];
     if Assigned(lEDID) then begin
-      var lEditorID := lEDID.Value;
+      lEditorID := lEDID.Value;
       if Length(lEditorID) > 0 then begin
         case lEditorID[1] of
           's': Result := 0; {String} {>>> Localization Strings <<<}
@@ -4296,18 +4522,21 @@ begin
 end;
 
 function wbModelInfoDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
+var
+  MainRecord : IwbMainRecord;
+  Version    : Integer;
 begin
   Result := 0;
 
   if not Assigned(aElement) then
     Exit;
 
-  var MainRecord := aElement.GetContainingMainRecord;
+  MainRecord := aElement.GetContainingMainRecord;
 
   if not Assigned(MainRecord) then
     Exit;
 
-  var Version := MainRecord.Version;
+  Version := MainRecord.Version;
 
   if Version >= 40 then begin
     if Assigned(aBasePtr) and Assigned(aEndPtr) and ((NativeUInt(aEndPtr)-NativeUInt(aBasePtr)) >= SizeOf(Cardinal)) and (PCardinal(aBasePtr)^ > 8 {arbitary limit of 8 supported headers for now}) then
@@ -4323,15 +4552,17 @@ end;
 function wbNoFlagsDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 var
   lContainer: IwbContainerElementRef;
+  lFlags    : IwbElement;
+  lFlagBits : Integer;
 begin
   if not wbTryGetContainerRefFromUnionOrValue(aElement, lContainer) then
     Exit(0);
 
-  var lFlags := lContainer.ElementByPath['Flags'];
+  lFlags := lContainer.ElementByPath['Flags'];
   if not Assigned(lFlags) then
     Exit(0);
 
-  var lFlagBits: Integer := lFlags.NativeValue;
+  lFlagBits := lFlags.NativeValue;
   if lFlagBits = 0 then
     Exit(1);
 
@@ -4366,20 +4597,22 @@ begin
 end;
 
 function wbNAVIIslandDataDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
+var
+  lContainer: IwbContainer;
+  lElement  : IwbElement;
 begin
   Result := 0;
 
   if not Assigned(aElement) then
     Exit;
 
-  var lContainer: IwbContainer;
   if not Supports(aElement, IwbContainer, lContainer) then
     lContainer := aElement.Container;
 
   if not Assigned(lContainer) then
     Exit;
 
-  var lElement := lContainer.ElementByPath['...\Has Island Data'];
+  lElement := lContainer.ElementByPath['...\Has Island Data'];
   if not Assigned(lElement) then
     Exit;
 
@@ -4387,20 +4620,22 @@ begin
 end;
 
 function wbNAVIParentDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
+var
+  lContainer: IwbContainer;
+  lElement  : IwbElement;
 begin
   Result := 0;
 
   if not Assigned(aElement) then
     Exit;
 
-  var lContainer: IwbContainer;
   if not Supports(aElement, IwbContainer, lContainer) then
     lContainer := aElement.Container;
 
   if not Assigned(lContainer) then
     Exit;
 
-  var lElement := lContainer.ElementByPath['...\Parent World'];
+  lElement := lContainer.ElementByPath['...\Parent World'];
   if not Assigned(lElement) then
     Exit;
 
@@ -4443,6 +4678,9 @@ end;
 
 function wbRecordSizeDecider(aSize: Integer): TwbUnionDecider;
 begin
+{$IFDEF FPC}
+  Result := wbFpcDefaultUnionDecider;
+{$ELSE}
   if aSize > High(_RecordSizeDeciders) then
     SetLength(_RecordSizeDeciders, Succ(aSize));
 
@@ -4465,10 +4703,14 @@ begin
       end;
 
   Result := _RecordSizeDeciders[aSize];
+{$ENDIF}
 end;
 
 function wbRecordSizeDecider(aMinSize, aMaxSize: Integer): TwbUnionDecider; overload;
 begin
+{$IFDEF FPC}
+  Result := wbFpcDefaultUnionDecider;
+{$ELSE}
   Result :=
     function(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer
     var
@@ -4485,20 +4727,27 @@ begin
 
       Exit(0);
     end;
+{$ENDIF}
 end;
 
 function wbRecordSizeDecider(const aSizes: array of Integer): TwbUnionDecider; overload;
 var
   Sizes : TArray<Integer>;
+  i     : Integer;
 begin
+{$IFDEF FPC}
+  Result := wbFpcDefaultUnionDecider;
+{$ELSE}
   SetLength(Sizes, Length(aSizes));
-  for var i := Low(aSizes) to High(aSizes) do
+  for i := Low(aSizes) to High(aSizes) do
     Sizes[i] := aSizes[i];
 
   Result :=
     function(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer
     var
       SubRecord : IwbSubRecord;
+      DataSize  : Integer;
+      i         : Integer;
     begin
       if not Assigned(aElement) then
         Exit(0);
@@ -4506,13 +4755,14 @@ begin
       if not Supports(aElement, IwbSubRecord, SubRecord) then
         Exit(0);
 
-      var DataSize := SubRecord.DataSize;
-      for var i := Low(Sizes) to High(Sizes) do
+      DataSize := SubRecord.DataSize;
+      for i := Low(Sizes) to High(Sizes) do
         if DataSize < Sizes[i] then
           Exit(i);
 
       Exit(Length(Sizes));
     end;
+{$ENDIF}
 end;
 
 function wbScriptObjFormatDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
@@ -4610,17 +4860,17 @@ end;
 function wbHasNoFlags(const aValue: IwbValueDef; aIsUnused: Boolean = True): IwbValueDef;
 begin
   if aIsUnused then
-    Result :=
+    Result := IwbValueDef(
       wbUnion(aValue.Name, wbNoFlagsDecider, [
         wbUnused(),
         aValue
-      ]).IncludeFlag(dfMustBeUnion)
+      ]).IncludeFlag(dfMustBeUnion))
   else
-      Result :=
+      Result := IwbValueDef(
       wbUnion(aValue.Name, wbNoFlagsDecider, [
         wbEmpty(aValue.Name),
         aValue
-      ]).IncludeFlag(dfMustBeUnion);
+      ]).IncludeFlag(dfMustBeUnion));
 end;
 
 function wbIsFlag(aFlag: Integer; const aSignature: TwbSignature; const aValue: IwbValueDef; aIsUnused: Boolean = True): IwbRecordMemberDef;
@@ -4642,17 +4892,17 @@ end;
 function wbIsFlag(aFlag: Integer; const aValue: IwbValueDef; aIsUnused: Boolean = True): IwbValueDef;
 begin
   if aIsUnused then
-    Result :=
+    Result := IwbValueDef(
       wbUnion(aValue.Name, wbFlagDecider(aFlag), [
         wbUnused(),
         aValue
-      ]).IncludeFlag(dfMustBeUnion)
+      ]).IncludeFlag(dfMustBeUnion))
   else
-      Result :=
+      Result := IwbValueDef(
       wbUnion(aValue.Name, wbFlagDecider(aFlag), [
         wbEmpty(aValue.Name),
         aValue
-      ]).IncludeFlag(dfMustBeUnion);
+      ]).IncludeFlag(dfMustBeUnion));
 end;
 
 function wbIsNotFlag(aFlag: Integer; const aSignature: TwbSignature; const aValue: IwbValueDef; aIsUnused: Boolean = True): IwbRecordMemberDef;
@@ -4674,17 +4924,17 @@ end;
 function wbIsNotFlag(aFlag: Integer; const aValue: IwbValueDef; aIsUnused: Boolean = True): IwbValueDef;
 begin
   if aIsUnused then
-    Result :=
+    Result := IwbValueDef(
       wbUnion(aValue.Name, wbFlagDecider(aFlag), [
         aValue,
         wbUnused()
-      ]).IncludeFlag(dfMustBeUnion)
+      ]).IncludeFlag(dfMustBeUnion))
   else
-      Result :=
+      Result := IwbValueDef(
       wbUnion(aValue.Name, wbFlagDecider(aFlag), [
         aValue,
         wbEmpty(aValue.Name)
-      ]).IncludeFlag(dfMustBeUnion);
+      ]).IncludeFlag(dfMustBeUnion));
 end;
 
 {>>> DLL Mod IfThen Defs <<<} //4
@@ -4992,17 +5242,17 @@ end;
 function wbBelowSize(aSize: Integer; const aValue: IwbValueDef; aIsUnused: Boolean = True): IwbValueDef;
 begin
   if aIsUnused then
-    Result :=
+    Result := IwbValueDef(
       wbUnion(aValue.Name, wbRecordSizeDecider(aSize), [
         aValue,
         wbUnused()
-      ]).IncludeFlag(dfUnionStaticResolve)
+      ]).IncludeFlag(dfUnionStaticResolve))
   else
-      Result :=
+      Result := IwbValueDef(
       wbUnion(aValue.Name, wbRecordSizeDecider(aSize), [
         aValue,
         wbEmpty(aValue.Name)
-      ]).IncludeFlag(dfUnionStaticResolve);
+      ]).IncludeFlag(dfUnionStaticResolve));
 end;
 
 function wbFromSize(aSize: Integer; const aSignature: TwbSignature; const aValue: IwbValueDef; aIsUnused: Boolean = True): IwbRecordMemberDef;
@@ -5025,17 +5275,17 @@ end;
 function wbFromSize(aSize: Integer; const aValue: IwbValueDef; aIsUnused: Boolean = True): IwbValueDef;
 begin
   if aIsUnused then
-    Result :=
+    Result := IwbValueDef(
       wbUnion(aValue.Name, wbRecordSizeDecider(aSize), [
         wbUnused(),
         aValue
-      ]).IncludeFlag(dfUnionStaticResolve)
+      ]).IncludeFlag(dfUnionStaticResolve))
   else
-      Result :=
+      Result := IwbValueDef(
       wbUnion(aValue.Name, wbRecordSizeDecider(aSize), [
         wbEmpty(aValue.Name),
         aValue
-      ]).IncludeFlag(dfUnionStaticResolve);
+      ]).IncludeFlag(dfUnionStaticResolve));
 end;
 
 {>>> Version IfThen Defs <<<} //4
@@ -5051,11 +5301,11 @@ end;
 
 function wbBelowVersion(aVersion: Integer; const aValue: IwbValueDef): IwbValueDef;
 begin
-  Result :=
+  Result := IwbValueDef(
     wbUnion(aValue.Name, wbFormVersionDecider(aVersion), [
       aValue,
       wbEmpty(aValue.Name, cpIgnore)
-    ]).IncludeFlag(dfUnionStaticResolve);
+    ]).IncludeFlag(dfUnionStaticResolve));
 end;
 
 function wbFromVersion(aVersion: Integer; const aSignature: TwbSignature; const aValue: IwbValueDef): IwbRecordMemberDef;
@@ -5069,11 +5319,11 @@ end;
 
 function wbFromVersion(aVersion: Integer; const aValue: IwbValueDef): IwbValueDef;
 begin
-  Result :=
+  Result := IwbValueDef(
     wbUnion(aValue.Name, wbFormVersionDecider(aVersion), [
       wbEmpty(aValue.Name, cpIgnore),
       aValue
-    ]).IncludeFlag(dfUnionStaticResolve);
+    ]).IncludeFlag(dfUnionStaticResolve));
 end;
 
 {>>> Vec3 Defs <<<} //11
@@ -5082,17 +5332,17 @@ function wbVec3(const aName   : string = 'Unknown';
                 const aPrefix : string = '')
                               : IwbValueDef;
 begin
-  Result :=
+  Result := IwbValueDef(
     wbStruct(aName, [
-      wbFloat('X'),
-      wbFloat('Y'),
-      wbFloat('Z')
+      wbFloat(string('X')),
+      wbFloat(string('Y')),
+      wbFloat(string('Z'))
     ]).SetSummaryKey([0, 1, 2])
       .SetSummaryMemberPrefixSuffix(0, aPrefix + '(', '')
       .SetSummaryMemberPrefixSuffix(2, '', ')')
       .SetSummaryDelimiter(', ')
       .IncludeFlag(dfSummaryMembersNoName)
-      .IncludeFlag(dfCollapsed, wbCollapseVec3);
+      .IncludeFlag(dfCollapsed, wbCollapseVec3));
 end;
 
 function wbVec3(const aSignature : TwbSignature;
@@ -5100,17 +5350,17 @@ function wbVec3(const aSignature : TwbSignature;
                 const aPrefix    : string = '')
                                  : IwbRecordMemberDef;
 begin
-  Result :=
+  Result := IwbRecordMemberDef(
     wbStruct(aSignature, aName, [
-      wbFloat('X'),
-      wbFloat('Y'),
-      wbFloat('Z')
+      wbFloat(string('X')),
+      wbFloat(string('Y')),
+      wbFloat(string('Z'))
     ]).SetSummaryKeyOnValue([0, 1, 2])
       .SetSummaryPrefixSuffixOnValue(0, aPrefix + '(', '')
       .SetSummaryPrefixSuffixOnValue(2, '', ')')
       .SetSummaryDelimiterOnValue(', ')
       .IncludeFlagOnValue(dfSummaryMembersNoName)
-      .IncludeFlag(dfCollapsed, wbCollapseVec3);
+      .IncludeFlag(dfCollapsed, wbCollapseVec3));
 end;
 
 function wbVec3Pos(const aName   : string = 'Position';
@@ -5132,17 +5382,17 @@ function wbVec3Rot(const aName   : string = 'Rotation';
                    const aPrefix : string = 'Rot')
                                  : IwbValueDef;
 begin
-  Result :=
+  Result := IwbValueDef(
     wbStruct(aName, [
-      wbFloatAngle('X'),
-      wbFloatAngle('Y'),
-      wbFloatAngle('Z')
+      wbFloatAngle(string('X')),
+      wbFloatAngle(string('Y')),
+      wbFloatAngle(string('Z'))
     ]).SetSummaryKey([0, 1, 2])
       .SetSummaryMemberPrefixSuffix(0, aPrefix + '(', '')
       .SetSummaryMemberPrefixSuffix(2, '', ')')
       .SetSummaryDelimiter(', ')
       .IncludeFlag(dfSummaryMembersNoName)
-      .IncludeFlag(dfCollapsed, wbCollapseVec3);
+      .IncludeFlag(dfCollapsed, wbCollapseVec3));
 end;
 
 function wbVec3Rot(const aSignature : TwbSignature;
@@ -5150,17 +5400,17 @@ function wbVec3Rot(const aSignature : TwbSignature;
                    const aPrefix    : string = 'Rot')
                                     : IwbRecordMemberDef;
 begin
-  Result :=
+  Result := IwbRecordMemberDef(
     wbStruct(aSignature, aName, [
-      wbFloatAngle('X'),
-      wbFloatAngle('Y'),
-      wbFloatAngle('Z')
+      wbFloatAngle(string('X')),
+      wbFloatAngle(string('Y')),
+      wbFloatAngle(string('Z'))
     ]).SetSummaryKeyOnValue([0, 1, 2])
       .SetSummaryPrefixSuffixOnValue(0, aPrefix + '(', '')
       .SetSummaryPrefixSuffixOnValue(2, '', ')')
       .SetSummaryDelimiterOnValue(', ')
       .IncludeFlagOnValue(dfSummaryMembersNoName)
-      .IncludeFlag(dfCollapsed, wbCollapseVec3);
+      .IncludeFlag(dfCollapsed, wbCollapseVec3));
 end;
 
 function wbVec3PosRot(const aCombinedName : string = 'Position/Rotation';
@@ -5170,13 +5420,13 @@ function wbVec3PosRot(const aCombinedName : string = 'Position/Rotation';
                       const aRotPrefix    : string = 'Rot')
                                           : IwbValueDef;
 begin
-  Result :=
+  Result := IwbValueDef(
     wbStruct(aCombinedName, [
       wbVec3Pos(aPosName, aPosPrefix),
       wbVec3Rot(aRotName, aRotPrefix)
     ]).SetSummaryKey([0, 1])
       .IncludeFlag(dfSummaryMembersNoName)
-      .IncludeFlag(dfCollapsed, wbCollapsePosRot);
+      .IncludeFlag(dfCollapsed, wbCollapsePosRot));
 end;
 
 function wbVec3PosRot(const aSignature    : TwbSignature;
@@ -5187,13 +5437,13 @@ function wbVec3PosRot(const aSignature    : TwbSignature;
                       const aRotPrefix    : string = 'Rot')
                                           : IwbRecordMemberDef;
 begin
-  Result :=
+  Result := IwbRecordMemberDef(
     wbStruct(aSignature, aCombinedName, [
       wbVec3Pos(aPosName, aPosPrefix),
       wbVec3Rot(aRotName, aRotPrefix)
     ]).SetSummaryKeyOnValue([0, 1])
       .IncludeFlagOnValue(dfSummaryMembersNoName)
-      .IncludeFlag(dfCollapsed, wbCollapsePosRot);
+      .IncludeFlag(dfCollapsed, wbCollapsePosRot));
 end;
 
 function wbVec3PosRotDegrees(const aCombinedName : string = 'Position/Rotation';
@@ -5203,13 +5453,13 @@ function wbVec3PosRotDegrees(const aCombinedName : string = 'Position/Rotation';
                              const aRotPrefix    : string = 'Rot')
                                                  : IwbValueDef;
 begin
-  Result :=
+  Result := IwbValueDef(
     wbStruct(aCombinedName, [
       wbVec3Pos(aPosName, aPosPrefix),
       wbVec3(aRotName, aRotPrefix)
     ]).SetSummaryKey([0, 1])
       .IncludeFlag(dfSummaryMembersNoName)
-      .IncludeFlag(dfCollapsed, wbCollapsePosRot);
+      .IncludeFlag(dfCollapsed, wbCollapsePosRot));
 end;
 
 function wbVec3PosRotDegrees(const aSignature    : TwbSignature;
@@ -5220,13 +5470,13 @@ function wbVec3PosRotDegrees(const aSignature    : TwbSignature;
                              const aRotPrefix    : string = 'Rot')
                                                  : IwbRecordMemberDef;
 begin
-  Result :=
+  Result := IwbRecordMemberDef(
     wbStruct(aSignature, aCombinedName, [
       wbVec3Pos(aPosName, aPosPrefix),
       wbVec3(aRotName, aRotPrefix)
     ]).SetSummaryKeyOnValue([0, 1])
       .IncludeFlagOnValue(dfSummaryMembersNoName)
-      .IncludeFlag(dfCollapsed, wbCollapsePosRot);
+      .IncludeFlag(dfCollapsed, wbCollapsePosRot));
 end;
 
 function wbSizePosRot(const aSignature : TwbSignature;
@@ -5236,7 +5486,7 @@ function wbSizePosRot(const aSignature : TwbSignature;
 begin
   Result :=
     wbStruct(aSignature, aName, [
-      wbStruct('Size', [
+      IwbValueDef(wbStruct('Size', [
         wbFloat('Width', cpNormal, False, 2),
         wbFloat('Height', cpNormal, False, 2)
       ]).SetSummaryKey([0, 1])
@@ -5244,9 +5494,9 @@ begin
         .SetSummaryMemberPrefixSuffix(1, '', ')')
         .SetSummaryDelimiter(', ')
         .IncludeFlag(dfSummaryMembersNoName)
-        .IncludeFlag(dfCollapsed, wbCollapseOther),
+        .IncludeFlag(dfCollapsed, wbCollapseOther)),
       wbVec3Pos,
-      wbStruct('Rotation (Quaternion?)', [
+      IwbValueDef(wbStruct('Rotation (Quaternion?)', [
         wbFloat('q1'),
         wbFloat('q2'),
         wbFloat('q3'),
@@ -5256,7 +5506,7 @@ begin
         .SetSummaryMemberPrefixSuffix(3, '', ')')
         .SetSummaryDelimiter(', ')
         .IncludeFlag(dfSummaryMembersNoName)
-        .IncludeFlag(dfCollapsed, wbCollapseDirectionRotation)
+        .IncludeFlag(dfCollapsed, wbCollapseDirectionRotation))
     ], aPriority);
 end;
 
@@ -5267,25 +5517,25 @@ function wbAmbientColors(const aSignature : TwbSignature;
                                           : IwbSubRecordDef;
 begin
   Result := wbStruct(aSignature, aName, [
-    wbStruct('Directional', [
-      wbByteColors('X+').IncludeFlag(dfSummaryNoName),
-      wbByteColors('X-').IncludeFlag(dfSummaryNoName),
-      wbByteColors('Y+').IncludeFlag(dfSummaryNoName),
-      wbByteColors('Y-').IncludeFlag(dfSummaryNoName),
-      wbByteColors('Z+').IncludeFlag(dfSummaryNoName),
-      wbByteColors('Z-').IncludeFlag(dfSummaryNoName)
+    IwbValueDef(wbStruct('Directional', [
+      IwbValueDef(wbByteColors('X+').IncludeFlag(dfSummaryNoName)),
+      IwbValueDef(wbByteColors('X-').IncludeFlag(dfSummaryNoName)),
+      IwbValueDef(wbByteColors('Y+').IncludeFlag(dfSummaryNoName)),
+      IwbValueDef(wbByteColors('Y-').IncludeFlag(dfSummaryNoName)),
+      IwbValueDef(wbByteColors('Z+').IncludeFlag(dfSummaryNoName)),
+      IwbValueDef(wbByteColors('Z-').IncludeFlag(dfSummaryNoName))
     ]).SetSummaryKey([0, 1, 2, 3, 4, 5])
-      .IncludeFlag(dfCollapsed, wbCollapseDirectionRotation),
-    IsFO76(
+      .IncludeFlag(dfCollapsed, wbCollapseDirectionRotation)),
+    IwbValueDef(IsFO76(
       wbUnused(4),
       IsSF1(
         nil,
-        wbFromVersion(34, wbByteColors('Specular')))),
-    IsFO76(
+        wbFromVersion(34, wbByteColors('Specular'))))),
+    IwbValueDef(IsFO76(
       wbUnused(4),
       IsSF1(
         nil,
-        wbFromVersion(34, wbFloat('Fresnel Power').SetDefaultNativeValue(1))))
+        wbFromVersion(34, wbFloat('Fresnel Power').SetDefaultNativeValue(1)))))
   ]);
 end;
 
@@ -5293,25 +5543,25 @@ function wbAmbientColors(const aName : string = 'Directional Ambient Lighting Co
                                      : IwbStructDef;
 begin
   Result := wbStruct(aName, [
-    wbStruct('Directional', [
-      wbByteColors('X+').IncludeFlag(dfSummaryNoName),
-      wbByteColors('X-').IncludeFlag(dfSummaryNoName),
-      wbByteColors('Y+').IncludeFlag(dfSummaryNoName),
-      wbByteColors('Y-').IncludeFlag(dfSummaryNoName),
-      wbByteColors('Z+').IncludeFlag(dfSummaryNoName),
-      wbByteColors('Z-').IncludeFlag(dfSummaryNoName)
+    IwbValueDef(wbStruct('Directional', [
+      IwbValueDef(wbByteColors('X+').IncludeFlag(dfSummaryNoName)),
+      IwbValueDef(wbByteColors('X-').IncludeFlag(dfSummaryNoName)),
+      IwbValueDef(wbByteColors('Y+').IncludeFlag(dfSummaryNoName)),
+      IwbValueDef(wbByteColors('Y-').IncludeFlag(dfSummaryNoName)),
+      IwbValueDef(wbByteColors('Z+').IncludeFlag(dfSummaryNoName)),
+      IwbValueDef(wbByteColors('Z-').IncludeFlag(dfSummaryNoName))
     ]).SetSummaryKey([0, 1, 2, 3, 4, 5])
-      .IncludeFlag(dfCollapsed, wbCollapseDirectionRotation),
-    IsFO76(
+      .IncludeFlag(dfCollapsed, wbCollapseDirectionRotation)),
+    IwbValueDef(IsFO76(
       wbUnused(4),
       IsSF1(
         nil,
-        wbFromVersion(34, wbByteColors('Specular')))),
-    IsFO76(
+        wbFromVersion(34, wbByteColors('Specular'))))),
+    IwbValueDef(IsFO76(
       wbUnused(4),
       IsSF1(
         nil,
-        wbFromVersion(34, wbFloat('Fresnel Power').SetDefaultNativeValue(1))))
+        wbFromVersion(34, wbFloat('Fresnel Power').SetDefaultNativeValue(1)))))
   ]);
 end;
 
@@ -5322,13 +5572,13 @@ function wbByteColors(const aSignature : TwbSignature;
                       const aDefaultB  : Byte = 0)
                                        : IwbRecordMemberDef;
 begin
-  Result := wbStruct(aSignature, aName, [
+  Result := IwbRecordMemberDef(wbStruct(aSignature, aName, [
     wbInteger('Red', itU8).SetDefaultNativeValue(aDefaultR),
     wbInteger('Green', itU8).SetDefaultNativeValue(aDefaultG),
     wbInteger('Blue', itU8).SetDefaultNativeValue(aDefaultB),
     wbUnused(1)
   ]).SetToStr(wbRGBAToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 function wbByteColors(const aName     : string = 'Color';
@@ -5337,13 +5587,13 @@ function wbByteColors(const aName     : string = 'Color';
                       const aDefaultB : Byte = 0)
                                       : IwbValueDef;
 begin
-  Result := wbStruct(aName, [
+  Result := IwbValueDef(wbStruct(aName, [
     wbInteger('Red', itU8).SetDefaultNativeValue(aDefaultR),
     wbInteger('Green', itU8).SetDefaultNativeValue(aDefaultG),
     wbInteger('Blue', itU8).SetDefaultNativeValue(aDefaultB),
     wbUnused(1)
   ]).SetToStr(wbRGBAToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 function wbByteABGR(const aSignature : TwbSignature;
@@ -5354,13 +5604,13 @@ function wbByteABGR(const aSignature : TwbSignature;
                     const aDefaultR  : Byte = 0)
                                      : IwbRecordMemberDef;
 begin
-  Result := wbStruct(aSignature, aName, [
+  Result := IwbRecordMemberDef(wbStruct(aSignature, aName, [
     wbInteger('Alpha', itU8).SetDefaultNativeValue(aDefaultA),
     wbInteger('Blue', itU8).SetDefaultNativeValue(aDefaultB),
     wbInteger('Green', itU8).SetDefaultNativeValue(aDefaultG),
     wbInteger('Red', itU8).SetDefaultNativeValue(aDefaultR)
   ]).SetToStr(wbABGRToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 function wbByteABGR(const aName     : string = 'Color';
@@ -5370,13 +5620,13 @@ function wbByteABGR(const aName     : string = 'Color';
                     const aDefaultR : Byte = 0)
                                     : IwbValueDef;
 begin
-  Result := wbStruct(aName, [
+  Result := IwbValueDef(wbStruct(aName, [
     wbInteger('Alpha', itU8).SetDefaultNativeValue(aDefaultA),
     wbInteger('Blue', itU8).SetDefaultNativeValue(aDefaultB),
     wbInteger('Green', itU8).SetDefaultNativeValue(aDefaultG),
     wbInteger('Red', itU8).SetDefaultNativeValue(aDefaultR)
   ]).SetToStr(wbABGRToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 function wbByteRGBA(const aSignature : TwbSignature;
@@ -5387,13 +5637,13 @@ function wbByteRGBA(const aSignature : TwbSignature;
                     const aDefaultA : Byte = 0)
                                     : IwbRecordMemberDef;
 begin
-  Result := wbStruct(aSignature, aName, [
+  Result := IwbRecordMemberDef(wbStruct(aSignature, aName, [
     wbInteger('Red', itU8).SetDefaultNativeValue(aDefaultR),
     wbInteger('Green', itU8).SetDefaultNativeValue(aDefaultG),
     wbInteger('Blue', itU8).SetDefaultNativeValue(aDefaultB),
     wbInteger('Alpha', itU8).SetDefaultNativeValue(aDefaultA)
   ]).SetToStr(wbRGBAToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 function wbByteRGBA(const aName     : string = 'Color';
@@ -5403,13 +5653,13 @@ function wbByteRGBA(const aName     : string = 'Color';
                     const aDefaultA : Byte = 0)
                                     : IwbValueDef;
 begin
-  Result := wbStruct(aName, [
+  Result := IwbValueDef(wbStruct(aName, [
     wbInteger('Red', itU8).SetDefaultNativeValue(aDefaultR),
     wbInteger('Green', itU8).SetDefaultNativeValue(aDefaultG),
     wbInteger('Blue', itU8).SetDefaultNativeValue(aDefaultB),
     wbInteger('Alpha', itU8).SetDefaultNativeValue(aDefaultA)
   ]).SetToStr(wbRGBAToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 function wbByteBGRA(const aSignature : TwbSignature;
@@ -5420,13 +5670,13 @@ function wbByteBGRA(const aSignature : TwbSignature;
                     const aDefaultA  : Byte = 0)
                                      : IwbRecordMemberDef;
 begin
-  Result := wbStruct(aSignature, aName, [
+  Result := IwbRecordMemberDef(wbStruct(aSignature, aName, [
     wbInteger('Blue', itU8).SetDefaultNativeValue(aDefaultB),
     wbInteger('Green', itU8).SetDefaultNativeValue(aDefaultG),
     wbInteger('Red', itU8).SetDefaultNativeValue(aDefaultR),
     wbInteger('Alpha', itU8).SetDefaultNativeValue(aDefaultA)
   ]).SetToStr(wbBGRAToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 function wbByteBGRA(const aName     : string = 'Color';
@@ -5436,13 +5686,13 @@ function wbByteBGRA(const aName     : string = 'Color';
                     const aDefaultA : Byte = 0)
                                     : IwbValueDef;
 begin
-  Result := wbStruct(aName, [
+  Result := IwbValueDef(wbStruct(aName, [
     wbInteger('Blue', itU8).SetDefaultNativeValue(aDefaultB),
     wbInteger('Green', itU8).SetDefaultNativeValue(aDefaultG),
     wbInteger('Red', itU8).SetDefaultNativeValue(aDefaultR),
     wbInteger('Alpha', itU8).SetDefaultNativeValue(aDefaultA)
   ]).SetToStr(wbBGRAToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 function wbFloatColors(const aSignature : TwbSignature;
@@ -5452,12 +5702,12 @@ function wbFloatColors(const aSignature : TwbSignature;
                        const aDefaultB  : Single = 0)
                                         : IwbRecordMemberDef;
 begin
-  Result := wbStruct(aSignature, aName, [
+  Result := IwbRecordMemberDef(wbStruct(aSignature, aName, [
     wbFloat('Red', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultR),
     wbFloat('Green', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultG),
     wbFloat('Blue', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultB)
   ]).SetToStr(wbRGBAToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 function wbFloatColors(const aName     : string = 'Color';
@@ -5466,16 +5716,16 @@ function wbFloatColors(const aName     : string = 'Color';
                        const aDefaultB : Single = 0)
                                        : IwbValueDef;
 begin
-  Result := wbStruct(aName, [
+  Result := IwbValueDef(wbStruct(aName, [
     wbFloat('Red', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultR),
     wbFloat('Green', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultG),
     wbFloat('Blue', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultB)
   ]).SetToStr(wbRGBAToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 function wbRFloatColors(const aName     : string = 'Color';
-                        const aSigs     : TwbSignatures = [];
+                        const aSigs     : TwbSignatures = nil;
                         const aDefaultR : Single = 0;
                         const aDefaultG : Single = 0;
                         const aDefaultB : Single = 0)
@@ -5483,12 +5733,12 @@ function wbRFloatColors(const aName     : string = 'Color';
 begin
   Assert(Length(aSigs) = 3, 'wbRFloatColors called with incorrect number of signatures.');
 
-  Result := wbRStruct(aName, [
+  Result := IwbRecordMemberDef(wbRStruct(aName, [
     wbFloat(aSigs[0], 'Red', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultR),
     wbFloat(aSigs[1], 'Green', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultG),
     wbFloat(aSigs[2], 'Blue', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultB)
   ]).SetToStr(wbRGBAToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 function wbFloatRGBA(const aSignature : TwbSignature;
@@ -5499,13 +5749,13 @@ function wbFloatRGBA(const aSignature : TwbSignature;
                      const aDefaultA  : Single = 0)
                                       : IwbRecordMemberDef;
 begin
-  Result := wbStruct(aSignature, aName, [
+  Result := IwbRecordMemberDef(wbStruct(aSignature, aName, [
     wbFloat('Red', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultR),
     wbFloat('Green', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultG),
     wbFloat('Blue', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultB),
     wbFloat('Alpha', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultA)
   ]).SetToStr(wbRGBAToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 function wbFloatRGBA(const aName     : string = 'Color';
@@ -5515,27 +5765,29 @@ function wbFloatRGBA(const aName     : string = 'Color';
                      const aDefaultA : Single = 0)
                                      : IwbValueDef;
 begin
-  Result := wbStruct(aName, [
+  Result := IwbValueDef(wbStruct(aName, [
     wbFloat('Red', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultR),
     wbFloat('Green', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultG),
     wbFloat('Blue', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultB),
     wbFloat('Alpha', cpNormal, True, 255, 0, nil, wbNormalizeToRange(0, 255), aDefaultA)
   ]).SetToStr(wbRGBAToStr)
-    .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+    .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 end;
 
 {>>> Many Record Defs <<<} //2
 
 function wbModelInfo(aSignature: TwbSignature; aName: string = ''): IwbRecordMemberDef;
+var
+  TextureFile: IwbValueDef;
 begin
   if wbGameMode < gmTES5 then begin
     if aName = '' then
       aName := 'Textures';
 
     if not wbDecodeTextureHashes then
-      Exit(wbByteArray(aSignature, aName, 0, cpIgnore).SetDontShow(wbNeverShow));
+      Exit(IwbRecordMemberDef(wbByteArray(aSignature, aName, 0, cpIgnore).SetDontShow(wbNeverShow)));
 
-    var TextureFile := wbStruct('Texture', [
+    TextureFile := IwbValueDef(wbStruct('Texture', [
       wbInteger('File Hash (PC)', itU64, wbFileHashCallback),
       wbInteger('File Hash (Console)', itU64, wbFileHashCallback),
       wbInteger('Folder Hash', itU64, wbFolderHashCallback)
@@ -5544,10 +5796,15 @@ begin
       .SetSummaryMemberPrefixSuffix(0, '', '')
       .SetSummaryMemberPrefixSuffix(2, '', '\')
       .IncludeFlag(dfSummaryMembersNoName)
-      .IncludeFlag(dfCollapsed, wbCollapseModelInfoTexture);
+      .IncludeFlag(dfCollapsed, wbCollapseModelInfoTexture));
 
-    Result := wbArray(aSignature, aName, TextureFile).IncludeFlag(dfCollapsed, wbCollapseModelInfoTextures);
+    Result := IwbRecordMemberDef(wbArray(aSignature, aName, TextureFile).IncludeFlag(dfCollapsed, wbCollapseModelInfoTextures));
   end else begin
+{$IFDEF FPC}
+    if aName = '' then
+      aName := 'Model Information';
+    Result := IwbRecordMemberDef(wbByteArray(aSignature, aName, 0, cpIgnore));
+{$ELSE}
     if aName = '' then
       aName := 'Model Information';
 
@@ -5647,13 +5904,14 @@ begin
       ]).SetSummaryKey([1]),
       NewModelInfo
     ], cpNormal, False, wbModelInfoDontShow, wbModelInfoGetCP).IncludeFlag(dfCollapsed, wbCollapseModelInfo);
+{$ENDIF}
   end;
 
 end;
 
 function wbOBND(aRequired: Boolean = False): IwbRecordMemberDef;
 begin
-  Result :=
+  Result := IwbRecordMemberDef(
     wbStruct(OBND, 'Object Bounds', [
       wbInteger('X1', itS16),
       wbInteger('Y1', itS16),
@@ -5669,7 +5927,7 @@ begin
       .SetSummaryDelimiterOnValue(', ')
       .IncludeFlagOnValue(dfSummaryMembersNoName)
       .SetRequired(aRequired)
-      .IncludeFlag(dfCollapsed, wbCollapseObjectBounds);
+      .IncludeFlag(dfCollapsed, wbCollapseObjectBounds));
 end;
 
 {>>> Multiple Record Defs <<<} //4
@@ -5677,33 +5935,37 @@ end;
 function wbDamageTypeArray(const aItemName: string): IwbRecordMemberDef;
 begin
   Result := wbArrayS(DAMA, aItemName + 's',
-    wbStructSK([0], aItemName, [
+    IwbValueDef(wbStructSK([0], aItemName, [
       wbFormIDCk('Type', [DMGT]),
       wbInteger('Amount', itU32),
       wbFromVersion(152, wbFormIDCk('Curve Table', [CURV, NULL]))
     ]).SetSummaryKey([1])
       .SetSummaryMemberPrefixSuffix(1, '= ','')
-      .IncludeFlag(dfSummaryMembersNoName))
+      .IncludeFlag(dfSummaryMembersNoName)))
 end;
 
 function wbEnchantment(aCapacity: Boolean = False): IwbRecordMemberDef;
+var
+  aName: string;
+  aSig1: TwbSignature;
+  aSig2: TwbSignature;
 begin
-  var aName := IsFO3('Object Effect', 'Enchantment');
-  var aSig1 := IsTES4(ENAM, EITM);
-  var aSig2 := IsTES4(ANAM, EAMT);
+  aName := IsFO3('Object Effect', 'Enchantment');
+  aSig1 := IsTES4(ENAM, EITM);
+  aSig2 := IsTES4(ANAM, EAMT);
 
   Result := wbFormIDCk(aSig1, aName, [ENCH]);
   if aCapacity then
-    Result :=
+    Result := IwbRecordMemberDef(
       wbRStruct(aName, [
         wbFormIDCk(aSig1, 'Effect', [ENCH]),
         wbInteger(aSig2, 'Capacity', itU16)
-      ]).IncludeFlag(dfAllowAnyMember);
+      ]).IncludeFlag(dfAllowAnyMember));
 end;
 
 function wbLeveledListEntry(aObjectName: string; aSigs: TwbSignatures): IwbRecordMemberDef;
 begin
-  Result :=
+  Result := IwbRecordMemberDef(
     wbStructExSK(LVLO, [0, 2], [3], IsTES4('Leveled List Entry', 'Base Data'), [
       wbInteger('Level', itU16),
       wbUnused(2),
@@ -5722,12 +5984,12 @@ begin
     .SetSummaryDelimiterOnValue(' ')
     .IncludeFlagOnValue(dfSummaryMembersNoName)
     .IncludeFlagOnValue(dfSummaryNoSortKey)
-    .IncludeFlag(dfCollapsed, wbCollapseLeveledItems);
+    .IncludeFlag(dfCollapsed, wbCollapseLeveledItems));
 end;
 
 function wbOwnership(aSkipSigs: TwbSignatures = nil): IwbRecordMemberDef;
 begin
-  Result :=
+  Result := IwbRecordMemberDef(
     wbRStruct('Ownership', [
       IsFO4Plus(
         wbStruct(XOWN, 'Owner', [
@@ -5747,7 +6009,7 @@ begin
       .SetSummaryDelimiter(' ')
       .IncludeFlag(dfCollapsed, wbCollapseOwnership)
       .IncludeFlag(dfSummaryMembersNoName)
-      .IncludeFlag(dfSummaryNoSortKey);
+      .IncludeFlag(dfSummaryNoSortKey));
 end;
 
 function wbTexturedModel(aSubRecordName     : string;
@@ -5756,6 +6018,7 @@ function wbTexturedModel(aSubRecordName     : string;
                                             : IwbRecordMemberDef;
 var
   Members : array of IwbRecordMemberDef;
+  i       : Integer;
 begin
 
   SetLength(Members,
@@ -5772,40 +6035,40 @@ begin
     end else if not wbIsStarfield then
       Members[1] := wbModelInfo(aSignatures[1]);
 
-    for var i := Low(aTextureSubRecords) to High(aTextureSubRecords) do
+    for i := Low(aTextureSubRecords) to High(aTextureSubRecords) do
       Members[Length(Members) - Length(aTextureSubRecords) + i] := aTextureSubRecords[i];
 
-  Result :=
+  Result := IwbRecordMemberDef(
     wbRStruct(aSubRecordName, Members, nil, cpNormal, False, nil, True)
       .SetSummaryKey([0])
       .IncludeFlag(dfSummaryMembersNoName)
       .IncludeFlag(dfSummaryNoSortKey)
       .IncludeFlag(dfAllowAnyMember)
       .IncludeFlag(dfCollapsed, wbCollapseModels)
-      .IncludeFlag(dfStructFirstNotRequired);
+      .IncludeFlag(dfStructFirstNotRequired));
 end;
 
 {>>> Record Header Def <<<} //1
 
 function wbRecordHeader(aRecordFlags: IwbIntegerDef): IwbValueDef;
 begin
-  Result := wbStruct('Record Header', [
-    wbString('Signature', 4, cpCritical),
-    wbInteger('Data Size', itU32, nil, cpIgnore),
-    aRecordFlags.IncludeFlag(dfIsRecordFlags),
-    wbFormID('FormID', cpFormID).IncludeFlag(dfSummarySelfAsShortName),
-    wbUnion('Version Control Info 1', wbFormVersionDecider(44), [
+  Result := IwbValueDef(wbStruct('Record Header', [
+    IwbValueDef(wbString('Signature', 4, cpCritical)),
+    IwbValueDef(wbInteger('Data Size', itU32, nil, cpIgnore)),
+    IwbValueDef(aRecordFlags.IncludeFlag(dfIsRecordFlags)),
+    IwbValueDef(wbFormID('FormID', cpFormID).IncludeFlag(dfSummarySelfAsShortName)),
+    IwbValueDef(wbUnion('Version Control Info 1', wbFormVersionDecider(44), [
       wbByteArray('Version Control Info 1', 4, cpIgnore).SetToStr(wbVCI1ToStrBeforeFO4),
       wbByteArray('Version Control Info 1', 4, cpIgnore).SetToStr(wbVCI1ToStrAfterFO4)
-    ]),
-    wbInteger('Form Version', itU16, nil, cpIgnore).IncludeFlag(dfSummaryShowIgnore),
-    wbByteArray('Version Control Info 2', 2, cpIgnore)
+    ])),
+    IwbValueDef(wbInteger('Form Version', itU16, nil, cpIgnore).IncludeFlag(dfSummaryShowIgnore)),
+    IwbValueDef(wbByteArray('Version Control Info 2', 2, cpIgnore))
   ]).SetSummaryKey([5, 3, 2])
     .SetSummaryMemberPrefixSuffix(5, '[v', ']')
     .SetSummaryMemberPrefixSuffix(2, '{', '}')
     .SetSummaryDelimiter(' ')
     .IncludeFlag(dfSummaryMembersNoName)
-    .IncludeFlag(dfCollapsed, wbCollapseRecordHeader);
+    .IncludeFlag(dfCollapsed, wbCollapseRecordHeader));
 end;
 
 {>>> Climate Defs <<<} //1
@@ -5837,6 +6100,8 @@ end;
 {>>> Creature Defs <<<} //1
 
 function wbModelInfos(aSignature: TwbSignature; aName: string = ''; aDontShow  : TwbDontShowCallback = nil): IwbRecordMemberDef;
+var
+  TextureFile: IwbValueDef;
 begin
   if wbGameMode >= gmTES5 then
     raise Exception.Create('Not Supported');
@@ -5845,9 +6110,9 @@ begin
     aName := 'Model List Textures';
 
   if not wbDecodeTextureHashes then
-    Exit(wbByteArray(aSignature, aName, 0, cpIgnore).SetDontShow(wbNeverShow));
+    Exit(IwbRecordMemberDef(wbByteArray(aSignature, aName, 0, cpIgnore).SetDontShow(wbNeverShow)));
 
-  var TextureFile := wbStruct('Texture', [
+  TextureFile := IwbValueDef(wbStruct('Texture', [
     wbInteger('File Hash (PC)', itU64, wbFileHashCallback),
     wbInteger('File Hash (Console)', itU64, wbFileHashCallback),
     wbInteger('Folder Hash', itU64, wbFolderHashCallback)
@@ -5856,22 +6121,22 @@ begin
     .SetSummaryMemberPrefixSuffix(0, '', '')
     .SetSummaryMemberPrefixSuffix(2, '', '\')
     .IncludeFlag(dfSummaryMembersNoName)
-    .IncludeFlag(dfCollapsed, wbCollapseModelInfoTexture);
+    .IncludeFlag(dfCollapsed, wbCollapseModelInfoTexture));
 
-  Result :=
+  Result := IwbRecordMemberDef(
     wbArray(aSignature, aName,
-      wbStruct('Model', [
-        wbArray('Textures', TextureFile, arcU8).IncludeFlag(dfCollapsed, wbCollapseModelInfoTextures)
-      ]).SetSummaryKey([0]),
+      IwbValueDef(wbStruct('Model', [
+        IwbValueDef(wbArray('Textures', TextureFile, arcU8).IncludeFlag(dfCollapsed, wbCollapseModelInfoTextures))
+      ]).SetSummaryKey([0])),
     -1).SetDontShow(aDontShow)
-    .IncludeFlag(dfCollapsed, wbCollapseModelInfo);
+    .IncludeFlag(dfCollapsed, wbCollapseModelInfo));
 end;
 
 {>>> Debris Defs <<<} //1
 
 function wbDebrisModel(aTextureFileHashes: IwbRecordMemberDef): IwbRecordMemberDef;
 begin
-  Result :=
+  Result := IwbRecordMemberDef(
     wbRStruct('Model', [
       wbStruct(DATA, 'Data', [
         wbInteger('Percentage', itU8),
@@ -5886,20 +6151,21 @@ begin
       aTextureFileHashes
     ]).SetSummaryKey([0])
       .SetRequired
-      .IncludeFlag(dfCollapsed, wbCollapseModels);
+      .IncludeFlag(dfCollapsed, wbCollapseModels));
 end;
 
 {>>> Image Space Adapter Defs <<<} //3
 
 function wbIMADMultAddCount(const aName: string): IwbValueDef;
+var
+  lPriority : TwbConflictPriority;
 begin
-  var lPriority : TwbConflictPriority;
   if aName = 'Unused' then
     lPriority := cpIgnore
   else
     lPriority := cpNormal;
 
-  Result :=
+  Result := IwbValueDef(
     wbStruct(aName, [
       wbInteger('Mult Count', itU32),
       wbIntegeR('Add Count', itU32)
@@ -5907,64 +6173,69 @@ begin
       .SetSummaryKey([0, 1])
       .SetSummaryMemberPrefixSuffix(0, 'Mult: ', ',')
       .SetSummaryMemberPrefixSuffix(1, 'Add: ', '')
-      .IncludeFlag(dfCollapsed);
+      .IncludeFlag(dfCollapsed));
 end;
 
 function wbTimeInterpolators(const aSignature: TwbSignature; const aName: string): IwbRecordMemberDef;
 begin
-  Result :=
+  Result := IwbRecordMemberDef(
     wbSubRecord(aSignature, aName,
       wbArray('', wbTimeInterpolator)
         .SetSummaryPassthroughMaxCount(10)
         .SetSummaryPassthroughMaxLength(100)
     ).SetRequired
-     .IncludeFlag(dfCollapsed, wbCollapseTimeInterpolators);
+     .IncludeFlag(dfCollapsed, wbCollapseTimeInterpolators));
 end;
 
 function wbTimeInterpolatorsMultAdd(const aSignatureMult, aSignatureAdd: TwbSignature; const aName: string): IwbRecordMemberDef;
+var
+  sMult: string;
+  sAdd : string;
 begin
-  var sMult := 'Mult';
-  var sAdd := 'Add';
+  sMult := 'Mult';
+  sAdd := 'Add';
   if SameText(aName, 'Unused') then begin
     sMult := aName;
     sAdd := aName;
   end;
 
-  Result :=
+  Result := IwbRecordMemberDef(
     wbRStruct(aName, [
       wbTimeInterpolators(aSignatureMult, sMult),
       wbTimeInterpolators(aSignatureAdd, sAdd)
     ]).SetSummaryKey([0, 1])
       .SetRequired
-      .IncludeFlag(dfCollapsed, wbCollapseTimeInterpolatorsMultAdd);
+      .IncludeFlag(dfCollapsed, wbCollapseTimeInterpolatorsMultAdd));
 end;
 
 {>>> NPC Defs <<<} //1
 
 function wbNPCTemplateActorEntry(const aName: string): IwbValueDef;
 begin
-  Result :=
-    wbFormIDCk(aName, [BMMO,LVLN,NPC_,NULL], False, cpNormalIgnoreEmpty).SetDontShow(wbTemplateActorDontShow);
+  Result := IwbValueDef(
+    wbFormIDCk(aName, [BMMO,LVLN,NPC_,NULL], False, cpNormalIgnoreEmpty).SetDontShow(wbTemplateActorDontShow));
 end;
 
 {>>> Perk Defs <<<} //1
 
 function wbPerkEffectType(aAfterSetCallback: TwbAfterSetCallback): IwbValueDef;
 begin
-  Result :=
+  Result := IwbValueDef(
     wbInteger('Type', itU8,
       wbEnum([
         {0} 'Quest + Stage',
         {1} 'Ability',
         {2} 'Entry Point'
-    ])).SetAfterSet(aAfterSetCallback);
+    ])).SetAfterSet(aAfterSetCallback));
 end;
 
 {>>> Race Defs <<<} //1
 
 function wbHeadPart(aHeadPartIndexEnum: IwbEnumDef = nil; aModel: IwbRecordMemberDef = nil; aHeadPartsAfterSet: TwbAfterSetCallback = nil): IwbRecordMemberDef;
+var
+  wbICON: IwbRecordMemberDef;
 begin
-  var wbICON: IwbRecordMemberDef := nil;
+  wbICON := nil;
 
   if wbIsOblivion then
     wbICON := wbString(ICON, 'Icon FileName')
@@ -5982,7 +6253,7 @@ begin
       ]);
 
   Result :=
-    wbRStructSK([0], IfThen(wbIsOblivion or wbIsFallout3, 'Part', 'Head Part'), [
+    IwbRecordMemberDef(wbRStructSK([0], IfThen(wbIsOblivion or wbIsFallout3, 'Part', 'Head Part'), [
       wbInteger(INDX, IfThen(wbIsOblivion or wbIsFallout3, 'Index', 'Head Part Number'), itU32, aHeadPartIndexEnum),
       IfThen(wbIsOblivion or wbIsFallout3, aModel, nil),
       IfThen(wbIsOblivion or wbIsFallout3, nil, wbFormIDCk(HEAD, 'Head', [HDPT, NULL])),
@@ -5993,7 +6264,7 @@ begin
       .SetAfterSet(aHeadPartsAfterSet)
       .IncludeFlag(dfSummaryMembersNoName)
       .IncludeFlag(dfSummaryNoSortKey)
-      .IncludeFlag(dfCollapsed, wbCollapseHeadParts);
+      .IncludeFlag(dfCollapsed, wbCollapseHeadParts));
 end;
 
 {>>> Weather Defs <<<} //1
@@ -6003,53 +6274,56 @@ var
   Struct : IwbValueDef;
 begin
   if wbIsFalloutNV then
-    Struct :=
+    Struct := IwbValueDef(
       wbUnion('', wbWeatherTimeOfDayDecider, [
-        wbStruct(aName, [
+        IwbValueDef(wbStruct(aName, [
           wbByteColors('Sunrise'),
-	        wbByteColors('Day'),
-	        wbByteColors('Sunset'),
-	        wbByteColors('Night'),
+		        wbByteColors('Day'),
+		        wbByteColors('Sunset'),
+		        wbByteColors('Night'),
           wbByteColors('High Noon'),
           wbByteColors('Midnight')
         ]).SetSummaryKey([0,1,2,3,4,5])
-          .IncludeFlag(dfCollapsed, wbCollapseWeatherTimeOfDay),
-        wbStruct(aName, [
+          .IncludeFlag(dfCollapsed, wbCollapseWeatherTimeOfDay)),
+        IwbValueDef(wbStruct(aName, [
           wbByteColors('Sunrise'),
-	        wbByteColors('Day'),
-	        wbByteColors('Sunset'),
-	        wbByteColors('Night')
+		        wbByteColors('Day'),
+		        wbByteColors('Sunset'),
+		        wbByteColors('Night')
         ]).SetSummaryKey([0,1,2,3])
-          .IncludeFlag(dfCollapsed, wbCollapseWeatherTimeOfDay)
-      ]).IncludeFlag(dfUnionStaticResolve)
+          .IncludeFlag(dfCollapsed, wbCollapseWeatherTimeOfDay))
+      ]).IncludeFlag(dfUnionStaticResolve))
   else if wbIsFallout4 or wbIsFallout76 or wbIsStarfield then
-    Struct :=
+    Struct := IwbValueDef(
       wbStruct(aName, [
         wbByteColors('Sunrise'),
-	      wbByteColors('Day'),
-	      wbByteColors('Sunset'),
-	      wbByteColors('Night'),
+		      wbByteColors('Day'),
+		      wbByteColors('Sunset'),
+		      wbByteColors('Night'),
         wbFromVersion(111, wbByteColors('Early Sunrise')),
-	      wbFromVersion(111, wbByteColors('Late Sunrise')),
-	      wbFromVersion(111, wbByteColors('Early Sunset')),
-	      wbFromVersion(111, wbByteColors('Late Sunset'))
-      ]).SetSummaryKey([0,1,2,3,4,5,6,7])
+		      wbFromVersion(111, wbByteColors('Late Sunrise')),
+		      wbFromVersion(111, wbByteColors('Early Sunset')),
+		      wbFromVersion(111, wbByteColors('Late Sunset'))
+      ]).SetSummaryKey([0,1,2,3,4,5,6,7]))
   else
-    Struct :=
+    Struct := IwbValueDef(
       wbStruct(aName, [
         wbByteColors('Sunrise'),
-	      wbByteColors('Day'),
-	      wbByteColors('Sunset'),
-	      wbByteColors('Night')
-        ]).SetSummaryKey([0,1,2,3]);
+		      wbByteColors('Day'),
+		      wbByteColors('Sunset'),
+		      wbByteColors('Night')
+        ]).SetSummaryKey([0,1,2,3]));
 
   wbWeatherTimeOfDay :=
-    Struct.IncludeFlag(dfSummaryMembersNoName)
-          .IncludeFlag(dfCollapsed, wbCollapseWeatherTimeOfDay)
+    IwbValueDef(Struct.IncludeFlag(dfSummaryMembersNoName)
+          .IncludeFlag(dfCollapsed, wbCollapseWeatherTimeOfDay))
 end;
 
 {>>> Common Definitions <<<}
 procedure DefineCommon;
+var
+  wbLandFlags       : IwbFlagsDef;
+  wbLandLayerDefault: Variant;
 begin
   wbIdxAddonNode := wbNamedIndex('AddonNode', True);
   wbIdxCollisionLayer := wbNamedIndex('CollisionLayer', True);
@@ -6964,9 +7238,9 @@ begin
 
   wbHEDR :=
     wbStruct(HEDR, 'Header', [
-      wbFloat('Version').IncludeFlag(dfInternalEditOnly, not wbAllowEditHEDRVersion),
-      wbInteger('Number of Records', itU32),
-      wbInteger('Next Object ID', itU32, wbNextObjectIDToString, wbNextObjectIDToInt)
+      IwbValueDef(wbFloat('Version').IncludeFlag(dfInternalEditOnly, not wbAllowEditHEDRVersion)),
+      IwbValueDef(wbInteger('Number of Records', itU32)),
+      IwbValueDef(wbInteger('Next Object ID', itU32, wbNextObjectIDToString, wbNextObjectIDToInt))
     ]).SetRequired;
 
   wbKWDAs :=
@@ -6974,25 +7248,25 @@ begin
       wbFormIDCk('Keyword', [KYWD, NULL]));
 
   wbKeywords :=
-    wbRStruct('Keywords', [
-      wbInteger(KSIZ, 'Keyword Count', itU32, nil, cpBenign).IncludeFlag(dfSkipImplicitEdit),
-      wbArrayS(KWDA, 'Keywords',
+    IwbRecordMemberDef(wbRStruct('Keywords', [
+      IwbRecordMemberDef(wbInteger(KSIZ, 'Keyword Count', itU32, nil, cpBenign).IncludeFlag(dfSkipImplicitEdit)),
+      IwbRecordMemberDef(wbArrayS(KWDA, 'Keywords',
         wbFormIDCk('Keyword', [KYWD,NULL])
       ).SetCountPathOnValue(KSIZ, False)
-       .SetRequired
+       .SetRequired)
     ]).SetSummaryKey([1])
-      .IncludeFlag(dfCollapsed, wbCollapseKeywords);
+      .IncludeFlag(dfCollapsed, wbCollapseKeywords));
 
   wbRagdoll :=
     wbRStruct('Ragdoll Data', [
-      wbArray(XRGD, 'Bones',
-        wbStruct('Bone', [
+      IwbRecordMemberDef(wbArray(XRGD, 'Bones',
+        IwbValueDef(wbStruct('Bone', [
           wbInteger('Bone Id', itU8),
           wbUnused(3),
           wbVec3PosRot
         ]).SetSummaryKey([0])
-          .IncludeFlag(dfCollapsed, wbCollapseRagdoll)
-      ).IncludeFlag(dfNotAlignable),
+          .IncludeFlag(dfCollapsed, wbCollapseRagdoll))
+      ).IncludeFlag(dfNotAlignable)),
       IsTES4(
         nil,
         wbVec3(XRGB, 'Biped Rotation'))
@@ -7005,7 +7279,7 @@ begin
     ]);
 
   wbTimeInterpolator :=
-    wbStructSK([0], 'Data', [
+    IwbValueDef(wbStructSK([0], 'Data', [
       wbFloat('Time'),
       wbFloat('Value')
     ]).SetSummaryKey([0, 1])
@@ -7013,19 +7287,19 @@ begin
       .SetSummaryMemberPrefixSuffix(1, '=', '')
       .SetSummaryDelimiter('')
       .IncludeFlag(dfSummaryMembersNoName)
-      .IncludeFlag(dfCollapsed, wbCollapseTimeInterpolator);
+      .IncludeFlag(dfCollapsed, wbCollapseTimeInterpolator));
 
   wbActionFlag :=
-    wbInteger(XACT, 'Action Flag', itU32,
+    IwbRecordMemberDef(wbInteger(XACT, 'Action Flag', itU32,
       wbFlags([
         {0} 'Use Default',
         {1} 'Activate',
         {2} 'Open',
         {3} 'Open by Default'
-      ])).IncludeFlag(dfCollapsed, wbCollapseFlags);
+      ])).IncludeFlag(dfCollapsed, wbCollapseFlags));
 
   wbAlternateTexture :=
-    wbStructSK([0, 2], 'Alternate Texture', [
+    IwbValueDef(wbStructSK([0, 2], 'Alternate Texture', [
       wbLenString('3D Name'),
       wbFormIDCk('New Texture', [TXST]),
       wbInteger('3D Index', itS32)
@@ -7035,25 +7309,25 @@ begin
       .SetSummaryDelimiter(' ')
       .IncludeFlag(dfSummaryNoSortKey)
       .IncludeFlag(dfSummaryMembersNoName)
-      .IncludeFlag(dfCollapsed, wbCollapseModelInfoTexture);
+      .IncludeFlag(dfCollapsed, wbCollapseModelInfoTexture));
 
-  var wbLandFlags :=
-      wbFlags([
-        {0} 'Hide - Quad 1',
-        {1} 'Hide - Quad 2',
-        {2} 'Hide - Quad 3',
-        {3} 'Hide - Quad 4',
-        {4} IsFO4Plus('No Collision - Quad 1', ''),
-        {5} IsFO4Plus('No Collision - Quad 2', ''),
-        {6} IsFO4Plus('No Collision - Quad 3', ''),
-        {7} IsFO4Plus('No Collision - Quad 4', '')
-      ], True);
+  wbLandFlags :=
+    wbFlags([
+      {0} 'Hide - Quad 1',
+      {1} 'Hide - Quad 2',
+      {2} 'Hide - Quad 3',
+      {3} 'Hide - Quad 4',
+      {4} IsFO4Plus('No Collision - Quad 1', ''),
+      {5} IsFO4Plus('No Collision - Quad 2', ''),
+      {6} IsFO4Plus('No Collision - Quad 3', ''),
+      {7} IsFO4Plus('No Collision - Quad 4', '')
+    ], True);
 
   wbCellGrid :=
-    wbStruct(XCLC, 'Grid', [
+    IwbRecordMemberDef(wbStruct(XCLC, 'Grid', [
       wbInteger('X', itS32),
       wbInteger('Y', itS32),
-      wbInteger('Land Flags', itU8, wbLandFlags).IncludeFlag(dfCollapsed, wbCollapseFlags),
+      IwbValueDef(wbInteger('Land Flags', itU8, wbLandFlags).IncludeFlag(dfCollapsed, wbCollapseFlags)),
       wbUnused(3)
     ], cpNormal, False, nil, 2)
     .SetSummaryKeyOnValue([0, 1, 2])
@@ -7063,23 +7337,23 @@ begin
     .IncludeFlagOnValue(dfSummaryMembersNoName)
     .SetDontShow(wbCellInteriorDontShow)
     .SetIsRemovable(wbCellGridIsRemovable)
-    .IncludeFlag(dfCollapsed, wbCollapseOther);
+    .IncludeFlag(dfCollapsed, wbCollapseOther));
 
   wbDATAPosRot := wbVec3PosRot(DATA).SetRequired;
 
   wbFaction :=
-    wbStructSK(SNAM, [0], 'Faction', [
+    IwbRecordMemberDef(wbStructSK(SNAM, [0], 'Faction', [
       wbFormIDCk('Faction', [FACT]),
       wbInteger('Rank', itS8),
-      IsFO4Plus(nil, wbUnused(3))
+      IwbValueDef(IsFO4Plus(nil, wbUnused(3)))
     ]).SetSummaryKeyOnValue([0, 1])
       .SetSummaryPrefixSuffixOnValue(1, '{Rank: ', '}')
       .IncludeFlagOnValue(dfSummaryMembersNoName)
-      .IncludeFlag(dfCollapsed, wbCollapseFactions);
+      .IncludeFlag(dfCollapsed, wbCollapseFactions));
 
   wbFactionRelations :=
     wbRArrayS('Relations',
-      wbStructSK(XNAM, [0], 'Relation', [
+      IwbRecordMemberDef(wbStructSK(XNAM, [0], 'Relation', [
         wbFormIDCkNoReach('Faction', [FACT, RACE]),
         wbInteger('Modifier', itS32),
         IsTES4(
@@ -7092,7 +7366,7 @@ begin
               {3} 'Friend'
             ])))
       ]).SetToStr(wbFactionRelationToStr)
-        .IncludeFlag(dfCollapsed, wbCollapseFactionRelations));
+        .IncludeFlag(dfCollapsed, wbCollapseFactionRelations)));
 
   wbMDOB := wbFormID(MDOB, 'Menu Display Object');
 
@@ -7116,7 +7390,7 @@ begin
 
   wbActorSounds :=
     wbRArrayS('Sounds',
-      wbRStructSK([0], 'Sound', [
+      IwbRecordMemberDef(wbRStructSK([0], 'Sound', [
         wbFormIDCk(CS2K, 'Keyword', [KYWD]),
         wbFormIDCk(CS2D, 'Sound', [SNDR]).SetRequired
       ], [], cpNormal, False, nil, True)
@@ -7126,11 +7400,11 @@ begin
         .IncludeFlag(dfCollapsed, wbCollapseSounds)
         .IncludeFlag(dfSummaryMembersNoName)
         .IncludeFlag(dfSummaryNoSortKey)
-      ).SetCountPath(CS2H);
+      )).SetCountPath(CS2H);
 
   wbMagicEffectSounds :=
     wbArrayS(SNDD, 'Sounds',
-      wbStructSK([0], 'Sound', [
+      IwbValueDef(wbStructSK([0], 'Sound', [
         wbInteger('Type', itU32,
           wbEnum([
             {0} 'Sheathe/Draw',
@@ -7145,24 +7419,24 @@ begin
         .SetSummaryMemberPrefixSuffix(0, '[', ']')
         .SetSummaryDelimiter(' ')
         .IncludeFlag(dfSummaryMembersNoName)
-        .IncludeFlag(dfCollapsed, wbCollapseSounds));
+        .IncludeFlag(dfCollapsed, wbCollapseSounds)));
 
   wbRegionSounds :=
-    wbArrayS(IfThen(wbIsOblivion or wbIsFallout3, RDSD, RDSA), 'Sounds',
-      wbStructSK([0], 'Sound', [
+    IwbRecordMemberDef(wbArrayS(IfThen(wbIsOblivion or wbIsFallout3, RDSD, RDSA), 'Sounds',
+      IwbValueDef(wbStructSK([0], 'Sound', [
         wbFormIDCk('Sound', [SNDR, SOUN, NULL]),
-        wbInteger('Flags', itU32,
+        IwbValueDef(wbInteger('Flags', itU32,
           wbFlags([
             {0} 'Pleasant',
             {1} 'Cloudy',
             {2} 'Rainy',
             {3} 'Snowy'
-          ])).IncludeFlag(dfCollapsed, wbCollapseFlags),
-        IsTES4FO3(
+          ])).IncludeFlag(dfCollapsed, wbCollapseFlags)),
+        IwbValueDef(IsTES4FO3(
           wbInteger('Chance', itU32, wbScaledInt4ToStr, wbScaledInt4ToInt),
-          wbFloat('Chance'))
-      ])).SetDontShow(wbREGNSoundDontShow)
-         .IncludeFlag(dfCollapsed, wbCollapseSounds);
+          wbFloat('Chance')))
+      ]))).SetDontShow(wbREGNSoundDontShow)
+         .IncludeFlag(dfCollapsed, wbCollapseSounds));
 
   wbSoundDescriptorSounds :=
     wbRArray('Sounds',
@@ -7170,21 +7444,24 @@ begin
 
   wbSoundTypeSounds :=
     wbRArrayS('Sounds',
-      wbRStructSK([0], 'Sound', [
-        IsTES5(
-          wbFormIDCk(CSDI, 'Sound', [SNDR, NULL]),
-          wbFormIDCk(CSDI, 'Sound', [SOUN, NULL])
-        ).SetRequired,
+      IwbRecordMemberDef(wbRStructSK([0], 'Sound', [
+        IwbRecordMemberDef(IsTES5(
+          IwbRecordMemberDef(wbFormIDCk(CSDI, 'Sound', [SNDR, NULL])),
+          IwbRecordMemberDef(wbFormIDCk(CSDI, 'Sound', [SOUN, NULL]))
+        ).SetRequired),
         wbInteger(CSDC, 'Sound Chance', itU8).SetRequired
       ]).SetSummaryKey([0, 1])
         .SetSummaryMemberPrefixSuffix(1, '{Chance: ', '}')
         .IncludeFlag(dfSummaryMembersNoName)
         .IncludeFlag(dfSummaryNoSortKey)
         .IncludeFlag(dfCollapsed, wbCollapseSounds)
-    ).SetRequired;
+    )).SetRequired;
 
   wbXLOD := wbArray(XLOD, 'Distant LOD Data', wbFloat('Unknown'), 3);
 
+{$IFDEF FPC}
+  wbMHDTCELL := wbByteArray(MHDT, 'Max Height Data');
+{$ELSE}
   wbMHDTCELL :=
     IfThen(wbSimpleRecords,
       wbByteArray(MHDT, 'Max Height Data'),
@@ -7197,35 +7474,36 @@ begin
         IsSF1(50, 32)).IncludeFlag(dfCollapsed, wbCollapseMaxHeightData)
       ]).SetSummaryKeyOnValue([0, 1])
         .IncludeFlag(dfCollapsed, wbCollapseMaxHeightData));
+{$ENDIF}
 
   wbMODT := wbModelInfo(MODT);
   wbDMDT := wbModelInfo(DMDT);
 
   wbStaticPartPlacements :=
     wbArrayS(DATA, 'Placements',
-      wbStruct('Placement', [
+      IwbValueDef(wbStruct('Placement', [
         wbVec3Pos,
         wbVec3Rot,
         wbFloat('Scale')
       ]).SetSummaryKey([0, 1, 2])
         .SetSummaryMemberPrefixSuffix(2, 'Scale: ', '')
         .IncludeFlag(dfSummaryMembersNoName)
-        .IncludeFlag(dfCollapsed, wbCollapsePlacement)
+        .IncludeFlag(dfCollapsed, wbCollapsePlacement))
     ).SetRequired;
 
   wbINOM :=
-    wbArray(INOM, 'INFO Order (Masters only)',
-      wbFormIDCk('INFO', [INFO], False, cpBenign).IncludeFlag(dfUseLoadOrder)
+    IwbRecordMemberDef(wbArray(INOM, 'INFO Order (Masters only)',
+      IwbValueDef(wbFormIDCk('INFO', [INFO], False, cpBenign).IncludeFlag(dfUseLoadOrder))
     ).IncludeFlag(dfInternalEditOnly)
      .IncludeFlag(dfDontSave)
-     .IncludeFlag(dfDontAssign);
+     .IncludeFlag(dfDontAssign));
 
   wbINOA :=
-    wbArray(INOA, 'INFO Order (All previous modules)',
-      wbFormIDCk('INFO', [INFO], False, cpBenign).IncludeFlag(dfUseLoadOrder)
+    IwbRecordMemberDef(wbArray(INOA, 'INFO Order (All previous modules)',
+      IwbValueDef(wbFormIDCk('INFO', [INFO], False, cpBenign).IncludeFlag(dfUseLoadOrder))
     ).IncludeFlag(dfInternalEditOnly)
      .IncludeFlag(dfDontSave)
-     .IncludeFlag(dfDontAssign);
+     .IncludeFlag(dfDontAssign));
 
   wbQSTI :=
     wbRArrayS('Associated Quests',
@@ -7245,23 +7523,23 @@ begin
         wbByteArray(FGTS, 'Facegen Symmetric Texture', 200).SetRequired
       ]).SetRequired,
       wbRStruct('Facegen Data', [
-        wbArray(FGGS, 'Facegen Symmetric Geometry',
+        IwbRecordMemberDef(wbArray(FGGS, 'Facegen Symmetric Geometry',
           wbFloat('Bone Morph Key'),
         50).SetRequired
-           .IncludeFlag(dfCollapsed, wbCollapseOther),
-        wbArray(FGGA, 'Facegen Asymmetric Geometry',
+           .IncludeFlag(dfCollapsed, wbCollapseOther)),
+        IwbRecordMemberDef(wbArray(FGGA, 'Facegen Asymmetric Geometry',
           wbFloat('Bone Morph Key'),
         30).SetRequired
-           .IncludeFlag(dfCollapsed, wbCollapseOther),
-        wbArray(FGTS, 'Facegen Symmetric Texture',
+           .IncludeFlag(dfCollapsed, wbCollapseOther)),
+        IwbRecordMemberDef(wbArray(FGTS, 'Facegen Symmetric Texture',
           wbFloat('Color Morph Key'),
         50).SetRequired
-           .IncludeFlag(dfCollapsed, wbCollapseOther)
+           .IncludeFlag(dfCollapsed, wbCollapseOther))
       ]).SetRequired);
 
   wbIdleAnimation :=
     wbRStruct('Idle Animations', [
-      wbInteger(IDLF, 'Flags', itU8,
+      IwbRecordMemberDef(wbInteger(IDLF, 'Flags', itU8,
         wbFlags([
         {0} 'Run In Sequence',
         {1} IsFO76('Old Pick Conditions',''),
@@ -7270,29 +7548,32 @@ begin
         {4} IsFO3('','Ignored By Sandbox'),
         {5} IsSF1('Ignore Conditions For Sandbox','Unknown 5')
         ])
-      ).IncludeFlag(dfCollapsed, wbCollapseFlags),
-      IsFO3(
-        wbStruct(IDLC, '', [
-          wbInteger('Animation Count', itU8, nil, cpBenign).IncludeFlag(dfSkipImplicitEdit),
+      ).IncludeFlag(dfCollapsed, wbCollapseFlags)),
+      IwbRecordMemberDef(IsFO3(
+        IwbRecordMemberDef(wbStruct(IDLC, '', [
+          IwbValueDef(wbInteger('Animation Count', itU8, nil, cpBenign).IncludeFlag(dfSkipImplicitEdit)),
           wbBelowVersion(14, wbUnused(3))
-        ]),
-        IsSF1(
-          wbInteger(IDLC, 'Animation Count', itU32, nil, cpBenign).IncludeFlag(dfSkipImplicitEdit),
-          wbInteger(IDLC, 'Animation Count', itU8,  nil, cpBenign).IncludeFlag(dfSkipImplicitEdit)
-        )
-      ),
-      wbFloat(IDLT, 'Idle Timer Setting'),
-      wbArray(IDLA, 'Animations',
+        ])),
+        IwbRecordMemberDef(IsSF1(
+          IwbRecordMemberDef(wbInteger(IDLC, 'Animation Count', itU32, nil, cpBenign).IncludeFlag(dfSkipImplicitEdit)),
+          IwbRecordMemberDef(wbInteger(IDLC, 'Animation Count', itU8,  nil, cpBenign).IncludeFlag(dfSkipImplicitEdit))
+        ))
+      )),
+      IwbRecordMemberDef(wbFloat(IDLT, 'Idle Timer Setting')),
+      IwbRecordMemberDef(wbArray(IDLA, 'Animations',
         wbFormIDCk('Animation', [IDLE,NULL])
-      ).SetCountPathOnValue(IsFO3('IDLC\Animation Count', 'IDLC'), False),
-      IsSF1(
+      ).SetCountPathOnValue(string(IsFO3('IDLC\Animation Count', 'IDLC')), False)),
+      IwbRecordMemberDef(IsSF1(
         nil,
         wbUnknown(IDLB)
-      )
+      ))
     ]);
 
 {>>>Landscape Common Defs<<<}
   //TES4,FO3,FNV,TES5,FO4,FO76,SF1
+{$IFDEF FPC}
+  wbLandNormals := wbByteArray(VNML, 'Vertex Normals', 3267, cpBenign, False, False, nil, wbLandNormalsGetCP);
+{$ELSE}
   wbLandNormals :=
     IfThen(wbSimpleRecords,
       wbByteArray(VNML, 'Vertex Normals', 3267, cpBenign, False, False, nil, wbLandNormalsGetCP),
@@ -7311,8 +7592,12 @@ begin
            .IncludeFlag(dfCollapsed, wbCollapseVertices),
       33).SetSummaryName('Rows')
          .IncludeFlag(dfCollapsed, wbCollapseVertices));
+{$ENDIF}
 
   //TES4,FO3,FNV,TES5,FO4,FO76,SF1
+{$IFDEF FPC}
+  wbLandHeights := wbByteArray(VHGT, 'Vertex Height Map');
+{$ELSE}
   wbLandHeights :=
     IfThen(wbSimpleRecords,
       wbByteArray(VHGT, 'Vertex Height Map'),
@@ -7327,8 +7612,12 @@ begin
            .IncludeFlag(dfCollapsed, wbCollapseVertices),
         wbUnused(3)
       ]));
+{$ENDIF}
 
   //TES4,FO3,FNV,TES5,FO4,FO76
+{$IFDEF FPC}
+  wbLandColors := wbByteArray(VCLR, 'Vertex Colors');
+{$ELSE}
   wbLandColors :=
     IfThen(wbSimpleRecords,
       wbByteArray(VCLR, 'Vertex Colors'),
@@ -7344,8 +7633,8 @@ begin
            .IncludeFlag(dfCollapsed, wbCollapseVertices),
       33).SetSummaryName('Rows')
          .IncludeFlag(dfCollapsed, wbCollapseVertices));
+{$ENDIF}
 
-  var wbLandLayerDefault : variant;
   case wbGameMode of
      gmTES4, gmTES4R         : wbLandLayerDefault := $000008C0; //TerrainHDDirt01dds
      gmFO3,  gmFNV           : wbLandLayerDefault := $00015457; //LDirtWasteland01
@@ -7354,6 +7643,11 @@ begin
   end;
 
   //TES4,FO3,FNV,TES5,FO4,FO76
+{$IFDEF FPC}
+  wbLandLayers :=
+    wbRArrayS('Layers',
+      wbByteArray(BTXT, 'Layer Data'));
+{$ELSE}
   wbLandLayers :=
     wbRArrayS('Layers',
       wbRUnion('Layer', [
@@ -7402,6 +7696,7 @@ begin
             ).IncludeFlag(dfCollapsed, wbCollapseOther))
         ]).IncludeFlag(dfCollapsed, wbCollapseOther)
       ]));
+{$ENDIF}
 
 
 {>>>Navmesh Common Defs<<<}
@@ -7472,6 +7767,11 @@ Can't properly represent that with current record definition methods.
 
 {>>>Region Common Defs<<<}
   //TES4,FO3,FNV,TES5,FO4,FO76,SF1
+{$IFDEF FPC}
+  wbRegionAreas :=
+    wbRArray('Region Areas',
+      wbByteArray(RPLI, 'Region Area'));
+{$ELSE}
   wbRegionAreas :=
     wbRArray('Region Areas',
       wbRStruct('Region Area', [
@@ -7485,9 +7785,13 @@ Can't properly represent that with current record definition methods.
           wbUnknown(ANAM),
           nil)
       ]));
+{$ENDIF}
 
 {>>>Weather Common Defs<<<}
   //TES4,FO3,FNV,TES5,FO4,FO76
+{$IFDEF FPC}
+  wbWeatherCloudTextures := wbRStruct('Cloud Textures', [wbString(DNAM, 'Layer #0')]);
+{$ELSE}
   wbWeatherCloudTextures :=
     IfThen(wbIsFallout3,
       wbRStruct('Cloud Textures', [
@@ -7532,30 +7836,38 @@ Can't properly represent that with current record definition methods.
         wbString(J0TX, 'Layer #26'),
         wbString(K0TX, 'Layer #27'),
         wbString(L0TX, 'Layer #28')
-      ]).IncludeFlag(dfAllowAnyMember)
-        .IncludeFlag(dfCollapsed, wbCollapseWeatherCloudTextures)
-        .IncludeFlag(dfStructFirstNotRequired));
+	      ]).IncludeFlag(dfAllowAnyMember)
+	        .IncludeFlag(dfCollapsed, wbCollapseWeatherCloudTextures)
+	        .IncludeFlag(dfStructFirstNotRequired));
+{$ENDIF}
 
   //FO3,FNV,TES5,FO4,FO76,SF1
+{$IFDEF FPC}
+  wbWeatherCloudSpeed := wbByteArray(ONAM, 'Cloud Speeds');
+{$ELSE}
   wbWeatherCloudSpeed :=
     IfThen(wbIsFallout3,
 	    wbArray(ONAM, 'Cloud Speeds',
 		    wbInteger('Layer', itU8),
       4)
       .IncludeFlag(dfCollapsed, wbCollapseWeatherCloudSpeed),
-	    wbRStruct('Cloud Speeds', [
-	      wbArray(RNAM, 'Y Speeds',
+		    wbRStruct('Cloud Speeds', [
+		      wbArray(RNAM, 'Y Speeds',
 		      wbInteger('Layer', itU8, wbWeatherCloudSpeedToStr, wbWeatherCloudSpeedToInt).SetDefaultEditValue('0'),
 		    32).IncludeFlag(dfNotAlignable)
            .IncludeFlag(dfCollapsed, wbCollapseWeatherCloudSpeed),
 		    wbArray(QNAM, 'X Speeds',
 		      wbInteger('Layer', itU8, wbWeatherCloudSpeedToStr, wbWeatherCloudSpeedToInt).SetDefaultEditValue('0'),
-	    	32).IncludeFlag(dfNotAlignable)
-           .IncludeFlag(dfCollapsed, wbCollapseWeatherCloudSpeed)
-           .SetRequired
-	    ])).SetRequired;
+		    	32).IncludeFlag(dfNotAlignable)
+	           .IncludeFlag(dfCollapsed, wbCollapseWeatherCloudSpeed)
+	           .SetRequired
+		    ])).SetRequired;
+{$ENDIF}
 
   //FO3,FNV,TES4,FO4,FO76,SF1
+{$IFDEF FPC}
+  wbWeatherCloudColors := wbByteArray(PNAM, 'Cloud Colors');
+{$ELSE}
   wbWeatherCloudColors :=
     wbArray(PNAM, 'Cloud Colors',
       wbWeatherTimeOfDay('Layer'),
@@ -7564,8 +7876,12 @@ Can't properly represent that with current record definition methods.
       .IncludeFlagOnValue(dfFastAssign)
       .IncludeFlagOnValue(dfNotAlignable)
       .SetRequired;
+{$ENDIF}
 
   //TES5,FO4,FO76,SF1
+{$IFDEF FPC}
+  wbWeatherCloudAlphas := wbByteArray(JNAM, 'Cloud Alphas');
+{$ELSE}
   wbWeatherCloudAlphas :=
     wbArray(JNAM, 'Cloud Alphas',
       wbStruct('Layer', [
@@ -7601,12 +7917,16 @@ Can't properly represent that with current record definition methods.
             .SetDefaultNativeValue(1.0)
             .IncludeFlag(dfSummaryNoName)),
           nil)
-      ]).SetSummaryKey([0,1,2,3,4,5,6,7])
-        .IncludeFlag(dfCollapsed, wbCollapseWeatherCloudAlphas),
-    32).IncludeFlag(dfNotAlignable)
-       .SetRequired;
+	      ]).SetSummaryKey([0,1,2,3,4,5,6,7])
+	        .IncludeFlag(dfCollapsed, wbCollapseWeatherCloudAlphas),
+	    32).IncludeFlag(dfNotAlignable)
+	       .SetRequired;
+{$ENDIF}
 
   //TES4,FO3,FNV,TES5,FO4,FO76,SF1
+{$IFDEF FPC}
+  wbWeatherColors := wbByteArray(NAM0, 'Weather Colors');
+{$ELSE}
   wbWeatherColors :=
     wbStruct(NAM0, 'Weather Colors', [
       wbWeatherTimeOfDay('Sky-Upper'),
@@ -7651,12 +7971,16 @@ Can't properly represent that with current record definition methods.
       IsFO4Plus(
         wbFromVersion(119, wbWeatherTimeOfDay('Fog Near High')),
         nil),
-      IsFO4Plus(
-        wbFromVersion(119, wbWeatherTimeOfDay('Fog Far High')),
-        nil)
-    ]).SetRequired;
+	      IsFO4Plus(
+	        wbFromVersion(119, wbWeatherTimeOfDay('Fog Far High')),
+	        nil)
+	    ]).SetRequired;
+{$ENDIF}
 
   //TES4,FO3,FNV,TES5,FO4,FO76,SF1
+{$IFDEF FPC}
+  wbWeatherFogDistance := wbByteArray(FNAM, 'Fog Distance');
+{$ELSE}
   wbWeatherFogDistance :=
     wbStruct(FNAM, 'Fog Distance', [
       wbFloat('Day - Near'),
@@ -7702,12 +8026,20 @@ Can't properly represent that with current record definition methods.
       IsFO4Plus(
         wbFromVersion(120, wbFloat('Night - Far Height Mid')),
         nil),
-      IsFO4Plus(
-        wbFromVersion(120, wbFloat('Night - Far Height Range')),
-        nil)
-    ]).SetRequired;
+	      IsFO4Plus(
+	        wbFromVersion(120, wbFloat('Night - Far Height Range')),
+	        nil)
+	    ]).SetRequired;
+{$ENDIF}
 
   //TES4,FO3,FNV,TES5,FO4,FO76,SF1
+{$IFDEF FPC}
+  wbWeatherLightningColor := IwbValueDef(wbStruct('Lightning Color', [
+    wbInteger('Red', itU8),
+    wbInteger('Green', itU8),
+    wbInteger('Blue', itU8)
+  ]));
+{$ELSE}
   wbWeatherLightningColor :=
     wbStruct('Lightning Color', [
       wbInteger('Red', itU8),
@@ -7715,19 +8047,29 @@ Can't properly represent that with current record definition methods.
       wbInteger('Blue', itU8)
     ]).SetToStr(wbRGBAToStr)
       .IncludeFlag(dfCollapsed, wbCollapseRGBA);
+{$ENDIF}
 
   //TES5,FO4,FO76,SF1
+{$IFDEF FPC}
+  wbWeatherDisabledLayers := wbInteger(NAM1, 'Disabled Cloud Layers', itU32);
+{$ELSE}
   wbWeatherDisabledLayers :=
     wbInteger(NAM1, 'Disabled Cloud Layers', itU32,
       wbFlags([
         '0','1','2','3','4','5','6','7','8','9','10','11',
-        '12','13','14','15','16','17','18','19','20','21',
-        '22','23','24','25','26','27','28','29','30','31'
-      ])).SetDefaultNativeValue(IsTES5(0, 4294967295))
-         .IncludeFlag(dfCollapsed, wbCollapseFlags)
-         .SetRequired;
+	        '12','13','14','15','16','17','18','19','20','21',
+	        '22','23','24','25','26','27','28','29','30','31'
+	      ])).SetDefaultNativeValue(IsTES5(0, 4294967295))
+	         .IncludeFlag(dfCollapsed, wbCollapseFlags)
+	         .SetRequired;
+{$ENDIF}
 
   //TES4,FO3,FNV,TES5,FO4,FO76,SF1
+{$IFDEF FPC}
+  wbWeatherSounds :=
+    wbRArray('Sounds',
+      wbByteArray(SNAM, 'Sound'));
+{$ELSE}
   wbWeatherSounds :=
     wbRArray('Sounds',
       wbStruct(SNAM, 'Sound', [
@@ -7739,13 +8081,38 @@ Can't properly represent that with current record definition methods.
             {2} 'Wind',
             {3} 'Thunder'
           ]))
-      ]).SetSummaryKeyOnValue([1, 0])
-        .SetSummaryPrefixSuffixOnValue(1, '[', ']')
-        .SetSummaryDelimiterOnValue(' ')
-        .IncludeFlagOnValue(dfSummaryMembersNoName)
-        .IncludeFlag(dfCollapsed, wbCollapseSounds));
+	      ]).SetSummaryKeyOnValue([1, 0])
+	        .SetSummaryPrefixSuffixOnValue(1, '[', ']')
+	        .SetSummaryDelimiterOnValue(' ')
+	        .IncludeFlagOnValue(dfSummaryMembersNoName)
+	        .IncludeFlag(dfCollapsed, wbCollapseSounds));
+{$ENDIF}
 
   //TES5,FO4,FO76,SF1
+{$IFDEF FPC}
+  wbWeatherImageSpaces := wbByteArray(IMSP, 'Image Spaces');
+  wbWeatherGodRays := wbByteArray(WGDR, 'God Rays');
+  wbWeatherVolumetricLighting := wbByteArray(HNAM, 'Volumetric Lighting');
+  wbWeatherDirectionalLighting := wbByteArray(DALC, 'Directional Ambient Lighting Colors');
+  wbWeatherMagic := wbByteArray(UNAM, 'Magic');
+
+{>>>Worldspace Common Defs<<<}
+  wbWorldLargeRefs := wbByteArray(RNAM, 'Large References');
+  wbWorldMaxHeight := wbByteArray(MHDT, 'Max Height Data');
+  wbWorldFixedCenter := wbByteArray(WCTR, 'Fixed Dimensions Center Cell');
+  wbWorldLODData := wbByteArray(NAM3, 'LOD Data');
+  wbWorldLandData := wbByteArray(DNAM, 'Land Data');
+  wbWorldMapData := wbByteArray(MNAM, 'World Map Data');
+  wbWorldMapOffset := wbByteArray(ONAM, 'World Map Offset Data');
+  wbWorldObjectBounds := wbByteArray(NAM0, 'Worldspace Bounds');
+  wbWorldSwapsImpactData := wbByteArray(IMPS, 'Swaps Impact Data');
+  wbWorldRegionEditorMap := wbByteArray(NAM5, 'Region Editor Map');
+  wbWorldWaterHeightData := wbByteArray(XCLW, 'Water Height Data');
+  wbWorldLevelData := wbByteArray(WLEV, 'World Default Level Data');
+  wbWorldOffsetData := IwbRecordMemberDef(wbByteArray(OFST, 'Offsets', 0, cpIgnore).SetDontShow(wbNeverShow));
+  wbWorldCellSizeData := IwbRecordMemberDef(wbByteArray(CLSZ, 'Cell Sizes', 0, cpIgnore).SetDontShow(wbNeverShow));
+  wbWorldVisibleCellsData := IwbRecordMemberDef(wbByteArray(VISI, 'Visible Cells', 0, cpIgnore).SetDontShow(wbNeverShow));
+{$ELSE}
   wbWeatherImageSpaces :=
     wbStruct(IMSP, 'Image Spaces', [
       wbFormIDCK('Sunrise', [IMGS, NULL]).SetDefaultNativeValue(359),
@@ -8185,8 +8552,7 @@ Can't properly represent that with current record definition methods.
         .IncludeFlag(dfCollapsed, wbCollapseOther)
         .IncludeFlag(dfFastAssign)
         .IncludeFlag(dfNoCopyAsOverride));
+{$ENDIF}
 end;
 
 end.
-
-

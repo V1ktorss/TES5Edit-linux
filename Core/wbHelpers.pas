@@ -14,15 +14,14 @@ interface
 
 uses
   Classes,
-  Windows,
+  {$IFDEF MSWINDOWS}Windows,{$ENDIF}
   System.UITypes,
   System.AnsiStrings,
+  {$IFDEF FPC}System.SysUtils,{$ENDIF}
   SysUtils,
-  Graphics,
-  Controls,
-  Forms,
+  {$IFNDEF FPC}Graphics, Controls, Forms,{$ENDIF}
   IniFiles,
-  RegularExpressionsCore,
+  {$IFDEF FPC}RegExpr{$ELSE}RegularExpressionsCore{$ENDIF},
   wbInterface,
   wbPlatform,
   Imaging,
@@ -77,7 +76,7 @@ Const
       $b40bbe37, $c30c8ea1, $5a05df1b, $2d02ef8d  );
 //{$ENDIF}
 
-function wbDistance(const a, b: TwbVector): Single; overload
+function wbDistance(const a, b: TwbVector): Single; overload;
 function wbDistance(const a, b: IwbMainRecord): Single; overload;
 function wbStringToSignatures(aSignatures: string): TwbSignatures;
 function wbGetSiblingREFRsWithin(const aMainRecord: IwbMainRecord; aDistance: Single): TDynMainRecords;
@@ -86,6 +85,7 @@ function FindMatchText(Strings: TStrings; const Str: string): Integer;
 function IsFileCC(const aFileName: string): Boolean;
 procedure DeleteDirectory(const DirName: string);
 function FullPathToFilename(aString: string): string;
+{$IFNDEF FPC}
 procedure wbFlipBitmap(aBitmap: TBitmap; MirrorType: Integer); // MirrorType: 1 - horizontal, 2 - vertical, 0 - both
 function wbAlphaBlend(DestDC, X, Y, Width, Height,
   SrcDC, SrcX, SrcY, SrcWidth, SrcHeight, Alpha: integer): Boolean;
@@ -93,16 +93,31 @@ procedure SaveFont(aIni: TMemIniFile; aSection, aName: string; aFont: TFont);
 procedure LoadFont(aIni: TMemIniFile; aSection, aName: string; aFont: TFont);
 function wbDDSDataToBitmap(aData: TBytes; Bitmap: TBitmap): Boolean;
 function wbDDSStreamToBitmap(aStream: TStream; Bitmap: TBitmap): Boolean;
+{$ENDIF}
+{$IFDEF FPC}
+function wbCRC32Ptr(aData: Pointer; aSize: Integer): DWord;
+function wbCRC32Data(aData: SysUtils.TBytes): DWord;
+function wbCRC32File(aFileName: string): DWord;
+function wbCRC32App: DWord;
+{$ELSE}
 function wbCRC32Ptr(aData: Pointer; aSize: Integer): TwbCRC32;
 function wbCRC32Data(aData: TBytes): TwbCRC32;
 function wbCRC32File(aFileName: string): TwbCRC32;
 function wbCRC32App: TwbCRC32;
+{$ENDIF}
 function bscrc32(const aText: string): Cardinal; // hashing func used in Fallout 4
 function wbDecodeCRCList(const aList: string): TDynCardinalArray;
+{$IFDEF FPC}
+function wbSHA1Data(aData: SysUtils.TBytes): AnsiString;
+function wbSHA1File(aFileName: string): AnsiString;
+function wbMD5Data(aData: SysUtils.TBytes): AnsiString;
+function wbMD5File(aFileName: string): AnsiString;
+{$ELSE}
 function wbSHA1Data(aData: TBytes): string;
 function wbSHA1File(aFileName: string): string;
 function wbMD5Data(aData: TBytes): string;
 function wbMD5File(aFileName: string): string;
+{$ENDIF}
 function wbIsAssociatedWithExtension(aExt: string): Boolean;
 function wbAssociateWithExtension(aExt, aName, aDescr: string): Boolean;
 function ExecuteCaptureConsoleOutput(const aCommandLine: string): Cardinal;
@@ -136,7 +151,11 @@ function HasBSAs(ModName, DataPath: String; Exact, modini: Boolean; var bsaNames
 function wbStripDotGhost(const aFileName: string): string;
 
 type
+{$IFDEF FPC}
+  TPassThroughFunc<T> = function (const a: T): T;
+{$ELSE}
   TPassThroughFunc<T> = reference to function (const a: T): T;
+{$ENDIF}
 
   TDynStringArray = TArray<string>;
 
@@ -169,7 +188,9 @@ procedure wbCodeBlock(const aProc: TProc);
 
 function wbVarArray(const aElements: array of Variant): Variant;
 
+{$IFNDEF FPC}
 procedure wbTwiddleHeight(aControl: TControl);
+{$ENDIF}
 
 implementation
 
@@ -177,13 +198,25 @@ uses
   System.SyncObjs,
   System.IOUtils,
   StrUtils,
+  {$IFNDEF MSWINDOWS}tfTypes, tfMD5, tfSHA1,{$ENDIF}
   wbSort;
 
 function TStringArrayHelper.AddPrefix(const aPrefix: string): TArray<string>;
+{$IFDEF FPC}
+var
+  i: Integer;
+{$ENDIF}
 begin
+{$IFDEF FPC}
+  Result := nil;
+  SetLength(Result, Length(Self));
+  for i := Low(Self) to High(Self) do
+    Result[i] := aPrefix + Self[i];
+{$ELSE}
   Result := Self.ForEach(function(const s: string): string begin
     Result := aPrefix + s;
   end);
+{$ENDIF}
 end;
 
 function TStringArrayHelper.ForEach(const aFunc: TPassThroughFunc<string>): TArray<string>;
@@ -534,6 +567,16 @@ begin
   if Length(wbCreationClubContent) <> 0 then
     Result := MatchText(aFileName, wbCreationClubContent)
   else
+{$IFDEF FPC}
+  with TRegExpr.Create do try
+    Expression := ccFileMask;
+    ModifierI := True;
+    ModifierS := True;
+    Result := Exec(aFileName);
+  finally
+    Free;
+  end;
+{$ELSE}
   with TPerlRegEx.Create do try
     Subject := aFileName;
     RegEx := ccFileMask;
@@ -542,8 +585,32 @@ begin
   finally
     Free;
   end;
+{$ENDIF}
 end;
 
+{$IFDEF FPC}
+procedure DeleteDirectory(const DirName: string);
+var
+  SR: TSearchRec;
+  Path: string;
+begin
+  if FindFirst(IncludeTrailingPathDelimiter(DirName) + '*', faAnyFile, SR) = 0 then
+  try
+    repeat
+      if (SR.Name = '.') or (SR.Name = '..') then
+        Continue;
+      Path := IncludeTrailingPathDelimiter(DirName) + SR.Name;
+      if (SR.Attr and faDirectory) <> 0 then
+        DeleteDirectory(Path)
+      else
+        SysUtils.DeleteFile(Path);
+    until FindNext(SR) <> 0;
+  finally
+    FindClose(SR);
+  end;
+  RemoveDir(DirName);
+end;
+{$ELSE}
 procedure DeleteDirectory(const DirName: string);
 var
   FileOp: TSHFileOpStruct;
@@ -554,6 +621,7 @@ begin
   FileOp.fFlags := FOF_SILENT or FOF_NOERRORUI or FOF_NOCONFIRMATION;
   SHFileOperation(FileOp);
 end;
+{$ENDIF}
 
 function FullPathToFilename(aString: string): string;
 var
@@ -578,6 +646,7 @@ begin
   Result := s;
 end;
 
+{$IFNDEF FPC}
 procedure wbFlipBitmap(aBitmap: TBitmap; MirrorType: Integer);
 var
   MemBmp: TBitmap;
@@ -653,6 +722,7 @@ begin
   aFont.Size    := aIni.ReadInteger(aSection, aName + 'Size', aFont.Size);
   aFont.Style   := TFontStyles(Byte(aIni.ReadInteger(aSection, aName + 'Style', Byte(aFont.Style))));
 end;
+{$ENDIF}
 
 function wbExpandFileName(const aFileName: string): string;
 begin
@@ -730,7 +800,8 @@ function ShaCrcRefresh(OldCRC: cardinal; BufPtr: pointer; BufLen: integer): card
 {$IFDEF WIN64}
 begin
   Result := crc32_update(BufPtr, BufLen, OldCRC);
-{$ENDIF WIN64}
+end;
+{$ELSE}
 {$IFDEF WIN32}
 asm
   test edx, edx
@@ -828,20 +899,44 @@ asm
   jnz @tail;
   pop ebx
   ret
-{$ENDIF WIN32}
+{$ELSE}
+var
+  p: PByte;
+  i: Integer;
+begin
+  Result := OldCRC;
+  p := BufPtr;
+  for i := 0 to BufLen - 1 do begin
+    Result := (Result shr 8) xor CRC32tab[(Result xor p^) and $FF];
+    Inc(p);
+  end;
 end;
+{$ENDIF}
+{$ENDIF}
 
+{$IFDEF FPC}
+function wbCRC32Ptr(aData: Pointer; aSize: Integer): DWord;
+{$ELSE}
 function wbCRC32Ptr(aData: Pointer; aSize: Integer): TwbCRC32;
+{$ENDIF}
 begin
   Result := not ShaCrcRefresh($FFFFFFFF, aData, aSize);
 end;
 
+{$IFDEF FPC}
+function wbCRC32Data(aData: SysUtils.TBytes): DWord;
+{$ELSE}
 function wbCRC32Data(aData: TBytes): TwbCRC32;
+{$ENDIF}
 begin
   Result := not ShaCrcRefresh($FFFFFFFF, @aData[0], Length(aData));
 end;
 
+{$IFDEF FPC}
+function wbCRC32File(aFileName: string): DWord;
+{$ELSE}
 function wbCRC32File(aFileName: string): TwbCRC32;
+{$ENDIF}
 var
   Data: TBytes;
 begin
@@ -860,14 +955,27 @@ var
   _CRC32AppLock : TRTLCriticalSection;
   _CRC32App     : Cardinal;
 
+{$IFDEF FPC}
+function wbCRC32App: DWord;
+{$ELSE}
 function wbCRC32App: TwbCRC32;
+{$ENDIF}
 begin
+{$IFDEF MSWINDOWS}
   if IsDebuggerPresent or (DebugHook <> 0) or wbDevMode then
     Exit(wbDevCRC32App);
+{$ELSE}
+  if wbDevMode then
+    Exit(wbDevCRC32App);
+{$ENDIF}
 
   Result := _CRC32App;
   if Result = 0 then begin
+{$IFDEF FPC}
+    EnterCriticalSection(_CRC32AppLock);
+{$ELSE}
     _CRC32AppLock.Enter;
+{$ENDIF}
     try
       Result := _CRC32App;
       if Result = 0 then begin
@@ -875,7 +983,11 @@ begin
         _CRC32App := Result;
       end;
     finally
+{$IFDEF FPC}
+      LeaveCriticalSection(_CRC32AppLock);
+{$ELSE}
       _CRC32AppLock.Leave;
+{$ENDIF}
     end;
   end;
 end;
@@ -919,6 +1031,7 @@ begin
 end;
 
 
+{$IFDEF MSWINDOWS}
 function CryptAcquireContext(var phProv: DWORD;
   pszContainer, pszProvider: LPCSTR; dwProvType, dwFlags: DWORD): BOOL;
   stdcall; external advapi32 name 'CryptAcquireContextA';
@@ -955,6 +1068,7 @@ begin
     CryptReleaseContext(hProv, 0);
   end;
 end;
+{$ENDIF}
 
 const
   ALG_CRC32 = $0001;
@@ -977,16 +1091,71 @@ function wbCryptoApiHashData(aData: TBytes; aALG: Cardinal): string;
       Result:= Result + Hex[bt shr $4 + 1] + Hex[bt and $0f + 1]
     end;
   end;
+{$IFNDEF MSWINDOWS}
+  function DigestToHexStr(pDigest: Pointer; aSize: Integer): string;
+  const
+    Hex = '0123456789abcdef';
+  var
+    i: Integer;
+    p: PByte;
+  begin
+    SetLength(Result, aSize * 2);
+    p := pDigest;
+    for i := 0 to aSize - 1 do begin
+      Result[i * 2 + 1] := Hex[p^ shr 4 + 1];
+      Result[i * 2 + 2] := Hex[p^ and $0F + 1];
+      Inc(p);
+    end;
+  end;
+var
+  md5: TMD5Alg;
+  sha1: TSHA1Alg;
+  md5Digest: TMD5Digest;
+  sha1Digest: TSHA1Digest;
+{$ENDIF}
 begin
+{$IFDEF MSWINDOWS}
+  if Length(aData) = 0 then
+    Exit('');
   Result := BytesToHexStr(CryptoAPIGetHash(@aData[0], Length(aData), aALG));
+{$ELSE}
+  case aALG of
+    ALG_MD5:
+      begin
+        TMD5Alg.Init(@md5);
+        if Length(aData) > 0 then
+          TMD5Alg.Update(@md5, @aData[0], Length(aData));
+        TMD5Alg.Done(@md5, @md5Digest);
+        Result := DigestToHexStr(@md5Digest, SizeOf(md5Digest));
+      end;
+    ALG_SHA:
+      begin
+        TSHA1Alg.Init(@sha1);
+        if Length(aData) > 0 then
+          TSHA1Alg.Update(@sha1, @aData[0], Length(aData));
+        TSHA1Alg.Done(@sha1, @sha1Digest);
+        Result := DigestToHexStr(@sha1Digest, SizeOf(sha1Digest));
+      end;
+  else
+    Result := '';
+  end;
+{$ENDIF}
 end;
 
+{$IFDEF FPC}
+function wbSHA1Data(aData: SysUtils.TBytes): AnsiString;
+{$ELSE}
 function wbSHA1Data(aData: TBytes): string;
+{$ENDIF}
 begin
   Result := wbCryptoApiHashData(aData, ALG_SHA);
 end;
 
+{$IFDEF FPC}
+function wbSHA1File(aFileName: string): AnsiString;
+{$ELSE}
 function wbSHA1File(aFileName: string): string;
+{$ENDIF}
 var
   Data: TBytes;
 begin
@@ -1001,12 +1170,20 @@ begin
     end;
 end;
 
+{$IFDEF FPC}
+function wbMD5Data(aData: SysUtils.TBytes): AnsiString;
+{$ELSE}
 function wbMD5Data(aData: TBytes): string;
+{$ENDIF}
 begin
   Result := wbCryptoApiHashData(aData, ALG_MD5);
 end;
 
+{$IFDEF FPC}
+function wbMD5File(aFileName: string): AnsiString;
+{$ELSE}
 function wbMD5File(aFileName: string): string;
+{$ENDIF}
 var
   Data: TBytes;
 begin
@@ -1339,6 +1516,7 @@ begin
   end;
 end;
 
+{$IFNDEF FPC}
 function wbDDSDataToBitmap(aData: TBytes; Bitmap: TBitmap): Boolean;
 var
   img: TImageData;
@@ -1380,6 +1558,7 @@ begin
     ms.Free;
   end;
 end;
+{$ENDIF}
 
 function wbIsAssociatedWithExtension(aExt: string): Boolean;
 begin
@@ -1391,8 +1570,25 @@ begin
   Result := wbPlatform.wbAssociateWithExtension(aExt, aName, aDescr, ParamStr(0));
 end;
 
+{$IFDEF FPC}
+function wbExecuteCaptureShouldTerminate: Boolean;
+begin
+  Result := wbForceTerminate;
+  if Result then
+    wbProgressCallback('Interrupted by user!');
+end;
+{$ENDIF}
+
 function ExecuteCaptureConsoleOutput(const aCommandLine: string): Cardinal;
 begin
+{$IFDEF FPC}
+  Result := wbExecuteCaptureConsoleOutput(
+    aCommandLine,
+    @wbProgressCallback,
+    nil,
+    @wbExecuteCaptureShouldTerminate
+  );
+{$ELSE}
   Result := wbExecuteCaptureConsoleOutput(
     aCommandLine,
     procedure(const aLine: string)
@@ -1401,18 +1597,35 @@ begin
     end,
     procedure
     begin
+{$IFNDEF FPC}
       Application.ProcessMessages;
+{$ENDIF}
     end,
+{$IFDEF MSWINDOWS}
     function: Boolean
     begin
       Result := wbForceTerminate or ((GetKeyState(VK_ESCAPE) and 128) = 128);
       if Result then
         wbProgressCallback('Interrupted by user!');
     end
+{$ELSE}
+    function: Boolean
+    begin
+      Result := wbForceTerminate;
+      if Result then
+        wbProgressCallback('Interrupted by user!');
+    end
+{$ENDIF}
   );
+{$ENDIF}
 end;
 
 function wbIsAeroEnabled: Boolean;
+{$IFNDEF MSWINDOWS}
+begin
+  Result := False;
+end;
+{$ELSE}
 type
   _DwmIsCompositionEnabledFunc = function(var IsEnabled: BOOL): HRESULT; stdcall;
 var
@@ -1444,17 +1657,28 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 
 function wbGetLastWriteTime(const s: string): TDateTime;
 var
   F: TSearchRec;
+{$IFDEF FPC}
+  lAge: TDateTime;
+{$ENDIF}
 begin
   if FindFirst(s, faAnyFile, F) = 0 then try
     Result := F.TimeStamp;
   finally
     FindClose(F);
   end else
+{$IFDEF FPC}
+    if FileAge(s, lAge) then
+      Result := lAge
+    else
+      Result := 0;
+{$ELSE}
     Result := TFile.GetLastWriteTime(s);
+{$ENDIF}
 end;
 
 class function wb<T>.Iff(aCond: Boolean; const aTrue, aFalse: T): T;
@@ -1481,16 +1705,26 @@ begin
   Result := Elements;
 end;
 
+{$IFNDEF FPC}
 procedure wbTwiddleHeight(aControl: TControl);
 begin
   var lHeight := aControl.Height;
   aControl.Height := Succ(lHeight);
   aControl.Height := lHeight;
 end;
+{$ENDIF}
 
 initialization
   CRCInit;
+{$IFDEF FPC}
+  InitCriticalSection(_CRC32AppLock);
+{$ELSE}
   _CRC32AppLock.Initialize;
+{$ENDIF}
 finalization
+{$IFDEF FPC}
+  DoneCriticalSection(_CRC32AppLock);
+{$ELSE}
   _CRC32AppLock.Destroy;
+{$ENDIF}
 end.

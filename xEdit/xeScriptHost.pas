@@ -15,7 +15,7 @@ interface
 uses
   Classes,
   SysUtils,
-  System.Generics.Collections,
+  Generics.Collections,
   wbInterface;
 
 type
@@ -57,10 +57,11 @@ end;
 class function TxeScriptHost.CreateForName(const aName: string): TxeScriptHost;
 var
   ScriptHostClass : TxeScriptHostClass;
+  i: TxeScriptHostClass;
 begin
   ScriptHostClass := nil;
   if Assigned(_ScriptHosts) and (aName <> '') then
-    for var i in _ScriptHosts do
+    for i in _ScriptHosts do
       if SameText(i.GetName, aName) then begin
         ScriptHostClass := i;
         break;

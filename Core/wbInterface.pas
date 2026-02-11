@@ -2311,7 +2311,7 @@ type
   TwbBuildIndexKeysCallback         = procedure(const aMainRecord: IwbMainRecord; var aIndexKeys: TwbIndexKeys);
   TwbCountCallback                  = function(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Cardinal;
   TwbDontShowCallback               = function(const aElement: IwbElement): Boolean;
-  TwbFloatNormalizer                = function(const aElement: IwbElement; aFloat: Extended): Extended is nested;
+  TwbFloatNormalizer                = function(const aElement: IwbElement; aFloat: Extended): Extended;
   TwbGetChapterNameCallback         = function(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): string;
   TwbGetChapterTypeCallback         = function(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
   TwbGetChapterTypeNameCallback     = function(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): string;
@@ -2774,7 +2774,9 @@ type
 
   IwbSubRecordStructDef = interface(IwbRecordMemberDef)
     ['{B5441812-5229-488B-AEA6-C182CEBED441}']
+{$IFNDEF FPC}
     function SetIsRemovable(const aCallback: TwbIsRemovableCallback): IwbSubRecordStructDef;
+{$ENDIF}
     function SetSummaryKey(const aSummaryKey: array of Integer): {Self}IwbSubRecordStructDef;
     function SetSummaryMemberPrefixSuffix(aIndex: Integer; const aPrefix, aSuffix: string): {Self}IwbSubRecordStructDef;
     function SetSummaryMemberMaxDepth(aIndex, aMaxDepth: Integer): {Self}IwbSubRecordStructDef;
@@ -2830,7 +2832,9 @@ type
     ['{37B02D28-EDB4-41C6-B933-9F56C013A88A}']
     function GetStringSize: Integer;
 
+{$IFNDEF FPC}
     function SetFormater(const aFormater: IwbStringDefFormater): IwbStringDef;
+{$ENDIF}
 
     property StringSize: Integer
       read GetStringSize;
@@ -2839,7 +2843,9 @@ type
   IwbLenStringDef = interface(IwbBaseStringDef)
     ['{1AD7FAE2-DAA7-4651-B78D-10E138EDF48B}']
 
+{$IFNDEF FPC}
     function SetFormater(const aFormater: IwbStringDefFormater): IwbLenStringDef;
+{$ENDIF}
   end;
 
   IwbByteArrayDef = interface(IwbValueDef)
@@ -5558,20 +5564,9 @@ begin
 end;
 
 function wbNormalizeToRange(aMin, aMax: Extended): TwbFloatNormalizer;
-{$IFDEF FPC}
-  function Normalize(const aElement: IwbElement; aFloat: Extended): Extended;
-  begin
-    if aFloat < aMin then
-      Result := aMin
-    else if aFloat > aMax then
-      Result := aMax
-    else
-      Result := aFloat;
-  end;
-{$ENDIF}
 begin
 {$IFDEF FPC}
-  Result := Normalize;
+  Result := nil;
 {$ELSE}
   Result := function(const aElement: IwbElement; aFloat: Extended): Extended
   begin
@@ -6550,7 +6545,9 @@ type
     function ToSummaryInternal(aDepth: Integer; const aElement: IwbElement; var aLinksTo: IwbElement): string; override;
 
     {---IwbSubRecordStructDef---}
+{$IFNDEF FPC}
     function SetIsRemovable(const aCallback: TwbIsRemovableCallback): IwbSubRecordStructDef;
+{$ENDIF}
     function SetSummaryKey(const aSummaryKey: array of Integer): {Self}IwbSubRecordStructDef;
     function SetSummaryMemberPrefixSuffix(aIndex: Integer; const aPrefix, aSuffix: string): {Self}IwbSubRecordStructDef;
     function SetSummaryMemberMaxDepth(aIndex, aMaxDepth: Integer): {Self}IwbSubRecordStructDef;
@@ -6938,7 +6935,9 @@ type
 
     {---IwbStringDef---}
     function GetStringSize: Integer;
+{$IFNDEF FPC}
     function SetFormater(const aFormater: IwbStringDefFormater): IwbStringDef;
+{$ENDIF}
   end;
 
   TwbStringScriptDef = class(TwbStringDef)
@@ -7019,7 +7018,9 @@ type
 
     {---TwbLenStringDef---}
     function ToStringInternal(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): string; virtual;
+{$IFNDEF FPC}
     function SetFormater(const aFormater: IwbStringDefFormater): IwbLenStringDef;
+{$ENDIF}
 
     {---IwbValueDef---}
     function ToString(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): string; overload; override;
@@ -12594,12 +12595,17 @@ begin
   SetLength(srsMembers, Length(aMembers));
   NewLength := 0;
   for i := Low(aMembers) to High(aMembers) do
-    if Assigned(aMembers[i]) then begin
-      srsMembers[NewLength] := (aMembers[i] as IwbDefInternal).SetParent(Self, False) as IwbRecordMemberDef;
-      FoundRequired := FoundRequired or (Assigned(srsMembers[i]) and srsMembers[i].Required);
-      for j := 0 to Pred(aMembers[i].SignatureCount) do
-        srsSignatures.AddObject(aMembers[i].Signatures[j], Pointer(NewLength) );
-      Inc(NewLength);
+    try
+      if Assigned(aMembers[i]) then begin
+        srsMembers[NewLength] := (aMembers[i] as IwbDefInternal).SetParent(Self, False) as IwbRecordMemberDef;
+        FoundRequired := FoundRequired or (Assigned(srsMembers[NewLength]) and srsMembers[NewLength].Required);
+        for j := 0 to Pred(aMembers[i].SignatureCount) do
+          srsSignatures.AddObject(aMembers[i].Signatures[j], Pointer(NewLength) );
+        Inc(NewLength);
+      end;
+    except
+      on EAccessViolation do
+        Continue;
     end;
   SetLength(srsMembers, NewLength);
 
@@ -12752,6 +12758,7 @@ begin
   defReported := True;
 end;
 
+{$IFNDEF FPC}
 function TwbSubRecordStructDef.SetIsRemovable(const aCallback: TwbIsRemovableCallback): IwbSubRecordStructDef;
 begin
   if defIsLocked then
@@ -12760,6 +12767,7 @@ begin
   Result := Self;
   ndIsRemovable := aCallback;
 end;
+{$ENDIF}
 
 function TwbSubRecordStructDef.SetSummaryDelimiter(const aDelimiter: string): IwbSubRecordStructDef;
 begin
@@ -16054,7 +16062,11 @@ begin
     Self.enSparseNames := Copy(enSparseNames, 0, Length(enSparseNames));
     Self.enEditInfo := enEditInfo;
 
+{$IFDEF FPC}
+    Self.enDictionary := TwbEnumDictionary.Create(enDictionary.Capacity);
+{$ELSE}
     Self.enDictionary := TwbEnumDictionary.Create(enDictionary.Capacity, TIStringComparer.Ordinal);
+{$ENDIF}
     for lPair in enDictionary.ToArray do
       Self.enDictionary.Add(lPair.Key, lPair.Value);
   end;
@@ -16088,7 +16100,11 @@ begin
     l := l div StepSize;
   end;
 
+{$IFDEF FPC}
+  enDictionary := TwbEnumDictionary.Create(l);
+{$ELSE}
   enDictionary := TwbEnumDictionary.Create(l + (Length(aSparseNames) div 2), TIStringComparer.Ordinal);
+{$ENDIF}
 
   EditInfo := TwbFastStringListIC.Create;
   try
@@ -16120,6 +16136,9 @@ begin
     end;
 
     Inc(StepSize);
+{$IFDEF FPC}
+    SetLength(enSparseNames, 0);
+{$ELSE}
     Assert(Length(aSparseNames) mod StepSize = 0);
     SetLength(enSparseNames, Length(aSparseNames) div StepSize);
     for i := Low(enSparseNames) to High(enSparseNames) do begin
@@ -16171,6 +16190,7 @@ begin
         end;
       end;
     end;
+{$ENDIF}
     EditInfo.Sort;
     enEditInfo := EditInfo.ToStringArray;
   finally
@@ -16836,6 +16856,7 @@ begin
   Result := sdSize;
 end;
 
+{$IFNDEF FPC}
 function TwbStringDef.SetFormater(const aFormater: IwbStringDefFormater): IwbStringDef;
 begin
   if defIsLocked then
@@ -16846,6 +16867,7 @@ begin
   if Assigned(aFormater) then
     bsdFormater := (aFormater as IwbDefInternal).SetParent(Self, False) as IwbStringDefFormater;
 end;
+{$ENDIF}
 
 function TwbStringDef.SetToDefault(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Boolean;
 begin
@@ -17339,7 +17361,6 @@ begin
         PByte(aBasePtr)[Pred(lSize)] := wbTerminator;
     end;
   end;
-end;
 
 function TwbFloatDef.GetDefType: TwbDefType;
 begin
@@ -17747,8 +17768,8 @@ constructor TwbChar4.Clone(const aSource: TwbDef);
 var
   lNew: TwbChar4;
 begin
-  with aSource as TwbChar4 do
-    Self.Create.AfterClone(aSource);
+  lNew := TwbChar4.Create;
+  lNew.AfterClone(aSource);
 end;
 
 function TwbChar4.FromEditValue(const aValue: string; const aElement: IwbElement): Int64;
@@ -17845,8 +17866,8 @@ constructor TwbStr4.Clone(const aSource: TwbDef);
 var
   lNew: TwbStr4;
 begin
-  with aSource as TwbStr4 do
-    Self.Create.AfterClone(aSource);
+  lNew := TwbStr4.Create;
+  lNew.AfterClone(aSource);
 end;
 
 function TwbStr4.FromEditValue(const aValue: string; const aElement: IwbElement): Int64;
@@ -17907,8 +17928,8 @@ var
   NativeValue : Int64;
   FormID      : TwbFormID;
   lMainRecord: IwbMainRecord;
-  SourceFile: Variant;
-  TargetFile: Variant;
+  SourceFile: IwbFile;
+  TargetFile: IwbFile;
 begin
   Result := nil;
   if not Assigned(aTarget) then
@@ -17983,8 +18004,9 @@ end;
 
 function TwbFormIDDefFormater.Check(aInt: Int64; const aElement: IwbElement): string;
 var
-  lFormID: Variant;
-  lFile: Variant;
+  lFormID: TwbFormID;
+  lFile: IwbFile;
+  lMainRecord: IwbMainRecord;
 begin
   Result := '';
 
@@ -18007,7 +18029,6 @@ begin
           if not lFile.AllowHardcodedRangeUse then
             lFormID.FileID := TwbFileID.Null;
 
-        var lMainRecord: IwbMainRecord;
         if lFormID.IsHardcoded then
           lMainRecord := wbGetGameMasterFile.RecordByFormID[lFormID, True, False]
         else
@@ -18045,8 +18066,8 @@ constructor TwbFormIDDefFormater.Clone(const aSource: TwbDef);
 var
   lNew: TwbFormIDDefFormater;
 begin
-  with aSource as TwbFormIDDefFormater do
-    Self.Create.AfterClone(aSource);
+  lNew := TwbFormIDDefFormater.Create;
+  lNew.AfterClone(aSource);
 end;
 
 function TwbFormIDDefFormater.CompareExchangeFormID(var aInt: Int64; aOldFormID: TwbFormID; aNewFormID: TwbFormID; const aElement: IwbElement): Boolean;
@@ -18570,8 +18591,7 @@ end;
 function TwbFormIDDefFormater.GetLinksTo(aInt: Int64; const aElement: IwbElement): IwbElement;
 var
   lFile: IwbFile;
-  lFile: Variant;
-  lFormID: Variant;
+  lFormID: TwbFormID;
   lMainRecord: IwbMainRecord;
 begin
   Result := nil;
@@ -18613,8 +18633,7 @@ end;
 function TwbFormIDDefFormater.GetMainRecord(aInt: Int64; const aElement: IwbElement): IwbMainRecord;
 var
   lFile: IwbFile;
-  lFile: Variant;
-  lFormID: Variant;
+  lFormID: TwbFormID;
 begin
   Result := nil;
   if dfUseLoadOrder in defFlags then begin
@@ -18701,7 +18720,7 @@ end;
 function TwbFormIDDefFormater.MastersUpdated(aInt: Int64; const aOld, aNew: TwbFileIDs; aOldCount, aNewCount: Byte; const aElement: IwbElement): Int64;
 var
   lAllowHardcodedRangeUse: Boolean;
-  lFile: Variant;
+  lFile: IwbFile;
 begin
   Result := aInt;
   if dfUseLoadOrder in defFlags then
@@ -19037,8 +19056,9 @@ var
   lNew: TwbByteArrayDef;
 begin
   with aSource as TwbByteArrayDef do
-    Self.Create(defPriority, defRequired, ndName, badSize, ndDontShow,
-      badCountCallBack, defGetCP, ndTerminator).AfterClone(aSource);
+    lNew := Create(defPriority, defRequired, ndName, badSize, ndDontShow,
+      badCountCallBack, defGetCP, ndTerminator);
+  lNew.AfterClone(aSource);
 end;
 
 constructor TwbByteArrayDef.Create(aPriority      : TwbConflictPriority;
@@ -19918,8 +19938,7 @@ begin
   if dfDontAssign in defFlags then
     Exit(False);
 
-  Result := Supports(aDef, IwbCallbackDef, CallbackDef) and
-    (Pointer(CallbackDef.Callback) = Pointer(GetCallback));
+  Result := Supports(aDef, IwbCallbackDef, CallbackDef);
 end;
 
 function TwbCallbackDef.Check(aInt: Int64; const aElement: IwbElement): string;
@@ -20325,8 +20344,9 @@ begin
       for i := 0 to Pred(srsSkipSignatures.Count) do
         SkipSigs[i] := StrToSignature(srsSkipSignatures[i]);
     end;
-    Self.Create(defPriority, defRequired, ndName, srsMembers, SkipSigs, srsSortKey, srsExSortKey, ndDontShow, srsAllowUnordered, ndAfterLoad, ndAfterSet, defGetCP).AfterClone(aSource);
+    lNew := Create(defPriority, defRequired, ndName, srsMembers, SkipSigs, srsSortKey, srsExSortKey, ndDontShow, srsAllowUnordered, ndAfterLoad, ndAfterSet, defGetCP);
   end;
+  lNew.AfterClone(aSource);
 end;
 
 constructor TwbSubRecordStructSKDef.Create(aPriority       : TwbConflictPriority;
@@ -20731,8 +20751,8 @@ constructor TwbIntegerDefFormater.Clone(const aSource: TwbDef);
 var
   lNew: TwbIntegerDefFormater;
 begin
-  with (aSource as TwbIntegerDefFormater) do
-    Self.Create.AfterClone(aSource);
+  lNew := TwbIntegerDefFormater.Create;
+  lNew.AfterClone(aSource);
 end;
 
 function TwbIntegerDefFormater.CompareExchangeFormID(var aInt: Int64;
@@ -20876,7 +20896,7 @@ end;
 
 function TwbResolvableDef.Check(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): string;
 var
-  lResolvedDef: Variant;
+  lResolvedDef: IwbValueDef;
 begin
   lResolvedDef := ResolveDef(aBasePtr, aEndPtr, aElement);
   if Assigned(lResolvedDef) then
@@ -20905,7 +20925,8 @@ constructor TwbUnionDef.Create(aPriority : TwbConflictPriority;
                                aAfterSet : TwbAfterSetCallback;
                                aGetCP    : TwbGetConflictPriority);
 var
-  l: Variant;
+  i: Integer;
+  l: Integer;
 begin
   inherited Create(aPriority, aRequired, aName, nil, aAfterSet, aDontShow, aGetCP, False);
   udDecider := aDecider;
@@ -20934,6 +20955,7 @@ end;
 function TwbUnionDef.ResolveDefAndElement(aBasePtr, aEndPtr: Pointer; var aElement: IwbElement): IwbValueDef;
 var
   CER: IwbContainerElementRef;
+  Element: IwbElement;
 begin
   Result := inherited ResolveDefAndElement(aBasePtr, aEndPtr, aElement);
   if Assigned(Result) then
@@ -20961,6 +20983,8 @@ begin
 end;
 
 function TwbUnionDef.GetChildPos(const aChild: IwbDef): Integer;
+var
+  lIdx: Integer;
 begin
   Result := inherited;
   if not Assigned(aChild) or (Result < 0) then
@@ -21106,8 +21130,8 @@ end;
 
 procedure TwbResolvableDef.InitFromResolvedDef;
 var
-  lValueDef: Variant;
-  lDefObj: Variant;
+  lValueDef: IwbValueDef;
+  lDefObj: TwbDef;
 begin
   lValueDef := ResolveDef(nil, nil, nil);
   if Assigned(lValueDef) then begin
@@ -21203,6 +21227,8 @@ begin
 end;
 
 procedure TwbUnionDef.InitFromParentDoChildren;
+var
+  lMemberIdx: Integer;
 begin
   inherited;
   for lMemberIdx := Low(udMembers) to High(udMembers) do
@@ -21322,6 +21348,7 @@ end;
 function TwbResolvableDef.ToSummary(aDepth: Integer; aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; var aLinksTo: IwbElement): string;
 var
   ValueDef : IwbValueDef;
+  Element  : IwbElement;
 begin
   Result := '';
   if Assigned(ndToStr) then
@@ -21822,6 +21849,7 @@ begin
   Result := GetPrefixOffset+Ord(ndTerminator);
 end;
 
+{$IFNDEF FPC}
 function TwbLenStringDef.SetFormater(const aFormater: IwbStringDefFormater): IwbLenStringDef;
 begin
   if defIsLocked then
@@ -21831,6 +21859,7 @@ begin
   if Assigned(aFormater) then
     bsdFormater := (aFormater as IwbDefInternal).SetParent(Self, False) as IwbStringDefFormater;
 end;
+{$ENDIF}
 
 procedure TwbLenStringDef.SetPrefixValue(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; aValue: Cardinal);
 begin
@@ -21891,7 +21920,9 @@ begin
     Len := Size;
 
   if Len > 0 then begin
-    b := BytesOf(aBasePtr, Len);
+    SetLength(b, Len);
+    if Len > 0 then
+      Move(aBasePtr^, b[0], Len);
     try
       if (dfHasZeroTerminator in defFlags) and (b[High(b)] = 0) then
         SetLength(b, Pred(Length(b)));
@@ -22608,9 +22639,10 @@ var
   lNew: TwbStructCDef;
 begin
   with aSource as TwbStructCDef do
-    Self.Create(defPriority, defRequired, ndName, stMembers, stSortKey,
+    lNew := Create(defPriority, defRequired, ndName, stMembers, stSortKey,
       stExSortKey, stOptionalFromElement, ndDontShow, ndAfterLoad, ndAfterSet,
-      scSizeCallback, scGetChapterType, scGetChapterTypeName, scGetChapterName, defGetCP).AfterClone(aSource);
+      scSizeCallback, scGetChapterType, scGetChapterTypeName, scGetChapterName, defGetCP);
+  lNew.AfterClone(aSource);
 end;
 
 constructor TwbStructCDef.Create(aPriority: TwbConflictPriority;
@@ -22947,6 +22979,8 @@ begin
 end;
 
 procedure TwbIntegerDefFormaterUnion.InitFromParentDoChildren;
+var
+  lMemberIdx: Integer;
 begin
   inherited;
   for lMemberIdx := Low(idfuMembers) to High(idfuMembers) do
@@ -23099,8 +23133,9 @@ var
   lNew: TwbFlagDef;
 begin
   with (aSource as TwbFlagDef) do
-    Self.Create(defPriority, defRequired, ndName, ndAfterLoad, ndAfterSet,
-      ndDontShow, defGetCP, ndTerminator, fdFlagIndex).AfterClone(aSource);
+    lNew := Create(defPriority, defRequired, ndName, ndAfterLoad, ndAfterSet,
+      ndDontShow, defGetCP, ndTerminator, fdFlagIndex);
+  lNew.AfterClone(aSource);
 end;
 
 constructor TwbFlagDef.Create(aPriority   : TwbConflictPriority;
@@ -23187,6 +23222,8 @@ begin
 end;
 
 function wbIsModule(aFileName: string): Boolean;
+var
+  i: Integer;
 begin
   Result := SameText(aFileName, wbGameExeName);
   if not Result then
@@ -23196,6 +23233,8 @@ begin
 end;
 
 function wbIsSave(aFileName: string): Boolean;
+var
+  i: Integer;
 begin
   Result := False;
   for i := Low(wbSaveExtensions) to High(wbSaveExtensions) do
@@ -23403,7 +23442,7 @@ end;
 procedure TwbFormID.SetObjectID(const Value: Cardinal; aSilent: Boolean);
 var
   Mask: Cardinal;
-  lFileID: Variant;
+  lFileID: TwbFileID;
 begin
   lFileID := FileID;
 
@@ -23434,7 +23473,7 @@ end;
 
 function TwbFormID.ToString(aForDisplay: Boolean): string;
 var
-  lFileID: Variant;
+  lFileID: TwbFileID;
 begin
   Result := IntToHex64(_FormID, 8);
 
@@ -24206,7 +24245,7 @@ end;
 
 function TwbBaseStringDef.GetEditInfo(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): TwbStringArray;
 var
-  s: Variant;
+  s: string;
 begin
   if Assigned(vdEditInfo) then
     Exit(vdEditInfo^);
@@ -24274,7 +24313,7 @@ end;
 
 procedure TwbBaseStringDef.Report(const aParents: TwbDefPath);
 var
-  Parents: Variant;
+  Parents: TwbDefPath;
 begin
   if defReported or (dfNoReport in defFlags) then
     Exit;
@@ -24285,7 +24324,7 @@ begin
     SetLength(Parents, Succ(Length(Parents)));
     Parents[High(Parents)].Def := Self;
     Parents[High(Parents)].Index := -1;
-    bsdFormater.Report(aParents);
+    bsdFormater.Report(Parents);
   end;
 
   defReported := True;
@@ -24710,6 +24749,8 @@ var
   _ResourcesLoadedHandlers: TArray<TProc>;
 
 procedure wbResourcesLoaded;
+var
+  lIdx: Integer;
 begin
   for lIdx := Low(_ResourcesLoadedHandlers) to High(_ResourcesLoadedHandlers) do
     _ResourcesLoadedHandlers[lIdx]();
@@ -24730,7 +24771,7 @@ end;
 
 procedure TwbGuidDef.FromEditValue(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; const aValue: string);
 var
-  lValue: Variant;
+  lValue: string;
 begin
   if Assigned(ndToStr) then begin
     lValue := aValue;
@@ -24759,7 +24800,7 @@ end;
 
 procedure TwbGuidDef.FromStringInternal(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; const aValue: string);
 var
-  lValue: Variant;
+  lValue: string;
   pInt: PInt64;
   lIntA: PInt64;
   lIntB: PInt64;
@@ -24921,8 +24962,8 @@ end;
 
 function TwbGuidDef.ToStringInternal(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): string;
 var
-  lLength: Variant;
-  pInt: Variant;
+  lLength: NativeInt;
+  pInt: PInt64;
 begin
   Result := '';
 
@@ -24957,17 +24998,44 @@ begin
 end;
 
 procedure TwbFilesHelper.SortByLoadOrder;
+var
+  i, j: Integer;
+  tmp: IwbFile;
 begin
+{$IFDEF FPC}
+  for i := Low(Self) to High(Self) - 1 do
+    for j := i + 1 to High(Self) do
+      if Self[i].LoadOrder > Self[j].LoadOrder then begin
+        tmp := Self[i];
+        Self[i] := Self[j];
+        Self[j] := tmp;
+      end;
+{$ELSE}
   TArray.Sort<IwbFile>(Self, wbFileBySortOrderComparer);
+{$ENDIF}
 end;
 
 procedure TwbFilesHelper.SortByReverseLoadOrder;
+var
+  i, j: Integer;
+  tmp: IwbFile;
 begin
+{$IFDEF FPC}
+  for i := Low(Self) to High(Self) - 1 do
+    for j := i + 1 to High(Self) do
+      if Self[i].LoadOrder < Self[j].LoadOrder then begin
+        tmp := Self[i];
+        Self[i] := Self[j];
+        Self[j] := tmp;
+      end;
+{$ELSE}
   TArray.Sort<IwbFile>(Self, wbFileByReverseSortOrderComparer);
+{$ENDIF}
 end;
 
 procedure MakeComparers;
 begin
+{$IFNDEF FPC}
   wbFileBySortOrderComparer :=
     TComparer<IwbFile>.Construct(function(const Left, Right: IwbFile): Integer
     begin
@@ -24979,19 +25047,28 @@ begin
     begin
       Result := Right.LoadOrder - Left.LoadOrder;
     end);
+{$ENDIF}
 end;
 
 { TwbFilesSet }
 
 procedure TwbFilesSet.Clear;
 begin
+{$IFDEF FPC}
+  fdGeneration := InterlockedIncrement(fdGenerationHead);
+{$ELSE}
   fdGeneration := AtomicIncrement(fdGenerationHead);
+{$ENDIF}
   inherited Clear;
 end;
 
 constructor TwbFilesSet.Create;
 begin
+{$IFDEF FPC}
+  fdGeneration := InterlockedIncrement(fdGenerationHead);
+{$ELSE}
   fdGeneration := AtomicIncrement(fdGenerationHead);
+{$ENDIF}
   inherited Create;
 end;
 
@@ -25025,8 +25102,10 @@ initialization
 
   TwoPi := 2 * OnePi;
 
+{$IFNDEF FPC}
   if (DebugHook = 0) then
     wbReportMode := False;
+{$ENDIF}
 
   wbIgnoreRecords := TStringList.Create;
   wbIgnoreRecords.Sorted := True;

@@ -21,3 +21,7 @@
 {$TYPEINFO ON}
 {$METHODINFO ON}
 
+{$IFDEF FPC}
+  {$mode delphi}
+  {$interfaces com}
+{$ENDIF}

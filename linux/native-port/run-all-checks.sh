@@ -56,6 +56,9 @@ fi
 
 if [[ "${RUN_XEDIT_HEADLESS}" == "1" ]]; then
   echo "[checks] xEdit headless smoke"
+  if [[ -x "linux/native-port/build-xedit-headless.sh" ]]; then
+    linux/native-port/build-xedit-headless.sh
+  fi
   linux/native-port/smoke-test-xedit-headless.sh
 else
   echo "[checks] Skipping xEdit headless smoke (RUN_XEDIT_HEADLESS=${RUN_XEDIT_HEADLESS})"

@@ -58,7 +58,7 @@
 /home/v1ktors/TES5Edit-linux/xEdit/xeElementDetailForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
 /home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:16:  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
 /home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:18:  Vcl.Styles.Utils.SystemMenu, Vcl.Samples.Spin, Vcl.Themes,
-/home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:19:  System.Generics.Collections, Vcl.Styles.Ext, Vcl.Styles.Preview;
+/home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:19:  Generics.Collections, Vcl.Styles.Ext, Vcl.Styles.Preview;
 /home/v1ktors/TES5Edit-linux/Core/wbInterface.pas:5175:  Windows,
 /home/v1ktors/TES5Edit-linux/Sniff/Proc/ProcAddRootCollisionNode.pas:14:  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
 /home/v1ktors/TES5Edit-linux/Sniff/Proc/ProcAddRootCollisionNode.pas:15:  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, SniffProcessor;

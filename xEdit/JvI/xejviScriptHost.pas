@@ -18,7 +18,7 @@ uses
   Classes,
   SysUtils,
   StrUtils,
-  System.Generics.Collections,
+  Generics.Collections,
   Variants,
   Forms,
   System.RegularExpressionsCore,

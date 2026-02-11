@@ -32,6 +32,12 @@ Optional headless startup smoke:
 linux/native-port/smoke-test-xedit-headless.sh
 ```
 
+Headless build helper:
+
+```bash
+linux/native-port/build-xedit-headless.sh
+```
+
 Optional xDump headless smoke:
 
 ```bash

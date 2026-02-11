@@ -106,8 +106,10 @@ const
 
 function wbCalcPGRCSize(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Cardinal;
   function ExtractCountFromLabel(const aElement: IwbElement; aCount: Integer): Integer;
+  var
+    i: Integer;
   begin
-    var i := Pos('#', aElement.Name);
+    i := Pos('#', aElement.Name);
     if i = 0 then
       Result := aCount
     else try
@@ -116,8 +118,10 @@ function wbCalcPGRCSize(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: Iwb
       Result := aCount;
     end;
   end;
+var
+  Index: Integer;
 begin
-  var Index := ExtractCountFromLabel(aElement, aElement.Container.ElementCount);
+  Index := ExtractCountFromLabel(aElement, aElement.Container.ElementCount);
   Result := ((aElement.Container.Container as IwbMainRecord).RecordBySignature['PGRP'].Elements[Pred(Index)] as IwbContainer).Elements[2].NativeValue;
 end;
 
@@ -271,12 +275,14 @@ end;
 procedure wbFactionReactionToStr(var aValue: string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType);
 var
   Container: IwbContainerElementRef;
+  Faction: IwbElement;
+  Reaction: Int64;
 begin
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
-  var Faction := Container.Elements[0];
-  var Reaction := Container.Elements[1].NativeValue;
+  Faction := Container.Elements[0];
+  Reaction := Container.Elements[1].NativeValue;
   aValue := IntToStr(Reaction) + ' ' + Faction.Value;
   if Reaction >= 0 then
     aValue := '+' + aValue;
@@ -286,6 +292,8 @@ procedure wbForwardForReal(const aElement: IwbElement);
 var
   Container : IwbContainer;
   Element   : IwbElement;
+  i         : Integer;
+  s         : string;
 begin
   if wbBeginInternalEdit then try
     if Length(aElement.Value) > 0 then begin
@@ -296,13 +304,13 @@ begin
         if not Assigned(Element) then
           Exit;
 
-        var i := 1;
+        i := 1;
         while i <= Length(aElement.Value) do begin
           if aElement.Value[i] = AnsiChar(#0) then
             Break;
           Inc(i);
         end;
-        var s := Copy(aElement.Value, 0, i);
+        s := Copy(aElement.Value, 0, i);
         Element.NativeValue := s;
      end;
   finally
@@ -355,12 +363,12 @@ procedure wbIngredientAfterLoad(const aElement: IwbElement);
 var
   Container  : IwbContainerElementRef;
   MainRecord : IwbMainRecord;
+  i          : Integer;
 begin
   if wbBeginInternalEdit then try
     if not wbTryGetContainerWithValidMainRecord(aElement, Container, MainRecord) then
       Exit;
 
-    var i : integer;
     for i := 0 to 3 do begin
       case (Container.ElementNativeValues['IRDT\Effects\Magic Effects\Magic Effect #' + IntToStr(i)]) of
         17, 22, 74, 79: Container.ElementNativeValues['IRDT\Effects\Skills\Skill #' + IntToStr(i)] := -1;
@@ -386,6 +394,8 @@ end;
 function wbSkillDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 var
   Container : IwbContainer;
+  INDX      : IwbElement;
+  i         : Int64;
 begin
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
@@ -395,11 +405,11 @@ begin
   if not Assigned(Container) then
     Exit;
 
-  var INDX := Container.ElementBySignature['INDX'];
+  INDX := Container.ElementBySignature['INDX'];
   if not Assigned(INDX) then
     Exit;
 
-  var i := INDX.NativeValue;
+  i := INDX.NativeValue;
   case i of
     1: Result := 1;
     2,3,17,21: Result := 2;
@@ -457,6 +467,8 @@ begin
   wbKnownSubRecordSignatures[ksrFullName] := 'FNAM';
   wbKnownSubRecordSignatures[ksrBaseRecord] := '____';
   wbKnownSubRecordSignatures[ksrGridCell] := 'DATA';
+
+{$IFNDEF FPC}
 
   {>>> Enums <<<}
 
@@ -2124,8 +2136,11 @@ begin
     ], [], cpNormal, False, nil, True),
     wbDeleted,
     wbVec3PosRot(DATA, 'Reference Data')
-  ]).SetGetFormIDCallback(function(const aMainRecord: IwbMainRecord; out aFormID: TwbFormID): Boolean begin
-      var lFRMR := aMainRecord.RecordBySignature[FRMR];
+  ]).SetGetFormIDCallback(function(const aMainRecord: IwbMainRecord; out aFormID: TwbFormID): Boolean
+    var
+      lFRMR: IwbElement;
+    begin
+      lFRMR := aMainRecord.RecordBySignature[FRMR];
       Result := Assigned(lFRMR);
       if Result then begin
         aFormID := TwbFormID.FromCardinal(lFRMR.NativeValue);
@@ -2468,5 +2483,6 @@ begin
   wbAddGroupOrder(INFO);
   wbNexusModsUrl := 'https://www.nexusmods.com/morrowind/mods/54508';
   wbHEDRVersion := 1.30;
+{$ENDIF}
 end;
 end.
