@@ -13636,45 +13636,55 @@ begin
         )
           .SetLinksToCallbackOnValue(
             function(const aElement: IwbElement): IwbElement
+            var
+              lContainer: IwbContainer;
+              lFaceDialIndexValue: Variant;
+              lFaceDialIndex: Integer;
+              lRace: IwbElement;
+              lRaceMainRecord: IwbMainRecord;
+              lIsFemale: Boolean;
+              lGender: string;
+              lRaceFaceDials: IwbElement;
+              lRaceFaceDialsContainer: IwbContainerElementRef;
+              lRaceFaceDialsIdx: Integer;
+              lRaceFaceDial: IwbElement;
+              lRaceFaceDialContainer: IwbContainerElementRef;
+              lSkinIndexValue: Variant;
+              lSkinIndex: Integer;
             begin
               Result := nil;
 
-              var lContainer: IwbContainer;
               if not Supports(aElement, IwbContainer, lContainer) then
                 Exit;
 
-              var lFaceDialIndexValue := aElement.NativeValue;
+              lFaceDialIndexValue := aElement.NativeValue;
               if not VarIsOrdinal(lFaceDialIndexValue) then
                 Exit;
-              var lFaceDialIndex: Integer := lFaceDialIndexValue;
+              lFaceDialIndex := lFaceDialIndexValue;
 
-              var lRace := lContainer.ElementLinksTo['...\RNAM'];
-              var lRaceMainRecord : IwbMainRecord;
+              lRace := lContainer.ElementLinksTo['...\RNAM'];
               if not Supports(lRace, IwbMainRecord, lRaceMainRecord) then
                 Exit;
 
-              var lIsFemale := lContainer.ElementExists['...\ACBS\Flags\Female'];
-              var lGender := 'Male';
+              lIsFemale := lContainer.ElementExists['...\ACBS\Flags\Female'];
+              lGender := 'Male';
               if lIsFemale then
                 lGender := 'Female';
 
-              var lRaceFaceDials := lRaceMainRecord.ElementByPath['Chargen and Skintones\' + lGender + '\Chargen\Face Dials'];
+              lRaceFaceDials := lRaceMainRecord.ElementByPath['Chargen and Skintones\' + lGender + '\Chargen\Face Dials'];
 
-              var lRaceFaceDialsContainer: IwbContainerElementRef;
               if not Supports(lRaceFaceDials, IwbContainerElementRef, lRaceFaceDialsContainer) then
                 Exit;
 
-              for var lRaceFaceDialsIdx := 0 to Pred(lRaceFaceDialsContainer.ElementCount) do begin
-                var lRaceFaceDial := lRaceFaceDialsContainer.Elements[lRaceFaceDialsIdx];
-
-                var lRaceFaceDialContainer: IwbContainerElementRef;
+              for lRaceFaceDialsIdx := 0 to Pred(lRaceFaceDialsContainer.ElementCount) do begin
+                lRaceFaceDial := lRaceFaceDialsContainer.Elements[lRaceFaceDialsIdx];
                 if not Supports(lRaceFaceDial, IwbContainerElementRef, lRaceFaceDialContainer) then
                   Continue;
 
-                var lSkinIndexValue := lRaceFaceDialContainer.ElementNativeValues[FDSI];
+                lSkinIndexValue := lRaceFaceDialContainer.ElementNativeValues[FDSI];
                 if not VarIsOrdinal(lSkinIndexValue) then
                   Continue;
-                var lSkinIndex: Integer := lSkinIndexValue;
+                lSkinIndex := lSkinIndexValue;
 
                 if lSkinIndex = lFaceDialIndex then
                   Exit(lRaceFaceDial);
