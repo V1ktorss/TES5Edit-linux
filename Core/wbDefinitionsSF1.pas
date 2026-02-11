@@ -27,6 +27,52 @@ uses
   wbDefinitionsCommon;
 
 procedure DefineSF1;
+begin
+  DefineCommon;
+end;
+{$ELSE}
+
+uses
+  System.Types,
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+  System.StrUtils,
+  System.Variants,
+  System.IOUtils,
+  {$IFDEF FPC}
+  Generics.Defaults,
+  Generics.Collections,
+  {$ELSE}
+  Generics.Defaults,
+  Generics.Collections,
+  {$ENDIF}
+  JsonDataObjects,
+  wbHelpers,
+  wbDefinitionsCommon,
+  wbDefinitionsSignatures;
+
+const
+  // signatures of reference records
+  sigReferences : TwbSignatures = [
+    'NULL', 'PLYR', 'ACHR', 'REFR', 'PGRE', 'PHZD',
+    'PMIS', 'PARW', 'PBAR', 'PBEA', 'PCON', 'PFLA'
+  ];
+
+  // signatures of referenceable records (placed by references or constructable)
+  sigBaseObjects : TwbSignatures = [
+    'NULL', 'ACTI', 'ADDN', 'ALCH', 'AMMO', 'ARMO',
+    'ARTO', 'ASPC', 'BNDS', 'BOOK', 'CMPO', 'COBJ',
+    'CONT', 'DEBR', 'DOOR', 'EXPL', 'FLST', 'FLOR',
+    'FURN', 'HAZD', 'IDLM', 'INGR', 'KEYM', 'LIGH',
+    'LVLI', 'LVLN', 'LVSP', 'MISC', 'MSTT', 'NOTE',
+    'NPC_', 'OMOD', 'PROJ', 'SCOL', 'SCRL', 'SOUN',
+    'SPEL', 'STAT', 'TACT', 'TERM', 'TREE', 'TXST',
+    'WATR', 'WEAP', 'ENCH', 'SECH', 'LGDI', 'IRES',
+    'BMMP', 'PDCL', 'PKIN', 'GBFM', 'AOPF', 'BMMO',
+    'LVLB', 'LVLP', 'GRAS'
+  ];
+
 var
   wbIdxSimpleGroup: TwbNamedIndex;
   wbIdxComplexGroup: TwbNamedIndex;
@@ -76,53 +122,6 @@ var
   wbPronounEnum: IwbEnumDef;
   wbLearnMethodEnum: IwbEnumDef;
   wbPhotoModeEnum: IwbEnumDef;
-begin
-  DefineCommon;
-end;
-{$ELSE}
-
-uses
-  System.Types,
-  System.Classes,
-  System.SysUtils,
-  System.Math,
-  System.StrUtils,
-  System.Variants,
-  System.IOUtils,
-  {$IFDEF FPC}
-  Generics.Defaults,
-  Generics.Collections,
-  {$ELSE}
-  Generics.Defaults,
-  Generics.Collections,
-  {$ENDIF}
-  JsonDataObjects,
-  wbHelpers,
-  wbDefinitionsCommon,
-  wbDefinitionsSignatures;
-
-const
-  // signatures of reference records
-  sigReferences : TwbSignatures = [
-    'NULL', 'PLYR', 'ACHR', 'REFR', 'PGRE', 'PHZD',
-    'PMIS', 'PARW', 'PBAR', 'PBEA', 'PCON', 'PFLA'
-  ];
-
-  // signatures of referenceable records (placed by references or constructable)
-  sigBaseObjects : TwbSignatures = [
-    'NULL', 'ACTI', 'ADDN', 'ALCH', 'AMMO', 'ARMO',
-    'ARTO', 'ASPC', 'BNDS', 'BOOK', 'CMPO', 'COBJ',
-    'CONT', 'DEBR', 'DOOR', 'EXPL', 'FLST', 'FLOR',
-    'FURN', 'HAZD', 'IDLM', 'INGR', 'KEYM', 'LIGH',
-    'LVLI', 'LVLN', 'LVSP', 'MISC', 'MSTT', 'NOTE',
-    'NPC_', 'OMOD', 'PROJ', 'SCOL', 'SCRL', 'SOUN',
-    'SPEL', 'STAT', 'TACT', 'TERM', 'TREE', 'TXST',
-    'WATR', 'WEAP', 'ENCH', 'SECH', 'LGDI', 'IRES',
-    'BMMP', 'PDCL', 'PKIN', 'GBFM', 'AOPF', 'BMMO',
-    'LVLB', 'LVLP', 'GRAS'
-  ];
-
-var
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
