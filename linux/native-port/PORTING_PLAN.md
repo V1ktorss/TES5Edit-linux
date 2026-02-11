@@ -189,6 +189,7 @@ This document tracks what is already done for the native Linux path and what com
   - removed unused xDump entrypoint dependencies (`ZlibEx`, `lz4`, `wbPlatform`) and dead helpers (`isMode`, unused `ProgramPath`, unused profile alias) to keep headless/native build path cleaner
   - removed unused direct `Windows`/`Registry` imports from `xDump.dpr` (registry access remains routed through `wbPlatform.wbTryReadRegistryString`)
   - gated xDump `{$MAXSTACKSIZE}` directive to Windows to avoid Linux-target warning noise in headless builds
+  - gated xDump `{$APPTYPE CONSOLE}` to Windows to avoid unsupported-directive note noise in Linux/FPC builds
   - replaced `wbDefProfiles` pointer/integer object-state hack in `xDump.dpr` with typed `TProfileState` objects and explicit cleanup to avoid pointer/ordinal portability warnings in profile tracking paths
   - extended compatibility wrappers used by xDump path:
     - `System.Classes`: `TFiler`/`TReader`/`TWriter`, lightweight `TDataModule`
