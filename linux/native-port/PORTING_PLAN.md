@@ -145,6 +145,7 @@ This document tracks what is already done for the native Linux path and what com
   - extracted Windows registry install-path resolution in `xeInit` into a dedicated helper (`TryResolveWindowsInstallPathFromRegistry`) to keep `DoInitPath` platform branches simpler
   - added optional `XEDIT_DATA_PATH` environment override in `xeInit` to provide a direct non-registry/non-probe data path for headless/native runs
   - improved `XEDIT_DATA_PATH` handling to fall back to normal auto-detection when the env path is invalid, while keeping strict failure for invalid explicit `-D` path
+  - added optional xEdit headless smoke env-override lane (`XEDIT_ENV_OVERRIDE_TEST=1`, `XEDIT_ENV_OVERRIDE_PATH=...`, `XEDIT_ENV_OVERRIDE_ARGS=...`) to validate `XEDIT_DATA_PATH` behavior on demand
   - replaced direct `SendMessage` usage with control `Perform` calls in `xeScriptForm` and `xePushLikeButton` to reduce API-coupled UI message calls
   - replaced remaining direct form-handle `SendMessage`/`PostMessage` calls in `xeMainForm` with `Perform` / `Self.PostMessage`
   - added `wbPlatform.TRegistryIniFile` script class alias in `xejviScriptAdapterMisc` alongside legacy `Registry.TRegistryIniFile` for cross-platform script namespace migration
