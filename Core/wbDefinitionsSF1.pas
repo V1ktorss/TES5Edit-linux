@@ -81,6 +81,7 @@ var
   wbOBTSReq: IwbSubRecordDef;
   wbBSMPSequence: IwbSubRecordArrayDef;
   wbArmorAddonBSMPSequence: IwbSubRecordArrayDef;
+  wbEffects: IwbSubRecordArrayDef;
   wbEffectsReq: IwbSubRecordArrayDef;
   wbBoneDataItem: IwbRecordMemberDef;
   wbArmorAddonBoneDataItem: IwbRecordMemberDef;
@@ -7530,7 +7531,7 @@ begin
     .SetSummaryKey([0,2]).IncludeFlag(dfSummaryMembersNoName)
     ;
 
-  var wbEffects :=
+  wbEffects :=
     wbRArrayS('Effects', wbEffect);
 
   wbEffectsReq :=
