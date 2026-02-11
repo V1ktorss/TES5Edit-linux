@@ -4934,6 +4934,7 @@ end;
 
 function TwbFile.IsElementEditable(const aElement: IwbElement): Boolean;
 begin
+  wbIgnoreUnused(@aElement);
   Result := wbIsInternalEdit or GetIsEditable;
 end;
 
@@ -7214,6 +7215,7 @@ end;
 
 procedure TwbContainer.ElementChanged(const aElement: IwbElement; aContainer: Pointer);
 begin
+  wbIgnoreUnused(@aElement);
   NotifyChanged(aContainer);
 end;
 
@@ -7691,6 +7693,7 @@ end;
 
 function TwbContainer.GetIsInSK(aIndex: Integer): Boolean;
 begin
+  wbIgnoreUnused(@aIndex);
   Result := False;
 end;
 
@@ -20214,6 +20217,7 @@ end;
 
 function TwbElement.MergeMultiple(const aElement: IwbElement): Boolean;
 begin
+  wbIgnoreUnused(@aElement);
   Result := False;
 end;
 
@@ -20375,6 +20379,9 @@ var
   Def           : IwbDef;
   ValueDef      : IwbValueDef;
 begin
+  wbIgnoreUnused(@aAsNew);
+  wbIgnoreUnused(@Initial);
+
   if    ((eReportMastersGen and $7FFFFFFF) = aMasters.Generation)
     and ((not Recursive) or ((eReportMastersGen and $80000000) <> 0))
   then
@@ -20491,6 +20498,7 @@ end;
 
 procedure TwbElement.SetLinksTo(const aElement: IwbElement);
 begin
+  wbIgnoreUnused(@aElement);
   raise Exception.CreateFmt('%s.SetLinksTo is not implemented', [ClassName]);
 end;
 
@@ -20646,6 +20654,7 @@ end;
 
 procedure TwbElement.TryAssignMembers(const aSource: IwbElement);
 begin
+  wbIgnoreUnused(@aSource);
   {can be overridden}
 end;
 
@@ -20769,6 +20778,7 @@ end;
 
 function TwbSubRecordArray.Add(const aName: string; aSilent: Boolean): IwbElement;
 begin
+  wbIgnoreUnused(@aSilent);
   Result := Assign(StrToIntDef(aName, wbAssignAdd), nil, False);
 end;
 
@@ -21377,6 +21387,8 @@ var
   Index     : Integer;
   SelfRef   : IwbContainerElementRef;
 begin
+  wbIgnoreUnused(@aSilent);
+
   Result := nil;
 
   if not IsElementEditable(nil) then
@@ -22256,6 +22268,7 @@ end;
 
 function TwbArray.Add(const aName: string; aSilent: Boolean): IwbElement;
 begin
+  wbIgnoreUnused(@aSilent);
   Result := Assign(StrToIntDef(aName, wbAssignAdd), nil, False);
 end;
 
@@ -23879,6 +23892,8 @@ var
   FlagsDef     : IwbFlagsDef;
   BaseFlagsDef : IwbFlagsDef;
 begin
+  wbIgnoreUnused(@aExtended);
+
   FlagsDef := GetFlagsDef.Root as IwbFlagsDef;
   BaseFlagsDef := FlagsDef.BaseFlagsDef;
 
@@ -25003,6 +25018,8 @@ end;
 
 function TwbRecordHeaderStruct.CompareExchangeFormID(aOldFormID, aNewFormID: TwbFormID): Boolean;
 begin
+  wbIgnoreUnused(@aOldFormID);
+  wbIgnoreUnused(@aNewFormID);
   Result := False;
 end;
 
@@ -25096,11 +25113,16 @@ end;
 
 function TwbStringListTerminator.AssignInternal(aIndex: Integer; const aElement: IwbElement; aOnlySK: Boolean): IwbElement;
 begin
+  wbIgnoreUnused(@aIndex);
+  wbIgnoreUnused(@aElement);
+  wbIgnoreUnused(@aOnlySK);
   Result := nil;
 end;
 
 function TwbStringListTerminator.CanAssignInternal(aIndex: Integer; const aElement: IwbElement; aCheckDontShow: Boolean): Boolean;
 begin
+  wbIgnoreUnused(@aIndex);
+  wbIgnoreUnused(@aCheckDontShow);
   Result := False;
   if Assigned(eContainer) then
     if not IwbContainer(eContainer).IsElementEditable(Self) then
@@ -25136,6 +25158,7 @@ end;
 
 function TwbStringListTerminator.GetSortKeyInternal(aExtended: Boolean): string;
 begin
+  wbIgnoreUnused(@aExtended);
   Result := #255;
 end;
 
@@ -25154,10 +25177,12 @@ end;
 
 procedure TwbStringListTerminator.SetEditValue(const aValue: string);
 begin
+  wbIgnoreUnused(@aValue);
 end;
 
 procedure TwbStringListTerminator.SetNativeValue(const aValue: Variant);
 begin
+  wbIgnoreUnused(@aValue);
 end;
 
 procedure TwbStringListTerminator.WriteToStreamInternal(aStream: TStream; aResetModified: TwbResetModified);
@@ -25208,6 +25233,8 @@ end;
 
 function TwbContainedInElement.CompareExchangeFormID(aOldFormID, aNewFormID: TwbFormID): Boolean;
 begin
+  wbIgnoreUnused(@aOldFormID);
+  wbIgnoreUnused(@aNewFormID);
   Result := False;
 end;
 
@@ -25461,6 +25488,8 @@ end;
 
 procedure TwbContainedInElement.ElementChanged(const aElement: IwbElement; aContainer: Pointer);
 begin
+  wbIgnoreUnused(@aElement);
+  wbIgnoreUnused(@aContainer);
 end;
 
 procedure TwbContainedInElement.InvalidateParentStorage;
@@ -25469,6 +25498,7 @@ end;
 
 function TwbContainedInElement.IsElementEditable(const aElement: IwbElement): Boolean;
 begin
+  wbIgnoreUnused(@aElement);
   Result := False;
 end;
 
