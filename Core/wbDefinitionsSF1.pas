@@ -10059,12 +10059,13 @@ begin
           wbFormIDCk('Quest', [QUST]),
           wbInteger('Quest Stage', itU16,
             function(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string
+            var
+              lMainRecord: IwbMainRecord;
+              lContainer: IwbContainerElementRef;
+              lElement: IwbElement;
             begin
-              var lMainRecord: IwbMainRecord;
-
-              var lContainer: IwbContainerElementRef;
               if wbTryGetContainerRefFromUnionOrValue(aElement, lContainer) then begin
-                var lElement := lContainer.ElementByName['Quest'];
+                lElement := lContainer.ElementByName['Quest'];
                 if not wbTryGetMainRecord(lElement, lMainRecord) then
                   lMainRecord := nil;
               end else
@@ -10318,11 +10319,13 @@ begin
       ])).IncludeFlag(dfCollapsed, wbCollapseFlags)
     ]).SetRequired
   ]).SetBuildIndexKeys(procedure(const aMainRecord: IwbMainRecord; var aIndexKeys: TwbIndexKeys)
+    var
+      lDATA: Variant;
     begin
       if not Assigned(aMainRecord) then
         Exit;
 
-      var lDATA := aMainRecord.ElementNativeValues[DATA];
+      lDATA := aMainRecord.ElementNativeValues[DATA];
       if not VarIsOrdinal(lDATA) then
         Exit;
 
@@ -10770,14 +10773,17 @@ begin
     wbByteRGBA(CNAM),
     wbInteger(XNAM, 'Star ID', itS32, wbStarIDToStr, wbStrToStarID)
       .SetLinksToCallbackOnValue(function(const aElement: IwbElement): IwbElement
+        var
+          lStarID: Variant;
+          lFile: IwbFile;
         begin
           Result := nil;
 
-          var lStarID := aElement.NativeValue;
+          lStarID := aElement.NativeValue;
           if not VarIsOrdinal(lStarID) then
             Exit;
 
-          var lFile := aElement._File;
+          lFile := aElement._File;
           if not Assigned(lFile) then
             Exit;
 
