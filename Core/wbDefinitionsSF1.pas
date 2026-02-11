@@ -249,6 +249,8 @@ var
   wbREFL: IwbSubRecordWithStructDef;
   wbRDIF: IwbSubRecordWithStructDef;
   wbTraversalData: IwbStructDef;
+  wbMOLM: function(const aSignature: TwbSignature): IwbSubRecordDef;
+  wbGenericModel: function(aRequired: Boolean = False; aDontShow: TwbDontShowCallback = nil): IwbRecordMemberDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -7746,7 +7748,7 @@ begin
   wbEffectsReq :=
     wbRArrayS('Effects', wbEffect, cpNormal, True);
 
-  var wbMOLM :=
+  wbMOLM :=
     function(const aSignature: TwbSignature): IwbSubRecordDef
     begin
       Result :=
@@ -7754,7 +7756,7 @@ begin
       Result.IncludeFlag(dfMergeIfMultiple);
     end;
 
-  var wbGenericModel :=
+  wbGenericModel :=
     function (aRequired: Boolean = False; aDontShow: TwbDontShowCallback = nil): IwbRecordMemberDef
     begin
       {subrecords checked against Starfield.esm}
