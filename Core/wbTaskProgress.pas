@@ -190,7 +190,7 @@ end;
 procedure InitializeTaskbars;
 begin
 {$IFDEF MSWINDOWS}
-  if Win32MajorVersion < 6 then
+  if not wbSupportsTaskbarProgress then
     Exit;
 
   if Assigned(TaskbarList) then

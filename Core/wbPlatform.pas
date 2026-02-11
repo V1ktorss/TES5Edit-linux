@@ -42,6 +42,7 @@ function wbTryReadRegistryString(
 function wbTryInitializeMOHook(const aHookDll, aProfile: string): Boolean;
 function wbGetClipboardText: string;
 procedure wbSetClipboardText(const aText: string);
+function wbSupportsTaskbarProgress: Boolean;
 function wbPlatformAlphaBlend(
   DestDC, X, Y, Width, Height: Integer;
   SrcDC, SrcX, SrcY, SrcWidth, SrcHeight, Alpha: Integer
@@ -190,6 +191,15 @@ begin
     SrcDC, SrcX, SrcY, SrcWidth, SrcHeight,
     lBlendFunc
   );
+  Exit;
+  {$ENDIF}
+  Result := False;
+end;
+
+function wbSupportsTaskbarProgress: Boolean;
+begin
+  {$IFDEF MSWINDOWS}
+  Result := Win32MajorVersion >= 6;
   Exit;
   {$ENDIF}
   Result := False;
