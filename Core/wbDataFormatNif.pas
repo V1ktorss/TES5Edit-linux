@@ -484,6 +484,8 @@ end;
 }
 
 function wbNiObjectList: TArray<string>;
+var
+  i: Integer;
 begin
   if not NifDefsInitialized then begin
     wbDefineNif;
@@ -491,7 +493,7 @@ begin
   end;
 
   SetLength(Result, Length(NiObjectInfos.NiObjects));
-  for var i := Low(NiObjectInfos.NiObjects) to High(NiObjectInfos.NiObjects) do
+  for i := Low(NiObjectInfos.NiObjects) to High(NiObjectInfos.NiObjects) do
     Result[i] := NiObjectInfos.NiObjects[i].Def.Name;
 end;
 
@@ -1026,6 +1028,7 @@ end;
 function TwbNifBlock.BlockByPath(const aBlockPath: string): TwbNifBlock;
 var
   i, p: Integer;
+  b: TwbNifBlock;
   curpath, path: string;
 begin
   Result := nil;
@@ -1048,7 +1051,7 @@ begin
   end;
 
   for i := 0 to Pred(RefsCount) do begin
-    var b: TwbNifBlock := TwbNifBlock(Refs[i].LinksTo);
+    b := TwbNifBlock(Refs[i].LinksTo);
     if not Assigned(b) then
       Continue;
 
@@ -1211,18 +1214,19 @@ end;
 function TwbNifBlock.SetTriangles(const aTris: TTriangleArray; aElement: TdfElement = nil): Boolean;
 var
   i: integer;
-  Entries: TdfElement;
+  Entries, NumTriangles: TdfElement;
+  MaxTris: Cardinal;
 begin
   Result := False;
 
   if not Assigned(aElement) then
     aElement := Self;
 
-  var NumTriangles := aElement.Elements['Num Triangles'];
+  NumTriangles := aElement.Elements['Num Triangles'];
   if not Assigned(NumTriangles) then
     Exit;
 
-  var MaxTris: Cardinal := High(Word);
+  MaxTris := High(Word);
   if NumTriangles.DataSize = SizeOf(Cardinal) then
     MaxTris := High(Cardinal);
 
@@ -2758,9 +2762,15 @@ end;
 function TwbNifFile.SpellOptimize(aOptions: TwbMeshOptimizeOptions = [moVertexCache, moOverdraw]): Boolean;
 var
   indices: TTriIndices;
-  bStripify, bTriangulate: Boolean;
+  tris: TTriangleArray;
+  vertices: TVector3Array;
+  bStripify, bTriangulate, bOptimized: Boolean;
   opt: TwbMeshOptimizeOptions;
   map: TTriIndices;
+  data: TwbNifBlock;
+  entries, Parts, Part: TdfElement;
+  strips: TStripArray;
+  i, j, p, dataindex, NumStrips: Integer;
 
   function MeshOptimize(var aIndices: TTriIndices; const aVertices: TVector3Array;
     aOpt: TwbMeshOptimizeOptions; aForStrip: Boolean = False): Boolean;
@@ -2812,8 +2822,10 @@ var
   procedure RemapTES4Tangents(const aShape: TwbNifBlock);
   var
     tanbin, newtanbin: TBytes;
+    exdata: TwbNifBlock;
+    i: Integer;
   begin
-    var exdata := aShape.ExtraDataByName(sTES4TangentsExtraDataName);
+    exdata := aShape.ExtraDataByName(sTES4TangentsExtraDataName);
     if not Assigned(exdata) then
       Exit;
 
@@ -2825,7 +2837,7 @@ var
     end;
 
     SetLength(newtanbin, Length(tanbin));
-    for var i := 0 to Pred(Length(map)) do begin
+    for i := 0 to Pred(Length(map)) do begin
       System.Move(tanbin[i * SizeOf(TSingleVector3)], newtanbin[map[i] * SizeOf(TSingleVector3)], SizeOf(TSingleVector3));
       System.Move(tanbin[(Length(map) + i) * SizeOf(TSingleVector3)], newtanbin[(Length(map) + Integer(map[i])) * SizeOf(TSingleVector3)], SizeOf(TSingleVector3));
     end;
@@ -2849,7 +2861,7 @@ begin
   bTriangulate := moTriangulate in aOptions;
   bStripify := moStripify in aOptions;
 
-  for var i := 0 to Pred(BlocksCount) do begin
+  for i := 0 to Pred(BlocksCount) do begin
 
     // BSTriShape
     // don't process descendants like BSSubIndexTriShape because reordering tris breaks them
@@ -2865,13 +2877,12 @@ begin
       // don't reorder vertices in skinned shapes
       if (moVertexFetch in opt) and (Blocks[i].GetSkin <> nil) then
         Exclude(opt, moVertexFetch);
-
-      var tris := Blocks[i].GetTriangles;
+      tris := Blocks[i].GetTriangles;
       if Length(tris) = 0 then
         Continue;
 
       indices := Tris2Indices(tris);
-      var vertices: TVector3Array;
+      vertices := nil;
       if opt * [moOverdraw, moVertexFetch] <> [] then
         vertices := Blocks[i].GetVertices;
 
@@ -2908,15 +2919,13 @@ begin
 
       if not Assigned(Blocks[i].Elements['Data']) then
         Continue;
-
-      var data := TwbNifBlock(Blocks[i].Elements['Data'].LinksTo);
+      data := TwbNifBlock(Blocks[i].Elements['Data'].LinksTo);
       if not Assigned(data) or (data.BlockType <> 'NiTriShapeData') then
         Continue;
-
-      var tris := data.GetTriangles;
+      tris := data.GetTriangles;
 
       if bStripify then begin
-        var dataindex := data.Index;
+        dataindex := data.Index;
         ConvertBlock(data.Index, 'NiTriStripsData');
         data := Blocks[dataindex];
         Result := True;
@@ -2924,13 +2933,11 @@ begin
 
       if Length(tris) = 0 then
         Continue;
-
       indices := Tris2Indices(tris);
-      var vertices: TVector3Array;
+      vertices := nil;
       if opt * [moOverdraw, moVertexFetch] <> [] then
         vertices := data.GetVertices;
-
-      var bOptimized := MeshOptimize(indices, vertices, opt, bStripify);
+      bOptimized := MeshOptimize(indices, vertices, opt, bStripify);
 
       if bOptimized and (moVertexFetch in opt) then begin
         Remap(data.Elements['Vertices']);
@@ -2939,9 +2946,9 @@ begin
         Remap(data.Elements['Bitangents']);
         Remap(data.Elements['Vertex Colors']);
         if NifVersion = nfTES4 then RemapTES4Tangents(Blocks[i]);
-        var entries := data.Elements['UV Sets'];
+        entries := data.Elements['UV Sets'];
         if Assigned(entries) then
-          for var j := 0 to Pred(entries.Count) do
+          for j := 0 to Pred(entries.Count) do
             Remap(entries[j]);
       end;
 
@@ -2980,15 +2987,13 @@ begin
 
       if not Assigned(Blocks[i].Elements['Data']) then
         Continue;
-
-      var data := TwbNifBlock(Blocks[i].Elements['Data'].LinksTo);
+      data := TwbNifBlock(Blocks[i].Elements['Data'].LinksTo);
       if not Assigned(data) or (data.BlockType <> 'NiTriStripsData') then
         Continue;
-
-      var tris := data.GetTriangles;
+      tris := data.GetTriangles;
 
       if bTriangulate then begin
-        var dataindex := data.Index;
+        dataindex := data.Index;
         ConvertBlock(data.Index, 'NiTriShapeData');
         data := Blocks[dataindex];
         Result := True;
@@ -2996,14 +3001,12 @@ begin
 
       if Length(tris) = 0 then
         Continue;
-
       indices := Tris2Indices(tris);
-      var vertices: TVector3Array;
+      vertices := nil;
       if opt * [moOverdraw, moVertexFetch] <> [] then
         vertices := data.GetVertices;
-
-      var NumStrips: Integer := data.NativeValues['Num Strips'];
-      var bOptimized := MeshOptimize(indices, vertices, opt, bStripify or ( (NumStrips <> 0) and not bTriangulate) );
+      NumStrips := data.NativeValues['Num Strips'];
+      bOptimized := MeshOptimize(indices, vertices, opt, bStripify or ( (NumStrips <> 0) and not bTriangulate) );
 
       if bOptimized and (moVertexFetch in opt) then begin
         Remap(data.Elements['Vertices']);
@@ -3012,9 +3015,9 @@ begin
         Remap(data.Elements['Bitangents']);
         Remap(data.Elements['Vertex Colors']);
         if NifVersion = nfTES4 then RemapTES4Tangents(Blocks[i]);
-        var entries := data.Elements['UV Sets'];
+        entries := data.Elements['UV Sets'];
         if Assigned(entries) then
-          for var j := 0 to Pred(entries.Count) do
+          for j := 0 to Pred(entries.Count) do
             Remap(entries[j]);
       end;
 
@@ -3035,18 +3038,16 @@ begin
       opt := aOptions;
       Exclude(opt, moOverdraw);
       Exclude(opt, moVertexFetch);
-
-      var Parts := Blocks[i].Elements['Partitions'];
-      for var p := 0 to Pred(Parts.Count) do begin
-        var Part := Parts[p];
-        var tris := Blocks[i].GetTriangles(Part);
+      Parts := Blocks[i].Elements['Partitions'];
+      for p := 0 to Pred(Parts.Count) do begin
+        Part := Parts[p];
+        tris := Blocks[i].GetTriangles(Part);
         if Length(tris) = 0 then
           Continue;
 
         indices := Tris2Indices(tris);
-
-        var NumStrips: Integer := Part.NativeValues['Num Strips'];
-        var bOptimized := MeshOptimize(indices, nil, opt, bStripify or ( (NumStrips <> 0) and not bTriangulate) );
+        NumStrips := Part.NativeValues['Num Strips'];
+        bOptimized := MeshOptimize(indices, nil, opt, bStripify or ( (NumStrips <> 0) and not bTriangulate) );
 
         // updating strips only if not triangulating
         if not bTriangulate then
@@ -3054,7 +3055,7 @@ begin
         // or indices have been optimized and partition is a strip
         // or existing strips > 1
         if (bStripify and (NumStrips = 0)) or (bOptimized and (NumStrips <> 0)) or (NumStrips > 1) then begin
-          var strips := Indices2Strips(meshopt_stripify(indices));
+          strips := Indices2Strips(meshopt_stripify(indices));
           Blocks[i].SetStrips(strips, Part);
           Result := True;
           Continue;
@@ -3131,10 +3132,14 @@ begin
 end;
 
 function TwbNifFile.GetRootNodes: TwbNifBlocks;
+var
+  roots: TdfElement;
+  i: Integer;
+  r: TwbNifBlock;
 begin
-  var roots := Footer.Elements['Roots'];
-  for var i := 0 to Pred(roots.Count) do begin
-    var r := TwbNifBlock(roots[i].LinksTo);
+  roots := Footer.Elements['Roots'];
+  for i := 0 to Pred(roots.Count) do begin
+    r := TwbNifBlock(roots[i].LinksTo);
     if Assigned(r) then
       Result := Result + [r];
   end;
