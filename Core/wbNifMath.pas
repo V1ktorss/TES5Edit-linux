@@ -207,23 +207,39 @@ begin
 end;
 
 class operator TVector3.Multiply(const A: TVector3; const B: TQuaternion): TVector3;
+var
+  num12 : Double;
+  num2  : Double;
+  num   : Double;
+  num11 : Double;
+  num10 : Double;
+  num9  : Double;
+  num8  : Double;
+  num7  : Double;
+  num6  : Double;
+  num5  : Double;
+  num4  : Double;
+  num3  : Double;
+  num15 : Double;
+  num14 : Double;
+  num13 : Double;
 begin
   // https://gamedev.stackexchange.com/questions/28395/rotating-vector3-by-a-quaternion
-  var num12 := B.X + B.X;
-  var num2 := B.Y + B.Y;
-  var num := B.Z + B.Z;
-  var num11 := B.W * num12;
-  var num10 := B.W * num2;
-  var num9 := B.W * num;
-  var num8 := B.X * num12;
-  var num7 := B.X * num2;
-  var num6 := B.X * num;
-  var num5 := B.Y * num2;
-  var num4 := B.Y * num;
-  var num3 := B.Z * num;
-  var num15 := ((A.X * ((1.0 - num5) - num3)) + (A.Y * (num7 - num9))) + (A.Z * (num6 + num10));
-  var num14 := ((A.X * (num7 + num9)) + (A.Y * ((1.0 - num8) - num3))) + (A.Z * (num4 - num11));
-  var num13 := ((A.X * (num6 - num10)) + (A.Y * (num4 + num11))) + (A.Z * ((1.0 - num8) - num5));
+  num12 := B.X + B.X;
+  num2 := B.Y + B.Y;
+  num := B.Z + B.Z;
+  num11 := B.W * num12;
+  num10 := B.W * num2;
+  num9 := B.W * num;
+  num8 := B.X * num12;
+  num7 := B.X * num2;
+  num6 := B.X * num;
+  num5 := B.Y * num2;
+  num4 := B.Y * num;
+  num3 := B.Z * num;
+  num15 := ((A.X * ((1.0 - num5) - num3)) + (A.Y * (num7 - num9))) + (A.Z * (num6 + num10));
+  num14 := ((A.X * (num7 + num9)) + (A.Y * ((1.0 - num8) - num3))) + (A.Z * (num4 - num11));
+  num13 := ((A.X * (num6 - num10)) + (A.Y * (num4 + num11))) + (A.Z * ((1.0 - num8) - num5));
   Result.X := num15;
   Result.Y := num14;
   Result.Z := num13;
@@ -624,8 +640,10 @@ begin
 end;
 
 function StripifyTriangles(const tris: TTriangleArray): TStrip;
+var
+  indices : TIndexArray;
 begin
-  var indices := Tris2Indices(tris);
+  indices := Tris2Indices(tris);
   Result := Indices2Strip(meshopt_stripify(indices));
 end;
 
@@ -654,6 +672,11 @@ procedure CalculateCenterRadius(
   aFromMinMax: Boolean = False;
   aMaxRadius: Boolean = True
 );
+var
+  v    : TVector3;
+  vmin : TVector3;
+  vmax : TVector3;
+  rv   : Double;
 begin
   center.x := 0; center.y := 0; center.z := 0;
   r := 0;
@@ -662,7 +685,6 @@ begin
     Exit;
 
   if aFromMinMax then begin
-    var vmin, vmax: TVector3;
     CalculateMinMax(verts, vmin, vmax);
     center.x := (vmin.x + vmax.x) / 2;
     center.y := (vmin.y + vmax.y) / 2;
@@ -670,13 +692,14 @@ begin
   end
 
   else begin
-    for var v in verts do center := center + v;
+    for v in verts do
+      center := center + v;
     center := center / Length(verts);
   end;
 
   if not aMaxRadius then r := MaxSingle;
-  for var v in verts do begin
-    var rv := (center - v).Length;
+  for v in verts do begin
+    rv := (center - v).Length;
     if (aMaxRadius and (rv > r)) or (not aMaxRadius and (rv < r)) then
       r := rv;
   end;
