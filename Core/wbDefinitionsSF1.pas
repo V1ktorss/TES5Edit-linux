@@ -251,6 +251,7 @@ var
   wbTraversalData: IwbStructDef;
   wbMOLM: function(const aSignature: TwbSignature): IwbSubRecordDef;
   wbGenericModel: function(aRequired: Boolean = False; aDontShow: TwbDontShowCallback = nil): IwbRecordMemberDef;
+  wbXTV2: IwbSubRecordWithArrayDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -8360,7 +8361,7 @@ begin
   ReferenceRecord(PHZD, 'Placed Hazard');
   ReferenceRecord(PMIS, 'Placed Missile');
 
-  var wbXTV2 :=
+  wbXTV2 :=
     wbArray(XTV2, 'Traversals', wbTraversalData)
     .SetWronglyAssumedFixedSizePerElementOnValue(56)
     .IncludeFlag(dfCollapsed, wbCollapseTraversal)
