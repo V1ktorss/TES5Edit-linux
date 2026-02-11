@@ -18866,6 +18866,7 @@ var
   NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
   Column                      : TColumnIndex;
+  ClipboardText               : string;
 begin
   UserWasActive := True;
 
@@ -18977,7 +18978,7 @@ begin
       Ord('V'): begin
         LockProcessMessages;
         try
-          var ClipboardText := wbGetClipboardText;
+          ClipboardText := wbGetClipboardText;
           if ClipboardText <> '' then
           begin
             Element.EditValue := ClipboardText;
@@ -19360,6 +19361,11 @@ var
   GroupRecord2 : IwbGroupRecord;
   MainRecord1  : IwbMainRecord;
   MainRecord2  : IwbMainRecord;
+  lLabel1      : TwbSignature;
+  lLabel2      : TwbSignature;
+  lName1       : string;
+  lName2       : string;
+  lRecordDef   : PwbMainRecordDef;
 begin
   Element1 := PNavNodeData(Sender.GetNodeData(Node1)).Element;
   Element2 := PNavNodeData(Sender.GetNodeData(Node2)).Element;
@@ -19433,12 +19439,11 @@ begin
           if Result = 0 then
             case GroupRecord1.GroupType of
               0: begin
-                var lLabel1 := TwbSignature(GroupRecord1.GroupLabel);
-                var lLabel2 := TwbSignature(GroupRecord2.GroupLabel);
-                var lName1: string := lLabel1;
-                var lName2: string := lLabel2;
+                lLabel1 := TwbSignature(GroupRecord1.GroupLabel);
+                lLabel2 := TwbSignature(GroupRecord2.GroupLabel);
+                lName1 := lLabel1;
+                lName2 := lLabel2;
                 if xeSortGroupsByFullName then begin
-                  var lRecordDef: PwbMainRecordDef;
                   if wbFindRecordDef(lLabel1, lRecordDef) then
                     lName1 := lRecordDef.Name;
                   if wbFindRecordDef(lLabel2, lRecordDef) then
@@ -20095,24 +20100,32 @@ procedure TfrmMain.TryViewOrCompareSelectedRecords(aElement: IwbElement);
 var
   _File                       : IwbFile;
   MainRecord                  : IwbMainRecord;
+  MainRecords                 : TDynMainRecords;
+  SelectedNodes               : TNodeArray;
+  SelectedNodesCount          : Integer;
+  Ctrl                        : Boolean;
+  FirstNode                   : PVirtualNode;
+  NodeData                    : PNavNodeData;
+  i                           : Integer;
+  j                           : Integer;
 begin
-  var MainRecords: TDynMainRecords := nil;
+  MainRecords := nil;
 
-  var SelectedNodes: TNodeArray := vstNav.GetSortedSelection(True);
-  var SelectedNodesCount: Integer := Length(SelectedNodes);
+  SelectedNodes := vstNav.GetSortedSelection(True);
+  SelectedNodesCount := Length(SelectedNodes);
 
-  var Ctrl: Boolean := wbIsVirtualKeyPressed(VK_CONTROL);
+  Ctrl := wbIsVirtualKeyPressed(VK_CONTROL);
 
   if InRange(SelectedNodesCount, 2, wbAutoCompareSelectedLimit) or (Ctrl and ComparingSiblings) then
   begin
     SetLength(MainRecords, SelectedNodesCount);
 
-    var FirstNode: PVirtualNode := nil;
-    var j: Integer := 0;
+    FirstNode := nil;
+    j := 0;
 
-    for var i := Low(SelectedNodes) to High(SelectedNodes) do
+    for i := Low(SelectedNodes) to High(SelectedNodes) do
     begin
-      var NodeData: PNavNodeData := vstNav.GetNodeData(SelectedNodes[i]);
+      NodeData := vstNav.GetNodeData(SelectedNodes[i]);
 
       if not Assigned(NodeData.Element) or not (NodeData.Element.ElementType = etMainRecord) then
         Continue;
@@ -21276,6 +21289,17 @@ var
   _File                       : IwbFile;
   s,t                         : string;
   b                           : TBytes;
+  lFoundArchives              : TStringList;
+  lNotFoundArchives           : TStringList;
+  lFoundPluginArchives        : TStringList;
+  lNotFoundPluginArchives     : TStringList;
+  lContainer                  : IwbContainer;
+  lBA2File                    : IwbBA2File;
+  lFoundIdx                   : Integer;
+  lNotFoundIdx                : Integer;
+  lLoadListIdx                : Integer;
+  lFoundPluginIdx             : Integer;
+  lNotFoundPluginIdx          : Integer;
 //  F                           : TSearchRec;
   StartTime                   : TDateTime;
   {$IFNDEF USE_PARALLEL_BUILD_REFS}
@@ -21301,9 +21325,9 @@ begin
           _LoaderProgressAction := 'loading resources';
 
           // Load archives defined in the game ini
-          var lFoundArchives := TStringList.Create;
+          lFoundArchives := TStringList.Create;
           try
-            var lNotFoundArchives := TStringList.Create;
+            lNotFoundArchives := TStringList.Create;
             try
               bsaCount := 0;
               if FileExists(wbTheGameIniFileName) then begin
@@ -21314,20 +21338,19 @@ begin
               end;
 
               if (bsaCount > 0) then begin
-                for var lFoundIdx := 0 to Pred(lFoundArchives.Count) do
+                for lFoundIdx := 0 to Pred(lFoundArchives.Count) do
                   if wbLoadBSAs then begin
                     LoaderProgress('[' + lFoundArchives[lFoundIdx] + '] Loading Resources.');
                     if wbArchiveExtension = '.bsa' then
                       wbContainerHandler.AddBSA(MakeDataFileName(lFoundArchives[lFoundIdx], ltDataPath))
                     else if wbArchiveExtension = '.ba2' then begin
-                      var lContainer := wbContainerHandler.AddBA2(MakeDataFileName(lFoundArchives[lFoundIdx], ltDataPath));
-                      var lBA2File: IwbBA2File;
+                      lContainer := wbContainerHandler.AddBA2(MakeDataFileName(lFoundArchives[lFoundIdx], ltDataPath));
                       if Supports(lContainer, IwbBA2File, lBA2File) then
                         LoaderProgress('[' + lFoundArchives[lFoundIdx] + '] Version: ' + lBA2File.Version.ToString);
                     end
                   end else
                     LoaderProgress('[' + lFoundArchives[lFoundIdx] + '] Skipped.');
-                for var lNotFoundIdx := 0 to Pred(lNotFoundArchives.Count) do
+                for lNotFoundIdx := 0 to Pred(lNotFoundArchives.Count) do
                   LoaderProgress('Warning: <Can''t find ' + lNotFoundArchives[lNotFoundIdx] + '>')
               end;
             finally
@@ -21338,24 +21361,23 @@ begin
           end;
 
           // Load archives associated with plugins
-          for var lLoadListIdx := 0 to Pred(ltLoadList.Count) do begin
-            var lFoundPluginArchives := TStringList.Create;
+          for lLoadListIdx := 0 to Pred(ltLoadList.Count) do begin
+            lFoundPluginArchives := TStringList.Create;
             try
-              var lNotFoundPluginArchives := TStringList.Create;
+              lNotFoundPluginArchives := TStringList.Create;
               try
                 // all games except old Skyrim load BSA files with partial matching, Skyrim requires exact names match
                 // and can use a private ini to specify the bsa to use.
                 if HasBSAs(ChangeFileExt(ltLoadList[lLoadListIdx], ''), ltDataPath,
                     wbGameMode in [gmTES5, gmEnderal], wbIsSkyrim, lFoundPluginArchives, lNotFoundPluginArchives)>0 then begin
-                      for var lFoundPluginIdx := 0 to Pred(lFoundPluginArchives.Count) do
+                      for lFoundPluginIdx := 0 to Pred(lFoundPluginArchives.Count) do
                         if wbLoadBSAs then begin
                           LoaderProgress('[' + lFoundPluginArchives[lFoundPluginIdx] + '] Loading Resources.');
                           try
                             if wbArchiveExtension = '.bsa' then
                               wbContainerHandler.AddBSA(MakeDataFileName(lFoundPluginArchives[lFoundPluginIdx], ltDataPath))
                             else if wbArchiveExtension = '.ba2' then begin
-                              var lContainer := wbContainerHandler.AddBA2(MakeDataFileName(lFoundPluginArchives[lFoundPluginIdx], ltDataPath));
-                              var lBA2File: IwbBA2File;
+                              lContainer := wbContainerHandler.AddBA2(MakeDataFileName(lFoundPluginArchives[lFoundPluginIdx], ltDataPath));
                               if Supports(lContainer, IwbBA2File, lBA2File) then
                                 LoaderProgress('[' + lFoundPluginArchives[lFoundPluginIdx] + '] Version: ' + lBA2File.Version.ToString);
                             end;
@@ -21365,7 +21387,7 @@ begin
                           end;
                         end else
                           LoaderProgress('[' + lFoundPluginArchives[lFoundPluginIdx] + '] Skipped.');
-                      for var lNotFoundPluginIdx := 0 to Pred(lNotFoundPluginArchives.Count) do
+                      for lNotFoundPluginIdx := 0 to Pred(lNotFoundPluginArchives.Count) do
                         LoaderProgress('Warning: <Can''t find ' + lNotFoundPluginArchives[lNotFoundPluginIdx] + '>');
                 end;
               finally
@@ -21390,8 +21412,7 @@ begin
 
         _LoaderProgressAction := 'loading modules';
 
-        for var
-        lLoadListIdx := 0 to Pred(ltLoadList.Count) do begin
+        for lLoadListIdx := 0 to Pred(ltLoadList.Count) do begin
 
           if wbGameMode = gmTES3 then
             if (lLoadListIdx = 0) and (ltMaster = '') and (ltLoadOrderOffset = 0) and (ltLoadList.Count > 0) and SameText(ltLoadList[0], wbGameMasterEsm) then begin
