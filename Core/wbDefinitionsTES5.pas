@@ -124,6 +124,9 @@ var
   wbVMADFragmentedQUST: IwbSubRecordDef;
   wbVMADFragmentedSCEN: IwbSubRecordDef;
   wbVMADFragmentedINFO: IwbSubRecordDef;
+  wbVMADScripts: IwbValueDef;
+  wbVMADVersion: IwbValueDef;
+  wbVMADObjectFormat: IwbValueDef;
   wbCOCT: IwbSubRecordDef;
   wbCITC: IwbSubRecordDef;
   wbCITCReq: IwbSubRecordDef;
@@ -151,8 +154,12 @@ var
   wbNVNM: IwbSubRecordDef;
   wbStaticPart: IwbRecordMemberDef;
   s: string;
+  wbConditionParameters: array of IwbValueDef;
+  wbEffect: IwbRecordMemberDef;
   wbMenuButton: IwbRecordMemberDef;
   wbFactionRank: IwbRecordMemberDef;
+  wbPerkConditions: IwbRecordMemberDef;
+  wbPerkEffect: IwbRecordMemberDef;
   wbSubtypeNamesEnum: IwbEnumDef;
 
 type
@@ -3212,13 +3219,13 @@ begin
   .IncludeFlag(dfSummaryMembersNoName);
 
   {>>> http://www.uesp.net/wiki/Tes5Mod:Mod_File_Format/VMAD_Field <<<}
-  var wbVMADScripts :=
+  wbVMADScripts :=
     wbArrayS('Scripts', wbScriptEntry, -2, cpNormal, False, nil, nil, nil, wbCanAddScripts)
     .SetSummaryPassthroughMaxLength(100);
 
-  var wbVMADVersion :=
+  wbVMADVersion :=
     wbInteger('Version', itS16, nil, cpIgnore).SetDefaultNativeValue(5);
-  var wbVMADObjectFormat :=
+  wbVMADObjectFormat :=
     wbInteger('Object Format', itS16, nil, cpIgnore).SetDefaultNativeValue(2);
 
   wbVMAD := wbStruct(VMAD, 'Virtual Machine Adapter', [
@@ -4174,7 +4181,7 @@ begin
       $080000, 'Left',
       $100000, 'Up']);
 
-  var wbConditionParameters := [
+  wbConditionParameters := [
     //Misc
     {0} wbByteArray('Unknown', 4),
     {1} wbByteArray('None', 4, cpIgnore).IncludeFlag(dfZeroSortKey),
@@ -4302,7 +4309,7 @@ begin
   wbYNAM := wbFormIDCk(YNAM, 'Sound - Pick Up', [SNDR]);
   wbZNAM := wbFormIDCk(ZNAM, 'Sound - Put Down', [SNDR]);
 
-  var wbEffect :=
+  wbEffect :=
     wbRStruct('Effect', [
       wbEFID,
       wbEFIT,
@@ -6261,13 +6268,13 @@ begin
     wbRArrayS('FormIDs', wbFormID(LNAM, 'FormID'), cpNormal, False, nil, nil, nil, wbFLSTLNAMIsSorted)
   ]);
 
-  var wbPerkConditions :=
+  wbPerkConditions :=
     wbRStructExSK([0], [1], 'Perk Condition', [
       wbInteger(PRKC, 'Run On (Tab Index)', itS8{, wbPRKCToStr, wbPRKCToInt}),
       wbConditions.SetRequired
     ], [], cpNormal, False{, nil, nil, wbPERKPRKCDontShow});
 
-  var wbPerkEffect :=
+  wbPerkEffect :=
     wbRStructExSK([0,1,3], [2], 'Effect', [
       wbStructSK(PRKE, [1, 2, 0], 'Header', [
         wbPerkEffectType(wbPERKPRKETypeAfterSet),
