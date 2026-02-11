@@ -62,6 +62,20 @@ var
   wbXFLG: IwbSubRecordDef;
   wbSoundLevelEnum: IwbEnumDef;
   wbEntryPointsEnum: IwbEnumDef;
+  wbEquipType: IwbFlagsDef;
+  wbEmotionTypeEnum: IwbEnumDef;
+  wbFurnitureAnimTypeEnum: IwbEnumDef;
+  wbWardStateEnum: IwbEnumDef;
+  wbDamageCauseTypeEnum: IwbEnumDef;
+  wbPerkCategoryEnum: IwbEnumDef;
+  wbPerkSkillGroupEnum: IwbEnumDef;
+  wbWeaponAnimTypeEnum: IwbEnumDef;
+  wbReverbClassEnum: IwbEnumDef;
+  wbHitBehaviourEnum: IwbEnumDef;
+  wbLGDIStarSlot: IwbEnumDef;
+  wbPronounEnum: IwbEnumDef;
+  wbLearnMethodEnum: IwbEnumDef;
+  wbPhotoModeEnum: IwbEnumDef;
 begin
   DefineCommon;
 end;
@@ -3629,7 +3643,7 @@ begin
     {253} 'Mod Final Player Ship Combat Damage'
   ]);
 
-  var wbEquipType := wbFlags([
+  wbEquipType := wbFlags([
     {0x00000001} 'Hand To Hand Melee',
     {0x00000002} 'One Hand Sword',
     {0x00000004} 'One Hand Dagger',
@@ -3647,7 +3661,7 @@ begin
     {0x00004000} 'Torch'
   ], True);
 
-  var wbEmotionTypeEnum := wbEnum([
+  wbEmotionTypeEnum := wbEnum([
     {0} 'Neutral',
     {1} 'Anger',
     {2} 'Disgust',
@@ -3658,7 +3672,7 @@ begin
     {7} 'Puzzled'
   ]);
 
-  var wbFurnitureAnimTypeEnum := wbEnum([
+  wbFurnitureAnimTypeEnum := wbEnum([
     {0} '',
     {1} 'Sit',
     {2} 'Lay',
@@ -3666,7 +3680,7 @@ begin
     {4} 'Lean'
   ]);
 
-  var wbWardStateEnum := wbEnum([
+  wbWardStateEnum := wbEnum([
     'None',
     'Absorb',
     'Break'
@@ -3680,7 +3694,7 @@ begin
     'GetItemValue'
   ]);
 
-  var wbDamageCauseTypeEnum := wbEnum([
+  wbDamageCauseTypeEnum := wbEnum([
     { 0} 'None',
     { 1} 'Explosion',
     { 2} 'Gun',
@@ -3696,7 +3710,7 @@ begin
     {12} 'Other'
   ]);
 
-  var wbPerkCategoryEnum := wbEnum([
+  wbPerkCategoryEnum := wbEnum([
     {0} 'None',
     {1} 'Combat',
     {2} 'Science',
@@ -3707,7 +3721,7 @@ begin
     {7} 'AllIncludingNone'
   ]);
 
-  var wbPerkSkillGroupEnum := wbEnum([
+  wbPerkSkillGroupEnum := wbEnum([
     {0} 'None',
     {1} 'Basic',
     {2} 'Advanced',
@@ -3739,7 +3753,7 @@ begin
     $7FFFFFFF, 'All'
   ]);
 
-  var wbWeaponAnimTypeEnum := wbEnum([
+  wbWeaponAnimTypeEnum := wbEnum([
     {0} 'HandToHandMelee',
     {1} 'OneHandSword',
     {2} 'OneHandDagger',
@@ -3752,7 +3766,7 @@ begin
     {9} 'Crossbow'
   ]);
 
-  var wbReverbClassEnum := wbEnum([
+  wbReverbClassEnum := wbEnum([
     'Default',
     'Class A',
     'Class B',
@@ -3761,14 +3775,14 @@ begin
     'Class E'
   ]);
 
-  var wbHitBehaviourEnum := wbEnum([
+  wbHitBehaviourEnum := wbEnum([
     'Normal formula behaviour',
     'Dismember only',
     'Explode only',
     'No dismember or explode'
   ]);
 
-  var wbLGDIStarSlot := wbEnum([
+  wbLGDIStarSlot := wbEnum([
     'First Star Slot',
     'Second Star Slot',
     'Third Star Slot',
@@ -3776,14 +3790,14 @@ begin
     'Fifth Star Slot'
   ]);
 
-  var wbPronounEnum := wbEnum([
+  wbPronounEnum := wbEnum([
     {0} 'Unspecified',
     {1} 'He/Him',
     {2} 'She/Her',
     {3} 'They/Them'
   ]);
 
-  var wbLearnMethodEnum  := wbEnum([
+  wbLearnMethodEnum := wbEnum([
     {0} 'Learned when picked up or by script',
     {1} 'Learned by scrapping',
     {2} 'Learned when ingested',
@@ -3791,7 +3805,7 @@ begin
     {4} 'Learned from plan'
       ]);
 
-  var wbPhotoModeEnum  := wbEnum([
+  wbPhotoModeEnum := wbEnum([
     {0} 'Texture',
     {1} 'Frame',
     {2} 'Filter'
