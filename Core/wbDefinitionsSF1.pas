@@ -123,6 +123,7 @@ var
   wbXLRD: IwbSubRecordWithStructDef;
   wbRACEDAT2Size: function(aName: string = 'Size'): IwbIntegerDef;
   wbWMKFDecider: function:TwbRUnionDecider;
+  wbBIOMBTPSStruct: function(aName: string = 'Unknown'): IwbValueDef;
   wbLongitudeDouble: IwbFloatDef;
   wbLatitudeDouble: IwbFloatDef;
   lDOBJUsesVarRecs1: TwbVarRecs;
@@ -18269,7 +18270,7 @@ begin
     'Path'
   ]);
 
-  var wbBIOMBTPSStruct := function(aName: string = 'Unknown'): IwbValueDef
+  wbBIOMBTPSStruct := function(aName: string = 'Unknown'): IwbValueDef
   begin
     Result := wbStruct(aName, [
       wbFloat('Noise Offset U'),
