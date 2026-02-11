@@ -124,6 +124,8 @@ var
   wbRACEDAT2Size: function(aName: string = 'Size'): IwbIntegerDef;
   wbWMKFDecider: function:TwbRUnionDecider;
   wbBIOMBTPSStruct: function(aName: string = 'Unknown'): IwbValueDef;
+  wbDESC: function(aName: string = 'Description'):IwbSubRecordWithBaseStringDef;
+  wbDESCReq: function(aName: string = 'Description'):IwbSubRecordWithBaseStringDef;
   wbLongitudeDouble: IwbFloatDef;
   wbLatitudeDouble: IwbFloatDef;
   lDOBJUsesVarRecs1: TwbVarRecs;
@@ -3964,11 +3966,11 @@ begin
   var wbNLDT := wbString(NLDT, 'Context Notes'); // localization note, explanation of variable, etc.
   var wbFULL := wbLStringKC(FULL, 'Name', 0, cpTranslate);
   var wbFULLReq := wbLStringKC(FULL, 'Name', 0, cpTranslate, True);
-  var wbDESC := function(aName: string = 'Description'):IwbSubRecordWithBaseStringDef
+  wbDESC := function(aName: string = 'Description'):IwbSubRecordWithBaseStringDef
   begin
     Result := wbLStringKC(DESC, aName, 0, cpTranslate);
   end;
-  var wbDESCReq := function(aName: string = 'Description'):IwbSubRecordWithBaseStringDef
+  wbDESCReq := function(aName: string = 'Description'):IwbSubRecordWithBaseStringDef
   begin
     Result := wbLStringKC(DESC, aName, 0, cpTranslate, True);
   end;
