@@ -3,7 +3,9 @@ unit System.IOUtils;
 interface
 
 uses
+  {$IFNDEF FPC}
   IOUtils,
+  {$ENDIF}
   SysUtils,
   Classes;
 

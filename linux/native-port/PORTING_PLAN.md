@@ -195,6 +195,7 @@ This document tracks what is already done for the native Linux path and what com
   - completed follow-up cleanup for `Core/wbDefinitionsTES5Saves.pas` pointer deltas via `NativeUInt` helper paths (`wbPtrDiffNative`, `wbSubtractConsumed`), eliminating remaining `Conversion between ordinals and pointers is not portable` hints for that unit in xDump headless builds
   - removed unused `Math` dependency from `Core/wbDefinitionsTES5Saves.pas` to keep xDump/FPC warning surface smaller
   - hardened local `IOUtils` compatibility shims (`IOUtils.pas`, `System.IOUtils.pas`) to use explicit local result buffers in `GetFiles`, removing managed-result initialization warnings from xEdit/xDump FPC headless builds
+  - cleaned `System.*` shim import warnings by gating `System.IOUtils`'s `IOUtils` dependency to non-FPC and adding explicit `System.Diagnostics` type aliases (`TTimeSpan`, `TStopwatch`)
   - moved `TxeScriptHost.Create` to public API (`reintroduce`) in `xEdit/xeScriptHost.pas` to remove FPC visibility warning while keeping dynamic host construction paths intact
   - extended compatibility wrappers used by xDump path:
     - `System.Classes`: `TFiler`/`TReader`/`TWriter`, lightweight `TDataModule`
