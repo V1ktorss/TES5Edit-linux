@@ -76,6 +76,12 @@ var
   ConflictAll         : TConflictAll;
   List                : TList;
   i                   : Integer;
+  lFile               : IwbFile;
+  lFormID             : TwbFormID;
+  aFormID             : TwbFormID;
+  Silent              : Boolean;
+  Node                : PVirtualNode;
+  NodeData            : PNavNodeData;
 begin
   with frmMain do
   if SameText(Identifier, 'wbGameMode') and (Args.Count = 0) then begin
@@ -215,8 +221,8 @@ begin
       JvInterpreterError(ieDirectInvalidArgument, 0); // or  ieNotEnoughParams, ieIncompatibleTypes or others.
   end
   else if SameText(Identifier, 'RecordFromFileByFormID') then begin
-    var lFile: IwbFile;
-    var lFormID: TwbFormID;
+    lFile := nil;
+    lFormID := 0;
     case Args.Count of
     0, 1: JvInterpreterError(ieNotEnoughParams, -1);
     2:
@@ -261,7 +267,7 @@ begin
   else if SameText(Identifier, 'RecordByHexFormID') then begin
     if (Args.Count = 1) and VarIsStr(Args.Values[0]) then begin
       Value := Null;
-      var aFormID: TwbFormID := TwbFormID.FromStr(string(Args.Values[0]));
+      aFormID := TwbFormID.FromStr(string(Args.Values[0]));
       for i := Low(Files) to High(Files) do
         if Files[i].LoadOrderFileID = aFormID.FileID then begin
           Value := Files[i].RecordByFormID[aFormID, True, True];
@@ -309,7 +315,7 @@ begin
     Value := false;
     if Supports(IInterface(Args.Values[0]), IwbElement, Element) then
       if Supports(IInterface(Args.Values[1]), IwbFile, _File) then begin
-        var Silent := False;
+        Silent := False;
         if Args.Count >= 4 then
           Silent := Args.Values[3];
         Value := AddRequiredMasters(Element, _File, Args.Values[2], Silent);
@@ -319,9 +325,9 @@ begin
   else if SameText(Identifier, 'RemoveNode') and (Args.Count = 1) then begin
     Value := False;
     if Supports(IInterface(Args.Values[0]), IwbElement, Element) then begin
-      var Node: PVirtualNode := FindNodeForElement(Element);
+      Node := FindNodeForElement(Element);
       if Assigned(Node) then begin
-        var NodeData: PNavNodeData := vstNav.GetNodeData(Node);
+        NodeData := vstNav.GetNodeData(Node);
         if Supports(Element, IwbMainRecord, MainRecord) then begin
           CheckHistoryRemove(BackHistory, MainRecord);
           CheckHistoryRemove(ForwardHistory, MainRecord);
@@ -359,9 +365,9 @@ begin
   end
   else if SameText(Identifier, 'ConflictThisForNode') and (Args.Count = 1) then begin
     if Supports(IInterface(Args.Values[0]), IwbElement, Element) then begin
-      var Node: PVirtualNode := FindNodeForElement(Element);
+      Node := FindNodeForElement(Element);
       if Assigned(Node) then begin
-        var NodeData: PNavNodeData := vstNav.GetNodeData(Node);
+        NodeData := vstNav.GetNodeData(Node);
         Value := NodeData.ConflictThis;
       end;
       Done := True;
@@ -370,9 +376,9 @@ begin
   end
   else if SameText(Identifier, 'ConflictAllForNode') and (Args.Count = 1) then begin
     if Supports(IInterface(Args.Values[0]), IwbElement, Element) then begin
-      var Node: PVirtualNode := FindNodeForElement(Element);
+      Node := FindNodeForElement(Element);
       if Assigned(Node) then begin
-        var NodeData: PNavNodeData := vstNav.GetNodeData(Node);
+        NodeData := vstNav.GetNodeData(Node);
         Value := NodeData.ConflictAll;
       end;
       Done := True;
