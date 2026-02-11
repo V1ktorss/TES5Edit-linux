@@ -8462,6 +8462,8 @@ var
   s                           : string;
   bShowMessages               : Boolean;
   PrevMaxMessageInterval      : UInt64;
+  Result                      : Variant;
+  LastErrorLocation           : string;
 begin
   // prevent execution of new scripts if already executing
   if Assigned(Script) then begin
@@ -8508,7 +8510,6 @@ begin
         try
           try
             if Script.FunctionExists('Initialize') then begin
-              var Result: Variant;
               Inc(wbHideStartTime);
               try
                 Result := Script.CallFunction('Initialize', []);
@@ -8529,7 +8530,6 @@ begin
                 ApplyScriptToSelection(SelectedElements, Count, bShowMessages);
 
             if Script.FunctionExists('Finalize') then begin
-              var Result: Variant;
               Inc(wbHideStartTime);
               try
                 Result := Script.CallFunction('Finalize', []);
@@ -8544,7 +8544,7 @@ begin
 
           except
             on E: Exception do begin
-              var LastErrorLocation := Script.GetLastErrorLocation;
+              LastErrorLocation := Script.GetLastErrorLocation;
               if LastErrorLocation <> '' then
                 LastErrorLocation := ' in ' + LastErrorLocation;
               wbProgress('Exception' + LastErrorLocation + ': [' + E.ClassName + '] ' + E.Message, True);
@@ -9233,6 +9233,7 @@ var
   CountToAdd                  : Integer;
   BeSilent                    : Boolean;
   s                           : string;
+  i                           : Integer;
 begin
   if Sender = mniNavAdd then Exit;
 
@@ -9253,7 +9254,7 @@ begin
       else
         Exit;
 
-    for var i := 1 to CountToAdd do
+    for i := 1 to CountToAdd do
       Element := Container.Add(StringReplace((Sender as TMenuItem).Caption, '&', '', [rfReplaceAll]), BeSilent);
 
     if Assigned(Element) then begin
@@ -16401,6 +16402,9 @@ begin
 end;
 
 procedure TfrmMain.DoSetActiveRecord(const aMainRecords: TDynMainRecords);
+var
+  FoundDifferent              : Boolean;
+  i                           : Integer;
 begin
   PendingContainer := nil;
   PendingMainRecords := nil;
@@ -16420,9 +16424,9 @@ begin
 
   if Length(aMainRecords) = Length(ActiveRecords) then
   begin
-    var FoundDifferent: Boolean := False;
+    FoundDifferent := False;
 
-    for var i := Low(ActiveRecords) to High(ActiveRecords) do
+    for i := Low(ActiveRecords) to High(ActiveRecords) do
       with ActiveRecords[i] do
       begin
         FoundDifferent := (Assigned(Element) <> Assigned(aMainRecords[i])) or
@@ -16450,7 +16454,7 @@ begin
       ActiveIndex := NoColumn;
 
       SetLength(ActiveRecords, Length(aMainRecords));
-      for var i := Low(ActiveRecords) to High(ActiveRecords) do
+      for i := Low(ActiveRecords) to High(ActiveRecords) do
         with ActiveRecords[i] do begin
           Element := aMainRecords[i];
           Container := aMainRecords[i] as IwbContainerElementRef;
@@ -16468,7 +16472,7 @@ begin
             Options := Options - [coDraggable, coShowDropMark];
             Options := Options + [coFixed];
           end;
-          for var i := Low(ActiveRecords) to High(ActiveRecords) do
+          for i := Low(ActiveRecords) to High(ActiveRecords) do
             with Add do begin
               Text := (ActiveRecords[i].Element as IwbMainRecord).EditorID;
               Hint := (ActiveRecords[i].Element as IwbMainRecord).EditorID;
