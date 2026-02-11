@@ -210,6 +210,8 @@ var
   wbETYP: IwbSubRecordDef;
   wbETYPReq: IwbSubRecordDef;
   wbFormTypeEnum: IwbEnumDef;
+  wbMiscStatEnum: IwbEnumDef;
+  wbDialogueSubtypeEnum: IwbEnumDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -5472,7 +5474,7 @@ begin
    116, 'Terminal'
   ]);
 
-  var wbMiscStatEnum := wbEnum([], [
+  wbMiscStatEnum := wbEnum([], [
     Int64($1EE71DBC), 'Animals Friended',
     Int64($FCDD5011), 'Animals Killed',
     Int64($366D84CF), 'Armor Improved',
@@ -5574,7 +5576,7 @@ begin
     Int64($60A11697), 'Workshops Unlocked'
   ]);
 
-  var wbDialogueSubtypeEnum := wbEnum([],[
+  wbDialogueSubtypeEnum := wbEnum([],[
     Sig2Int('ACAC'), 'Actor Collidewith Actor',
     Sig2Int('ACYI'), 'Accept Yield',
     Sig2Int('AGRE'), 'Agree',
