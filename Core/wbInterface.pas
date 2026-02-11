@@ -18,15 +18,21 @@ unit wbInterface;
 interface
 
 uses
+{$IFNDEF FPC}
   System.Types,
+{$ENDIF}
   System.Classes,
+{$IFNDEF FPC}
   System.SysUtils,
+{$ENDIF}
 {$IFDEF FPC}
   SysUtils,
   StrUtils,
   Variants,
 {$ENDIF}
+{$IFNDEF FPC}
   System.UITypes,
+{$ENDIF}
   VCL.Graphics,
   Generics.Defaults,
   Generics.Collections,
