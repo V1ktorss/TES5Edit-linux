@@ -1996,6 +1996,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Changed Form', aElement);
   Assert(Element.BaseName='Changed Form');
@@ -2022,6 +2023,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Alias', aElement);
   Assert(Element.BaseName='Alias');
@@ -2040,6 +2042,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Runtime Data', aElement);
   Assert(Element.BaseName='Runtime Data');
@@ -2058,6 +2061,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Param', aElement);
   Assert(Element.BaseName='Param');
@@ -2129,6 +2133,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Extra', aElement);
   Assert(Element.BaseName='Extra');
@@ -2184,6 +2189,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('CForm Data', aElement);
   Assert(Element.BaseName='CForm Data');
@@ -2211,6 +2217,7 @@ var
   Consumed  : NativeUInt;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('CForm Data', aElement);
   Assert(Element.BaseName='CForm Data');
@@ -2249,6 +2256,7 @@ var
   Consumed  : NativeUInt;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('CForm Data', aElement);
   Assert(Element.BaseName='CForm Data');
@@ -2312,11 +2320,13 @@ end;
 
 function SkipCounter(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Cardinal;
 begin
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Result := wbBytesToSkip;
 end;
 
 function DumpCounter(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Cardinal;
 begin
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if wbBytesToDump = $FFFFFFFF then
     Result := Cardinal((wbPtrDiffNative(aEndPtr, aBasePtr) div wbBytesToGroup) + 1)
   else
@@ -2330,6 +2340,7 @@ var
 
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement(aName, aElement);
   Assert(Element.BaseName=aName);
@@ -2355,6 +2366,7 @@ var
   Consumed  : NativeUInt;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement(aName, aElement);
   Assert(Element.BaseName=aName);
@@ -2399,6 +2411,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Quest Runtime Data', aElement);
 
@@ -2416,6 +2429,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Factions', aElement);
 
@@ -2437,6 +2451,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Chunk', aElement);
 
@@ -2463,6 +2478,7 @@ end;
 function SKSERegKeyDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   case LastRegistrationStart of
     5, 7, 8 : Result := 1;  // String
     6, 11:    Result := 2;  // UInt32
@@ -2473,6 +2489,7 @@ end;
 function SKSERegDataDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   case LastRegistrationStart of
     8:
       Result := 1;  // String
