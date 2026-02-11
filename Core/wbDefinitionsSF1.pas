@@ -115,6 +115,12 @@ var
   wbLightRoundnessData: function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef;
   wbLightAreaLightData: function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef;
   wbLightGoboData: function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef;
+  wbFLGDReq: IwbSubRecordWithStructDef;
+  wbXLGD: IwbSubRecordWithStructDef;
+  wbFLADReq: IwbSubRecordWithStructDef;
+  wbXALD: IwbSubRecordWithStructDef;
+  wbFLRDReq: IwbSubRecordWithStructDef;
+  wbXLRD: IwbSubRecordWithStructDef;
   wbLongitudeDouble: IwbFloatDef;
   wbLatitudeDouble: IwbFloatDef;
   lDOBJUsesVarRecs1: TwbVarRecs;
@@ -3140,12 +3146,12 @@ begin
     ], cpNormal, aRequired);
   end;
 
-  var wbFLGDReq := wbLightGoboData(FLGD, True);
-  var wbXLGD := wbLightGoboData(XLGD);
-  var wbFLADReq := wbLightAreaLightData(FLAD, True);
-  var wbXALD := wbLightAreaLightData(XALD);
-  var wbFLRDReq := wbLightRoundnessData(FLRD, True);
-  var wbXLRD := wbLightRoundnessData(XLRD);
+  wbFLGDReq := wbLightGoboData(FLGD, True);
+  wbXLGD := wbLightGoboData(XLGD);
+  wbFLADReq := wbLightAreaLightData(FLAD, True);
+  wbXALD := wbLightAreaLightData(XALD);
+  wbFLRDReq := wbLightRoundnessData(FLRD, True);
+  wbXLRD := wbLightRoundnessData(XLRD);
 
   {>>> When NAME is user defined these will be incorrect <<<}
   var wbBipedObjectEnum := wbEnum([
