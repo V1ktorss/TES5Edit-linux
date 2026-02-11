@@ -212,6 +212,11 @@ var
   wbFormTypeEnum: IwbEnumDef;
   wbMiscStatEnum: IwbEnumDef;
   wbDialogueSubtypeEnum: IwbEnumDef;
+  wbAdvanceActionEnum: IwbEnumDef;
+  wbStaggerEnum: IwbEnumDef;
+  wbAttackSpeedEnum: IwbEnumDef;
+  wbEFID: IwbSubRecordDef;
+  wbEFIT: IwbSubRecordWithStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -5762,7 +5767,7 @@ begin
     Sig2Int('ZKEY'), 'Z Key Object'
   ]);
 
-  var wbAdvanceActionEnum := wbEnum([
+  wbAdvanceActionEnum := wbEnum([
     'Normal Usage',
     'Power Attack',
     'Bash',
@@ -5770,7 +5775,7 @@ begin
     'Lockpick Broken'
   ]);
 
-  var wbStaggerEnum := wbEnum([
+  wbStaggerEnum := wbEnum([
     'None',
     'Small',
     'Medium',
@@ -5778,7 +5783,7 @@ begin
     'Extra Large'
   ]);
 
-  var wbAttackSpeedEnum := wbEnum([
+  wbAttackSpeedEnum := wbEnum([
     'VerySlow',
     'Slow',
     'Medium',
@@ -5786,9 +5791,9 @@ begin
     'VeryFast'
   ]);
 
-  var wbEFID := wbFormIDCk(EFID, 'Base Effect', [MGEF]);
+  wbEFID := wbFormIDCk(EFID, 'Base Effect', [MGEF]);
 
-  var wbEFIT :=
+  wbEFIT :=
     wbStructSK(EFIT, [0,1,2], '', [
       wbFloat('Magnitude', cpNormal, True),
       wbFloat('Area'),
