@@ -7333,13 +7333,6 @@ begin
       7, 'Greater Than or Equal To',
       8, 'Always Show'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbZTestFuncEnum.');
-  Exit;
-{$ENDIF}
-{$ENDIF}
-
   wbFurnitureEntryTypeFlags :=
     wbFlags([
     {0} 'Front',
@@ -7443,6 +7436,12 @@ begin
            IsSF1 ('Reaction Radius', '')),
       {14} IsSF1 ('Combat Style', '')
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbTemplateFlags.');
+  Exit;
+{$ENDIF}
+{$ENDIF}
 
   wbHEDR :=
     wbStruct(HEDR, 'Header', [
