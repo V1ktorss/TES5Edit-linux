@@ -1048,34 +1048,49 @@ var
   end;
 
   procedure calculateSortData(var sort_data: array of Double; const clusters: array of Cardinal; cluster_count: Integer);
+  var
+    mesh_centroid: TVector3;
+    i: Cardinal;
+    cluster: Integer;
+    cluster_begin: Cardinal;
+    cluster_end: Cardinal;
+    cluster_area: Double;
+    cluster_centroid: TVector3;
+    cluster_normal: TVector3;
+    p0, p1, p2: Cardinal;
+    p10, p20: TVector3;
+    normal: TVector3;
+    area: Double;
+    inv_cluster_area: Double;
+    cluster_normal_length: Double;
+    inv_cluster_normal_length: Double;
+    centroid_vector: TVector3;
   begin
-    var mesh_centroid: TVector3;
-
-    for var i in indices do
+    for i in indices do
       mesh_centroid := mesh_centroid + vertices[i];
 
     mesh_centroid := mesh_centroid / index_count;
 
-    for var cluster := 0 to Pred(cluster_count) do begin
-      var cluster_begin := clusters[cluster] * 3;
-      var cluster_end := IfThen(cluster + 1 < cluster_count, clusters[cluster + 1] * 3, index_count);
+    for cluster := 0 to Pred(cluster_count) do begin
+      cluster_begin := clusters[cluster] * 3;
+      cluster_end := IfThen(cluster + 1 < cluster_count, clusters[cluster + 1] * 3, index_count);
       Assert(cluster_begin < cluster_end);
 
-      var cluster_area: Double := 0;
-      var cluster_centroid: TVector3;
-      var cluster_normal: TVector3;
+      cluster_area := 0;
+      cluster_centroid := Default(TVector3);
+      cluster_normal := Default(TVector3);
 
-      var i := cluster_begin;
+      i := cluster_begin;
       while i < cluster_end do begin
-        var p0 := indices[i + 0];
-        var p1 := indices[i + 1];
-        var p2 := indices[i + 2];
+        p0 := indices[i + 0];
+        p1 := indices[i + 1];
+        p2 := indices[i + 2];
 
-        var p10 := vertices[p1] - vertices[p0];
-        var p20 := vertices[p2] - vertices[p0];
+        p10 := vertices[p1] - vertices[p0];
+        p20 := vertices[p2] - vertices[p0];
 
-        var normal := Vector3Cross(p10, p20);
-        var area := normal.Length;
+        normal := Vector3Cross(p10, p20);
+        area := normal.Length;
 
         cluster_centroid.x := cluster_centroid.x + (vertices[p0].x + vertices[p1].x + vertices[p2].x) * (area / 3);
         cluster_centroid.y := cluster_centroid.y + (vertices[p0].y + vertices[p1].y + vertices[p2].y) * (area / 3);
@@ -1087,14 +1102,14 @@ var
         Inc(i, 3);
       end;
 
-      var inv_cluster_area := IfThen(SameValue(cluster_area, 0), 0, 1 / cluster_area);
+      inv_cluster_area := IfThen(SameValue(cluster_area, 0), 0, 1 / cluster_area);
       cluster_centroid := cluster_centroid * inv_cluster_area;
 
-      var cluster_normal_length := cluster_normal.Length;
-      var inv_cluster_normal_length := IfThen(SameValue(cluster_normal_length, 0), 0, 1 / cluster_normal_length);
+      cluster_normal_length := cluster_normal.Length;
+      inv_cluster_normal_length := IfThen(SameValue(cluster_normal_length, 0), 0, 1 / cluster_normal_length);
       cluster_normal := cluster_normal * inv_cluster_normal_length;
 
-      var centroid_vector := cluster_centroid - mesh_centroid;
+      centroid_vector := cluster_centroid - mesh_centroid;
       sort_data[cluster] := centroid_vector.x * cluster_normal.x + centroid_vector.y * cluster_normal.y + centroid_vector.z * cluster_normal.z;
     end;
   end;
@@ -1103,35 +1118,42 @@ var
     var sort_keys: array of Word; cluster_count: Integer);
   const
     sort_bits = 11;
+  var
+    sort_data_max: Double;
+    i: Integer;
+    dpa: Double;
+    sort_key: Double;
+    histogram: array of Cardinal;
+    histogram_sum: Cardinal;
+    count: Cardinal;
   begin
     // compute sort data bounds and renormalize, using fixed point snorm
-    var sort_data_max: Double := 1e-3;
+    sort_data_max := 1e-3;
 
-    for var i := 0 to Pred(cluster_count) do begin
-      var dpa := Abs(sort_data[i]);
+    for i := 0 to Pred(cluster_count) do begin
+      dpa := Abs(sort_data[i]);
 
       sort_data_max := IfThen(sort_data_max < dpa, dpa, sort_data_max);
     end;
 
-    for var i := 0 to Pred(cluster_count) do begin
+    for i := 0 to Pred(cluster_count) do begin
       // note that we flip distribution since high dot product should come first
-      var sort_key := 0.5 - 0.5 * (sort_data[i] / sort_data_max);
+      sort_key := 0.5 - 0.5 * (sort_data[i] / sort_data_max);
 
       sort_keys[i] := meshopt_quantizeUnorm(sort_key, sort_bits) and ((1 shl sort_bits) - 1);
     end;
 
     // fill histogram for counting sort
-    var histogram: array of Cardinal;
     SetLength(histogram, 1 shl sort_bits);
 
-    for var i := 0 to Pred(cluster_count) do
+    for i := 0 to Pred(cluster_count) do
       Inc(histogram[sort_keys[i]]);
 
     // compute offsets based on histogram data
-    var histogram_sum := 0;
+    histogram_sum := 0;
 
-    for var i := 0 to Pred(1 shl sort_bits) do begin
-      var count := histogram[i];
+    for i := 0 to Pred(1 shl sort_bits) do begin
+      count := histogram[i];
       histogram[i] := histogram_sum;
       Inc(histogram_sum, count);
     end;
@@ -1139,7 +1161,7 @@ var
     Assert(histogram_sum = cluster_count);
 
     // compute sort order based on offsets
-    for var i := 0 to Pred(cluster_count) do begin
+    for i := 0 to Pred(cluster_count) do begin
       sort_order[histogram[sort_keys[i]]] := i;
       Inc(histogram[sort_keys[i]]);
     end;
