@@ -1967,11 +1967,16 @@ begin
 end;
 
 procedure TwbNifBlock.RemoveBranch(aEvenIfUsed: Boolean = False);
+var
+  Branch: TwbNifBlocks;
+  i: Integer;
 
   function Exists(var blocks: TwbNifBlocks; block: TwbNifBlock): Boolean;
+  var
+    b: TwbNifBlock;
   begin
     Result := False;
-    for var b in blocks do
+    for b in blocks do
       if b = block then begin
         Result := True;
         Break;
@@ -1982,6 +1987,7 @@ procedure TwbNifBlock.RemoveBranch(aEvenIfUsed: Boolean = False);
   var
     refs: TwbNifBlocks;
     b: TwbNifBlock;
+    i: Integer;
   begin
     // block is used by other blocks, can't remove
     if block.IsReferenced then
@@ -1995,7 +2001,7 @@ procedure TwbNifBlock.RemoveBranch(aEvenIfUsed: Boolean = False);
     blocks := blocks + [block];
 
     // collecting referenced blocks
-    for var i: Integer := 0 to Pred(block.RefsCount) do begin
+    for i := 0 to Pred(block.RefsCount) do begin
       b := TwbNifBlock(block.Refs[i].LinksTo);
       // never delete the root node
       if Assigned(b) and (b.Index <> 0) then
@@ -2012,14 +2018,14 @@ procedure TwbNifBlock.RemoveBranch(aEvenIfUsed: Boolean = False);
 begin
   // unlinking ourselves from everywhere
   if aEvenIfUsed then
-    for var ref in Self.ReferencedBy do ref.NativeValue := -1;
+    for i := Low(Self.ReferencedBy) to High(Self.ReferencedBy) do
+      Self.ReferencedBy[i].NativeValue := -1;
 
-  var Branch: TwbNifBlocks;
   GatherBranchBlocks(Branch, Self);
 
   // remove the whole branch
-  for var b in Branch do
-    NifFile.Delete(b.Index);
+  for i := Low(Branch) to High(Branch) do
+    NifFile.Delete(Branch[i].Index);
 end;
 
 
