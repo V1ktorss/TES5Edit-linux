@@ -2671,9 +2671,11 @@ begin
 end;
 
 function TwbNifFile.GetUniqueName(const aName: string): string;
+var
+  i: Integer;
 begin
   Result := aName;
-  var i := 0;
+  i := 0;
   while Assigned(BlockByName(Result)) do begin
     Result := Result + ':' + IntToStr(i);
     Inc(i);
@@ -2681,23 +2683,28 @@ begin
 end;
 
 function TwbNifFile.DetectBSXFlags: Cardinal;
+var
+  i: Integer;
+  cols, constraints, controllers, bounds, addons, dynbodies, markers, emitters: Integer;
+  b: TwbNifBlock;
+  name: string;
 begin
   Result := 0;
 
   if NifVersion < nfFO3 then
     Exit;
 
-  var cols := 0;
-  var constraints := 0;
-  var controllers := 0;
-  var bounds := 0;
-  var addons := 0;
-  var dynbodies := 0;
-  var markers := 0;
-  var emitters := 0;
+  cols := 0;
+  constraints := 0;
+  controllers := 0;
+  bounds := 0;
+  addons := 0;
+  dynbodies := 0;
+  markers := 0;
+  emitters := 0;
 
-  for var i := 0 to Pred(BlocksCount) do begin
-    var b := Blocks[i];
+  for i := 0 to Pred(BlocksCount) do begin
+    b := Blocks[i];
     if b.IsNiObject('NiCollisionObject') then Inc(cols) else
     if b.IsNiObject('bhkConstraint') then Inc(constraints) else
     if b.IsNiObject('bhkBallSocketConstraintChain') then Inc(constraints) else
@@ -2707,7 +2714,7 @@ begin
     if b.IsNiObject('BSShaderProperty') and b.NativeValues['Shader Flags 1\External_Emittance'] then Inc(emitters) else
     if (NifVersion < nfTES5) and b.IsNiObject('NiNode', False) then begin
       // older games use NiNode with special names
-      var name := b.EditValues['Name'];
+      name := b.EditValues['Name'];
       if name.StartsWith('FlameNode') or name.StartsWith('AttachLight') then
         Inc(addons);
     end;
