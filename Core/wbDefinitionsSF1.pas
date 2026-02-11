@@ -265,6 +265,8 @@ var
   wbBIOMMaskNameStringEnum: IwbEnumDef;
   wbBIOMMaskNamesEnum: IwbEnumDef;
   wbSPCHQuestStage: function(aSignature: TwbSignature; const aName: string): IwbRecordMemberDef;
+  wbQUSTLocationAliasFlags: IwbSubRecordDef;
+  wbQUSTReferenceAliasFlags: IwbSubRecordDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -14691,7 +14693,7 @@ begin
     ], [], cpNormal, True)
   ], False, nil, cpNormal, False, nil {wbPACKAfterLoad});
 
-  var wbQUSTLocationAliasFlags :=
+  wbQUSTLocationAliasFlags :=
     wbInteger(FNAM, 'Flags', itU32, wbFlags([
       {0x00000001} {00} 'Reserves Location',
       {0x00000002} {01} 'Optional',
@@ -14727,7 +14729,7 @@ begin
       {0x80000000} {31} 'Unknown 31'
     ]), cpNormal, True).IncludeFlag(dfCollapsed, wbCollapseFlags);
 
-  var wbQUSTReferenceAliasFlags :=
+  wbQUSTReferenceAliasFlags :=
     wbInteger(FNAM, 'Flags', itU32, wbFlags([
       {0x00000001} {00} 'Reserves Reference',
       {0x00000002} {01} 'Optional',
