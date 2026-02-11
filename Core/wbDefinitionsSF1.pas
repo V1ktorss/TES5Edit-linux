@@ -19770,12 +19770,15 @@ begin
   var wbWMKFDecider := function:TwbRUnionDecider
   begin
     Result := function(const aContainer: IwbContainerElementRef): Integer
+    var
+      lContainer: IwbMainRecord;
+      lType: IwbElement;
     begin
       Result := -1;
-        var lContainer := aContainer.ContainingMainRecord;
-        var lType := lContainer.ElementBySignature[WMTI];
-        if Assigned(lType) then
-          Result := lType.NativeValue;
+      lContainer := aContainer.ContainingMainRecord;
+      lType := lContainer.ElementBySignature[WMTI];
+      if Assigned(lType) then
+        Result := lType.NativeValue;
     end;
   end;
 
@@ -19791,8 +19794,18 @@ begin
   ]);
 
   wbRegisterResourcesLoadedHandler(procedure
+  var
+    lSoundbankInfo: TBytes;
+    lObject: TJsonObject;
+    lGUIDString: string;
+    lGUID: TGUID;
+    lName: string;
+    lExistingObject: TJsonObject;
+    lExistingName: string;
+    lGuid: string;
+    lObjectPath: string;
   begin
-    var lSoundbankInfo := wbContainerHandler.OpenResourceData('', 'sound\soundbanks\soundbanksinfo.json');
+    lSoundbankInfo := wbContainerHandler.OpenResourceData('', 'sound\soundbanks\soundbanksinfo.json');
     if Length(lSoundbankInfo) > 0 then begin
       wbProgress('Loading Wwise Soundbank Info...');
       wbWwiseSoundbankInfo := TJSONObject.Create;
@@ -19805,20 +19818,19 @@ begin
         begin
           if not (aContainer is TJsonObject) then
             Exit;
-          var lObject := TJsonObject(aContainer);
-          var lGUIDString := lObject.S['GUID'];
+          lObject := TJsonObject(aContainer);
+          lGUIDString := lObject.S['GUID'];
           if lGUIDString = '' then
             Exit;
 
-          var lGUID := StringToGUID(lGUIDString);
+          lGUID := StringToGUID(lGUIDString);
 
           if not wbWwiseGUIDs.TryAdd(lGUID, lObject) then begin
 
-            var lName := lObject.S['Name'];
+            lName := lObject.S['Name'];
             if lName <> '' then begin
-              var lExistingObject: TJsonObject;
               if wbWwiseGUIDs.TryGetValue(lGUID, lExistingObject) then begin
-                var lExistingName := lExistingObject.S['Name'];
+                lExistingName := lExistingObject.S['Name'];
                 if lExistingName = '' then begin
                   wbWwiseGUIDs.Remove(lGUID);
                   wbWwiseGUIDs.Add(lGUID, lObject);
@@ -19832,10 +19844,10 @@ begin
         wbProgress('Indexed %d GUIDs successfully.', [wbWwiseGUIDs.Count]);
 
         with TStringList.Create do try
-          for var lObject in wbWwiseGUIDs.Values do begin
-            var lGuid := lObject.S['GUID'];
-            var lName := lObject.S['Name'];
-            var lObjectPath := lObject.S['ObjectPath'];
+          for lObject in wbWwiseGUIDs.Values do begin
+            lGuid := lObject.S['GUID'];
+            lName := lObject.S['Name'];
+            lObjectPath := lObject.S['ObjectPath'];
 
             if lGuid <> '' then begin
               if lName <> '' then
