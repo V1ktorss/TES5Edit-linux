@@ -154,8 +154,13 @@ var
   wbNVNM: IwbSubRecordDef;
   wbStaticPart: IwbRecordMemberDef;
   s: string;
+  wbDOBJObjectsTES5: TVarRecs;
+  wbDOBJObjects: TVarRecs;
+  wbDOBJObjectsTES5VR: TVarRecs;
   wbConditionParameters: array of IwbValueDef;
   wbEffect: IwbRecordMemberDef;
+  wbHeadParts: IwbRecordMemberDef;
+  wbBodyParts: IwbRecordMemberDef;
   wbMenuButton: IwbRecordMemberDef;
   wbFactionRank: IwbRecordMemberDef;
   wbPerkConditions: IwbRecordMemberDef;
@@ -5169,12 +5174,14 @@ begin
     wbInteger(SNAM, 'Subtype Name', itU32, wbSubtypeNamesEnum)
       .SetDefaultNativeValue(Sig2Int('CUST'))
       .SetAfterSet(procedure(const aElement: IwbElement; const aOldValue, aNewValue: Variant)
+        var
+          lContainer : IwbContainer;
+          lSubtype   : IwbElement;
         begin
-          var lContainer: IwbContainer;
           if not Supports(aElement, IwbContainer, lContainer) then
             Exit;
 
-          var lSubtype := lContainer.ElementByPath['..\DATA\Subtype'];
+          lSubtype := lContainer.ElementByPath['..\DATA\Subtype'];
           if not Assigned(lSubtype) then
             Exit;
 
@@ -6922,7 +6929,7 @@ begin
     wbRArray('Menu Buttons', wbMenuButton)
   ], False, nil, cpNormal, False, wbMESGAfterLoad);
 
-  var wbDOBJObjectsTES5 := wbMakeVarRecs([
+  wbDOBJObjectsTES5 := wbMakeVarRecs([
                   0, 'None',
     Sig2Int('AAAC'), 'Action - Activate',
     Sig2Int('AAB1'), 'Action - Bleedout Start',
@@ -7298,9 +7305,9 @@ begin
     Sig2Int('RADA'), 'Unused - RADA'
   ]);
 
-  var wbDOBJObjects := wbDOBJOBjectsTES5;
+  wbDOBJObjects := wbDOBJOBjectsTES5;
 
-  var wbDOBJObjectsTES5VR := wbMakeVarRecs([
+  wbDOBJObjectsTES5VR := wbMakeVarRecs([
     Sig2Int('CBIT'), 'CBIT',
     Sig2Int('CBLT'), 'CBLT',
     Sig2Int('CBST'), 'CBST',
@@ -9693,10 +9700,10 @@ begin
     ])
   ]);
 
-  var wbHeadParts :=
+  wbHeadParts :=
     wbRArrayS('Head Parts', wbHeadPart, cpNormal);
 
-  var wbBodyParts :=
+  wbBodyParts :=
     wbRArrayS('Parts',
       wbRStructSK([0], 'Part', [
         wbUnused(INDX, 0),
