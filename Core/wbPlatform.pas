@@ -812,6 +812,8 @@ begin
     lProc.Options := [poUsePipes, poStderrToOutput];
     lProc.Execute;
     lCarry := '';
+    lChunk := '';
+    FillChar(lBuffer, SizeOf(lBuffer), 0);
 
     while lProc.Running do
     begin
