@@ -446,13 +446,17 @@ const
 {$ENDIF}
 
 var
-  s, regPath, regKey, client, regValue: string;
+  s: string;
+{$IFDEF MSWINDOWS}
+  regPath, regKey, client, regValue: string;
+{$ENDIF}
   isEpicNV : Boolean;
   IniFile : TMemIniFile;
   lIDs: TStringList;
   lIdx: Integer;
   lID: string;
 
+{$IFDEF MSWINDOWS}
   function TryReadInstallPathFromRegistry(
     const aCurrentUser: Boolean;
     const aPath, aValue: string;
@@ -461,6 +465,7 @@ var
   begin
     Result := wbTryReadRegistryString(aCurrentUser, aPath, aValue, aInstallPath);
   end;
+{$ENDIF}
 begin
   wbModGroupFileName := wbProgramPath + wbAppName + wbToolName + '.modgroups';
   isEpicNV := false;
@@ -501,11 +506,11 @@ begin
     {$ENDIF}
 
     if (wbDataPath = '') then begin
+      {$IFDEF MSWINDOWS}
       client := 'Steam';
       regPath := '';
       regKey := '';
 
-      {$IFDEF MSWINDOWS}
       case wbGameMode of
         gmTES3, gmTES4, gmFO3, gmFNV, gmTES5, gmFO4, gmSSE, gmTES5VR, gmFO4VR: begin
           regPath := sBethRegKey + wbGameNameReg + '\';
