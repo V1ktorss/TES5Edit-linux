@@ -2,9 +2,6 @@ unit Graphics;
 
 interface
 
-uses
-  Types;
-
 type
   TColor = Longint;
   TRGBTriple = packed record

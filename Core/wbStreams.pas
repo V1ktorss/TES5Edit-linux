@@ -13,7 +13,7 @@ unit wbStreams;
 interface
 
 uses
-  SysUtils, Math, Classes;
+  SysUtils, Classes;
 
 type
   {$IFDEF FPC}

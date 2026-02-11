@@ -11,13 +11,9 @@ unit wbSteamVDFParser;
 interface
 
 uses
-  System.SysUtils,
   System.Classes,
-  {$IFDEF FPC}
   Generics.Collections
-  {$ELSE}
-  Generics.Collections
-  {$ENDIF};
+  ;
 
  type
   TSteamVDFNode = class
