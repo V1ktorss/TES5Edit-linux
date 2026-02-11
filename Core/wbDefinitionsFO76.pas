@@ -282,6 +282,21 @@ var
   wbCTRN: IwbSubRecordDef;
   wbUITE, wbUITO : IwbEnumDef;
   wbBlendOperationEnum: IwbEnumDef;
+  wbConditionParameters: array of IwbValueDef;
+  wbBoneDataItem: IwbRecordMemberDef;
+  wbArmorAddonBoneDataItem: IwbRecordMemberDef;
+  wbEffect: IwbRecordMemberDef;
+  wbFactionRank: IwbRecordMemberDef;
+  wbPerkConditions: IwbRecordMemberDef;
+  wbMenuButton: IwbRecordMemberDef;
+  wbLeveledListEntryItem: IwbRecordMemberDef;
+  wbLeveledListEntryNPC: IwbRecordMemberDef;
+  wbLeveledListEntryPackIn: IwbRecordMemberDef;
+  wbLRNM: IwbEnumDef;
+  wbEquipSlot: IwbRecordMemberDef;
+  wbBodyParts: IwbRecordMemberDef;
+  wbStaticPart: IwbRecordMemberDef;
+  wbLeveledListEntryPerkCard: IwbRecordMemberDef;
   s: String;
   a, b, c : TVarRecs;
 
@@ -7033,7 +7048,7 @@ begin
       wbUnknown { If form version is less than 154 or greater than 182 this is empty. If form version is between 154 and 165 then its a 12 byte value. If form version is between 166 and 182 then this is an 8 byte value. }
     ], cpNormal, True, nil, -1, wbEFITAfterLoad);
 
-  var wbConditionParameters := [
+  wbConditionParameters := [
     //Misc
     {0}  wbByteArray('Unknown', 4).IncludeFlag(dfZeroSortKey),
     {1}  wbByteArray('None', 4, cpIgnore).IncludeFlag(dfZeroSortKey),
@@ -7734,7 +7749,7 @@ begin
   ]);
 
   // Forwarded from FO4 defs
-  var wbBoneDataItem :=
+  wbBoneDataItem :=
       wbRStruct('Bone Data Set', [
         wbRStruct('Bone Weight Scale Data', [
           wbInteger(BSMP, 'Weight Scale Target Gender', itU32, wbSexEnum),
@@ -7782,7 +7797,7 @@ begin
         ])
       ]);
 
-  var wbArmorAddonBoneDataItem :=
+  wbArmorAddonBoneDataItem :=
       wbRStruct('Bone Scale Modifier Set', [
         wbInteger(BSMP, 'Target Gender', itU32, wbSexEnum),
         wbRArrayS('Bone Scale Modifiers',
@@ -7802,7 +7817,7 @@ begin
 
   wbCTRN := wbByteArray(CTRN, 'Unknown CTRN', 13);
 
-  var wbEffect :=
+  wbEffect :=
     wbRStruct('Effect', [
       wbEFID,
       wbEFIT,
@@ -9059,7 +9074,7 @@ begin
     ]), cpNormal, True).IncludeFlag(dfCollapsed, wbCollapseFlags)
   ]);
 
-  var wbFactionRank :=
+  wbFactionRank :=
     wbRStructSK([0], 'Rank', [
       wbInteger(RNAM, 'Rank#', itU32),
       wbLString(MNAM, 'Male Title', 0, cpTranslate),
@@ -10075,7 +10090,7 @@ begin
     wbRArrayS('FormIDs', wbFormID(LNAM, 'FormID').IncludeFlag(dfNoReport), cpNormal, False, nil, nil, nil, wbFLSTLNAMIsSorted)
   ]);
 
-  var wbPerkConditions :=
+  wbPerkConditions :=
     wbRStructSK([0], 'Perk Condition', [
       wbInteger(PRKC, 'Run On (Tab Index)', itS8{, wbPRKCToStr, wbPRKCToInt}),
       wbConditions.SetRequired
@@ -10784,7 +10799,7 @@ begin
     wbByteRGBA(CNAM)
   ]);
 
-  var wbMenuButton :=
+  wbMenuButton :=
     wbRStruct('Menu Button', [
       wbLStringKC(ITXT, 'Button Text', 0, cpTranslate),
       wbConditions,
@@ -12651,7 +12666,7 @@ begin
     wbRArray('Unused', wbFormIDCk(GNAM, 'Unused', [GRAS,REFR], False, cpIgnore).IncludeFlag(dfNoReport), cpIgnore)
   ]);
 
-  var wbLeveledListEntryItem :=
+  wbLeveledListEntryItem :=
     wbRStruct('Leveled List Entry', [
       wbUnion(LVLO, '', wbFormVersionDecider(174), [
         wbUnion('', wbFormVersionDecider(69), [
@@ -12705,7 +12720,7 @@ begin
     .IncludeFlag(dfSummaryMembersNoName)
     .IncludeFlag(dfCollapsed, wbCollapseLeveledItems);
 
-  var wbLeveledListEntryNPC :=
+  wbLeveledListEntryNPC :=
     wbRStruct('Leveled List Entry', [
       wbUnion(LVLO, '', wbFormVersionDecider(174), [
         wbStructExSK([0, 2], [3], 'Base Data', [
@@ -12736,7 +12751,7 @@ begin
     .IncludeFlag(dfSummaryMembersNoName)
     .IncludeFlag(dfCollapsed, wbCollapseLeveledItems);
 
-  var wbLeveledListEntryPackIn :=
+  wbLeveledListEntryPackIn :=
     wbRStructExSK([0], [1], 'Leveled List Entry', [
       wbFormIDCk(LVLO, 'Pack In', sigBaseObjects),
       //wbCOED,
@@ -13152,7 +13167,7 @@ begin
 
   wbComponents := wbArrayS(FVPA, 'Components', wbComponent);
 
-  var wbLRNM := wbEnum([
+  wbLRNM := wbEnum([
         'Learned when picked up or by script',
         'Learned by scrapping',
         'Learned when ingested',
@@ -14370,7 +14385,7 @@ begin
       ]))
     ]);}
 
-  var wbEquipSlot :=
+  wbEquipSlot :=
     wbRStruct('Equip Slot', [
       wbFormIDCk(QNAM, 'Equip Slot', [EQUP]),
       wbString(ZNAM, 'Node')
@@ -14380,7 +14395,7 @@ begin
     .IncludeFlag(dfSummaryMembersNoName)
     .IncludeFlag(dfCollapsed, wbCollapseEquipSlots);
 
-  var wbBodyParts :=
+  wbBodyParts :=
     wbRArrayS('Parts',
       wbRStructSK([0], 'Part', [
         wbUnused(INDX, 0),
@@ -16361,7 +16376,7 @@ begin
     wbUnknown(VNAM, cpNormal, True)
   ]);
 
-  var wbStaticPart :=
+  wbStaticPart :=
     wbRStruct('Part', [
       wbStruct(ONAM, 'Static', [
         wbFormIDCk('Static', [ACTI, ALCH, AMMO, BOOK, CONT, DOOR, FURN, MISC, MSTT, STAT, TERM, WEAP, CNCY, SCOL, FLOR]),
@@ -16747,7 +16762,7 @@ begin
     )
   ]);
 
-  var wbLeveledListEntryPerkCard :=
+  wbLeveledListEntryPerkCard :=
     wbRStructExSK([0], [1], 'Leveled List Entry', [
       wbUnion(LVLO, '', wbFormVersionDecider(174), [
         wbStructExSK([0, 2], [3], 'Base Data', [
