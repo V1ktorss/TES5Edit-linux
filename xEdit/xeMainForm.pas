@@ -2372,6 +2372,9 @@ var
   ElementTypes           : TwbElementTypes;
   DefTypes               : TwbDefTypes;
   OptionalAndMissing     : Boolean;
+  lNodeCount             : Integer;
+  lLastIndex             : Integer;
+  lFirstNode             : PViewNodeData;
 begin
 //  if aSiblingCompare then
 //    Priority := cpBenign
@@ -2382,8 +2385,8 @@ begin
   MasterPosition := 0;
   OverallConflictThis := ctUnknown;
 
-  var lNodeCount := 0;
-  var lFirstNode := PViewNodeData(nil);
+  lNodeCount := 0;
+  lFirstNode := nil;
 
   if aNodeCount = 1 then begin
     lNodeCount := 1;
@@ -2414,7 +2417,7 @@ begin
         Result := caOnlyOne;
       end
   else
-    var lLastIndex := Pred(aNodeCount);
+    lLastIndex := Pred(aNodeCount);
 
     LastElement := aNodeDatas[lLastIndex].Element;
     while not Assigned(LastElement) and (vnfIsPartialForm in aNodeDatas[lLastIndex].ViewNodeFlags) and (lLastIndex > 0) do begin
@@ -2549,7 +2552,7 @@ begin
         1: Result := caNoConflict;
         2: begin
             Element := aNodeDatas[0].Element;
-            var lCompareIndex := Pred(aNodeCount);
+            lCompareIndex := Pred(aNodeCount);
             CompareElement := aNodeDatas[lCompareIndex].Element;
             while not Assigned(CompareElement) and (vnfIsPartialForm in aNodeDatas[lCompareIndex].ViewNodeFlags) and (lCompareIndex > 0) do begin
               Dec(lCompareIndex);
@@ -2704,6 +2707,11 @@ var
   PrevDeleteResult     : TModalResult;
   lResult              : TDynElements;
   Operation            : string;
+  lMasters             : TwbFilesSet;
+  lMasters2            : TwbFilesSet;
+  lFile                : IwbFile;
+  lElementIdx          : Integer;
+  lCompareIndex        : Integer;
 begin
   Result := nil;
   lResult := nil;
@@ -2730,7 +2738,7 @@ begin
     j := -1;
 
     begin
-      var lMasters := TwbFilesSet.Create;
+      lMasters := TwbFilesSet.Create;
       try
         for i := Low(Elements) to High(Elements) do begin
           if not Elements[i].CanCopy then begin
@@ -2761,7 +2769,7 @@ begin
             end;
           end;
         end;
-        for var lFile in lMasters do
+        for lFile in lMasters do
           sl.AddObject(lFile.FileName, Pointer(lFile));
       finally
         FreeAndNil(lMasters);
@@ -2889,7 +2897,7 @@ begin
             begin
               Result := mfTemplate in a.miFlags;
               if not Result then
-                for var lElementIdx := Low(Elements) to High(Elements) do begin
+                for lElementIdx := Low(Elements) to High(Elements) do begin
                   Result := not a._File.Equals(Elements[lElementIdx]._File);
                   if not Result then
                     Exit;
@@ -3020,7 +3028,7 @@ begin
 
               if Assigned(TargetFile) then begin
                 sl.Clear;
-                var lMasters2 := TwbFilesSet.Create;
+                lMasters2 := TwbFilesSet.Create;
                 try
                   for j := Low(Elements) to High(Elements) do begin
                     Elements[j].ReportRequiredMasters(lMasters2, AsNew);
@@ -3042,7 +3050,7 @@ begin
                       Container := Container.Container;
                     end;
                   end;
-                  for var lFile in lMasters2 do
+                  for lFile in lMasters2 do
                     sl.AddObject(lFile.FileName, Pointer(lFile));
                 finally
                   FreeAndNil(lMasters2);
@@ -4355,6 +4363,8 @@ var
   Container                   : IwbContainer;
   InjectionSourceFiles        : TwbFiles;
   sl                          : TStringList;
+  lMasters                    : TwbFilesSet;
+  lFile                       : IwbFile;
   i, j                        : Integer;
 begin
   if not wbEditAllowed then
@@ -4394,7 +4404,7 @@ begin
   sl.Sorted := True;
   sl.Duplicates := dupIgnore;
   try
-    var lMasters := TwbFilesSet.Create;
+    lMasters := TwbFilesSet.Create;
     try
       for i := Low(Elements) to High(Elements) do begin
         Elements[i].ReportRequiredMasters(lMasters, False);
@@ -4404,7 +4414,7 @@ begin
           Container := Container.Container;
         end;
       end;
-      for var lFile in lMasters do
+      for lFile in lMasters do
         sl.AddObject(lFile.FileName, Pointer(lFile));
     finally
       FreeAndNil(lMasters);
@@ -4963,8 +4973,11 @@ var
   Stream        : TStream;
 begin
   {$IFDEF USE_PARALLEL_BUILD_REFS}
-  TThread.CreateAnonymousThread(procedure begin
-    var ThreadCount := TThread.ProcessorCount;
+  TThread.CreateAnonymousThread(procedure
+  var
+    ThreadCount: Integer;
+  begin
+    ThreadCount := TThread.ProcessorCount;
     ThreadCount := (ThreadCount * 7) div 8;
     if ThreadCount < 3 then
       ThreadCount := 3;
@@ -6127,25 +6140,30 @@ var
 function TfrmMain.FindColors(const s: string; out aColors: TArray<TColor>): Boolean;
 type
   TColorBytes = array[0..2] of Integer;
+var
+  i: Integer;
+  j: Integer;
+  k: Integer;
+  Valid: Boolean;
+  Elements: TArray<string>;
+  ColorBytes: TColorBytes;
 begin
   with _ColorsCache do
   if ccString = s then
     aColors := ccColors
   else begin
     aColors := nil;
-    var i := Pos('RGB', s);
+    i := Pos('RGB', s);
     while i > 0 do begin
       Inc(i, 3);
-      var j := Pos('(', s, i);
+      j := Pos('(', s, i);
       if j > 0 then begin
         if (j = i) or ((j = Succ(i)) and (s[i] = 'A')) then begin
           i := Pos(')', s, j);
           if i > 0 then begin
-            var Elements := Copy(s, Succ(j), Pred(i - j)).Split([',']).ForEach(Trim);
+            Elements := Copy(s, Succ(j), Pred(i - j)).Split([',']).ForEach(Trim);
             if Length(Elements) in [3, 4] then begin
-              var Valid: Boolean;
-              var ColorBytes: TColorBytes;
-              for var k := 0 to 2 do begin
+              for k := 0 to 2 do begin
                 Valid := TryStrToInt(Elements[k], ColorBytes[k]) and InRange(ColorBytes[k], 0, 255);
                 if not Valid then
                   Break;
@@ -19029,14 +19047,16 @@ begin
 end;
 
 procedure TfrmMain.vstViewMeasureTextWidth(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; const Text: string; var Extent: Integer);
+var
+  NodeDatas : PViewNodeDatas;
+  Colors : TArray<TColor>;
 begin
   Dec(Column);
   if InRange(Column, Low(ActiveRecords), High(ActiveRecords)) then begin
-    var NodeDatas : PViewNodeDatas := vstView.GetNodeData(Node);
+    NodeDatas := vstView.GetNodeData(Node);
     with NodeDatas[Column] do
       if Assigned(Element) and (dfHideText in Element.Def.DefFlags) then
         Extent := 0;
-    var Colors : TArray<TColor>;
     if FindColors(Text, Colors) then
       Inc(Extent, (Length(Colors) * Node.NodeHeight) + vstView.TextMargin );
   end;
@@ -19181,16 +19201,18 @@ begin
 end;
 
 procedure TfrmMain.vstViewShortenString(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; const S: string; TextSpace: Integer; var Result: string; var Done: Boolean);
+var
+  NodeDatas : PViewNodeDatas;
+  Colors: TArray<TColor>;
 begin
   Result := s;
   Dec(Column);
   if InRange(Column, Low(ActiveRecords), High(ActiveRecords)) then begin
-    var NodeDatas : PViewNodeDatas := vstView.GetNodeData(Node);
+    NodeDatas := vstView.GetNodeData(Node);
     with NodeDatas[Column] do
       if Assigned(Element) and (dfHideText in Element.Def.DefFlags) then
         Done := True;
     if not Done then begin
-      var Colors: TArray<TColor>;
       Done := FindColors(s, Colors);
     end;
   end;
@@ -21178,11 +21200,13 @@ begin
 end;
 
 procedure TfrmMain.vstNavDragAllowed(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+var
+  lNodeData: PNavNodeData;
 begin
   Allowed := False;
   if not Assigned(Node) then
     Exit;
-  var lNodeData: PNavNodeData := Sender.GetNodeData(Node);
+  lNodeData := Sender.GetNodeData(Node);
   if not Assigned(lNodeData) then
     Exit;
   if not Supports(lNodeData.Element, IwbMainRecord) then
@@ -21936,8 +21960,10 @@ end;
 { TwbComboEditLink }
 
 procedure TwbComboEditLink.ComboEnter(Sender: TObject);
+var
+  lCombo: TComboBox;
 begin
-  var lCombo := TComboBox(Sender);
+  lCombo := TComboBox(Sender);
   if (FCachedIndex >= 0) and (FCachedIndex < lCombo.Items.Count) then begin
     lCombo.ItemIndex := FCachedIndex;
     lCombo.Perform(CB_SETCURSEL, FCachedIndex, 0);
@@ -21958,6 +21984,8 @@ begin
 end;
 
 procedure TwbComboEditLink.PrepareEditControl;
+var
+  lIdx: Integer;
 begin
   inherited;
 
@@ -21965,7 +21993,7 @@ begin
     Items.BeginUpdate;
     try
       FIndexMap.Clear;
-      for var lIdx := 0 to Pred(Items.Count) do
+      for lIdx := 0 to Pred(Items.Count) do
         FIndexMap.AddOrSetValue(Items[lIdx], lIdx);
     finally
       Items.EndUpdate;
@@ -21976,8 +22004,10 @@ begin
 end;
 
 procedure TwbComboEditLink.SetBounds(R: TRect);
+var
+  H: Integer;
 begin  // Let's show from 1 to 32 lines to pick from
-  var H := PickList.Count;
+  H := PickList.Count;
   if H > 32 then
     H := 32
   else if H < 1 then
@@ -21990,10 +22020,12 @@ begin  // Let's show from 1 to 32 lines to pick from
 end;
 
 procedure TwbComboEditLink.SetEditText(const Value: WideString);
+var
+  lCombo: TComboBox;
 begin
   inherited;
 
-  var lCombo := TComboBox(EditControl);
+  lCombo := TComboBox(EditControl);
   if lCombo.Style <> csDropDownList then begin
     if FIndexMap.TryGetValue(Value, FCachedIndex) then begin
       lCombo.ItemIndex := FCachedIndex;
@@ -22235,6 +22267,7 @@ type
 var
   Trampoline_TUxThemeStyle_DoDrawIcon : function(Self: TUxThemeStyleHack; DC: HDC; Details: TThemedElementDetails; const R: TRect; himl: HIMAGELIST; Index: Integer; DPI: Integer = 0): Boolean;
   CodePointer_TUxThemeStyle_DoDrawIcon : TDoDrawIcon;
+  Handle: Pointer;
 
 function Detour_TUxThemeStyle_DoDrawIcon(Self: TUxThemeStyleHack; DC: HDC;
   Details: TThemedElementDetails; const R: TRect; himl: HIMAGELIST;
@@ -22273,7 +22306,7 @@ initialization
     Free;
   end;
 
-  var Handle := BeginTransaction;
+  Handle := BeginTransaction;
   try
 
     @Trampoline_TWinControl_MainWndProc := InterceptCreate(@CodePointer_TWinControl_MainWndProc, @Detour_TWinControl_MainWndProc);
@@ -22289,7 +22322,7 @@ finalization
   _LoaderProgressLock.Free;
   {$ENDIF}
 
-  var Handle := BeginTransaction;
+  Handle := BeginTransaction;
   try
 
     InterceptRemove(@Trampoline_TWinControl_MainWndProc);
