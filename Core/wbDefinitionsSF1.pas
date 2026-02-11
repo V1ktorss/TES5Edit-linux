@@ -222,6 +222,8 @@ var
   wbRaceOverrideDontShow: function(aFlag: Byte): TwbDontShowCallback;
   wbRACEDAT2Flags: IwbFlagsDef;
   wbRaceSizeEnum: IwbEnumDef;
+  wbPKDTInterruptFlags: IwbFlagsDef;
+  wbBoneModAxisEnum: IwbEnumDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -14265,7 +14267,7 @@ begin
     ])
   ]);
 
-  var wbPKDTInterruptFlags := wbFlags([
+  wbPKDTInterruptFlags := wbFlags([
     {0x0001} 'Hellos to player',
     {0x0002} 'Random conversations',
     {0x0004} 'Observe combat behavior',
@@ -18848,7 +18850,7 @@ begin
   end)
   .IncludeFlag(dfSummaryMembersNoName);
 
-  var wbBoneModAxisEnum := wbEnum([
+  wbBoneModAxisEnum := wbEnum([
     'X',
     'Y',
     'Z'
