@@ -1300,6 +1300,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Dual RefID Table', aElement);
   Assert(Element.BaseName='Dual RefID Table');
@@ -1317,6 +1318,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Dual RefID Table', aElement);
   Assert(Element.BaseName='Dual RefID Table');
@@ -1352,6 +1354,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Unknown1000_0000', aElement);
   Assert(Element.BaseName='Unknown1000_0000');
@@ -1424,6 +1427,7 @@ end;
 
 function GlobalDataSizer(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; var CompressedSize: Integer): Cardinal;
 begin
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   CompressedSize := PCardinal(PByte(aBasePtr) + SizeOf(cardinal))^ + 2*SizeOf(Cardinal);
   Result := CompressedSize;
 end;
@@ -1486,6 +1490,7 @@ var
   Container  : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := aElement;
   while Assigned(Element.Container) do
     Element := Element.Container;
@@ -1510,6 +1515,7 @@ var
   aType      : Integer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := aElement;
   aType := ChangedFormGetRawType(Element);
 
@@ -1574,6 +1580,7 @@ function ChangedFormGetChapterTypeName(aBasePtr: Pointer; aEndPtr: Pointer; cons
 var
   aType : Integer;
 begin
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   aType := ChangedFormGetChapterType(aBasePtr, aEndPtr, aElement);
   if (aType>=wbChangedFormOffset) and (aType < wbChangedFormOffset+wbChangeTypes.NameCount) then
     Result := wbChangeTypes.Names[aType-wbChangedFormOffset];
@@ -1590,6 +1597,7 @@ var
   Element : IwbElement;
 begin
   Result := '';
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then
     Exit;
   Element := (aElement as iwbContainer).ElementByName['RefID'];
@@ -1604,6 +1612,7 @@ var
   Element : IwbElement;
 begin
   Result := 3;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := aElement;
   aType := ChangedFormGetRawType(Element) shr 6;
 
@@ -1622,6 +1631,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := aElement;
   Result := ChangedFormGetRawType(Element);
 
@@ -1639,6 +1649,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := aElement;
   Element := wbFindSaveElement('Change Actor Face', Element);
   Assert(Element.BaseName='Change Actor Face');
@@ -1656,6 +1667,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := aElement;
   Element := wbFindSaveElement('Change Actor Face', Element);
   Assert(Element.BaseName='Change Actor Face');
@@ -1673,6 +1685,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := aElement;
   Element := wbFindSaveElement('Change Projectile', Element);
   Assert(Element.BaseName='Change Projectile');
@@ -1690,6 +1703,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := aElement;
   Element := wbFindSaveElement('Extra Unknown 12', Element);
   Assert(Element.BaseName='Extra Unknown 12');
@@ -1707,6 +1721,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := aElement;
   Element := wbFindSaveElement('Change Actor', Element);
   Assert(Element.BaseName='Change Actor');
@@ -1724,6 +1739,7 @@ var
   Container  : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := wbFindSaveElement('Havok Moved SubBuffer', aElement);
 
   if Supports(Element, IwbDataContainer, Container) then begin
@@ -1740,6 +1756,7 @@ var
   Container  : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := wbFindSaveElement('Animation SubBuffer', aElement);
 
   if Supports(Element, IwbDataContainer, Container) then begin
@@ -1755,6 +1772,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := aElement;
   Result := ChangedFormGetRawType(Element) and $3F;
 
@@ -1770,6 +1788,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Changed Form', aElement);
   Assert(Element.BaseName='Changed Form');
