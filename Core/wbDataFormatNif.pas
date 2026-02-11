@@ -701,13 +701,15 @@ begin
 end;
 
 function TwbNifBlock.GetIsBone: Boolean;
+var
+  r: TdfElement;
 begin
   Result := False;
 
   if not IsNiObject('NiNode', True) then
     Exit;
 
-  for var r in ReferencedBy do
+  for r in ReferencedBy do
     if r.Def.Name.StartsWith('Bones', True) then begin
       Result := True;
       Exit;
@@ -715,15 +717,19 @@ begin
 end;
 
 function TwbNifBlock.GetIsDynamicRigidBody: Boolean;
+var
+  layer: Variant;
+  ms: string;
+  mq: string;
 begin
   Result := False;
 
   if not IsNiObject('bhkRigidBody', True) then
     Exit;
 
-  var layer := NativeValues['Havok Filter\Layer'];
-  var ms := EditValues['Motion System'];
-  var mq := EditValues['Motion Quality'];
+  layer := NativeValues['Havok Filter\Layer'];
+  ms := EditValues['Motion System'];
+  mq := EditValues['Motion Quality'];
 
   Result :=
     // not undefined, static or animstatic layer
@@ -1246,6 +1252,7 @@ end;
 function TwbNifBlock.GetStrips(aElement: TdfElement = nil): TStripArray;
 var
   i, j: integer;
+  tris: Integer;
   Entries, e: TdfElement;
 begin
   Result := nil;
@@ -1268,6 +1275,7 @@ end;
 function TwbNifBlock.SetStrips(const aStrips: TStripArray; aElement: TdfElement = nil): Boolean;
 var
   i, j: integer;
+  tris: Integer;
   Entries, e: TdfElement;
 begin
   Result := False;
@@ -1280,8 +1288,9 @@ begin
   if Length(aStrips) <> 0 then begin
     aElement.NativeValues['Has Points'] := 1;
 
-    var tris := 0;
-    for var s in aStrips do Inc(tris, Length(s) - 2);
+    tris := 0;
+    for i := Low(aStrips) to High(aStrips) do
+      Inc(tris, Length(aStrips[i]) - 2);
     if tris > High(Word) then
       raise Exception.Create(Self.Name + ': Num Triangles ' + IntToStr(tris) + ' > 65535');
 
