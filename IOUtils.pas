@@ -41,6 +41,7 @@ class function TDirectory.GetFiles(const APath, ASearchPattern: string;
 var
   LRoot: string;
   LList: TStringList;
+  LResult: TStringDynArray;
   i: Integer;
 
   procedure AddMatchesInFolder(const AFolder: string);
@@ -81,19 +82,20 @@ var
   end;
 
 begin
-  SetLength(Result, 0);
+  SetLength(LResult, 0);
   LRoot := ExcludeTrailingPathDelimiter(APath);
   LList := TStringList.Create;
   try
     if DirectoryExists(LRoot) then
       AddMatchesInFolder(LRoot);
-    SetLength(Result, LList.Count);
+    SetLength(LResult, LList.Count);
     // Manual copy keeps compatibility with older compilers.
     for i := 0 to LList.Count - 1 do
-      Result[i] := LList[i];
+      LResult[i] := LList[i];
   finally
     LList.Free;
   end;
+  Result := LResult;
 end;
 
 end.
