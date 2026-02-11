@@ -99,8 +99,10 @@ procedure wbPlatformFreeBuffer(var aView: Pointer);
 implementation
 
 uses
-  Classes,
-  IOUtils
+  Classes
+  {$IFNDEF FPC}
+  , IOUtils
+  {$ENDIF}
   {$IFDEF MSWINDOWS}
   , Windows,
   ComObj,
