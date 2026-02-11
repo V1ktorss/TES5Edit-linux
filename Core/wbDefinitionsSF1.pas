@@ -76,6 +76,9 @@ const
 var
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
+  wbObjectModProperties: IwbArrayDef;
+  wbObjectTemplate: IwbSubRecordStructDef;
+  wbOBTSReq: IwbSubRecordDef;
   wbArmorPropertyEnum: IwbEnumDef;
   wbActorPropertyEnum: IwbEnumDef;
   wbWeaponPropertyEnum: IwbEnumDef;
@@ -7352,7 +7355,7 @@ begin
     {94} 'ActorValues'
   ]);
 
-  var wbObjectModProperties :=
+  wbObjectModProperties :=
    wbArrayS('Properties', wbStructSK([4], 'Property', [
       wbInteger('Value Type', itU8, wbEnum([
         {0} 'Int',
@@ -7398,7 +7401,7 @@ begin
       wbFloat('Step')
       ])).SetCountPath(csPropertyCount, True);
 
-  var wbOBTSReq := wbStruct(OBTS, 'Object Mod Template Item', [
+  wbOBTSReq := wbStruct(OBTS, 'Object Mod Template Item', [
     wbInteger(csIncludeCount, itU32, nil, cpBenign).IncludeFlag(dfSkipImplicitEdit),
     wbInteger(csPropertyCount, itU32, nil, cpBenign).IncludeFlag(dfSkipImplicitEdit),
     wbInteger('Level Min', itU16),
@@ -7419,7 +7422,7 @@ begin
       .SetSummaryKeyOnValue([6,9,10])
       .IncludeFlagOnValue(dfSummaryMembersNoName);
 
-  var wbObjectTemplate := wbRStruct('Object Template', [
+  wbObjectTemplate := wbRStruct('Object Template', [
     wbInteger(OBTE, 'Count', itU32, nil, cpBenign).IncludeFlag(dfSkipImplicitEdit),
     wbRArray('Combinations',
       wbRStruct('Combination', [
