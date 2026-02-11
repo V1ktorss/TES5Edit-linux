@@ -199,6 +199,7 @@ This document tracks what is already done for the native Linux path and what com
   - removed additional low-risk unused-unit warnings in common shim/core units (`System.Types`, `Graphics`, `Core/wbSteamVDFParser.pas`, `Core/wbStreams.pas`) to keep headless build output cleaner while preserving behavior
   - removed redundant `SyncObjs` import from `System.SyncObjs.pas` wrapper to silence shim warning noise in xEdit/xDump headless builds
   - removed unused `Math` imports from save/definition units where no math helpers are referenced (`Core/wbDefinitionsFO76.pas`, `Core/wbDefinitionsFNVSaves.pas`, `Core/wbDefinitionsFO3Saves.pas`, `Core/wbDefinitionsFO4Saves.pas`, `Core/wbDefinitionsTES4Saves.pas`)
+  - trimmed additional unused standard imports from `Core/wbDefinitionsTES5.pas` (`Types`, `Math`, `IOUtils`) while retaining compatibility/signature units
   - moved `TxeScriptHost.Create` to public API (`reintroduce`) in `xEdit/xeScriptHost.pas` to remove FPC visibility warning while keeping dynamic host construction paths intact
   - extended compatibility wrappers used by xDump path:
     - `System.Classes`: `TFiler`/`TReader`/`TWriter`, lightweight `TDataModule`

@@ -50,12 +50,9 @@ procedure DefineTES5;
 implementation
 
 uses
-  Types,
   Classes,
   SysUtils,
-  Math,
   Variants,
-  IOUtils,
   wbHelpers,
   wbDefinitionsCommon,
   wbDefinitionsSignatures;
