@@ -217,6 +217,8 @@ var
   wbAttackSpeedEnum: IwbEnumDef;
   wbEFID: IwbSubRecordDef;
   wbEFIT: IwbSubRecordWithStructDef;
+  wbREFLColorEnum: IwbEnumDef;
+  wbREFLFloatEnum: IwbEnumDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -6080,7 +6082,7 @@ begin
     wbMarkerReq(XNAM)                                                   //XNAM  end marker for BNAM fields
   ]);
 
-  var wbREFLColorEnum :=
+  wbREFLColorEnum :=
     wbEnum([
     {0} 'Red',
     {1} 'Green',
@@ -6088,7 +6090,7 @@ begin
     {3} 'Alpha'
     ]);
 
-  var wbREFLFloatEnum :=
+  wbREFLFloatEnum :=
     wbEnum([
     {0} 'Operation',
     {1} 'Value',
