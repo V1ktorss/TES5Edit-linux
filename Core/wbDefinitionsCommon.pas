@@ -1471,6 +1471,7 @@ var
   MinX, MaxX : Integer;
 begin
   Result := 0;
+  if (aBasePtr = aEndPtr) and Assigned(aBasePtr) then;
 
   if not Supports(aElement.Container, IwbDataContainer, Container) then
     Exit;
@@ -1501,6 +1502,7 @@ var
   lGridSizeElement: IwbElement;
   lGridSize: Integer;
 begin
+  if (aBasePtr = aEndPtr) and Assigned(aBasePtr) then;
   lContainer := aElement.Container;
   if not Assigned(lContainer) then
     Exit(0);
@@ -1523,6 +1525,7 @@ var
   Version    : Cardinal;
 begin
   Result := 0;
+  if (aBasePtr = aEndPtr) and Assigned(aBasePtr) then;
   if Assigned(aElement) then begin
     MainRecord := aElement.ContainingMainRecord;
     if Assigned(MainRecord) then begin
@@ -1543,6 +1546,7 @@ var
   MinX, MaxX : Single;
 begin
   Result := 0;
+  if (aBasePtr = aEndPtr) and Assigned(aBasePtr) then;
 
   if not Supports(aElement.Container, IwbDataContainer, Container) then
     Exit;
@@ -1580,6 +1584,7 @@ var
   MinY, MaxY : Single;
 begin
   Result := 0;
+  if (aBasePtr = aEndPtr) and Assigned(aBasePtr) then;
 
   if not Supports(aElement.Container, IwbDataContainer, Container) then
     Exit;
@@ -1707,6 +1712,7 @@ end;
 
 function wbAlwaysDontShow(const aElement: IwbElement): Boolean;
 begin
+  if Assigned(aElement) then;
   Result := True;
 end;
 
@@ -2006,6 +2012,7 @@ end;
 function wbNormalizeToRange(aMin, aMax: Extended): TwbFloatNormalizer;
 begin
 {$IFDEF FPC}
+  if (aMin = aMax) then;
   Result := nil;
 {$ELSE}
   Result := function(const aElement: IwbElement; aFloat: Extended): Extended
@@ -2610,6 +2617,7 @@ var
   s: string;
 begin
   Result := -1;
+  if Assigned(aElement) then;
 
   if aString = 'None' then
     Exit;
@@ -2667,6 +2675,7 @@ function wbConditionTypeToInt(const aString: string; const aElement: IwbElement)
 var
   s: string;
 begin
+  if Assigned(aElement) then;
   s := aString + '00000000';
   if s[1] = '1' then begin
     if s[2] = '1' then begin
@@ -2719,6 +2728,7 @@ var
   i: Integer;
   s: string;
 begin
+  if Assigned(aElement) then;
   i := 1;
   s := Trim(aString);
   while (i <= Length(s)) and (s[i] in ['0'..'9']) do
@@ -2732,6 +2742,7 @@ function wbEdgeToInt(aEdge: Integer; const aString: string; const aElement: IwbE
 var
   s: string;
 begin
+  if (aEdge >= 0) and Assigned(aElement) then;
   s := Trim(aString);
   if (s = '')  or SameText(s, 'None') then
     Result := -1
@@ -2756,6 +2767,7 @@ end;
 
 function wbNVTREdgeToInt(const aString: string; const aElement: IwbElement): Int64;
 begin
+  if Assigned(aElement) then;
   Result := StrToInt64(aString);
 end;
 
@@ -2763,6 +2775,7 @@ function wbScaledInt4ToInt(const aString: string; const aElement: IwbElement): I
 var
   f: Extended;
 begin
+  if Assigned(aElement) then;
   f := StrToFloat(aString);
   f := f * 10000;
   Result := Round(f);
@@ -2773,6 +2786,7 @@ var
   s: string;
   i: integer;
 begin
+  if Assigned(aElement) then;
   // ignore anything after space or :
   i := Pos(' ', aString);
   if i = 0 then
@@ -2792,6 +2806,7 @@ end;
 
 function wbVertexToInt(aVertex: Integer; const aString: string; const aElement: IwbElement): Int64;
 begin
+  if (aVertex >= 0) and Assigned(aElement) then;
   Result := StrToIntDef(aString, 0);
 end;
 
@@ -2814,6 +2829,7 @@ function wbWeatherCloudSpeedToInt(const aString: string; const aElement: IwbElem
 var
   f: Extended;
 begin
+  if Assigned(aElement) then;
   f := StrToFloat(aString);
   f := f*10*127 + 127;
   Result := Min(Round(f), 254);
@@ -2971,6 +2987,7 @@ var
   Masser      : Boolean;
   Secunda     : Boolean;
 begin
+  if Assigned(aElement) then;
   Result := '';
   if aType = ctToSortKey then begin
     Result := IntToHex64(aInt, 2);
@@ -2997,6 +3014,7 @@ end;
 
 function wbClmtTime(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
 begin
+  if Assigned(aElement) then;
   Result := '';
   while aInt > 143 do
     aInt := aInt - 143;
@@ -4364,6 +4382,7 @@ end;
 {$IFDEF FPC}
 function wbFpcDefaultUnionDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if (aBasePtr = aEndPtr) and Assigned(aElement) then;
   Result := 0;
 end;
 {$ENDIF}
@@ -4374,6 +4393,7 @@ var
   lFlagBits: Int64;
 begin
 {$IFDEF FPC}
+  if aFlag > 0 then;
   Result := wbFpcDefaultUnionDecider;
 {$ELSE}
   if aFlag > High(_FlagDeciders) then
@@ -4406,6 +4426,7 @@ end;
 function wbFormVersionDecider(aVersion: Integer): TwbUnionDecider;
 begin
 {$IFDEF FPC}
+  if aVersion >= 0 then;
   Result := wbFpcDefaultUnionDecider;
 {$ELSE}
   if aVersion > High(_FormVersionDeciders) then
@@ -4437,6 +4458,7 @@ end;
 function wbFormVersionDecider(aMinVersion, aMaxVersion: Integer): TwbUnionDecider; overload;
 begin
 {$IFDEF FPC}
+  if aMinVersion <= aMaxVersion then;
   Result := wbFpcDefaultUnionDecider;
 {$ELSE}
   Result :=
