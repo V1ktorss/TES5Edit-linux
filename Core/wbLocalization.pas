@@ -249,6 +249,7 @@ begin
   p := @PByte(aStream.Memory)[Position];
   i := 0;
   j := aStream.Size - Position;
+  b := nil;
   while (i < j) and (p[i] <> 0) do
     Inc(i);
   if i > 0 then begin
@@ -283,6 +284,7 @@ begin
   Position := aStream.Position;
   p := @PByte(aStream.Memory)[Position];
   i := PInteger(p)^;
+  b := nil;
   Inc(PInteger(p), 1);
   Dec(i);
   if i > 0 then begin
@@ -344,6 +346,9 @@ var
   oldPos: int64;
   s: string;
 begin
+  scount := 0;
+  id := 0;
+  offset := 0;
   if aStream.Size < 8 then
     Exit;
 
