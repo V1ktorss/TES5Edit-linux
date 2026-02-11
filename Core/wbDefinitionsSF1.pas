@@ -274,6 +274,10 @@ var
   wbMorphGroups: function(const aName: string): IwbSubRecordArrayDef;
   wbFaceMorphs: function(const aName: string): IwbSubRecordArrayDef;
   wbUNAMs: IwbSubRecordArrayDef;
+  wbConditionParameters: array of IwbValueDef;
+  wbConditions: IwbSubRecordArrayDef;
+  wbPerkActivityTypes: array of string;
+  wbActivityTracker: IwbSubRecordStructDef;
   wbStarSlot: IwbIntegerDef;
   wbArrayShouldIncludeStarSlotMatchesMemoryOrder: TwbShouldIncludeCallback;
   wbLGDIStarSlotArray: function(aSignature: TwbSignature; const aElement: IwbValueDef; aSorted: Boolean): IwbRecordMemberDef;
@@ -5864,7 +5868,7 @@ begin
       wbInteger('Duration', itU32)
     ], cpNormal, True, nil, -1);
 
-  var wbConditionParameters := [
+  wbConditionParameters := [
     //Misc
     {0}  wbByteArray('Unknown', 4).IncludeFlag(dfZeroSortKey),
     {1}  wbByteArray('None', 4, cpIgnore).IncludeFlag(dfZeroSortKey),
@@ -5942,7 +5946,7 @@ begin
     {67} wbFormIDCkNoReach('Worldspace', [FLST,WRLD], [WRLD])
   ];
 
-  var wbConditions :=
+  wbConditions :=
     wbRArray('Conditions',
       wbRStructSK([0,1,2], 'Condition', [
       {0} wbStructSK(CTDA, [3,5,6], '', [
@@ -6034,7 +6038,7 @@ begin
         .IncludeFlag(dfCollapsed, wbCollapseConditions)
     ).SetCountPath(CITC);
 
-  var wbPerkActivityTypes := [
+  wbPerkActivityTypes := [
     'Actor Value',
     'Apply Magic Effect',
     'Barter',
@@ -6067,7 +6071,7 @@ begin
     'Take Hit Damage'
     ];
 
-  var wbActivityTracker := wbRStruct('Activity Tracker', [
+  wbActivityTracker := wbRStruct('Activity Tracker', [
     wbInteger(ATCP, 'Activity Count', itU32, nil, cpBenign, True).IncludeFlag(dfSkipImplicitEdit),
     wbRArray('Activities',
       wbRStruct('Activity', [
