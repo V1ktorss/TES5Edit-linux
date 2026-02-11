@@ -448,6 +448,7 @@ const
 var
   s: string;
   lDataPathOverridden: Boolean;
+  lDataPathFromEnv: Boolean;
   isEpicNV : Boolean;
   IniFile : TMemIniFile;
   lIDs: TStringList;
@@ -506,6 +507,7 @@ var
 begin
   wbModGroupFileName := wbProgramPath + wbAppName + wbToolName + '.modgroups';
   isEpicNV := false;
+  lDataPathFromEnv := False;
 
   if not wbFindCmdLineParam('S', wbScriptsPath) then
     wbScriptsPath := wbProgramPath + 'Edit Scripts' + PathDelim;
@@ -521,6 +523,18 @@ begin
     if s <> '' then begin
       wbDataPath := ExpandFileName(s);
       lDataPathOverridden := True;
+      lDataPathFromEnv := True;
+    end;
+  end;
+
+  if lDataPathOverridden and not DirectoryExists(wbDataPath) then begin
+    if lDataPathFromEnv then begin
+      wbDataPath := '';
+      lDataPathOverridden := False;
+    end else begin
+      xeShowMessage(Format('Fatal: Data path does not exist: %s', [wbDataPath]));
+      wbDontSave := True;
+      Exit;
     end;
   end;
 
