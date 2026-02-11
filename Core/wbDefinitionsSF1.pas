@@ -19665,11 +19665,13 @@ begin
         .SetAfterSet(wbGPOFTypeAfterSetCallback)
         .SetRequired,
       wbRUnion('Type Dependent Data', function(const aContainer: IwbContainerElementRef): Integer
+        var
+          lType: Variant;
         begin
           Result := -1;
           if not Assigned(aContainer) then
             Exit;
-          var lType := aContainer.ElementNativeValues[TNAM];
+          lType := aContainer.ElementNativeValues[TNAM];
           if not VarIsOrdinal(lType) then
             Exit;
           Result := lType;
@@ -19724,11 +19726,13 @@ begin
         .SetAfterSet(wbGPOGTypeAfterSetCallback)
         .SetRequired,
       wbRUnion('Type Dependent Options', function(const aContainer: IwbContainerElementRef): Integer
+        var
+          lType: Variant;
         begin
           Result := -1;
           if not Assigned(aContainer) then
             Exit;
-          var lType := aContainer.ElementNativeValues[BNAM];
+          lType := aContainer.ElementNativeValues[BNAM];
           if not VarIsOrdinal(lType) then
             Exit;
           Result := lType;
