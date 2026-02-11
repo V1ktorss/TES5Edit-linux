@@ -256,6 +256,9 @@ var
   wbPerkConditions: IwbSubRecordStructDef;
   wbPerkEffect: IwbSubRecordStructDef;
   wbMenuButton: IwbSubRecordStructDef;
+  wbFilterKeywordChances: IwbSubRecordArrayDef;
+  wbMGEFType: IwbIntegerDef;
+  wbMGEFData: IwbSubRecordWithStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -12820,7 +12823,7 @@ begin
     wbFloat(QNAM, 'Dirtiness', cpNormal, True, 1, -1, nil, wbFloatScale0to1).SetDefaultEditValue('1.0')
   ]).SetSummaryKey([1]);
 
-  var wbFilterKeywordChances :=
+  wbFilterKeywordChances :=
     wbArrayS(LLKC, 'Filter Keyword Chances',
       wbStructSK([0], 'Filter', [
         wbFormIDCk('Keyword', [KYWD]),
@@ -13035,7 +13038,7 @@ begin
   ]);
   (**)
 
-  var wbMGEFType := wbInteger('Archetype', itU32, wbEnum([
+  wbMGEFType := wbInteger('Archetype', itU32, wbEnum([
     {00} 'Value Modifier',
     {01} 'Script',
     {02} 'Dispel',
@@ -13092,7 +13095,7 @@ begin
     {53} 'Antigravity'
   ])).SetAfterSet(wbMGEFArchtypeAfterSet);
 
-  var wbMGEFData :=
+  wbMGEFData :=
     wbStruct(DATA, 'Magic Effect Data', [
       {  0} wbUnion('Assoc. Item', wbMGEFAssocItemDecider1, [
               wbFormID('Unused', cpIgnore),
