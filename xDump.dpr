@@ -231,9 +231,9 @@ var
 begin
   i := wbDefProfiles.IndexOf(aProfile);
   if i >= 0 then begin
-    wbDefProfiles.Objects[i] := Pointer(Integer(wbDefProfiles.Objects[i])+1);
+    wbDefProfiles.Objects[i] := Pointer(PtrInt(wbDefProfiles.Objects[i]) + 1);
   end else begin
-    wbDefProfiles.AddObject(aProfile, Pointer(1));
+    wbDefProfiles.AddObject(aProfile, Pointer(PtrInt(1)));
   end;
 end;
 
@@ -243,7 +243,7 @@ var
 begin
   i := wbDefProfiles.IndexOf(aProfile);
   if i >= 0 then begin
-    Result := Integer(wbDefProfiles.Objects[i]);
+    Result := PtrInt(wbDefProfiles.Objects[i]);
   end else
     Result := 0;
 end;
@@ -254,7 +254,7 @@ var
 begin
   i := wbDefProfiles.IndexOf(aProfile);
   if i >= 0 then
-    wbDefProfiles.Objects[i] := Pointer(-1);
+    wbDefProfiles.Objects[i] := Pointer(PtrInt(-1));
 end;
 
 procedure LockProfile(aProfile: String);
@@ -263,7 +263,7 @@ var
 begin
   i := wbDefProfiles.IndexOf(aProfile);
   if i >= 0 then
-    wbDefProfiles.Objects[i] := Pointer(-2);
+    wbDefProfiles.Objects[i] := Pointer(PtrInt(-2));
 end;
 
 procedure ProfileContainer(aFormat: TExportFormat; aElement: IwbNamedDef; var aProfile: String;
