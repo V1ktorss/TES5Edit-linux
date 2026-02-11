@@ -19,7 +19,6 @@ uses
   Types,
   Classes,
   SysUtils,
-  Math,
   Variants,
   wbInterface,
   wbSaveInterface,
@@ -6941,4 +6940,3 @@ end;
 
 initialization
 end.
-

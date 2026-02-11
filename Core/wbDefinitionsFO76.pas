@@ -69,7 +69,6 @@ uses
   Types,
   Classes,
   SysUtils,
-  Math,
   Variants,
   IOUtils,
   wbHelpers,
