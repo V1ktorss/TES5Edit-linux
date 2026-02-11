@@ -248,6 +248,7 @@ var
   wbREFLDIFF: IwbStructDef;
   wbREFL: IwbSubRecordWithStructDef;
   wbRDIF: IwbSubRecordWithStructDef;
+  wbTraversalData: IwbStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -6314,7 +6315,7 @@ begin
     Result := nil;
   end;
 
-  var wbTraversalData := wbStruct('Traversal', [
+  wbTraversalData := wbStruct('Traversal', [
     wbUnknown(4),
     wbVec3('From'),
     wbVec3('To'),
