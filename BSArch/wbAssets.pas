@@ -125,9 +125,12 @@ uses
 
 //============================================================================
 function IsArchive(const aFileName: string): Boolean;
+var
+  ext: string;
+  s: string;
 begin
-  var ext: string := LowerCase(ExtractFileExt(aFileName));
-  for var s in cArchiveExtensions do
+  ext := LowerCase(ExtractFileExt(aFileName));
+  for s in cArchiveExtensions do
     if s = ext then begin
       Result := True;
       Exit;
@@ -137,9 +140,12 @@ end;
 
 //============================================================================
 function IsSkippedFile(const aFileName: string): Boolean;
+var
+  ext: string;
+  s: string;
 begin
-  var ext: string := LowerCase(ExtractFileExt(aFileName));
-  for var s in cSkippedExtensions do
+  ext := LowerCase(ExtractFileExt(aFileName));
+  for s in cSkippedExtensions do
     if s = ext then begin
       Result := True;
       Exit;
@@ -152,12 +158,18 @@ function GetAssetName(const aFileName: string): string;
 var
   i: Integer;
   bFound: Boolean;
+  parts: TArray<string>;
+  part: string;
+  folder: string;
+  a: TAssetType;
+  ext: string;
+  e: string;
 begin
   Result := '';
   if aFileName = '' then
     Exit;
 
-  var parts := aFileName.Split([TPath.DirectorySeparatorChar]);
+  parts := aFileName.Split([TPath.DirectorySeparatorChar]);
   // remove the drive part if present
   if Pos(':', parts[0]) <> 0 then
     Delete(parts, 0, 1);
@@ -165,16 +177,16 @@ begin
   // let's try to find the root data folder or a known asset type root folder
   bFound := False;
   i := Low(parts);
-  for var part in parts do begin
+  for part in parts do begin
 
-    for var folder in cDataFolders do
+    for folder in cDataFolders do
       if SameText(part, folder) then begin
         bFound := True;
         Inc(i);
         Break;
       end;
 
-    for var a in AssetTypes do
+    for a in AssetTypes do
       if SameText(part, a.Root) then begin
         bFound := True;
         Break;
@@ -194,9 +206,9 @@ begin
   if Length(parts) > 1 then
     Result := TPath.Combine(parts[Pred(High(parts))], Result);
 
-  var ext := TPath.GetExtension(parts[High(parts)]);
-  for var a in AssetTypes do
-    for var e in a.Ext do
+  ext := TPath.GetExtension(parts[High(parts)]);
+  for a in AssetTypes do
+    for e in a.Ext do
         if SameText(ext, e) then begin
           Result := TPath.Combine(a.Root, Result);
           Exit;
@@ -260,6 +272,10 @@ end;
 procedure TAsset.GetDDSInfo(var aInfo: TDDSInfo);
 const
   MAGIC_DDS : TMagic4 = 'DDS ';
+var
+  i: Integer;
+  r: PwbBSFileFO4;
+  dds: TBytes;
 begin
   if LowerCase(ExtractFileExt(FileName)) <> '.dds' then
     raise Exception.Create('Invalid extension for a texture, must be *.dds');
@@ -267,9 +283,9 @@ begin
   if DDSInfo.Width = 0 then begin
 
     if ArchiveName <> '' then begin
-      var i := ArchiveManager.IndexOf(ArchiveName);
+      i := ArchiveManager.IndexOf(ArchiveName);
       if (i <> -1) and (ArchiveManager[i].ArchiveType in [baFO4dds, baSFdds]) then begin
-        var r: PwbBSFileFO4 := ArchiveManager[i].FindFileRecord(FileName);
+        r := ArchiveManager[i].FindFileRecord(FileName);
         if not Assigned(r) then
           raise Exception.Create('Error reading texture parameters from DDS archive');
 
@@ -280,7 +296,7 @@ begin
     end;
 
     if DDSInfo.Width = 0 then begin
-      var dds := GetData;
+      dds := GetData;
       if (Length(dds) < SizeOf(TDDSHeader)) or (PDDSHeader(@dds[0]).Magic <> MAGIC_DDS) then
         raise Exception.Create('Not a valid DDS file');
 
@@ -375,8 +391,10 @@ end;
 
 //============================================================================
 function TArchiveManager.OpenArchive(const aFileName: string): TwbBSArchive;
+var
+  i: Integer;
 begin
-  var i := IndexOf(aFileName);
+  i := IndexOf(aFileName);
   if i <> -1 then begin
     Result := Get(i);
     Exit;
@@ -397,17 +415,21 @@ end;
 
 //============================================================================
 procedure TArchiveManager.CloseAll;
+var
+  arch: TwbBSArchive;
 begin
-  for var arch in FList do
-      arch.Free;
+  for arch in FList do
+    arch.Free;
 
   SetLength(FList, 0);
 end;
 
 //============================================================================
 procedure TArchiveManager.CloseArchive(const aFileName: string);
+var
+  i: Integer;
 begin
-  var i := IndexOf(aFileName);
+  i := IndexOf(aFileName);
   if i <> -1 then begin
     FList[i].Free;
     Delete(FList, i, 1);
