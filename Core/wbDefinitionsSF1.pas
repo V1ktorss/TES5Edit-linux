@@ -103,6 +103,7 @@ var
   wbMarkerEntryExitTypes: IwbFlagsDef;
   wbSNAMMarkerParams: IwbRecordMemberDef;
   wbCSTYPowerWeightingStruct: IwbStructDef;
+  wbAngleToStr: TwbToStrCallback;
   wbLongitudeToStr: TwbToStrCallback;
   wbLatitudeToStr: TwbToStrCallback;
   wbLongitudeDouble: IwbFloatDef;
@@ -6145,7 +6146,7 @@ begin
     .IncludeFlag(dfCollapsed, wbCollapseTraversal)
     .IncludeFlag(dfExcludeFromBuildRef);
 
-  var wbAngleToStr: TwbToStrCallback :=
+  wbAngleToStr :=
     procedure(var aValue: string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType)
     var
       loFull: Integer;
