@@ -185,6 +185,21 @@ var
   wbDMDS: IwbSubRecordDef;
   wbDMDC: IwbSubRecordDef;
   wbDEST: IwbSubRecordStructDef;
+  wbXESP: IwbSubRecordWithStructDef;
+  wbPDTO: IwbSubRecordWithStructDef;
+  wbPDTOs: IwbSubRecordArrayDef;
+  wbFloatScale0to1: TwbFloatNormalizer;
+  wbFloatScale0to10: TwbFloatNormalizer;
+  wbFloatScale0to100: TwbFloatNormalizer;
+  wbSNTP: IwbSubRecordDef;
+  wbSNBH: IwbSubRecordDef;
+  wbODTYReq: IwbSubRecordDef;
+  wbOPDS: IwbSubRecordWithStructDef;
+  wbDEFL: IwbSubRecordDef;
+  wbPTT2: IwbSubRecordWithStructDef;
+  wbXLCM: IwbSubRecordDef;
+  wbXEED: IwbSubRecordWithStructDef;
+  wbNVNM: IwbSubRecordWithStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -4787,7 +4802,7 @@ begin
   ], [], cpNormal, False, nil)
   .SetSummaryKey([3]);
 
-  var wbXESP := wbStruct(XESP, 'Enable State Parent', [
+  wbXESP := wbStruct(XESP, 'Enable State Parent', [
     wbFormIDCk('Reference', sigReferences),
     wbInteger('Flags', itU8, wbFlags([
       'Set Enable State to Opposite of Parent',
@@ -4796,7 +4811,7 @@ begin
     wbUnused(3)
   ]);
 
-  var wbPDTO :=
+  wbPDTO :=
     wbStruct(PDTO, 'Topic Data', [
       wbInteger('Type', itU32, wbEnum([
         'Topic Ref',
@@ -4808,16 +4823,16 @@ begin
       ])
     ]);
 
-  var wbPDTOs := wbRArray('Topic', wbPDTO, cpNormal, False, nil);
+  wbPDTOs := wbRArray('Topic', wbPDTO, cpNormal, False, nil);
 
-  var wbFloatScale0to1 := wbNormalizeToRange(0.0, 1.0);
-  var wbFloatScale0to10 := wbNormalizeToRange(0.0, 10.0);
-  var wbFloatScale0to100 := wbNormalizeToRange(0.0, 100.0);
+  wbFloatScale0to1 := wbNormalizeToRange(0.0, 1.0);
+  wbFloatScale0to10 := wbNormalizeToRange(0.0, 10.0);
+  wbFloatScale0to100 := wbNormalizeToRange(0.0, 100.0);
 
-  var wbSNTP := wbFormIDCk(SNTP, 'Snap Template', [STMP]);
-  var wbSNBH := wbFormIDCk(SNBH, 'Snap Behavior', [STBH]);
-  var wbODTYReq := wbFloat(ODTY, 'Dirtiness Scale', cpNormal, True, 1, -1, nil, wbFloatScale0to1); // any record which can have ODTY should always have it
-  var wbOPDS :=
+  wbSNTP := wbFormIDCk(SNTP, 'Snap Template', [STMP]);
+  wbSNBH := wbFormIDCk(SNBH, 'Snap Behavior', [STBH]);
+  wbODTYReq := wbFloat(ODTY, 'Dirtiness Scale', cpNormal, True, 1, -1, nil, wbFloatScale0to1); // any record which can have ODTY should always have it
+  wbOPDS :=
     wbStruct(OPDS, 'Object Palette Defaults', [
       wbInteger('Flags', itU8, wbFlags([
         'Conform To Slope',
@@ -4855,9 +4870,9 @@ begin
       wbFloat('Distance Above Water')
     ])
       .IncludeFlag(dfCollapsed, wbCollapseObjectPaletteDefaults);
-  var wbDEFL := wbFormIDCk(DEFL, 'Default Layer', [LAYR]);
+  wbDEFL := wbFormIDCk(DEFL, 'Default Layer', [LAYR]);
 
-  var wbPTT2 := wbStruct(PTT2, 'Transforms', [
+  wbPTT2 := wbStruct(PTT2, 'Transforms', [
     wbFormIDCk('Inventory Icon Transform', [NULL, TRNS]),
     wbFormIDCk('Workshop Icon Transform', [NULL, TRNS]),
     wbFormIDCk('Ship Builder Icon Transform', [NULL, TRNS]),
@@ -4872,14 +4887,14 @@ begin
   .IncludeFlagOnValue(dfSummaryExcludeNULL)
   .IncludeFlag(dfCollapsed, wbCollapseTransforms);
 
-  var wbXLCM := wbInteger(XLCM, 'Level Modifier', itS32, wbEnum([
+  wbXLCM := wbInteger(XLCM, 'Level Modifier', itS32, wbEnum([
     'Easy',
     'Medium',
     'Hard',
     'Very Hard'
   ]));
 
-  var wbXEED :=
+  wbXEED :=
     wbStruct(XEED, 'External Emittance', [
     { 0} wbFloat('External Emittance Luminance Scale'),
     { 4} wbInteger('Override Enabled', itU8, wbBoolEnum),
@@ -4887,7 +4902,7 @@ begin
     { 8}
     ]);
 
-  var wbNVNM :=
+  wbNVNM :=
     wbStruct(NVNM, 'Navmesh Geometry', [
       wbInteger('Version', itU32).SetDefaultNativeValue(17),
       wbStruct('Pathing Cell', [
