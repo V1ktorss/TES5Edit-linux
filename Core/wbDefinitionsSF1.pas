@@ -255,6 +255,7 @@ var
   wbFactionRank: IwbSubRecordStructDef;
   wbPerkConditions: IwbSubRecordStructDef;
   wbPerkEffect: IwbSubRecordStructDef;
+  wbMenuButton: IwbSubRecordStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -11032,7 +11033,7 @@ begin
   ]);
 
 
-  var wbMenuButton :=
+  wbMenuButton :=
     wbRStruct('Menu Button', [
       wbLStringKC(ITXT, 'Button Text', 0, cpTranslate),
       wbString(IBIN, 'Event Name'),  // unsure if localized or not
