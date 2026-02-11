@@ -9030,6 +9030,13 @@ var
   SelfRef   : IwbContainerElementRef;
   lHasSignature : IwbHasSignature;
 begin
+  wbIgnoreUnused(@aAsNew);
+  wbIgnoreUnused(@aPrefixRemove);
+  wbIgnoreUnused(@aSuffixRemove);
+  wbIgnoreUnused(@aPrefix);
+  wbIgnoreUnused(@aSuffix);
+  wbIgnoreUnused(@aAllowOverwrite);
+
   if not wbIsInternalEdit then
     if not wbEditAllowed then
       raise Exception.Create(GetName + ' can not be assigned.');
@@ -20770,6 +20777,12 @@ var
   SelfRef   : IwbContainerElementRef;
   i         : Integer;
 begin
+  wbIgnoreUnused(@aPrefixRemove);
+  wbIgnoreUnused(@aSuffixRemove);
+  wbIgnoreUnused(@aPrefix);
+  wbIgnoreUnused(@aSuffix);
+  wbIgnoreUnused(@aAllowOverwrite);
+
   if not wbIsInternalEdit then begin
     if not wbEditAllowed then
       raise Exception.Create(GetName + ' can not be assigned.');
@@ -21395,6 +21408,13 @@ function TwbSubRecordStruct.AddIfMissingInternal(const aElement: IwbElement; aAs
 var
   SelfRef   : IwbContainerElementRef;
 begin
+  wbIgnoreUnused(@aAsNew);
+  wbIgnoreUnused(@aPrefixRemove);
+  wbIgnoreUnused(@aSuffixRemove);
+  wbIgnoreUnused(@aPrefix);
+  wbIgnoreUnused(@aSuffix);
+  wbIgnoreUnused(@aAllowOverwrite);
+
   if not wbIsInternalEdit then begin
     if not wbEditAllowed then
       raise Exception.Create(GetName + ' can not be assigned.');
@@ -22247,6 +22267,13 @@ var
   ArrayDef  : IwbArrayDef;
   ValueDef  : IwbValueDef;
 begin
+  wbIgnoreUnused(@aAsNew);
+  wbIgnoreUnused(@aPrefixRemove);
+  wbIgnoreUnused(@aSuffixRemove);
+  wbIgnoreUnused(@aPrefix);
+  wbIgnoreUnused(@aSuffix);
+  wbIgnoreUnused(@aAllowOverwrite);
+
   if not wbIsInternalEdit then begin
     if not wbEditAllowed then
       raise Exception.Create(GetName + ' can not be modified.');
@@ -24935,6 +24962,13 @@ var
   StructDef : IwbStructDef;
   SelfRef   : IwbContainerElementRef;
 begin
+  wbIgnoreUnused(@aAsNew);
+  wbIgnoreUnused(@aPrefixRemove);
+  wbIgnoreUnused(@aSuffixRemove);
+  wbIgnoreUnused(@aPrefix);
+  wbIgnoreUnused(@aSuffix);
+  wbIgnoreUnused(@aAllowOverwrite);
+
   Result := nil;
 
   if not wbIsInternalEdit then begin
