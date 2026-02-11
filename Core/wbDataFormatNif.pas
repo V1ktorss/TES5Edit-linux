@@ -1468,20 +1468,25 @@ begin
 end;
 
 function TwbNifBlock.GetStringPaletteString(aIndex: Integer): string;
+var
+  idx: Integer;
+  p: string;
+  palette: TStringDynArray;
+  s: string;
 begin
   Result := '';
 
   if BlockType <> 'NiStringPalette' then
     Exit;
 
-  var p: string := NativeValues['Palette'];
+  p := NativeValues['Palette'];
   if (aIndex < 0) or (aIndex > Length(p)) then
     Exit;
 
-  var palette := p.Split([#0]);
+  palette := p.Split([#0]);
   // index is an offset into palette string ending with #0 terminator
-  var idx := 0;
-  for var s in palette do begin
+  idx := 0;
+  for s in palette do begin
     if aIndex = idx then begin
       Result := s;
       Break;
