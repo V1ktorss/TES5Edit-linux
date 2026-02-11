@@ -12192,10 +12192,12 @@ begin
 end;
 
 function TfrmMain.GetFocusedNavElementSafely: IwbElement;
+var
+  NodeData: PNavNodeData;
 begin
   Result := nil;
 
-  var NodeData: PNavNodeData := vstNav.GetNodeData(vstNav.FocusedNode);
+  NodeData := vstNav.GetNodeData(vstNav.FocusedNode);
   if not Assigned(NodeData) then
     Exit;
 
@@ -12203,14 +12205,18 @@ begin
 end;
 
 function TfrmMain.GetFocusedViewElementSafely: IwbElement;
+var
+  NodeDatas: PViewNodeDatas;
+  FocusedColumn: Integer;
+  i: Integer;
 begin
   Result := nil;
 
-  var NodeDatas: PViewNodeDatas := vstView.GetNodeData(vstViewFocusedNode);
+  NodeDatas := vstView.GetNodeData(vstViewFocusedNode);
   if not Assigned(NodeDatas) then
     Exit;
 
-  var FocusedColumn := FocusedColumnOverride;
+  FocusedColumn := FocusedColumnOverride;
   if FocusedColumn < 0 then
     FocusedColumn := vstView.FocusedColumn;
   if Length(ActiveRecords) = 1 then
@@ -12221,7 +12227,7 @@ begin
     Result := NodeDatas[Pred(FocusedColumn)].Element;
 
   if not Assigned(Result) then
-    for var i := Low(ActiveRecords) to High(ActiveRecords) do
+    for i := Low(ActiveRecords) to High(ActiveRecords) do
     begin
       Result := NodeDatas[i].Element;
       if Assigned(Result) then
@@ -12230,61 +12236,78 @@ begin
 end;
 
 procedure TfrmMain.mniCopyDisplayNameToClipboardClick(Sender: TObject);
+var
+  Element: IwbElement;
 begin
-  var Element := GetFocusedViewElementSafely;
+  Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
     wbSetClipboardText(Element.DisplayName[True]);
 end;
 
 procedure TfrmMain.mniCopyFullPathToClipboardClick(Sender: TObject);
+var
+  Element: IwbElement;
 begin
-  var Element := GetFocusedViewElementSafely;
+  Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
     wbSetClipboardText(Element.FullPath);
 end;
 
 procedure TfrmMain.mniCopyIndexedPathToClipboardClick(Sender: TObject);
+var
+  Element: IwbElement;
 begin
-  var Element := GetFocusedViewElementSafely;
+  Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
     wbSetClipboardText(Element.IndexedPath[False]);
 end;
 
 procedure TfrmMain.mniCopyNameToClipboardClick(Sender: TObject);
+var
+  Element: IwbElement;
 begin
-  var Element := GetFocusedViewElementSafely;
+  Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
     wbSetClipboardText(Element.Name);
 end;
 
 procedure TfrmMain.mniCopyPathNameToClipboardClick(Sender: TObject);
+var
+  Element: IwbElement;
 begin
-  var Element := GetFocusedViewElementSafely;
+  Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
     wbSetClipboardText(Element.PathName);
 end;
 
 procedure TfrmMain.mniCopyPathToClipboardClick(Sender: TObject);
+var
+  Element: IwbElement;
 begin
-  var Element := GetFocusedViewElementSafely;
+  Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
     wbSetClipboardText(Element.Path);
 end;
 
 procedure TfrmMain.mniCopyShortNameToClipboardClick(Sender: TObject);
+var
+  Element: IwbElement;
 begin
-  var Element := GetFocusedViewElementSafely;
+  Element := GetFocusedViewElementSafely;
   if Assigned(Element) then
     wbSetClipboardText(Element.ShortName);
 end;
 
 procedure TfrmMain.mniCopySignatureToClipboardClick(Sender: TObject);
+var
+  Element: IwbElement;
+  SubRecord: IwbSubRecord;
 begin
-  var Element := GetFocusedViewElementSafely;
+  Element := GetFocusedViewElementSafely;
   if not Assigned(Element) then
     Exit;
 
-  var SubRecord: IwbSubRecord := nil;
+  SubRecord := nil;
   if Supports(Element, IwbSubRecord, SubRecord) then
     wbSetClipboardText(string(SubRecord.Signature));
 end;
