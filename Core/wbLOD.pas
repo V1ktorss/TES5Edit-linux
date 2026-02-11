@@ -11,7 +11,6 @@ unit wbLOD;
 interface
 
 uses
-  Windows,
   Classes,
   SysUtils,
   IniFiles,
