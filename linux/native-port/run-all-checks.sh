@@ -66,10 +66,17 @@ fi
 
 if [[ "${RUN_XDUMP_HEADLESS}" == "1" ]]; then
   echo "[checks] xDump headless smoke"
-  if [[ -x "linux/native-port/build-xdump.sh" ]]; then
+  should_run_xdump_smoke=1
+  if command -v "${FPC:-fpc}" >/dev/null 2>&1 && [[ -x "linux/native-port/build-xdump.sh" ]]; then
     linux/native-port/build-xdump.sh
+  elif [[ ! -x "linux/bin/xdump-core" && ! -x "linux/bin/xDump" ]]; then
+    echo "[checks] Skipping xDump headless smoke (missing fpc and no prebuilt xDump binary)"
+    should_run_xdump_smoke=0
   fi
-  linux/native-port/smoke-test-xdump-headless.sh
+
+  if [[ "${should_run_xdump_smoke}" == "1" ]]; then
+    linux/native-port/smoke-test-xdump-headless.sh
+  fi
 else
   echo "[checks] Skipping xDump headless smoke (RUN_XDUMP_HEADLESS=${RUN_XDUMP_HEADLESS})"
 fi
