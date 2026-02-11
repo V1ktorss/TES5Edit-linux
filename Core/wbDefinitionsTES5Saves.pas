@@ -1192,6 +1192,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   aValue := VMversionDecider(aBasePtr, aEndPtr, aElement);
   if aValue >1 then begin
@@ -1223,6 +1224,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   aValue := VMversionDecider(aBasePtr, aEndPtr, aElement);
   if aValue >1 then begin
@@ -1254,6 +1256,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   aValue := VMversionDecider(aBasePtr, aEndPtr, aElement);
   if aValue >1 then begin
@@ -1276,6 +1279,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Functor', aElement);
   Assert(Element.BaseName='Functor');
@@ -1371,6 +1375,7 @@ var
   Container : IwbContainer;
 begin
   Result := -1;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if Supports(aElement, IwbContainer, Container) then
     Element := Container.ElementByName['Type'];
   if Assigned(Element) then
@@ -1382,6 +1387,7 @@ var
   Element    : IwbElement;
   Container : IwbContainer;
 begin
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if Supports(aElement, IwbContainer, Container) then
     Element :=  Container.ElementByPath['Type'];
   if Assigned(aElement) then
@@ -1431,6 +1437,7 @@ var
   BasePtr    : Pointer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := aElement;
 
   if Supports(Element, IwbDataContainer, Container) then begin
