@@ -7,7 +7,7 @@ OUT_FILE="${OUT_DIR}/xedit-readiness.txt"
 
 mkdir -p "${OUT_DIR}"
 
-CORE_PATTERN='\bWinapi\.|\bWindows\b|\bRegistry\b|\bShellAPI\b|\bShlObj\b|\bLockWindowUpdate\s*\(|(^|[^.[:alnum:]_])SendMessage\s*\(|(^|[^.[:alnum:]_])PostMessage\s*\('
+CORE_PATTERN='\bWinapi\.|\bWindows\b|\bRegistry\b|\bShellAPI\b|\bShlObj\b|\bLockWindowUpdate\s*\(|(^|[^.[:alnum:]_])SendMessage\s*\(|(^|[^.[:alnum:]_])PostMessage\s*\(|(^|[^.[:alnum:]_])MessageBox\s*\(|(^|[^.[:alnum:]_])GetKeyState\s*\(|(^|[^.[:alnum:]_])ShellExecute\s*\(|(^|[^.[:alnum:]_])CreateProcess\s*\('
 STYLE_PATTERN='\bVcl\.Styles\.|\bVcl\.Themes\b|\bVcl\.Samples\.'
 EXCLUDE_PATTERN="AddConst\\('Windows'|AddFunction\\('Windows'|AddFunction\\('ShellApi'|AddFunction\\('Vcl\\.Clipbrd'|AddClass\\('Registry'|CurrentVersion\\\\Uninstall"
 
