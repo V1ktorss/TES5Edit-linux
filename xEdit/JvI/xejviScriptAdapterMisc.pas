@@ -627,35 +627,57 @@ end;
 procedure JvInterpreter_ShellExecuteWait(var Value: Variant; Args: TJvInterpreterArgs);
 var
   ExitCode: Cardinal;
+  lVerb, lFileName, lParams, lWorkDir: string;
+  lShowCmd: Integer;
 begin
+  lVerb := String(Args.Values[1]);
+  lFileName := String(Args.Values[2]);
+  lParams := String(Args.Values[3]);
+  lWorkDir := String(Args.Values[4]);
+  lShowCmd := Integer(Args.Values[5]);
+
   if wbShellExecuteWait(
-    String(Args.Values[1]),
-    String(Args.Values[2]),
-    String(Args.Values[3]),
-    String(Args.Values[4]),
-    Integer(Args.Values[5]),
+    lVerb,
+    lFileName,
+    lParams,
+    lWorkDir,
+    lShowCmd,
     ExitCode
   ) then begin
     Value := ExitCode;
   end else
-    raise Exception.Create('ShellExecute failed');
+    raise Exception.CreateFmt(
+      'wbPlatform.ShellExecuteWait failed (verb=%s, file=%s, params=%s, dir=%s, show=%d)',
+      [lVerb, lFileName, lParams, lWorkDir, lShowCmd]
+    );
 end;
 
 // file, params, show window, timeout
 procedure JvInterpreter_CreateProcessWait(var Value: Variant; Args: TJvInterpreterArgs);
 var
   ExitCode: Cardinal;
+  lExecPath, lParams: string;
+  lShowCmd: Integer;
+  lTimeoutMs: Cardinal;
 begin
+  lExecPath := String(Args.Values[0]);
+  lParams := String(Args.Values[1]);
+  lShowCmd := Integer(Args.Values[2]);
+  lTimeoutMs := Cardinal(Args.Values[3]);
+
   if wbCreateProcessWait(
-    String(Args.Values[0]),
-    String(Args.Values[1]),
-    Integer(Args.Values[2]),
-    Cardinal(Args.Values[3]),
+    lExecPath,
+    lParams,
+    lShowCmd,
+    lTimeoutMs,
     ExitCode
   ) then begin
     Value := ExitCode;
   end else
-    raise Exception.Create('CreateProcess failed');
+    raise Exception.CreateFmt(
+      'wbPlatform.CreateProcessWait failed (file=%s, params=%s, show=%d, timeout=%d)',
+      [lExecPath, lParams, lShowCmd, lTimeoutMs]
+    );
 end;
 
 procedure JvInterpreter_Sleep(var Value: Variant; Args: TJvInterpreterArgs);

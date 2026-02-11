@@ -138,6 +138,7 @@ This document tracks what is already done for the native Linux path and what com
   - replaced `Vcl.Samples.Spin` with `Spin` (and normalized theme unit names) in options/cell-details forms
   - moved `xeRichEditForm` non-activating refresh lock from direct `LockWindowUpdate` to `wbPlatform.wbLockWindowUpdate`
   - kept `JvI/xejviScriptAdapterMisc` legacy script namespaces (`Windows`/`ShellApi`) as cross-platform aliases to existing `wbPlatform` wrappers for Linux script compatibility
+  - improved `xejviScriptAdapterMisc` process/shell wrapper error reporting to use `wbPlatform.*` wording plus call context for Linux diagnostics
   - updated readiness audit to split core blockers (WinAPI/Registry/Shell) from style-only namespace usage for clearer Linux-port tracking
   - replaced remaining `Vcl.Styles.*` namespace usages with `Styles.*` equivalents across key forms; readiness audit now reports zero core blockers and zero style-namespace matches
   - added readiness gate script `linux/native-port/check-xedit-readiness.sh` and CI workflow `.github/workflows/xedit-readiness-ci.yml` to enforce zero core blockers on push/PR
