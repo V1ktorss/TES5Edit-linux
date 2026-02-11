@@ -7436,19 +7436,16 @@ begin
            IsSF1 ('Reaction Radius', '')),
       {14} IsSF1 ('Combat Style', '')
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbXLOD.');
-  Exit;
-{$ENDIF}
-{$ENDIF}
-
   wbHEDR :=
     wbStruct(HEDR, 'Header', [
       IwbValueDef(wbFloat('Version').IncludeFlag(dfInternalEditOnly, not wbAllowEditHEDRVersion)),
       IwbValueDef(wbInteger('Number of Records', itU32)),
       IwbValueDef(wbInteger('Next Object ID', itU32, wbNextObjectIDToString, wbNextObjectIDToInt))
     ]).SetRequired;
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbKWDAs :=
     wbArrayS(KWDA, 'Keywords',
@@ -7463,6 +7460,10 @@ begin
        .SetRequired)
     ]).SetSummaryKey([1])
       .IncludeFlag(dfCollapsed, wbCollapseKeywords));
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbRagdoll :=
     wbRStruct('Ragdoll Data', [
@@ -7478,6 +7479,10 @@ begin
         nil,
         wbVec3(XRGB, 'Biped Rotation'))
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbColorInterpolator :=
     wbStructSK([0], 'Data', [
@@ -7545,7 +7550,12 @@ begin
     .SetDontShow(wbCellInteriorDontShow)
     .SetIsRemovable(wbCellGridIsRemovable)
     .IncludeFlag(dfCollapsed, wbCollapseOther));
-
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbCellGrid.');
+  Exit;
+{$ENDIF}
+{$ENDIF}
   wbDATAPosRot := wbVec3PosRot(DATA).SetRequired;
 
   wbFaction :=
@@ -7574,6 +7584,10 @@ begin
             ])))
       ]).SetToStr(wbFactionRelationToStr)
         .IncludeFlag(dfCollapsed, wbCollapseFactionRelations)));
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbMDOB := wbFormID(MDOB, 'Menu Display Object');
 
@@ -7608,6 +7622,10 @@ begin
         .IncludeFlag(dfSummaryMembersNoName)
         .IncludeFlag(dfSummaryNoSortKey)
       )).SetCountPath(CS2H);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbMagicEffectSounds :=
     wbArrayS(SNDD, 'Sounds',
@@ -7666,13 +7684,6 @@ begin
 
   wbXLOD := wbArray(XLOD, 'Distant LOD Data', wbFloat('Unknown'), 3);
 {$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbXLOD.');
-  Exit;
-{$ENDIF}
-{$ENDIF}
-
-{$IFDEF FPC}
   wbMHDTCELL := wbByteArray(MHDT, 'Max Height Data');
 {$ELSE}
   wbMHDTCELL :=
@@ -7688,9 +7699,17 @@ begin
       ]).SetSummaryKeyOnValue([0, 1])
         .IncludeFlag(dfCollapsed, wbCollapseMaxHeightData));
 {$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbMODT := wbModelInfo(MODT);
   wbDMDT := wbModelInfo(DMDT);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbStaticPartPlacements :=
     wbArrayS(DATA, 'Placements',
@@ -7703,6 +7722,10 @@ begin
         .IncludeFlag(dfSummaryMembersNoName)
         .IncludeFlag(dfCollapsed, wbCollapsePlacement))
     ).SetRequired;
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbINOM :=
     IwbRecordMemberDef(wbArray(INOM, 'INFO Order (Masters only)',
@@ -7710,6 +7733,10 @@ begin
     ).IncludeFlag(dfInternalEditOnly)
      .IncludeFlag(dfDontSave)
      .IncludeFlag(dfDontAssign));
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbINOA :=
     IwbRecordMemberDef(wbArray(INOA, 'INFO Order (All previous modules)',
@@ -7717,6 +7744,10 @@ begin
     ).IncludeFlag(dfInternalEditOnly)
      .IncludeFlag(dfDontSave)
      .IncludeFlag(dfDontAssign));
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbQSTI :=
     wbRArrayS('Associated Quests',
@@ -7725,7 +7756,10 @@ begin
   wbQSTR :=
     wbRArrayS('Removed Quests',
       wbFormIDCkNoReach(QSTR, 'Removed Quest', [QUST], False, cpBenign));
-
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 {>>>Multiple Record Defs<<<}
   //TES4,FO3,FNV
   wbFaceGen :=
