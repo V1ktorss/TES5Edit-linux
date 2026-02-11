@@ -5390,6 +5390,10 @@ var
   h, s, l: Extended;
   rgb:TRGBTriple;
 begin
+  h := 0.0;
+  s := 0.0;
+  l := 0.0;
+  FillChar(rgb, SizeOf(rgb), 0);
   RGBtoHSL(ColToRGBTriple(Color), h, s, l);
 
   l := Min(l + (1.0 - l) * Amount, 1.0);
@@ -5403,6 +5407,10 @@ var
   h, s, l: Extended;
   rgb:TRGBTriple;
 begin
+  h := 0.0;
+  s := 0.0;
+  l := 0.0;
+  FillChar(rgb, SizeOf(rgb), 0);
   RGBtoHSL(ColToRGBTriple(Color), h, s, l);
 
   l := Max(l - l * Amount, 0.0);
@@ -5431,6 +5439,10 @@ function wbIsDarkMode: Boolean;
 var
   H, S, BkL, TxL: extended;
 begin
+  H := 0.0;
+  S := 0.0;
+  BkL := 0.0;
+  TxL := 0.0;
   RGBtoHSL(ColToRGBTriple(clWindow), H, S, BkL);
   RGBtoHSL(ColToRGBTriple(clWindowText), H, S, TxL);;
   Result := BkL < TxL;
@@ -5548,6 +5560,7 @@ end;
 
 function wbNormalizeRadians(const aElement: IwbElement; aFloat: Extended): Extended;
 begin
+  if Assigned(aElement) then;
   Result := aFloat;
 
   if Abs(Result/TwoPi) > 100.0 then begin
@@ -5569,6 +5582,7 @@ end;
 function wbNormalizeToRange(aMin, aMax: Extended): TwbFloatNormalizer;
 begin
 {$IFDEF FPC}
+  if aMin = aMax then;
   Result := nil;
 {$ELSE}
   Result := function(const aElement: IwbElement; aFloat: Extended): Extended
@@ -5605,6 +5619,7 @@ type
 
 function TwbNullWaitForm.CreateProgress(const aCaption, aStatus: string; aMax: Integer): IwbProgress;
 begin
+  if (aCaption <> '') or (aStatus <> '') or (aMax <> 0) then;
   Result := TwbNullProgress.Create;
 end;
 
@@ -5617,6 +5632,7 @@ end;
 
 procedure TwbNullProgress.UpdateStatus(aPosition: Integer; const aStatus: string);
 begin
+  if (aPosition <> 0) or (aStatus <> '') then;
 end;
 
 function NullCreateWaitForm(const aCaption     : string;
@@ -5626,6 +5642,7 @@ function NullCreateWaitForm(const aCaption     : string;
                                   aUpdateDelay : Integer = 0)
                                                : IwbWaitForm;
 begin
+  if (aCaption <> '') or (aMessage <> '') or aCanCancel or (aShowDelay <> 0) or (aUpdateDelay <> 0) then;
   Result := TwbNullWaitForm.Create;
 end;
 
