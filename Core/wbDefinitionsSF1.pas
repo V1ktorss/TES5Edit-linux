@@ -2974,14 +2974,17 @@ begin
   var wbStarSystemLookupCallback := function(): TwbLinksToCallback
   begin
     Result := function(const aElement: IwbElement): IwbElement
+    var
+      lStarID: Variant;
+      lFile: IwbFile;
     begin
       Result := nil;
 
-      var lStarID := aElement.NativeValue;
+      lStarID := aElement.NativeValue;
       if not VarIsOrdinal(lStarID) then
         Exit;
 
-      var lFile := aElement._File;
+      lFile := aElement._File;
       if not Assigned(lFile) then
         Exit;
 
@@ -6008,15 +6011,30 @@ begin
   var wbBaseFormComponents: IwbRecordMemberDef;
 
   var wbLinksToBluePrintComponent:TwbLinksToCallback  := function(const aElement: IwbElement): IwbElement
+  var
+    lElementValue: Integer;
+    lContainer: IwbContainer;
+    lDef: IwbNamedDef;
+    lArrayIdx: Integer;
+    lComponentStruct: IwbContainerElementRef;
+    lBFCB: IwbElement;
+    lItems: IwbContainerElementRef;
+    lItemIdx: Integer;
+    lElementCount: Integer;
+    lItem: IwbContainerElementRef;
+    lMoveBy: Integer;
+    lPart: IwbElement;
+    lPartValue: Integer;
+    lDiff: Integer;
   begin
     if not Assigned(aElement) then
       Exit(nil);
-    var lElementValue: Integer := aElement.NativeValue;
+    lElementValue := aElement.NativeValue;
     if lElementValue < 0 then
       Exit(nil);
-    var lContainer := aElement.Container;
+    lContainer := aElement.Container;
     while Assigned(lContainer) do begin
-      var lDef := lContainer.Def;
+      lDef := lContainer.Def;
       if not Assigned(lDef) or (lDef.DefType = dtRecord) then
         Exit(nil);
       if lDef.Root.Equals(wbBaseFormComponents.Root) then
@@ -6025,24 +6043,21 @@ begin
     end;
     if not Assigned(lContainer) then
       Exit(nil);
-    for var lArrayIdx := 0 to Pred (lContainer.ElementCount) do begin
-      var lComponentStruct: IwbContainerElementRef;
+    for lArrayIdx := 0 to Pred(lContainer.ElementCount) do begin
       if Supports(lContainer.Elements[lArrayIdx], IwbContainerElementRef, lComponentStruct) then begin
-        var lBFCB := lComponentStruct.ElementBySignature[BFCB];
+        lBFCB := lComponentStruct.ElementBySignature[BFCB];
         if Assigned(lBFCB) and (lBFCB.Value = 'Blueprint_Component') then begin
-          var lItems: IwbContainerElementRef;
           if Supports(lComponentStruct.ElementByPath['Component Data\BUO4 - Blue Print Components'], IwbContainerElementRef, lItems) then begin
-            var lItemIdx := lElementValue;
-            var lElementCount := lItems.ElementCount;
+            lItemIdx := lElementValue;
+            lElementCount := lItems.ElementCount;
             lItemIdx := Min(lItemIdx, Pred(lElementCount));
-            var lItem: IwbContainerElementRef;
-            var lMoveBy := 0;
+            lMoveBy := 0;
             repeat
               if Supports(lItems[lItemIdx], IwbContainerElementRef, lItem) then begin
-                var lPart := lItem.ElementByName['Part ID'];
+                lPart := lItem.ElementByName['Part ID'];
                 if Assigned(lPart) then begin
-                  var lPartValue: Integer := lPart.NativeValue;
-                  var lDiff := lElementValue - lPartValue;
+                  lPartValue := lPart.NativeValue;
+                  lDiff := lElementValue - lPartValue;
                   if lDiff = 0 then
                     Exit(lItem);
                   if lDiff < 0 then begin
@@ -7899,24 +7914,29 @@ begin
       wbAVMDMNAMReq,
       wbString(TNAM, 'Entry Type')
         .SetLinksToCallbackOnValue(function(const aElement: IwbElement): IwbElement
+        var
+          lContainer: IwbContainer;
+          lAVMDName: Variant;
+          lFile: IwbFile;
+          lMNAMValue: Variant;
+          lType: Integer;
         begin
           Result := nil;
-          var lContainer: IwbContainer;
           if not Supports(aElement, IwbContainer, lContainer) then
             Exit;
 
-          var lAVMDName := aElement.NativeValue;
+          lAVMDName := aElement.NativeValue;
           if not VarIsStr(lAVMDName) or (lAVMDName = '') then
             Exit;
 
-          var lFile := aElement._File;
+          lFile := aElement._File;
           if not Assigned(lFile) then
             Exit;
 
-          var lMNAMValue := lContainer.ElementNativeValues['...\MNAM'];
+          lMNAMValue := lContainer.ElementNativeValues['...\MNAM'];
           if not VarIsOrdinal(lMNAMValue) then
             Exit;
-          var lType := Integer(lMNAMValue);
+          lType := Integer(lMNAMValue);
 
           if (lType >= Low(wbIdxAVMByType)) and (lType <= High(wbIdxAVMByType)) then
             Result := lFile.RecordFromIndexByKey[wbIdxAVMByType[lType], lAVMDName];
@@ -9450,15 +9470,18 @@ begin
     ),
     wbString(NAM2, 'Color Mapping')
       .SetLinksToCallbackOnValue(function(const aElement: IwbElement): IwbElement
+      var
+        lAVMDName: Variant;
+        lFile: IwbFile;
       begin
         Result := nil;
         if not Assigned(aElement) then
           Exit;
-        var lAVMDName := aElement.NativeValue;
+        lAVMDName := aElement.NativeValue;
         if not VarIsStr(lAVMDName) then
           Exit;
 
-        var lFile := aElement._File;
+        lFile := aElement._File;
         if not Assigned(lFile) then
           Exit;
 
