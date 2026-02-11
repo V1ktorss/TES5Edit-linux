@@ -43,6 +43,17 @@ var
   wbSPLOs: IwbSubRecordArrayDef;
   wbCVPA: IwbSubRecordWithArrayDef;
   wbCDIX: IwbSubRecordWithArrayDef;
+  wbCOED: IwbSubRecordWithStructDef;
+  wbCNTO: IwbSubRecordStructDef;
+  wbCOCT: IwbSubRecordDef;
+  wbCNTOs: IwbSubRecordArrayDef;
+  wbContainerItems: IwbSubRecordStructDef;
+  wbFIMD: IwbSubRecordDef;
+  wbALSH: IwbRecordMemberDef;
+  wbACSH: IwbRecordMemberDef;
+  wbCUSH: IwbRecordMemberDef;
+  wbPUSH: IwbRecordMemberDef;
+  wbPDSH: IwbRecordMemberDef;
 begin
   DefineCommon;
 end;
@@ -3063,7 +3074,7 @@ begin
     end;
   end;
 
-  var wbCOED := wbStructExSK(COED, [2], [0, 1], 'Extra Data', [
+  wbCOED := wbStructExSK(COED, [2], [0, 1], 'Extra Data', [
     {00} wbFormIDCkNoReach('Owner', [NPC_, FACT, NULL]),
     {04} wbUnion('Global Variable / Required Rank', wbCOEDOwnerDecider, [
            wbUnused(4),
@@ -3073,7 +3084,7 @@ begin
     {08} wbFloat('Item Condition')
   ]);
 
-  var wbCNTO :=
+  wbCNTO :=
     wbRStructExSK([0], [1], 'Item', [
       wbStructExSK(CNTO, [0], [1], 'Item', [
         wbFormIDCk('Item', sigBaseObjects),
@@ -3090,21 +3101,21 @@ begin
     ])
     .IncludeFlag(dfCollapsed, wbCollapseItems);
 
-  var wbCOCT := wbInteger(COCT, 'Count', itU32, nil, cpBenign);
-  var wbCNTOs := wbRArrayS('Items', wbCNTO).SetCountPath(COCT);
+  wbCOCT := wbInteger(COCT, 'Count', itU32, nil, cpBenign);
+  wbCNTOs := wbRArrayS('Items', wbCNTO).SetCountPath(COCT);
 
-  var wbContainerItems := wbRStructSK([1], 'Container Items', [
+  wbContainerItems := wbRStructSK([1], 'Container Items', [
     wbCOCT,
     wbCNTOs.SetRequired
   ]);
 
-  var wbFIMD := wbFormIDCk(FIMD, 'Featured Item Message', [MESG]);
+  wbFIMD := wbFormIDCk(FIMD, 'Featured Item Message', [MESG]);
 
-  var wbALSH := wbSoundReference(ALSH, 'Looping Sound');
-  var wbACSH := wbSoundReference(ACSH, 'Activate Sound');
-  var wbCUSH := wbSoundReference(CUSH, 'Crafting Sound');
-  var wbPUSH := wbSoundReference(PUSH, 'Pickup Sound');
-  var wbPDSH := wbSoundReference(PDSH, 'Putdown Sound');
+  wbALSH := wbSoundReference(ALSH, 'Looping Sound');
+  wbACSH := wbSoundReference(ACSH, 'Activate Sound');
+  wbCUSH := wbSoundReference(CUSH, 'Crafting Sound');
+  wbPUSH := wbSoundReference(PUSH, 'Pickup Sound');
+  wbPDSH := wbSoundReference(PDSH, 'Putdown Sound');
 
   wbLightRoundnessData := function(aSignature: TwbSignature; aRequired: boolean = False): IwbSubRecordWithStructDef
   begin
