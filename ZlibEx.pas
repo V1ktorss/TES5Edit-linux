@@ -6,6 +6,7 @@ uses
   Classes;
 
 procedure ZCompressStream(aSrc, aDst: TStream);
+procedure ZDecompressStream(aSrc, aDst: TStream);
 procedure DecompressToUserBuf(aSrc: Pointer; aSrcSize: Integer; aDst: Pointer; aDstSize: Integer);
 
 implementation
@@ -23,6 +24,19 @@ begin
     LComp.CopyFrom(aSrc, aSrc.Size - aSrc.Position);
   finally
     LComp.Free;
+  end;
+end;
+
+procedure ZDecompressStream(aSrc, aDst: TStream);
+var
+  LDecomp: TDecompressionStream;
+begin
+  aSrc.Position := 0;
+  LDecomp := TDecompressionStream.Create(aSrc);
+  try
+    aDst.CopyFrom(LDecomp, 0);
+  finally
+    LDecomp.Free;
   end;
 end;
 

@@ -8,11 +8,15 @@ uses
 type
   TPersistent = Classes.TPersistent;
   TComponent = Classes.TComponent;
+  TDataModule = class(TComponent);
 
   TStream = Classes.TStream;
   TFileStream = Classes.TFileStream;
   TMemoryStream = Classes.TMemoryStream;
   TBytesStream = Classes.TBytesStream;
+  TFiler = Classes.TFiler;
+  TReader = Classes.TReader;
+  TWriter = Classes.TWriter;
 
   TStrings = Classes.TStrings;
   TStringList = Classes.TStringList;

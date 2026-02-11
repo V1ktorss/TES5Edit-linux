@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 OUT_DIR="${ROOT_DIR}/linux/bin"
 OUT_BIN="${OUT_DIR}/xdump-core"
+ALT_OUT_BIN="${OUT_DIR}/xDump"
 FPC_BIN="${FPC:-fpc}"
 
 log() {
@@ -21,6 +22,7 @@ UNIT_PATHS=(
   "${ROOT_DIR}"
   "${ROOT_DIR}/Core"
   "${ROOT_DIR}/xDump"
+  "${ROOT_DIR}/External/FileContainer"
   "${ROOT_DIR}/External/lz4/lib/delphi"
   "${ROOT_DIR}/External/lz4/common"
   "${ROOT_DIR}/External/ImagingLib/Source"
@@ -57,6 +59,13 @@ log "Unit paths: ${UNIT_PATHS[*]}"
   -Fi"${ROOT_DIR}/External/ImagingLib/Source" \
   -Fi"${ROOT_DIR}/External/TForge/Source/Include" \
   "${ROOT_DIR}/xDump.dpr"
+
+# FPC names the binary after the program identifier (`xDump`) by default.
+# Normalize to the expected Linux artifact name.
+if [[ -x "$ALT_OUT_BIN" && ! -x "$OUT_BIN" ]]; then
+  cp -f "$ALT_OUT_BIN" "$OUT_BIN"
+  chmod +x "$OUT_BIN"
+fi
 
 if [[ -x "$OUT_BIN" ]]; then
   log "Build ok: ${OUT_BIN}"

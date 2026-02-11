@@ -15,6 +15,7 @@ find_xdump_bin() {
 
   local candidates=(
     "${ROOT_DIR}/linux/bin/xdump-core"
+    "${ROOT_DIR}/linux/bin/xDump"
     "${ROOT_DIR}/xDump/xdump-core"
     "${ROOT_DIR}/xDump/xDump"
     "${ROOT_DIR}/xDump/xdump"

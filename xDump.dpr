@@ -58,7 +58,9 @@ uses
   wbDefinitionsTES5Saves in 'Core/wbDefinitionsTES5Saves.pas',
   wbDefinitionsSF1 in 'Core/wbDefinitionsSF1.pas';
 
+{$IFDEF MSWINDOWS}
 {$R *.res}
+{$ENDIF}
 {$MAXSTACKSIZE 2097152}
 
 const
@@ -664,6 +666,7 @@ var
   Container   : IwbContainer;
   Name        : string;
   Value       : string;
+  lSummary    : string;
   Error       : string;
 
   i            : Integer;
@@ -704,7 +707,7 @@ begin
 
     Name := aElement.DisplayName[True];
     Value := aElement.Value;
-    var lSummary := '';
+    lSummary := '';
     if DumpSummary and (Value = '') then
       lSummary := aElement.Summary;
 
@@ -937,12 +940,17 @@ var
   tms             : TwbSetOfMode;
   Found           : Boolean;
   b               : TBytes;
+  SourceName      : string;
 begin
+  {$IFDEF FPC}
+  DefaultFormatSettings.DecimalSeparator := '.';
+  {$ELSE}
   {$IF CompilerVersion >= 24}
   FormatSettings.DecimalSeparator := '.';
   {$ELSE}
   SysUtils.DecimalSeparator := '.';
   {$IFEND}
+  {$ENDIF}
   _wbProgressCallback := ReportProgress;
   wbDontSave := True;
   wbAllowInternalEdit := False;
@@ -953,7 +961,7 @@ begin
 
   try
     try
-      t := ExtractFileName(ParamStr(0)).ToLowerInvariant;
+      t := LowerCase(ExtractFileName(ParamStr(0)));
 
       Found := False;
       for ts := Low(TwbToolSource) to High(TwbToolSource) do begin
@@ -967,9 +975,9 @@ begin
       end;
       if not Found then
         for ts := Low(TwbToolSource) to High(TwbToolSource) do begin
-          s := GetEnumName(TypeInfo(TwbToolSource), Ord(ts) ).ToLowerInvariant;
+          s := LowerCase(GetEnumName(TypeInfo(TwbToolSource), Ord(ts)));
           Delete(s, 1, 2);
-          if t.Contains(s) then begin
+          if Pos(s, t) > 0 then begin
             wbToolSource := ts;
             Found := True;
             Break;
@@ -990,9 +998,9 @@ begin
       end;
       if not Found then
         for tm := Low(TwbToolMode) to High(TwbToolMode) do begin
-          s := GetEnumName(TypeInfo(TwbToolMode), Ord(tm) ).ToLowerInvariant;
+          s := LowerCase(GetEnumName(TypeInfo(TwbToolMode), Ord(tm)));
           Delete(s, 1, 2);
-          if t.Contains(s) then begin
+          if Pos(s, t) > 0 then begin
             wbToolMode := tm;
             Found := True;
             Break;
@@ -1015,9 +1023,9 @@ begin
       end;
       if not Found then
         for gm := Low(TwbGameMode) to High(TwbGameMode) do begin
-          s := GetEnumName(TypeInfo(TwbGameMode), Ord(gm) ).ToLowerInvariant;
+          s := LowerCase(GetEnumName(TypeInfo(TwbGameMode), Ord(gm)));
           Delete(s, 1, 2);
-          if t.Contains(s) then begin
+          if Pos(s, t) > 0 then begin
             wbGameMode := gm;
             Found := True;
             Break;
@@ -1233,11 +1241,11 @@ begin
       if wbReportMode then
         wbShowFlagEnumValue := True;
 
-     var SourceName := wbSourceName;
+     SourceName := wbSourceName;
      if SourceName = 'Plugins' then
        SourceName := '';
 
-     wbApplicationTitle := wbAppName + wbToolName + SourceName +  ' ' + VersionString;
+     wbApplicationTitle := wbAppName + wbToolName + SourceName +  ' ' + VersionString.ToString;
      {$IFDEF WIN64}
      wbApplicationTitle := wbApplicationTitle + ' x64';
      {$ENDIF WIN64}
@@ -1756,9 +1764,11 @@ begin
         ReportProgress('Unexpected Error: <'+e.ClassName+': '+e.Message+'>');
     end;
   finally
+    {$IFNDEF FPC}
     if DebugHook <> 0 then begin
       ReportProgress('Press enter to continue...');
       ReadLn;
     end;
+    {$ENDIF}
   end;
 end.

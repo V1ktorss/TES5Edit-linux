@@ -36,6 +36,7 @@ function IntToHex(Value: Integer; Digits: Integer): string; overload; inline;
 function IntToHex(Value: Int64; Digits: Integer): string; overload; inline;
 function IntToStr(Value: Integer): string; overload; inline;
 function IntToStr(Value: Int64): string; overload; inline;
+function FileExists(const FileName: string): Boolean; inline;
 
 implementation
 
@@ -107,6 +108,11 @@ end;
 function IntToStr(Value: Int64): string; overload; inline;
 begin
   Result := SysUtils.IntToStr(Value);
+end;
+
+function FileExists(const FileName: string): Boolean; inline;
+begin
+  Result := SysUtils.FileExists(FileName);
 end;
 
 end.

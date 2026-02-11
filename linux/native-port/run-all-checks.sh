@@ -66,6 +66,9 @@ fi
 
 if [[ "${RUN_XDUMP_HEADLESS}" == "1" ]]; then
   echo "[checks] xDump headless smoke"
+  if [[ -x "linux/native-port/build-xdump.sh" ]]; then
+    linux/native-port/build-xdump.sh
+  fi
   linux/native-port/smoke-test-xdump-headless.sh
 else
   echo "[checks] Skipping xDump headless smoke (RUN_XDUMP_HEADLESS=${RUN_XDUMP_HEADLESS})"

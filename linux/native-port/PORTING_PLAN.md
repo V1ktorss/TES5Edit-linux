@@ -150,6 +150,18 @@ This document tracks what is already done for the native Linux path and what com
   - normalized data path suffix to `Data` + `PathDelim` for cross-platform paths
   - added Linux build helper: `linux/native-port/build-xdump.sh`
   - made LZ4 Pascal units tolerate non-Windows builds (CPU defines + non-Windows uses)
+  - made `xDump.dpr` FPC-friendly in key startup paths (removed inline-var usage, removed `ToLowerInvariant`/`Contains` dependence, guarded debug-only `DebugHook` usage)
+  - made Linux resource inclusion optional for xDump (`{$R *.res}` guarded to Windows)
+  - extended compatibility wrappers used by xDump path:
+    - `System.Classes`: `TFiler`/`TReader`/`TWriter`, lightweight `TDataModule`
+    - `System.SysUtils`: `FileExists`
+    - `ZlibEx`: added `ZDecompressStream`
+  - updated xDump smoke/build scripts:
+    - `smoke-test-xdump-headless.sh` now detects `linux/bin/xDump` fallback
+    - `build-xdump.sh` now normalizes FPC default `xDump` output to `linux/bin/xdump-core`
+  - verified:
+    - `linux/native-port/build-xdump.sh` succeeds and produces `linux/bin/xdump-core`
+    - `linux/native-port/smoke-test-xdump-headless.sh` passes (`-h`)
 
 ## Risks
 
@@ -167,6 +179,7 @@ This document tracks what is already done for the native Linux path and what com
 - Added convenience runner: `linux/native-port/run-all-checks.sh` (strict readiness + BSArch checks + optional xEdit headless smoke)
 - Runner now supports toggles for quicker local loops (`RUN_BSARCH_STRESS=0`, `RUN_BSARCH=0`, `RUN_XEDIT_HEADLESS=0`, `RUN_XDUMP_HEADLESS=0`)
 - Runner now also supports readiness mode toggle (`ENFORCE_STYLE=1` strict, `ENFORCE_STYLE=0` core-only)
+- Runner now builds `xDump` before xDump headless smoke when `RUN_XDUMP_HEADLESS=1`, mirroring xEdit headless flow.
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`
