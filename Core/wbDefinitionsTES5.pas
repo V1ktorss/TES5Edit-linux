@@ -831,6 +831,10 @@ var
   EditInfos  : TStringList;
   Stages     : IwbContainerElementRef;
   Stage      : IwbContainerElementRef;
+  i          : Integer;
+  j          : Integer;
+  s          : string;
+  t          : string;
 begin
   Result := '';
   case aType of
@@ -865,11 +869,11 @@ begin
 
   try
     if Supports(MainRecord.ElementByName['Stages'], IwbContainerElementRef, Stages) then begin
-      for var i := 0 to Pred(Stages.ElementCount) do
+      for i := 0 to Pred(Stages.ElementCount) do
         if Supports(Stages.Elements[i], IwbContainerElementRef, Stage) then begin
-        var j := Stage.ElementNativeValues['INDX\Stage Index'];
-        var s := Trim(Stage.ElementValues['Log Entries\Log Entry\CNAM']);
-        var t: string := IntToStr(j);
+        j := Stage.ElementNativeValues['INDX\Stage Index'];
+        s := Trim(Stage.ElementValues['Log Entries\Log Entry\CNAM']);
+        t := IntToStr(j);
         while Length(t) < 3 do
           t := '0' + t;
         if s <> '' then
@@ -959,6 +963,10 @@ var
   EditInfos  : TStringList;
   Stages     : IwbContainerElementRef;
   Stage      : IwbContainerElementRef;
+  i          : Integer;
+  j          : Integer;
+  s          : string;
+  t          : string;
 begin
   case aType of
     ctToEditValue, ctToSummary: Result := aInt.ToString;
@@ -993,11 +1001,11 @@ begin
 
   try
     if Supports(MainRecord.ElementByName['Stages'], IwbContainerElementRef, Stages) then begin
-      for var i := 0 to Pred(Stages.ElementCount) do
+      for i := 0 to Pred(Stages.ElementCount) do
         if Supports(Stages.Elements[i], IwbContainerElementRef, Stage) then begin
-          var j := Stage.ElementNativeValues['INDX\Stage Index'];
-          var s := Trim(Stage.ElementValues['Log Entries\Log Entry\CNAM']);
-          var t := IntToStr(j);
+          j := Stage.ElementNativeValues['INDX\Stage Index'];
+          s := Trim(Stage.ElementValues['Log Entries\Log Entry\CNAM']);
+          t := IntToStr(j);
           while Length(t) < 3 do
             t := '0' + t;
           if s <> '' then
