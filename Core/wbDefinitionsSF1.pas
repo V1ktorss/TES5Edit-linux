@@ -163,6 +163,28 @@ var
   wbPLVD: IwbSubRecordDef;
   wbPTDA: IwbSubRecordWithStructDef;
   wbXLOC: IwbSubRecordWithStructDef;
+  wbMODS: IwbSubRecordDef;
+  wbMO2S: IwbSubRecordDef;
+  wbMO3S: IwbSubRecordDef;
+  wbMO4S: IwbSubRecordDef;
+  wbMO5S: IwbSubRecordDef;
+  wbModelFlags: IwbFlagsDef;
+  wbMODF: IwbSubRecordDef;
+  wbMO2F: IwbSubRecordDef;
+  wbMO3F: IwbSubRecordDef;
+  wbMO4F: IwbSubRecordDef;
+  wbMO5F: IwbSubRecordDef;
+  wbMO6F: IwbSubRecordDef;
+  wbMO7F: IwbSubRecordDef;
+  wbMODC: IwbSubRecordDef;
+  wbMO2C: IwbSubRecordDef;
+  wbMO3C: IwbSubRecordDef;
+  wbMO4C: IwbSubRecordDef;
+  wbMO5C: IwbSubRecordDef;
+  wbFLLD: IwbSubRecordDef;
+  wbDMDS: IwbSubRecordDef;
+  wbDMDC: IwbSubRecordDef;
+  wbDEST: IwbSubRecordStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -4664,43 +4686,43 @@ begin
     wbInteger('Unknown', itU32)
   ], cpNormal, False, nil, 4);
 
-  var wbMODS := wbFloat(MODS, 'Color Remapping Index');
-  var wbMO2S := wbFloat(MO2S, 'Color Remapping Index');
-  var wbMO3S := wbFloat(MO3S, 'Color Remapping Index');
-  var wbMO4S := wbFloat(MO4S, 'Color Remapping Index');
-  var wbMO5S := wbFloat(MO5S, 'Color Remapping Index');
+  wbMODS := wbFloat(MODS, 'Color Remapping Index');
+  wbMO2S := wbFloat(MO2S, 'Color Remapping Index');
+  wbMO3S := wbFloat(MO3S, 'Color Remapping Index');
+  wbMO4S := wbFloat(MO4S, 'Color Remapping Index');
+  wbMO5S := wbFloat(MO5S, 'Color Remapping Index');
 
-  var wbModelFlags := wbFlags([
+  wbModelFlags := wbFlags([
     'Has FaceBones Model',
     'Support Model Only Swap'
   ]);
 
-  var wbMODF := wbInteger(MODF, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
-  var wbMO2F := wbInteger(MO2F, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
-  var wbMO3F := wbInteger(MO3F, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
-  var wbMO4F := wbInteger(MO4F, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
-  var wbMO5F := wbInteger(MO5F, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
-  var wbMO6F := wbInteger(MO6F, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
-  var wbMO7F := wbInteger(MO7F, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
+  wbMODF := wbInteger(MODF, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
+  wbMO2F := wbInteger(MO2F, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
+  wbMO3F := wbInteger(MO3F, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
+  wbMO4F := wbInteger(MO4F, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
+  wbMO5F := wbInteger(MO5F, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
+  wbMO6F := wbInteger(MO6F, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
+  wbMO7F := wbInteger(MO7F, 'Flags', itU8, wbModelFlags).IncludeFlag(dfCollapsed, wbCollapseFlags);
 
-  var wbMODC := wbFloat(MODC, 'Color Remapping Index');
-  var wbMO2C := wbFloat(MO2C, 'Color Remapping Index');
-  var wbMO3C := wbFloat(MO3C, 'Color Remapping Index');
-  var wbMO4C := wbFloat(MO4C, 'Color Remapping Index');
-  var wbMO5C := wbFloat(MO5C, 'Color Remapping Index');
+  wbMODC := wbFloat(MODC, 'Color Remapping Index');
+  wbMO2C := wbFloat(MO2C, 'Color Remapping Index');
+  wbMO3C := wbFloat(MO3C, 'Color Remapping Index');
+  wbMO4C := wbFloat(MO4C, 'Color Remapping Index');
+  wbMO5C := wbFloat(MO5C, 'Color Remapping Index');
 
-  var wbFLLD := wbInteger(FLLD, 'Light Layer', itU32, wbFlags([
+  wbFLLD := wbInteger(FLLD, 'Light Layer', itU32, wbFlags([
     'Default Light Layer',
     'Helmet Light',
     'Ship Interior',
     'Ship Exterior'
   ])).SetDefaultNativeValue(1).IncludeFlag(dfCollapsed, wbCollapseFlags);
 
-  var wbDMDS := wbFormIDCk(DMDS, 'Material Swap', [NULL, MSWP]);
-  var wbDMDC := wbFloat(DMDC, 'Color Remapping Index');
+  wbDMDS := wbFormIDCk(DMDS, 'Material Swap', [NULL, MSWP]);
+  wbDMDC := wbFloat(DMDC, 'Color Remapping Index');
 
   {subrecords checked against Starfield.esm}
-  var wbDEST := wbRStruct('Destructible', [
+  wbDEST := wbRStruct('Destructible', [
     wbStruct(DEST, 'Header', [
       wbInteger('Health', itS32),
       wbInteger('Stage Count', itU8).IncludeFlag(dfSkipImplicitEdit),
