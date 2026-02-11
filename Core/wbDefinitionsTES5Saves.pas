@@ -825,6 +825,7 @@ var
   i             : Integer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Handle := 0;
   if not Assigned(aElement) then Exit;
 
@@ -864,6 +865,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Script', aElement);
   Assert(Element.BaseName='Script');
@@ -888,6 +890,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Parameter', aElement);
   Assert(Element.BaseName='Parameter');
@@ -908,6 +911,7 @@ var
   anOpcode  : Integer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Code', aElement);
   Assert(Element.BaseName='Code');
@@ -929,6 +933,7 @@ var
   anOpcode  : Integer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Code', aElement);
   Assert(Element.BaseName='Code');
@@ -966,6 +971,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Frame', aElement);
   Assert(Element.BaseName='Frame');
@@ -985,6 +991,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Stack', aElement);
   Assert(Element.BaseName='Stack');
@@ -1010,6 +1017,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Callback', aElement);
   Assert(Element.BaseName='Callback');
@@ -1041,6 +1049,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Stack', aElement);
   Assert(Element.BaseName='Stack');
@@ -1067,6 +1076,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Papyrus Struct', aElement);
   Assert(Element.BaseName='Papyrus Struct');
@@ -1094,6 +1104,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Papyrus Struct', aElement);
   Assert(Element.BaseName='Papyrus Struct');
@@ -1115,6 +1126,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Papyrus Struct', aElement);
   Assert(Element.BaseName='Papyrus Struct');
@@ -1136,6 +1148,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Papyrus Struct', aElement);
   Assert(Element.BaseName='Papyrus Struct');
@@ -1157,6 +1170,7 @@ var
   Container : IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Papyrus Struct', aElement);
   Assert(Element.BaseName='Papyrus Struct');
