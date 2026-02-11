@@ -8,9 +8,11 @@ unit MSHeap;
 
 interface
 
-uses Windows;
-
 implementation
+
+{$IFDEF MSWINDOWS}
+uses
+  Windows;
 
 var
   ProcessHeap: THandle;
@@ -63,5 +65,6 @@ if DebugHook = 0 then begin
   ProcessHeap := GetProcessHeap;
   SetMemoryManager(MemoryManager);
 end;
+{$ENDIF}
 
 end.

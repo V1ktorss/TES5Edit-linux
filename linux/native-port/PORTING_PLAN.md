@@ -168,6 +168,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved taskbar capability gating from `Core/wbTaskProgress.pas` into `wbPlatform.wbSupportsTaskbarProgress`
   - moved taskbar progress COM state/operations (`ITaskbarList3`) from `Core/wbTaskProgress.pas` into `wbPlatform` (`wbTaskbarProgressInitialize/Show/Error/Hide`)
   - removed now-unused conditional `Windows` import from `Core/wbHelpers.pas` after wrapper migration
+  - gated `Core/MSHeap.pas` Windows heap override behind `MSWINDOWS` so non-Windows builds keep default memory manager without WinAPI imports
   - updated readiness audit to split core blockers (WinAPI/Registry/Shell) from style-only namespace usage for clearer Linux-port tracking
   - replaced remaining `Vcl.Styles.*` namespace usages with `Styles.*` equivalents across key forms; readiness audit now reports zero core blockers and zero style-namespace matches
   - added readiness gate script `linux/native-port/check-xedit-readiness.sh` and CI workflow `.github/workflows/xedit-readiness-ci.yml` to enforce zero core blockers on push/PR
