@@ -1484,8 +1484,6 @@ begin
 end;
 
 function SaveDataDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
-const
-  OffsetLength = -10;
 var
   Element    : IwbElement;
   Container  : IwbDataContainer;
