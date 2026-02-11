@@ -10198,9 +10198,12 @@ begin
   end;
 
   {
-  var lPath := wbDataPath + 'Dump\' + GetFile.FileName + '\' + Self.GetSignature + '\';
+  var
+    lPath     : string;
+    lFileName : string;
+  lPath := wbDataPath + 'Dump\' + GetFile.FileName + '\' + Self.GetSignature + '\';
   ForceDirectories(lPath);
-  var lFileName := lPath + GetLoadOrderFormID.ToString;
+  lFileName := lPath + GetLoadOrderFormID.ToString;
   if not FileExists(lFileName) then
     with TFileStream.Create(lFileName, fmCreate) do try
       WriteBuffer(dcDataBasePtr^, NativeUInt(dcDataEndPtr) - NativeUInt(dcDataBasePtr) );
@@ -21102,6 +21105,9 @@ begin
 end;
 {
 function TwbSubRecordArray.GetAssignTemplates(aIndex: Integer): TwbTemplateElements;
+var
+  lRUnion   : IwbSubRecordUnionDef;
+  lMemberIdx: Integer;
 begin
   Result := nil;
   if not Assigned(arcDef)  then
@@ -21109,11 +21115,10 @@ begin
   if aIndex <> wbAssignAdd then
     Exit;
 
-  var lRUnion: IwbSubRecordUnionDef;
   if not Supports(arcDef.Element, IwbSubRecordUnionDef, lRUnion) then
     Exit;
   SetLength(Result, lRUnion.MemberCount);
-  for var lMemberIdx := Low(Result) to High(Result) do
+  for lMemberIdx := Low(Result) to High(Result) do
     Result[lMemberIdx] := TwbTemplateElement.Create(lRUnion.Members[lMemberIdx]);
 end;
 }
@@ -21745,17 +21750,19 @@ begin
 end;
 {
 function TwbSubRecordStruct.GetAssignTemplates(aIndex: Integer): TwbTemplateElements;
+var
+  lRUnion   : IwbSubRecordUnionDef;
+  lMemberIdx: Integer;
 begin
   Result := nil;
   if not Assigned(srcDef) then
     Exit;
   if not ((aIndex >= 0) and (aIndex < srcDef.MemberCount)) then
     Exit;
-  var lRUnion: IwbSubRecordUnionDef;
   if not Supports(srcDef.Members[aIndex], IwbSubRecordUnionDef, lRUnion) then
     Exit;
   SetLength(Result, lRUnion.MemberCount);
-  for var lMemberIdx := Low(Result) to High(Result) do
+  for lMemberIdx := Low(Result) to High(Result) do
     Result[lMemberIdx] := TwbTemplateElement.Create(lRUnion.Members[lMemberIdx]);
 end;
 }
@@ -24129,18 +24136,22 @@ begin
   lValueDef := GetValueDef;
   Exit(Resolve(lValueDef, GetDataBasePtr, dcDataEndPtr, Self));
 {
+  var
+    lSortOrder        : Integer;
+    lContainer        : IwbContainerElementRef;
+    lContainerValueDef: IwbValueDef;
+    lStructDef        : IwbStructDef;
+    lMemberValueDef   : IwbValueDef;
   if Supports(lValueDef, IwbResolvableDef) then
     Exit(Resolve(lValueDef, GetDataBasePtr, dcDataEndPtr, Self));
 
-  var lSortOrder := GetSortOrder;
+  lSortOrder := GetSortOrder;
   if lSortOrder >= 0 then begin
-    var lContainer: IwbContainerElementRef;
     if Supports(GetContainer, IwbContainerElementRef, lContainer) then begin
-      var lContainerValueDef := lContainer.ResolvedValueDef;
-      var lStructDef: IwbStructDef;
+      lContainerValueDef := lContainer.ResolvedValueDef;
       if Supports(lContainerValueDef, IwbStructDef, lStructDef) then begin
         if lSortOrder <= lStructDef.MemberCount then begin
-          var lMemberValueDef := lStructDef.Members[lSortOrder];
+          lMemberValueDef := lStructDef.Members[lSortOrder];
           if Supports(lMemberValueDef, IwbResolvableDef) then
             Exit(Resolve(lMemberValueDef, GetDataBasePtr, dcDataEndPtr, Self));
         end;
