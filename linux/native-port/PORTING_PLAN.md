@@ -143,6 +143,7 @@ This document tracks what is already done for the native Linux path and what com
   - gated Fallout New Vegas Epic (`EOSSDK-Win32-Shipping.dll`) profile-path override to `MSWINDOWS` in `xeInit`
   - cleaned `xeInit` registry path flow so registry variables/functions are compiled only on Windows (`MSWINDOWS`) and no longer participate in Linux code paths
   - extracted Windows registry install-path resolution in `xeInit` into a dedicated helper (`TryResolveWindowsInstallPathFromRegistry`) to keep `DoInitPath` platform branches simpler
+  - replaced direct `SendMessage` usage with control `Perform` calls in `xeScriptForm` and `xePushLikeButton` to reduce API-coupled UI message calls
   - updated readiness audit to split core blockers (WinAPI/Registry/Shell) from style-only namespace usage for clearer Linux-port tracking
   - replaced remaining `Vcl.Styles.*` namespace usages with `Styles.*` equivalents across key forms; readiness audit now reports zero core blockers and zero style-namespace matches
   - added readiness gate script `linux/native-port/check-xedit-readiness.sh` and CI workflow `.github/workflows/xedit-readiness-ci.yml` to enforce zero core blockers on push/PR

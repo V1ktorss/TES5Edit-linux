@@ -323,8 +323,8 @@ begin
           Editor.SelText := Indent(Editor.SelText, '  ')
       else
       begin
-        SendMessage(Editor.Handle, WM_CHAR, Ord(' '), 0);
-        SendMessage(Editor.Handle, WM_CHAR, Ord(' '), 0);
+        Editor.Perform(WM_CHAR, Ord(' '), 0);
+        Editor.Perform(WM_CHAR, Ord(' '), 0);
       end;
     end;
   end;

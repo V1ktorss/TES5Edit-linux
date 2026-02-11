@@ -83,7 +83,7 @@ procedure TButton.CreateWnd;
 begin
   inherited CreateWnd;
   if FPushLike then
-    SendMessage(Handle, BM_SETCHECK, Integer(FChecked), 0);
+    Perform(BM_SETCHECK, Integer(FChecked), 0);
 end;
 
 class destructor TButton.Destroy;
@@ -117,7 +117,7 @@ begin
     if FPushLike then
     begin
       if HandleAllocated then
-        SendMessage(Handle, BM_SETCHECK, Integer(Checked), 0);
+        Perform(BM_SETCHECK, Integer(Checked), 0);
       if not ClicksDisabled then Click;
     end;
   end;
