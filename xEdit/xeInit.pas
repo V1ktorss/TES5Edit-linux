@@ -447,6 +447,7 @@ const
 
 var
   s: string;
+  lDataPathOverridden: Boolean;
   isEpicNV : Boolean;
   IniFile : TMemIniFile;
   lIDs: TStringList;
@@ -514,7 +515,16 @@ begin
   else
     xeRemoveTempPath := not DirectoryExists(wbTempPath);
 
-  if not wbFindCmdLineParam('D', wbDataPath) then begin
+  lDataPathOverridden := wbFindCmdLineParam('D', wbDataPath);
+  if not lDataPathOverridden then begin
+    s := Trim(GetEnvironmentVariable('XEDIT_DATA_PATH'));
+    if s <> '' then begin
+      wbDataPath := ExpandFileName(s);
+      lDataPathOverridden := True;
+    end;
+  end;
+
+  if not lDataPathOverridden then begin
     wbDataPath := CheckAppPath;
 
     if (wbDataPath = '') then begin
