@@ -14,11 +14,9 @@ interface
 
 uses
 {$IFDEF FPC}
-  Types,
   Classes,
   SysUtils,
 {$ELSE}
-  System.Types,
   System.Classes,
   System.SysUtils,
 {$ENDIF}
@@ -149,10 +147,8 @@ uses
   System.IOUtils,
   {$IFDEF FPC}
   Generics.Defaults,
-  Generics.Collections,
   {$ELSE}
   Generics.Defaults,
-  Generics.Collections,
   {$ENDIF}
   wbHelpers,
   wbImplementation,
