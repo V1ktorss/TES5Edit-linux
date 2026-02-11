@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${ROOT_DIR}"
 
 IMPORT_PATTERN='^[[:space:]]*(Winapi\.(Windows|Messages|ShellAPI)|Windows|ShellAPI|Registry)\b'
-IMPORT_ALLOWLIST='^(Core/(wbPlatform|wbHelpers|MSHeap)\.pas):'
+IMPORT_ALLOWLIST='^(Core/(wbPlatform|MSHeap)\.pas):'
 CALL_PATTERN='Windows\.(AlphaBlend|LockWindowUpdate)|(^|[^.[:alnum:]_])(GetKeyState|CreateProcess|ShellExecute|MessageBox|SendMessage|PostMessage)\s*\('
 CALL_ALLOWLIST='^(Core/wbPlatform\.pas):'
 
