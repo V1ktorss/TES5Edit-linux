@@ -7683,12 +7683,6 @@ begin
 
   wbXLOD := wbArray(XLOD, 'Distant LOD Data', wbFloat('Unknown'), 3);
 {$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbXLOD.');
-  Exit;
-{$ENDIF}
-{$ENDIF}
-{$IFDEF FPC}
   wbMHDTCELL := wbByteArray(MHDT, 'Max Height Data');
 {$ELSE}
   wbMHDTCELL :=
@@ -7741,6 +7735,12 @@ begin
   wbQSTR :=
     wbRArrayS('Removed Quests',
       wbFormIDCkNoReach(QSTR, 'Removed Quest', [QUST], False, cpBenign));
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbQSTR.');
+  Exit;
+{$ENDIF}
+{$ENDIF}
 {>>>Multiple Record Defs<<<}
   //TES4,FO3,FNV
   wbFaceGen :=
