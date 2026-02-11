@@ -252,6 +252,9 @@ var
   wbMOLM: function(const aSignature: TwbSignature): IwbSubRecordDef;
   wbGenericModel: function(aRequired: Boolean = False; aDontShow: TwbDontShowCallback = nil): IwbRecordMemberDef;
   wbXTV2: IwbSubRecordWithArrayDef;
+  wbFactionRank: IwbSubRecordStructDef;
+  wbPerkConditions: IwbSubRecordStructDef;
+  wbPerkEffect: IwbSubRecordStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -9264,7 +9267,7 @@ begin
   ]);
 
 
-  var wbFactionRank :=
+  wbFactionRank :=
     wbRStructSK([0], 'Rank', [
       wbInteger(RNAM, 'Rank#', itU32),
       wbLString(MNAM, 'Male Title', 0, cpTranslate),
@@ -10277,13 +10280,13 @@ begin
     wbFormIDCk(ANAM, 'Add To List', [FLST, NULL])
   ]);
 
-  var wbPerkConditions :=
+  wbPerkConditions :=
     wbRStructSK([0], 'Perk Condition', [
       wbInteger(PRKC, 'Run On (Tab Index)', itS8{, wbPRKCToStr, wbPRKCToInt}),
       wbConditions.SetRequired
     ], [], cpNormal, False{, nil, nil, wbPERKPRKCDontShow});
 
-  var wbPerkEffect :=
+  wbPerkEffect :=
     wbRStructSK([0, 1], 'Effect', [
       wbStructSK(PRKE, [1, 2, 0], 'Header', [
         wbPerkEffectType(wbPERKPRKETypeAfterSet),
