@@ -103,6 +103,8 @@ var
   wbMarkerEntryExitTypes: IwbFlagsDef;
   wbSNAMMarkerParams: IwbRecordMemberDef;
   wbCSTYPowerWeightingStruct: IwbStructDef;
+  wbActorValue: function(aName: string = 'Actor Value'): IwbIntegerDef;
+  wbStarSystemLookupCallback: function(): TwbLinksToCallback;
   wbAngleToStr: TwbToStrCallback;
   wbLonLanFunc: function(aIsLat: Boolean): TwbToStrCallback;
   wbLongitudeToStr: TwbToStrCallback;
@@ -3005,12 +3007,12 @@ begin
   var wbCDIX := wbArray(CDIX, 'Component Display Indices', wbInteger('Display Index', itU8));
 
   //wbActorValue := wbInteger('Actor Value', itS32, wbActorValueEnum);
-  var wbActorValue := function(aName: string = 'Actor Value'): IwbIntegerDef
+  wbActorValue := function(aName: string = 'Actor Value'): IwbIntegerDef
   begin
     Result := wbFormIDCkNoReach(aName, [AVIF, NULL]);
   end;
 
-  var wbStarSystemLookupCallback := function(): TwbLinksToCallback
+  wbStarSystemLookupCallback := function(): TwbLinksToCallback
   begin
     Result := function(const aElement: IwbElement): IwbElement
     var
