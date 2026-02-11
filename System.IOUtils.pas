@@ -76,7 +76,6 @@ end;
 class function TDirectory.GetFiles(const Path, SearchPattern: string; SearchOption: TSearchOption): TStringDynArray;
 var
   Results: TStringList;
-  LResult: TStringDynArray;
 
   procedure AddFiles(const Dir: string);
   var
@@ -111,18 +110,17 @@ var
 var
   i: Integer;
 begin
+  Result := nil;
   Results := TStringList.Create;
-  SetLength(LResult, 0);
   try
     if DirectoryExists(Path) then
       AddFiles(Path);
-    SetLength(LResult, Results.Count);
+    SetLength(Result, Results.Count);
     for i := 0 to Results.Count - 1 do
-      LResult[i] := Results[i];
+      Result[i] := Results[i];
   finally
     Results.Free;
   end;
-  Result := LResult;
 end;
 {$ENDIF}
 
