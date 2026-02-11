@@ -10371,14 +10371,16 @@ begin
       ]))
     ], cpNormal, True)
   ]).SetBuildIndexKeys(procedure(const aMainRecord: IwbMainRecord; var aIndexKeys: TwbIndexKeys)
+    var
+      lDATA  : IwbElement;
+      lIKEK  : IwbElement;
+      lIndex : Variant;
     begin
       if not Assigned(aMainRecord) then
         Exit;
 
-      var lDATA := aMainRecord.ElementBySignature[DATA];
-      var lIKEK := aMainRecord.ElementBySignature[IKEK];
-
-      var lIndex : Variant;
+      lDATA := aMainRecord.ElementBySignature[DATA];
+      lIKEK := aMainRecord.ElementBySignature[IKEK];
       if Assigned(lDATA) then
         lIndex := lDATA.NativeValue;
       if Assigned(lIKEK) then
@@ -12164,16 +12166,18 @@ begin
     wbInteger(INTV, 'Interactables Count', itU32, nil, cpNormal, True),
     wbArrayS(CNAM, 'Collides With', wbFormIDCk('Forms', [COLL]), 0, cpNormal, False)
   ]).SetBuildIndexKeys(procedure(const aMainRecord: IwbMainRecord; var aIndexKeys: TwbIndexKeys)
-     begin
-       if not Assigned(aMainRecord) then
-         Exit;
+    var
+      lBNAM : Variant;
+    begin
+      if not Assigned(aMainRecord) then
+        Exit;
 
-       var lBNAM := aMainRecord.ElementNativeValues[BNAM];
-       if not VarIsOrdinal(lBNAM) then
-         Exit;
+      lBNAM := aMainRecord.ElementNativeValues[BNAM];
+      if not VarIsOrdinal(lBNAM) then
+        Exit;
 
-       aIndexKeys.Keys[wbIdxCollisionLayer] := lBNAM;
-     end);
+      aIndexKeys.Keys[wbIdxCollisionLayer] := lBNAM;
+    end);
 
   wbRecord(CLFM, 'Color',
     wbFlags(wbFlagsList([
@@ -15061,16 +15065,19 @@ begin
     {>>> COLL form Index value <<<}
     wbInteger(XTRI, 'Collision Layer', itU32)
       .SetLinksToCallbackOnValue(function(const aElement: IwbElement): IwbElement
+        var
+          lCollisionLayerIndex : Variant;
+          lFile                : IwbFile;
       begin
         Result := nil;
         if not Assigned(aElement) then
           Exit;
 
-        var lCollisionLayerIndex := aElement.NativeValue;
+        lCollisionLayerIndex := aElement.NativeValue;
         if not VarIsOrdinal(lCollisionLayerIndex) then
           Exit;
 
-        var lFile := aElement._File;
+        lFile := aElement._File;
         if not Assigned(lFile) then
           Exit;
 
