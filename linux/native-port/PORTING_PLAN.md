@@ -212,6 +212,7 @@ This document tracks what is already done for the native Linux path and what com
 - Runner now also supports readiness mode toggle (`ENFORCE_STYLE=1` strict, `ENFORCE_STYLE=0` core-only)
 - Added xEdit inline-var regression guard: `linux/native-port/check-xedit-inline-vars.sh` (wired via `RUN_XEDIT_INLINE_GUARD=1` in `run-all-checks.sh`)
 - Added xEdit Winapi-import regression guard: `linux/native-port/check-xedit-winapi-imports.sh` (wired via `RUN_XEDIT_WINAPI_GUARD=1` in `run-all-checks.sh`)
+- Extended xEdit Winapi guard with direct-call regression checks (`GetKeyState`, `CreateProcess`, `ShellExecute`, `MessageBox`, `SendMessage`, `PostMessage`, `Windows.AlphaBlend`, `Windows.LockWindowUpdate`) while allowlisting platform-layer implementations in `Core/wbPlatform.pas`
 - Added Core Winapi-import regression guard: `linux/native-port/check-core-winapi-imports.sh` (wired via `RUN_CORE_WINAPI_GUARD=1` in `run-all-checks.sh`, allowlisted only for `Core/wbPlatform.pas`, `Core/wbHelpers.pas`, and `Core/MSHeap.pas`)
 - Runner now builds `xDump` before xDump headless smoke when `RUN_XDUMP_HEADLESS=1`, mirroring xEdit headless flow.
 - Runner now degrades gracefully when `fpc` is unavailable: xDump smoke is skipped only if no prebuilt xDump binary exists.
