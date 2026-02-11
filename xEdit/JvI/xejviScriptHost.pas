@@ -787,6 +787,9 @@ begin
 end;
 
 constructor TxejviScript.Create(const aScriptName: string; aScript: string);
+var
+  i: Integer;
+  s: string;
 begin
   inherited Create;
   // Try to remove namespaces from unit names in uses clause if script is written in newer Delphi version
@@ -796,8 +799,8 @@ begin
     RegEx := '^\s*uses\s+(.+?);';
     Options := [preCaseLess, preSingleLine, preMultiLine];
     while MatchAgain do begin
-      var i := MatchedOffset;
-      var s := MatchedText;
+      i := MatchedOffset;
+      s := MatchedText;
       s := StringReplace(s, 'system.', '', [rfReplaceAll, rfIgnoreCase]);
       s := StringReplace(s, 'vcl.',    '', [rfReplaceAll, rfIgnoreCase]);
       s := StringReplace(s, 'winapi.', '', [rfReplaceAll, rfIgnoreCase]);
@@ -837,8 +840,10 @@ begin
 end;
 
 function TxejviScript.GetLastErrorLocation: string;
+var
+  LastError: TJvInterpreterError;
 begin
-  var LastError := FProgram.LastError;
+  LastError := FProgram.LastError;
   if Assigned(LastError) then
     Result := 'unit ' + LastError.ErrUnitName + ' line ' + IntToStr(LastError.ErrLine)
   else
