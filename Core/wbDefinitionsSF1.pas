@@ -18569,12 +18569,15 @@ begin
   .SetSummaryKey([2, 4, 6])
   .SetSummaryMemberPrefixSuffix(2, '[', ']')
   .SetBuildIndexKeys(procedure(const aMainRecord: IwbMainRecord; var aIndexKeys: TwbIndexKeys)
+  var
+    lType: Variant;
+    lName: string;
   begin
-    var lType := aMainRecord.ElementNativeValues[MNAM];
+    lType := aMainRecord.ElementNativeValues[MNAM];
     if not VarIsOrdinal(lType) then
       Exit;
 
-    var lName := aMainRecord.ElementEditValues[TNAM];
+    lName := aMainRecord.ElementEditValues[TNAM];
     if lName = '' then
       Exit;
 
@@ -18626,12 +18629,14 @@ begin
       wbLenString('Target').IncludeFlag(dfHasZeroTerminator),
       wbFloat('Max Anim Distance'),
       wbUnion('Type Dependant Data', function(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer
+      var
+        lContainer: IwbContainer;
+        lType: string;
       begin
         Result := 0;
-        var lContainer: IwbContainer;
         if not Supports(aElement, IwbContainer, lContainer) then
           Exit;
-        var lType := lContainer.ElementEditValues['...\Type'];
+        lType := lContainer.ElementEditValues['...\Type'];
         if SameText(lType, 'LookAtChain') then
           Result := 1
         else if SameText(lType, 'MorphDriver') then
