@@ -89,8 +89,31 @@ end;
 type
   TExportFormat = (efUESPWiki, efRaw);
   TwbExportPass = ( epRead, epSimple, epShared, epChapters, epRemaining, epNothing);
+  TProfileState = class
+  public
+    Value: Integer;
+    constructor Create(aValue: Integer);
+  end;
 var
   wbDefProfiles : TStringList = nil;
+
+constructor TProfileState.Create(aValue: Integer);
+begin
+  inherited Create;
+  Value := aValue;
+end;
+
+function GetProfileState(aIndex: Integer): TProfileState;
+begin
+  Result := nil;
+  if not Assigned(wbDefProfiles) then
+    Exit;
+  if (aIndex < 0) or (aIndex >= wbDefProfiles.Count) then
+    Exit;
+  if Assigned(wbDefProfiles.Objects[aIndex]) then
+    Result := wbDefProfiles.Objects[aIndex] as TProfileState;
+end;
+
 function StrToTExportFormat(aFormat: string): TExportFormat;
 begin
   Result := efRaw;
@@ -224,22 +247,33 @@ end;
 procedure AddProfile(aProfile: String);
 var
   i       : Integer;
+  lState  : TProfileState;
 begin
   i := wbDefProfiles.IndexOf(aProfile);
   if i >= 0 then begin
-    wbDefProfiles.Objects[i] := Pointer(PtrInt(wbDefProfiles.Objects[i]) + 1);
+    lState := GetProfileState(i);
+    if not Assigned(lState) then begin
+      lState := TProfileState.Create(0);
+      wbDefProfiles.Objects[i] := lState;
+    end;
+    Inc(lState.Value);
   end else begin
-    wbDefProfiles.AddObject(aProfile, Pointer(PtrInt(1)));
+    wbDefProfiles.AddObject(aProfile, TProfileState.Create(1));
   end;
 end;
 
 function FindProfile(aProfile: String): Integer;
 var
   i       : Integer;
+  lState  : TProfileState;
 begin
   i := wbDefProfiles.IndexOf(aProfile);
   if i >= 0 then begin
-    Result := PtrInt(wbDefProfiles.Objects[i]);
+    lState := GetProfileState(i);
+    if Assigned(lState) then
+      Result := lState.Value
+    else
+      Result := 0;
   end else
     Result := 0;
 end;
@@ -247,19 +281,46 @@ end;
 procedure MarkProfile(aProfile: String);
 var
   i       : Integer;
+  lState  : TProfileState;
 begin
   i := wbDefProfiles.IndexOf(aProfile);
-  if i >= 0 then
-    wbDefProfiles.Objects[i] := Pointer(PtrInt(-1));
+  if i >= 0 then begin
+    lState := GetProfileState(i);
+    if not Assigned(lState) then begin
+      lState := TProfileState.Create(0);
+      wbDefProfiles.Objects[i] := lState;
+    end;
+    lState.Value := -1;
+  end;
 end;
 
 procedure LockProfile(aProfile: String);
 var
   i       : Integer;
+  lState  : TProfileState;
 begin
   i := wbDefProfiles.IndexOf(aProfile);
-  if i >= 0 then
-    wbDefProfiles.Objects[i] := Pointer(PtrInt(-2));
+  if i >= 0 then begin
+    lState := GetProfileState(i);
+    if not Assigned(lState) then begin
+      lState := TProfileState.Create(0);
+      wbDefProfiles.Objects[i] := lState;
+    end;
+    lState.Value := -2;
+  end;
+end;
+
+procedure FreeProfileStates;
+var
+  i: Integer;
+begin
+  if not Assigned(wbDefProfiles) then
+    Exit;
+  for i := 0 to Pred(wbDefProfiles.Count) do begin
+    wbDefProfiles.Objects[i].Free;
+    wbDefProfiles.Objects[i] := nil;
+  end;
+  FreeAndNil(wbDefProfiles);
 end;
 
 procedure ProfileContainer(aFormat: TExportFormat; aElement: IwbNamedDef; var aProfile: String;
@@ -1748,6 +1809,7 @@ begin
         ReportProgress('Unexpected Error: <'+e.ClassName+': '+e.Message+'>');
     end;
   finally
+    FreeProfileStates;
     {$IFNDEF FPC}
     if DebugHook <> 0 then begin
       ReportProgress('Press enter to continue...');
