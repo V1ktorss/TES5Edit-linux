@@ -336,6 +336,12 @@ end;
 
 { TES5saves }
 
+procedure wbIgnoreElementRange(const aBasePtr: Pointer; const aEndPtr: Pointer); inline;
+begin
+  if (aBasePtr = nil) and (aEndPtr = nil) then
+    Exit;
+end;
+
 function SaveVersionDecider(aMinimum: Integer; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 var
   aType : Integer;
@@ -343,6 +349,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := aElement;
   while Assigned(Element.Container) do
@@ -370,6 +377,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := aElement;
   while Assigned(Element.Container) do
@@ -392,6 +400,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := aElement;
   while Assigned(Element.Container) do
@@ -464,6 +473,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := aElement;
   while Assigned(Element.Container) do
@@ -509,6 +519,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := aElement;
   while (Pos('Global Data ', Element.Name)=0) and Assigned(Element.Container) do
@@ -538,6 +549,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Array Entry Data', aElement);
   Assert(Element.BaseName = 'Array Entry Data');
@@ -627,6 +639,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Variable', aElement);
   Assert(Element.BaseName='Variable');
@@ -659,6 +672,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Element', aElement);
   Assert(Element.BaseName = 'Element');
@@ -701,6 +715,7 @@ var
   Container: IwbDataContainer;
 begin
   Result := 0;
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Stack', aElement);
   Assert(Element.BaseName='Stack');
@@ -733,6 +748,7 @@ var
   Container : IwbDataContainer;
 
 begin
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if VMObjectArrayCount<0 then begin
     Result := 0;
     if not Assigned(aElement) then Exit;
@@ -759,6 +775,7 @@ var
   Container : IwbDataContainer;
 
 begin
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if VMArrayTableCount<0 then begin
     Result := 0;
     if not Assigned(aElement) then Exit;
@@ -780,6 +797,7 @@ var
   Container : IwbDataContainer;
 
 begin
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   if StackTableCount<0 then begin
     Result := 0;
     if not Assigned(aElement) then Exit;
