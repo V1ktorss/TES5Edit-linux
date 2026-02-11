@@ -6113,21 +6113,27 @@ begin
 
   var wbAngleToStr: TwbToStrCallback :=
     procedure(var aValue: string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType)
+    var
+      loFull: Integer;
+      lVariant: Variant;
+      lValue: Extended;
+      lAngle: Extended;
+      lPosDegree: Integer;
+      lDeg: Double;
     begin
-      var loFull := 360;
+      loFull := 360;
 
       case aType of
         ctToStr, ctToSummary: begin
-          var lVariant: Variant;
           if Assigned(aElement) then
             lVariant := aElement.NativeValue;
 
           if not VarIsFloat(lVariant) then
             Exit;
 
-          var lValue: Extended := lVariant;
+          lValue := lVariant;
 
-          var lAngle := lValue * wbRadiansToDegreesScale;
+          lAngle := lValue * wbRadiansToDegreesScale;
           while lAngle > loFull do
             lAngle := lAngle - loFull;
           while lAngle < -loFull do
@@ -6144,12 +6150,11 @@ begin
             Exit;
 
           // Get position of degree symbol and check for presence
-          var lPosDegree := Pos(#$00B0, aValue);
+          lPosDegree := Pos(#$00B0, aValue);
           if lPosDegree = 0 then
             Exit;
 
           // Check numeric value
-          var lDeg: Double;
           try
             lDeg := StrToFloat(Copy(aValue, 1, lPosDegree - 1))
           except
@@ -6168,14 +6173,19 @@ begin
 
   var wbLonLanFunc :=
     function(aIsLat: Boolean): TwbToStrCallback
+    var
+      loFull: Integer;
+      loHalf: Integer;
+      loNegDir: Char;
+      loPosDir: Char;
     begin
-      var loFull := 360;
+      loFull := 360;
       if aIsLat then
         loFull := loFull div 2;
-      var loHalf := loFull div 2;
+      loHalf := loFull div 2;
 
-      var loNegDir: Char := 'W';
-      var loPosDir: Char := 'E';
+      loNegDir := 'W';
+      loPosDir := 'E';
       if aIsLat then begin
         loNegDir := 'S';
         loPosDir := 'N';
@@ -6183,28 +6193,42 @@ begin
 
       Result :=
         procedure(var aValue: string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType)
+        var
+          lVariant: Variant;
+          lValue: Extended;
+          lCoord: Extended;
+          lCoordDeg: Integer;
+          lCoordMin: Integer;
+          lCoordSec: Integer;
+          lPosDegree: Integer;
+          lPosMinute: Integer;
+          lPosSecond: Integer;
+          lDirection: Char;
+          lDeg: Integer;
+          lMin: Integer;
+          lSec: Integer;
+          lDecimalDeg: Extended;
         begin
           case aType of
             ctToStr{, ctToEditValue}, ctToSummary{, ctToSortKey}: begin
-              var lVariant: Variant;
               if Assigned(aElement) then
                 lVariant := aElement.NativeValue;
 
               if not VarIsFloat(lVariant) then
                 Exit;
 
-              var lValue: Extended := lVariant;
+              lValue := lVariant;
 
-              var lCoord := lValue * wbRadiansToDegreesScale;
+              lCoord := lValue * wbRadiansToDegreesScale;
 
               while lCoord > loHalf do
                 lCoord := lCoord - loFull;
               while lCoord < -loHalf do
                 lCoord := lCoord + loFull;
 
-              var lCoordDeg := Trunc(lCoord);
-              var lCoordMin := Trunc(Abs(lCoord - lCoordDeg) * 60);
-              var lCoordSec := Round((Abs(lCoord - lCoordDeg) * 60 - lCoordMin) * 60);
+              lCoordDeg := Trunc(lCoord);
+              lCoordMin := Trunc(Abs(lCoord - lCoordDeg) * 60);
+              lCoordSec := Round((Abs(lCoord - lCoordDeg) * 60 - lCoordMin) * 60);
               if lCoordSec = 60 then begin
                 lCoordSec := 0;
                 Inc(lCoordMin);
@@ -6228,22 +6252,22 @@ begin
                 Exit;
 
               // Get positions of symbols
-              var lPosDegree := Pos(#$00B0, aValue);
-              var lPosMinute := Pos('''', aValue);
-              var lPosSecond := Pos('"', aValue);
+              lPosDegree := Pos(#$00B0, aValue);
+              lPosMinute := Pos('''', aValue);
+              lPosSecond := Pos('"', aValue);
 
               // Check Valid Symbols and Direction
               if (lPosDegree = 0) or (lPosMinute = 0) or (lPosSecond = 0) then
                 Exit;
 
-              var lDirection := aValue[Length(aValue)];
+              lDirection := aValue[Length(aValue)];
               if (lDirection <> loPosDir) and (lDirection <> loNegDir) then
                 Exit;
 
               // Check Numeric Values
-              var lDeg := StrToIntDef(Copy(aValue, 1, lPosDegree - 1), -1);
-              var lMin := StrToIntDef(Copy(aValue, lPosDegree + 1, lPosMinute - lPosDegree - 1), -1);
-              var lSec := StrToIntDef(Copy(aValue, lPosMinute + 1, lPosSecond - lPosMinute - 1), -1);
+              lDeg := StrToIntDef(Copy(aValue, 1, lPosDegree - 1), -1);
+              lMin := StrToIntDef(Copy(aValue, lPosDegree + 1, lPosMinute - lPosDegree - 1), -1);
+              lSec := StrToIntDef(Copy(aValue, lPosMinute + 1, lPosSecond - lPosMinute - 1), -1);
 
               if (lDeg < 0) or (lDeg >= loHalf+1) or
                  ((lDeg = loHalf) and ( (lMin > 0) or (lSec > 0) ) ) or
@@ -6253,7 +6277,7 @@ begin
                 Exit;
 
               // Conversion to Decimal Degrees and Return Result
-              var lDecimalDeg := lDeg + (lMin / 60) + (lSec / 3600);
+              lDecimalDeg := lDeg + (lMin / 60) + (lSec / 3600);
               if (lDirection = loNegDir) or (lDecimalDeg = 180.0)  then
                 lDecimalDeg := -lDecimalDeg;
 
