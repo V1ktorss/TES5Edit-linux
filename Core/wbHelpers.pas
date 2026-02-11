@@ -1707,8 +1707,10 @@ end;
 
 {$IFNDEF FPC}
 procedure wbTwiddleHeight(aControl: TControl);
+var
+  lHeight: Integer;
 begin
-  var lHeight := aControl.Height;
+  lHeight := aControl.Height;
   aControl.Height := Succ(lHeight);
   aControl.Height := lHeight;
 end;

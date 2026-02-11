@@ -126,6 +126,7 @@ var
   CodePointer_TStringList_Sort           : TSort;
   CodePointer_TStringList_CompareStrings : TCompareStrings;
   Trampoline_TStringList_Sort            : procedure(Self: TStringListProtectedHacker);
+  Handle                                 : Pointer;
 
 function ListSortCompareStringItemPtr_AnsiCompareStr(Item1, Item2: TwbMergeSort<TwbTwoPtr>.TPtr): Integer;
 {$IFDEF WIN32}
@@ -295,7 +296,7 @@ initialization
     Free;
   end;
 
-  var Handle := BeginTransaction;
+  Handle := BeginTransaction;
   try
 
     @Trampoline_TStringList_Assign := InterceptCreate(@CodePointer_TStringList_Assign, @Detour_TStringList_Assign);
@@ -307,7 +308,7 @@ initialization
 
 finalization
 
-  var Handle := BeginTransaction;
+  Handle := BeginTransaction;
   try
 
     InterceptRemove(@Trampoline_TStringList_Assign);
@@ -318,4 +319,3 @@ finalization
   end;
 
 end.
-

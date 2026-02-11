@@ -1977,16 +1977,18 @@ begin
 end;
 
 procedure TdfContainer.Remap(const aMap: array of Cardinal);
+var
+  NewElements: TdfElements;
+  i: Integer;
 begin
   if FCount = 0 then
     Exit;
 
   Assert(Length(aMap) = FCount);
 
-  var NewElements: TdfElements;
   SetLength(NewElements, FCount);
 
-  for var i := Low(NewElements) to High(NewElements) do begin
+  for i := Low(NewElements) to High(NewElements) do begin
     Assert(aMap[i] < Cardinal(FCount));
     NewElements[aMap[i]] := fElements[i];
   end;
