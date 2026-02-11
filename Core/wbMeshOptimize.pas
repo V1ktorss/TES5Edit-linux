@@ -148,9 +148,11 @@ begin
 end;
 
 function GetVertexCount(const indices: TTriIndices): Cardinal;
+var
+  index: Cardinal;
 begin
   Result := 0;
-  for var index in indices do
+  for index in indices do
     if index > Result then
       Result := index;
 
@@ -160,8 +162,10 @@ end;
 
 // https://github.com/zeux/meshoptimizer/blob/master/src/meshoptimizer.h
 function meshopt_quantizeUnorm(v: Double; N: Integer): Integer;
+var
+  scale: Single;
 begin
-  var scale: Single := (1 shl N) - 1;
+  scale := (1 shl N) - 1;
 
   if v < 0 then v := 0 else if v > 0 then v := 1;
 
@@ -171,10 +175,12 @@ end;
 
 // https://github.com/zeux/meshoptimizer/blob/master/src/meshoptimizer.h
 function meshopt_quantizeSnorm(v: Double; N: Integer): Integer;
+var
+  scale: Single;
+  r: Single;
 begin
-  var scale: Single := (1 shl (N - 1)) - 1;
+  scale := (1 shl (N - 1)) - 1;
 
-  var r: Single;
   if v >= 0 then r := 0.5 else r := -0.5;
 
   if v < -1 then v := -1 else if v > 1 then v := 1;
@@ -185,6 +191,19 @@ end;
 
 // https://github.com/zeux/meshoptimizer/blob/master/src/vcacheanalyzer.cpp
 function meshopt_analyzeVertexCache(const indices: TTriIndices; cache_size: Cardinal = 16; warp_size: Cardinal = 0; primgroup_size: Cardinal = 0): TVertexCacheStatistics;
+var
+  index_count: Integer;
+  vertex_count: Cardinal;
+  warp_offset: Cardinal;
+  primgroup_offset: Cardinal;
+  cache_timestamps: array of Cardinal;
+  timestamp: Cardinal;
+  i: Integer;
+  a, b, c: Cardinal;
+  ac, bc, cc: Boolean;
+  j: Integer;
+  index: Cardinal;
+  unique_vertex_count: Integer;
 begin
   Assert(Length(indices) mod 3 = 0);
   Assert(cache_size >= 3);
@@ -193,24 +212,25 @@ begin
   Result.vertices_transformed := 0;
   Result.warps_executed := 0;
 
-  var index_count := Length(indices);
-  var vertex_count := GetVertexCount(indices);
+  index_count := Length(indices);
+  vertex_count := GetVertexCount(indices);
 
-  var warp_offset: Cardinal := 0;
-  var primgroup_offset: Cardinal := 0;
+  warp_offset := 0;
+  primgroup_offset := 0;
 
-  var cache_timestamps: array of Cardinal;
   SetLength(cache_timestamps, vertex_count);
 
-  var timestamp: Cardinal := cache_size + 1;
+  timestamp := cache_size + 1;
 
-  var i := 0;
+  i := 0;
   while i < index_count do begin
-    var a := indices[i + 0]; var b := indices[i + 1]; var c := indices[i + 2];
+    a := indices[i + 0];
+    b := indices[i + 1];
+    c := indices[i + 2];
 
-    var ac := (timestamp - cache_timestamps[a]) > cache_size;
-    var bc := (timestamp - cache_timestamps[b]) > cache_size;
-    var cc := (timestamp - cache_timestamps[c]) > cache_size;
+    ac := (timestamp - cache_timestamps[a]) > cache_size;
+    bc := (timestamp - cache_timestamps[b]) > cache_size;
+    cc := (timestamp - cache_timestamps[c]) > cache_size;
 
     // flush cache if triangle doesn't fit into warp or into the primitive buffer
     if (( (primgroup_size <> 0) and (primgroup_offset = primgroup_size) ) or ( (warp_size <> 0) and (warp_offset + Cardinal(ac) + Cardinal(bc) + Cardinal(cc) > warp_size) )) then begin
@@ -225,8 +245,8 @@ begin
     end;
 
     // update cache and add vertices to warp
-    for var j := 0 to 2 do begin
-      var index := indices[i + j];
+    for j := 0 to 2 do begin
+      index := indices[i + j];
 
       if timestamp - cache_timestamps[index] > cache_size then begin
         cache_timestamps[index] := timestamp;
@@ -239,7 +259,7 @@ begin
     Inc(i, 3);
   end;
 
-  var unique_vertex_count := 0;
+  unique_vertex_count := 0;
 
   for i := 0 to Pred(vertex_count) do
     if cache_timestamps[i] > 0 then
