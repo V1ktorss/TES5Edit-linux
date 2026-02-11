@@ -9737,6 +9737,8 @@ var
   _File                       : IwbFile;
   _OldFile                    : IwbFile;
   _NewMasterFile              : IwbFile;
+  lYesToAll                   : Boolean;
+  lYes                        : Boolean;
 begin
   if not wbEditAllowed then
     Exit;
@@ -9783,7 +9785,7 @@ begin
     end;
   end;
 
-  var lYesToAll := False;
+  lYesToAll := False;
   for j := Low(Nodes) to High(Nodes) do begin
     NodeData := vstNav.GetNodeData(Nodes[j]);
     if not Assigned(NodeData) then
@@ -9866,7 +9868,7 @@ begin
         end;
         // if it is not the last override and user confirms
         if (k < Pred(Length(Overrides))) then begin
-          var lYes := lYesToAll;
+          lYes := lYesToAll;
           if not lYes then
             case MessageDlg('Record '+MainRecord.Name+' has later overrides, update them too?', mtConfirmation, [mbYesToAll, mbYes, mbNo], 0) of
               mrYes:
@@ -10141,6 +10143,8 @@ var
   DialogResult                : Integer;
   MainRecord                  : IwbMainRecord;
   GroupRecord                 : IwbGroupRecord;
+  lNewMainRecord              : IwbMainRecord;
+  lActiveIdx                  : Integer;
 begin
   if not wbEditAllowed then
     Exit;
@@ -10165,9 +10169,9 @@ begin
   if DialogResult <> mrYes then
     Exit;
 
-  var lNewMainRecord := ActiveRecord;
+  lNewMainRecord := ActiveRecord;
   if Element.Equals(lNewMainRecord) then
-    for var lActiveIdx := Low(ActiveRecords) to High(ActiveRecords) do
+    for lActiveIdx := Low(ActiveRecords) to High(ActiveRecords) do
       if     Supports(ActiveRecords[lActiveIdx].Element, IwbMainRecord, lNewMainRecord)
          and not Element.Equals(lNewMainRecord)
       then
@@ -13011,6 +13015,12 @@ begin
 end;
 
 function IsUnnecessaryPersistent(MainRecord: IwbMainRecord): Boolean;
+var
+  lRefCount: Integer;
+  i: Integer;
+  lRefRecord: IwbMainRecord;
+  lNAME: IwbElement;
+  lBaseRecord: IwbMainRecord;
 begin
   if MainRecord.Flags.IsDeleted then begin
     Result := IsMasterTemporary(MainRecord);
@@ -13025,10 +13035,10 @@ begin
     if MainRecord.Flags._Flags and $10000 <> 0 then
       Exit;
 
-  var lRefCount := MainRecord.ReferencedByCount;
+  lRefCount := MainRecord.ReferencedByCount;
   if (lRefCount > 0) and (wbIsSkyrim or wbIsFallout4 or wbIsFallout76 or wbIsStarfield) then
-    for var i := 0 to Pred(lRefCount) do begin
-      var lRefRecord : IwbMainRecord;
+    for i := 0 to Pred(lRefCount) do begin
+      lRefRecord := nil;
       if Supports(MainRecord.ReferencedBy[i].LinksTo, IwbMainRecord, lRefRecord) then
         if lRefRecord.Signature = 'LCTN' then
           lRefCount := lRefCount - 1;
@@ -13040,7 +13050,7 @@ begin
   if Assigned(MainRecord.RecordBySignature['XTEL']) then
     Exit;
 
-  var lNAME := MainRecord.RecordBySignature['NAME'];
+  lNAME := MainRecord.RecordBySignature['NAME'];
   if not Assigned(lNAME) then
     Exit;
 
@@ -13048,7 +13058,7 @@ begin
     $4,$5,$6,$10,$12,$15,$1F,$34,$3B,$138C0,$3DF55: Exit;
   end;
 
-  var lBaseRecord : IwbMainRecord;
+  lBaseRecord := nil;
   if not Supports(lNAME.LinksTo, IwbMainRecord, lBaseRecord) then
     Exit;
 
@@ -14981,6 +14991,9 @@ var
   _File                       : IwbFile;
   i                           : Integer;
   Nodes                       : TNodeArray;
+  lItemCount                  : Integer;
+  lAddToMni                   : TMenuItem;
+  IsMainRecord                : Boolean;
 begin
   mniNavTest.Visible := DebugHook <> 0;
 
@@ -15088,8 +15101,8 @@ begin
   mniNavAdd.Clear;
   pmuNavAdd.Items.Clear;
 
-  var lItemCount := 0;
-  var lAddToMni := mniNavAdd;
+  lItemCount := 0;
+  lAddToMni := mniNavAdd;
   if not wbTranslationMode and wbEditAllowed then
     if Supports(Element, IwbContainerElementRef, Container) then
       if Container.IsElementEditable(nil) then begin
@@ -15112,7 +15125,7 @@ begin
 
   mniNavAdd.Visible := mniNavAdd.Count > 0;
 
-  var IsMainRecord := Supports(Element, IwbMainRecord, MainRecord);
+  IsMainRecord := Supports(Element, IwbMainRecord, MainRecord);
 
   mniNavCopyAsOverride.Visible := mniNavCheckForErrors.Visible and not mniNavAddMasters.Visible;
 
@@ -20663,16 +20676,18 @@ end;
 procedure TfrmMain.WMUser(var Message: TMessage);
 var
   t : string;
+  Strs: TStringDynArray;
+  s: string;
 begin
   Pointer(t) := Pointer(Message.WParam);
   if not Assigned(NewMessages) then
     NewMessages := TStringList.Create;
 
-  var Strs := t.Split(CRLF);
+  Strs := t.Split(CRLF);
   if Length(Strs) < 1 then
     SetLength(Strs, 1);
 
-  for var s in Strs do
+  for s in Strs do
     NewMessages.Add(s);
 end;
 
