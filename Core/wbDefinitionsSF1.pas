@@ -107,6 +107,8 @@ var
   wbLonLanFunc: function(aIsLat: Boolean): TwbToStrCallback;
   wbLongitudeToStr: TwbToStrCallback;
   wbLatitudeToStr: TwbToStrCallback;
+  wbSPEDRotationSpeedAngles: function(aName: string = 'Unknown'): IwbStructDef;
+  wbSPEDMovementSpeeds: function(aName: string = 'Unknown'): IwbStructDef;
   wbLongitudeDouble: IwbFloatDef;
   wbLatitudeDouble: IwbFloatDef;
   lDOBJUsesVarRecs1: TwbVarRecs;
@@ -12009,7 +12011,7 @@ begin
     ])).IncludeFlag(dfCollapsed, wbCollapseFlags)
   ]);
 
-  var wbSPEDRotationSpeedAngles := function(aName: string = 'Unknown'): IwbStructDef
+  wbSPEDRotationSpeedAngles := function(aName: string = 'Unknown'): IwbStructDef
   begin
     Result :=
       wbStruct(aName, [
@@ -12023,7 +12025,7 @@ begin
       ]);
   end;
 
-  var wbSPEDMovementSpeeds := function(aName: string = 'Unknown'): IwbStructDef
+  wbSPEDMovementSpeeds := function(aName: string = 'Unknown'): IwbStructDef
   begin
     Result :=
       wbStruct(aName, [
