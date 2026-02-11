@@ -2108,9 +2108,17 @@ begin
   end;
 end;
 
-function wbPtrDiffCardinal(const aPtr, aOrigin: Pointer): Cardinal;
+function wbPtrDiffNative(const aPtr, aOrigin: Pointer): NativeUInt;
 begin
-  Result := Cardinal(PByte(aPtr) - PByte(aOrigin));
+  Result := NativeUInt(PByte(aPtr) - PByte(aOrigin));
+end;
+
+procedure wbSubtractConsumed(var aRemaining: Cardinal; const aConsumed: NativeUInt);
+begin
+  if aConsumed >= NativeUInt(aRemaining) then
+    aRemaining := 0
+  else
+    aRemaining := aRemaining - Cardinal(aConsumed);
 end;
 
 function ChangedFormDataCounter(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Cardinal;
@@ -2143,7 +2151,7 @@ var
   Container : IwbDataContainer;
   EasC      : IwbDataContainer;
   Origin    : Pointer;
-  Consumed  : Cardinal;
+  Consumed  : NativeUInt;
 begin
   Result := 0;
   if not Assigned(aElement) then Exit;
@@ -2169,8 +2177,8 @@ begin
 
     if Supports(Element, IwbDataContainer, Container) then begin
       Origin := Container.DataBasePtr;
-      Consumed := wbPtrDiffCardinal(aBasePtr, Origin);
-      Result := Result - Consumed;
+      Consumed := wbPtrDiffNative(aBasePtr, Origin);
+      wbSubtractConsumed(Result, Consumed);
     end;
   end;
 end;
@@ -2181,7 +2189,7 @@ var
   Container : IwbDataContainer;
   EasC      : IwbDataContainer;
   Origin    : Pointer;
-  Consumed  : Cardinal;
+  Consumed  : NativeUInt;
 begin
   Result := 0;
   if not Assigned(aElement) then Exit;
@@ -2209,8 +2217,8 @@ begin
       Origin := Container.DataBasePtr;
       Element := Container.Elements[2];
       if Assigned(Element) and Supports(Element, IwbDataContainer, EasC) then begin
-        Consumed := wbPtrDiffCardinal(EasC.DataBasePtr, Origin);
-        Result := Result - Consumed;
+        Consumed := wbPtrDiffNative(EasC.DataBasePtr, Origin);
+        wbSubtractConsumed(Result, Consumed);
       end;
     end;
   end;
@@ -2253,7 +2261,7 @@ end;
 function DumpCounter(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Cardinal;
 begin
   if wbBytesToDump = $FFFFFFFF then
-    Result := wbPtrDiffCardinal(aEndPtr, aBasePtr) div wbBytesToGroup + 1
+    Result := Cardinal((wbPtrDiffNative(aEndPtr, aBasePtr) div wbBytesToGroup) + 1)
   else
     Result := wbBytesToDump div wbBytesToGroup + 1;
 end;
@@ -2287,7 +2295,7 @@ var
   Container : IwbDataContainer;
   EasC      : IwbDataContainer;
   Origin    : Pointer;
-  Consumed  : Cardinal;
+  Consumed  : NativeUInt;
 begin
   Result := 0;
   if not Assigned(aElement) then Exit;
@@ -2301,8 +2309,8 @@ begin
       Origin := EasC.DataBasePtr;
       Element := Container.ElementByName['Remainder'];
       if Assigned(Element) and Supports(Element, IwbDataContainer, EasC) then begin
-        Consumed := wbPtrDiffCardinal(EasC.DataBasePtr, Origin);
-        Result := Result - Consumed;
+        Consumed := wbPtrDiffNative(EasC.DataBasePtr, Origin);
+        wbSubtractConsumed(Result, Consumed);
         case aModifier of
           1: Result := Result div wbBytesToGroup;
           2: Result := Result mod wbBytesToGroup;
