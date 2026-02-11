@@ -27,6 +27,22 @@ uses
   wbDefinitionsCommon;
 
 procedure DefineSF1;
+var
+  wbIdxSimpleGroup: TwbNamedIndex;
+  wbIdxComplexGroup: TwbNamedIndex;
+  wbIdxModulation: TwbNamedIndex;
+  wbIdxAVMByType: TArray<TwbNamedIndex>;
+  wbIdxStarID: TwbNamedIndex;
+  wbNull: IwbValueDef;
+  wbLLCT: IwbSubRecordDef;
+  wbCITC: IwbSubRecordDef;
+  wbCITCReq: IwbSubRecordDef;
+  wbLVLDReq: IwbSubRecordDef;
+  wbSPCT: IwbSubRecordDef;
+  wbSPLO: IwbSubRecordDef;
+  wbSPLOs: IwbSubRecordArrayDef;
+  wbCVPA: IwbSubRecordWithArrayDef;
+  wbCDIX: IwbSubRecordWithArrayDef;
 begin
   DefineCommon;
 end;
@@ -2989,25 +3005,25 @@ begin
   wbHEDRVersion := 0.96;
   wbCellSizeFactor := 100;
 
-  var wbIdxSimpleGroup := wbNamedIndex('SimpleGroup', True);
-  var wbIdxComplexGroup := wbNamedIndex('ComplexGroup', True);
-  var wbIdxModulation := wbNamedIndex('Modulation', True);
+  wbIdxSimpleGroup := wbNamedIndex('SimpleGroup', True);
+  wbIdxComplexGroup := wbNamedIndex('ComplexGroup', True);
+  wbIdxModulation := wbNamedIndex('Modulation', True);
 
-  var wbIdxAVMByType : TArray<TwbNamedIndex> := [-1, wbIdxSimpleGroup, wbIdxComplexGroup, wbIdxModulation];
+  wbIdxAVMByType := [-1, wbIdxSimpleGroup, wbIdxComplexGroup, wbIdxModulation];
 
-  var wbIdxStarID := wbNamedIndex('StarID', True);
+  wbIdxStarID := wbNamedIndex('StarID', True);
 
-  var wbNull := wbUnused(-255);
-  var wbLLCT := wbInteger(LLCT, 'Count', itU8, nil, cpBenign);
-  var wbCITC := wbInteger(CITC, 'Condition Count', itU32, nil, cpBenign).IncludeFlag(dfSkipImplicitEdit);
-  var wbCITCReq := wbInteger(CITC, 'Condition Count', itU32, nil, cpBenign, True).IncludeFlag(dfSkipImplicitEdit);
-  var wbLVLDReq := wbFloat(LVLD, 'Chance None', cpNormal, True);
+  wbNull := wbUnused(-255);
+  wbLLCT := wbInteger(LLCT, 'Count', itU8, nil, cpBenign);
+  wbCITC := wbInteger(CITC, 'Condition Count', itU32, nil, cpBenign).IncludeFlag(dfSkipImplicitEdit);
+  wbCITCReq := wbInteger(CITC, 'Condition Count', itU32, nil, cpBenign, True).IncludeFlag(dfSkipImplicitEdit);
+  wbLVLDReq := wbFloat(LVLD, 'Chance None', cpNormal, True);
 
-  var wbSPCT := wbInteger(SPCT, 'Count', itU32, nil, cpBenign);
-  var wbSPLO := wbFormIDCk(SPLO, 'Actor Effect', [SPEL, LVSP]);
-  var wbSPLOs := wbRArrayS('Actor Effects', wbSPLO).SetCountPath(SPCT);
+  wbSPCT := wbInteger(SPCT, 'Count', itU32, nil, cpBenign);
+  wbSPLO := wbFormIDCk(SPLO, 'Actor Effect', [SPEL, LVSP]);
+  wbSPLOs := wbRArrayS('Actor Effects', wbSPLO).SetCountPath(SPCT);
 
-  var wbCVPA := wbArray(CVPA,'Components',
+  wbCVPA := wbArray(CVPA,'Components',
     wbStruct('Component', [
       wbFormIDCk('Component', sigBaseObjects), // CK allows only IRES
       wbInteger('Count', itU32),
@@ -3018,7 +3034,7 @@ begin
     .IncludeFlag(dfSummaryMembersNoName)
     .IncludeFlag(dfCollapsed, wbCollapseItems));
 
-  var wbCDIX := wbArray(CDIX, 'Component Display Indices', wbInteger('Display Index', itU8));
+  wbCDIX := wbArray(CDIX, 'Component Display Indices', wbInteger('Display Index', itU8));
 
   //wbActorValue := wbInteger('Actor Value', itS32, wbActorValueEnum);
   wbActorValue := function(aName: string = 'Actor Value'): IwbIntegerDef
