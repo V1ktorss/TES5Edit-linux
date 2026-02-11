@@ -2309,6 +2309,8 @@ var
   Signature : TwbSignature;
   Dummy     : Integer;
 begin
+  wbIgnoreUnused(@aSilent);
+
   if not IsElementEditable(nil) then
     raise Exception.Create('File "' + GetFileName + '" is not editable');
 
@@ -6480,6 +6482,8 @@ function ValueDoInit(const aValueDef: IwbValueDef; const aContainer: IwbContaine
 
 function TwbContainer.Add(const aName: string; aSilent: Boolean): IwbElement;
 begin
+  wbIgnoreUnused(@aName);
+  wbIgnoreUnused(@aSilent);
   Result := nil;
 end;
 
@@ -8911,6 +8915,8 @@ var
   i         : Integer;
   Group     : IwbGroupRecord;
 begin
+  wbIgnoreUnused(@aSilent);
+
   Result := nil;
 
   if not wbIsInternalEdit then
