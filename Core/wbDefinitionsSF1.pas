@@ -103,6 +103,10 @@ var
   wbMarkerEntryExitTypes: IwbFlagsDef;
   wbSNAMMarkerParams: IwbRecordMemberDef;
   wbCSTYPowerWeightingStruct: IwbStructDef;
+  wbLongitudeToStr: TwbToStrCallback;
+  wbLatitudeToStr: TwbToStrCallback;
+  wbLongitudeDouble: IwbFloatDef;
+  wbLatitudeDouble: IwbFloatDef;
   lDOBJUsesVarRecs1: TwbVarRecs;
   lDOBJUsesVarRecs2: TwbVarRecs;
   lDOBJUsesVarRecs3: TwbVarRecs;
@@ -6318,11 +6322,11 @@ begin
         end;
     end;
 
-  var wbLongitudeToStr := wbLonLanFunc(False);
-  var wbLatitudeToStr := wbLonLanFunc(True);
+  wbLongitudeToStr := wbLonLanFunc(False);
+  wbLatitudeToStr := wbLonLanFunc(True);
 
-  var wbLongitudeDouble := wbDouble('Longitude', cpNormal, True, 1, 12).SetToStr(wbLongitudeToStr);
-  var wbLatitudeDouble := wbDouble('Latitude', cpNormal, True, 1, 12).SetToStr(wbLatitudeToStr);
+  wbLongitudeDouble := wbDouble('Longitude', cpNormal, True, 1, 12).SetToStr(wbLongitudeToStr);
+  wbLatitudeDouble := wbDouble('Latitude', cpNormal, True, 1, 12).SetToStr(wbLatitudeToStr);
 
   wbBaseFormComponents := wbRArray('Base Form Components',
     wbRStructSK([0], 'Component', [
