@@ -6325,8 +6325,17 @@ var
   wbLandFlags       : IwbFlagsDef;
   wbLandLayerDefault: Variant;
 begin
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap mode enabled (FPC).');
+{$ENDIF}
+{$ENDIF}
   wbIdxAddonNode := wbNamedIndex('AddonNode', True);
   wbIdxCollisionLayer := wbNamedIndex('CollisionLayer', True);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbActorImpactMaterialEnum :=
     wbEnum([
@@ -6343,6 +6352,10 @@ begin
       {10} 'Organic Bug',
       {11} 'Organic Glow'
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbAggressionEnum :=
     wbEnum([
@@ -6351,6 +6364,10 @@ begin
       {2} 'Very Aggressive',
       {3} 'Frenzied'
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbAlignmentEnum :=
     wbEnum([
@@ -6360,7 +6377,20 @@ begin
       {3} 'Very Good',
       {4} 'Very Evil'
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
+{$IFDEF FPC}
+  wbArchtypeEnum :=
+    wbEnum([
+      {0} 'Value Modifier',
+      {1} 'Script',
+      {2} 'Dispel',
+      {3} 'Cure Disease'
+    ]);
+{$ELSE}
   wbArchtypeEnum :=
     wbEnum([
       {0} 'Value Modifier',
@@ -6384,6 +6414,11 @@ begin
       35, IsFNV('Limb Condition', ''),
       36, IsFNV('Turbo', '')
     ]);
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbAssistanceEnum :=
     wbEnum([
@@ -6391,7 +6426,17 @@ begin
       {1} 'Helps Allies',
       {2} 'Helps Friends and Allies'
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
+{$IFDEF FPC}
+  wbAttackAnimationEnum :=
+    wbEnum([
+      {0} 'Any'
+    ]);
+{$ELSE}
   wbAttackAnimationEnum :=
     wbEnum([],[
        26, 'AttackLeft',
@@ -6511,14 +6556,48 @@ begin
       178, 'PipBoyChild',
       255, 'Any'
     ]);
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
+{$IFDEF FPC}
+  wbAxisEnum :=
+    wbEnum([
+      {0} 'X',
+      {1} 'Y',
+      {2} 'Z'
+    ]);
+{$ELSE}
   wbAxisEnum :=
     wbEnum([], [
       88, 'X',
       89, 'Y',
       90, 'Z'
     ]);
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
+{$IFDEF FPC}
+  wbBlendModeEnum :=
+    wbEnum([
+      {0}  'Zero',
+      {1}  'One',
+      {2}  'Source Color',
+      {3}  'Source Inverse Color',
+      {4}  'Source Alpha',
+      {5}  'Source Inverted Alpha',
+      {6}  'Dest Alpha',
+      {7}  'Dest Inverted Alpha',
+      {8}  'Dest Color',
+      {9}  'Dest Inverse Color',
+      {10} 'Source Alpha SAT'
+    ]);
+{$ELSE}
   wbBlendModeEnum :=
     wbEnum([], [
       1,  'Zero',
@@ -6533,7 +6612,22 @@ begin
       10, 'Dest Inverse Color',
       11, 'Source Alpha SAT'
     ]);
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
+{$IFDEF FPC}
+  wbBlendOpEnum :=
+    wbEnum([
+      {0} 'Add',
+      {1} 'Subtract',
+      {2} 'Reverse Subtract',
+      {3} 'Minimum',
+      {4} 'Maximum'
+    ]);
+{$ELSE}
   wbBlendOpEnum :=
     wbEnum([], [
       1, 'Add',
@@ -6542,7 +6636,32 @@ begin
       4, 'Minimum',
       5, 'Maximum'
     ]);
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
+{$IFDEF FPC}
+  wbBodyLocationEnum :=
+    wbEnum([
+      {0} 'Torso',
+      {1} 'Head 1',
+      {2} 'Head 2',
+      {3} 'Left Arm 1',
+      {4} 'Left Arm 2',
+      {5} 'Right Arm 1',
+      {6} 'Right Arm 2',
+      {7} 'Left Leg 1',
+      {8} 'Left Leg 2',
+      {9} 'Left Leg 3',
+      {10} 'Right Leg 1',
+      {11} 'Right Leg 2',
+      {12} 'Right Leg 3',
+      {13} 'Brain',
+      {14} 'Weapon'
+    ]);
+{$ELSE}
   wbBodyLocationEnum :=
     wbEnum([
       {0} 'Torso',
@@ -6563,6 +6682,11 @@ begin
     ], [
      -1, 'None'
     ]);
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbBodyPartIndexEnum :=
     wbEnum([
@@ -6575,12 +6699,20 @@ begin
                  'Upper Body Texture'),
       {4} IsTES4('Tail', '')
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbBoolEnum :=
     wbEnum([
       {0} 'False',
       {1} 'True'
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbConfidenceEnum :=
     wbEnum([
@@ -6590,7 +6722,17 @@ begin
       {3} 'Brave',
       {4} 'Foolhardy'
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
+{$IFDEF FPC}
+  wbCRCValuesEnum :=
+    wbEnum([
+      {0} 'None'
+    ]);
+{$ELSE}
   wbCRCValuesEnum :=
     wbEnum([
       {0}               'None'
@@ -6803,6 +6945,11 @@ begin
       Int64($6AF11190), 'QuestPathingRequest',
       Int64($FCD0CCC3), 'Water'
     ]);
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbCriticalStageEnum :=
     wbEnum([
@@ -6814,7 +6961,21 @@ begin
       {5} IsFO4Plus('Freeze Start', ''),
       {6} IsFO4Plus('Freeze End', '')
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
+{$IFDEF FPC}
+  wbCrimeTypeEnum :=
+    wbEnum([
+      {0} 'Steal',
+      {1} 'Pickpocket',
+      {2} 'Trespass',
+      {3} 'Attack',
+      {4} 'Murder'
+    ]);
+{$ELSE}
   wbCrimeTypeEnum :=
     wbEnum([
       {0} 'Steal',
@@ -6830,6 +6991,11 @@ begin
     ], [
       -1, 'None'
     ]);
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbCreatureTypeEnum :=
     wbEnum([
@@ -6842,6 +7008,10 @@ begin
       {6} 'Robot',
       {7} 'Giant'
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbEffectTypeEnum :=
     wbEnum([
@@ -6849,7 +7019,30 @@ begin
       {1} 'Touch',
       {2} 'Target'
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
+{$IFDEF FPC}
+  wbEquipTypeEnum :=
+    wbEnum([
+      {0}  'Big Guns',
+      {1}  'Energy Weapons',
+      {2}  'Small Guns',
+      {3}  'Melee Weapons',
+      {4}  'Unarmed Weapon',
+      {5}  'Thrown Weapons',
+      {6}  'Mine',
+      {7}  'Body Wear',
+      {8}  'Head Wear',
+      {9}  'Hand Wear',
+      {10} 'Chems',
+      {11} 'Stimpak',
+      {12} 'Food',
+      {13} 'Alcohol'
+    ]);
+{$ELSE}
   wbEquipTypeEnum :=
     wbEnum([
       {0}  'Big Guns',
@@ -6869,7 +7062,22 @@ begin
     ], [
       -1, 'None'
     ]);
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+  Exit;
+{$ENDIF}
+{$ENDIF}
 
+{$IFDEF FPC}
+  wbMenuModeEnum :=
+    wbEnum([
+      {0} 'Any',
+      {1} 'Type: Character Interface',
+      {2} 'Type: Other',
+      {3} 'Type: Console'
+    ]);
+{$ELSE}
   wbMenuModeEnum :=
     wbEnum([
       {0}          'Any',
@@ -6955,6 +7163,11 @@ begin
       1083, IsFNV ('Minigame: Caravan', ''),
       1084, IsFNV ('Character Creation Traits', '')
     ]);
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+{$ENDIF}
+{$ENDIF}
 
   wbMoodEnum :=
     wbEnum([

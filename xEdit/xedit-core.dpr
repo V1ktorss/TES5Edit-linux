@@ -35,7 +35,7 @@ end;
 begin
   SysUtils.FormatSettings.DecimalSeparator := '.';
 
-  if HasHelpSwitch then begin
+  if (ParamCount = 0) or HasHelpSwitch then begin
     WriteLn('xedit-core (headless)');
     WriteLn('Usage: xedit-core [options]');
     WriteLn('  -h, --help   Show this help');

@@ -717,6 +717,7 @@ end;
 function _DoInit: Boolean;
 var
   s: string;
+  hasScriptHostSwitch: Boolean;
   ToolModes: TwbSetOfMode;
   ToolSources: TwbSetOfSource;
   i: Integer;
@@ -1370,8 +1371,12 @@ begin
         tsPlugins: DefineFO3;
       end;
       gmFO4, gmFO4VR: case wbToolSource of
-        tsSaves:   DefineFO4Saves;
-        tsPlugins: DefineFO4;
+        tsSaves: begin
+          DefineFO4Saves;
+        end;
+        tsPlugins: begin
+          DefineFO4;
+        end;
       end;
       gmFO76: case wbToolSource of
         tsPlugins: DefineFO76;
@@ -1395,11 +1400,15 @@ begin
       end;
     end;
   except
-    on E: Exception do
-      raise Exception.Create(
+    on E: Exception do begin
+      xeShowMessage(
         'Define stage failed (game=' + IntToStr(Integer(wbGameMode)) +
-        ', source=' + IntToStr(Integer(wbToolSource)) + '): ' + E.Message
+        ', source=' + IntToStr(Integer(wbToolSource)) + '): [' +
+        E.ClassName + '] ' + E.Message + ' @ ' +
+        IntToHex(PtrUInt(ExceptAddr), SizeOf(Pointer) * 2)
       );
+      raise;
+    end;
   end;
 
   if FindCmdLineSwitch('reportinjected') then
@@ -1539,9 +1548,22 @@ begin
   else if xeAutoGameLink then
     wbSubMode := 'Auto Game Link';
 
-  if not wbFindCmdLineParam('scripthost', s) then
+  hasScriptHostSwitch := wbFindCmdLineParam('scripthost', s);
+  if not hasScriptHostSwitch then
     s := xeDefaultScriptHost;
+{$IFDEF XEDIT_HEADLESS}
+  try
+    TxeScriptHost.Init(s);
+  except
+    on E: Exception do
+      if hasScriptHostSwitch then
+        raise
+      else
+        WriteLn(ErrOutput, '[headless] ScriptHost "' + s + '" unavailable, continuing without scripting support.');
+  end;
+{$ELSE}
   TxeScriptHost.Init(s);
+{$ENDIF}
 
   wbApplicationTitle := wbAppName + wbToolName + ' ' + VersionString.ToString;
   {$IFDEF LiteVersion}

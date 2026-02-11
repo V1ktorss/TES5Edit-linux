@@ -20,6 +20,11 @@ This document tracks what is already done for the native Linux path and what com
   - `wbDefinitionsFO76.pas` (passes)
   - `wbDefinitionsTES3.pas` (passes after FPC-guarded definition body)
 - `xedit-core` headless build now links successfully via `linux/native-port/build-xedit-headless.sh`
+- Headless smoke test now covers both `-h` and init path (`-dummy`) via
+  `linux/native-port/smoke-test-xedit-headless.sh`
+- FPC headless init no longer crashes in early FO4 common definitions:
+  - `DefineCommon` uses a reduced bootstrap path under `FPC + XEDIT_HEADLESS`
+  - keeps `xedit-core -dummy` stable for headless smoke checks
 
 ## Completed Milestones
 
@@ -133,6 +138,7 @@ This document tracks what is already done for the native Linux path and what com
   - extended readiness gate with strict mode (`ENFORCE_STYLE=1`) and enabled it in CI to keep style namespace usage at zero as well
 - configured xEdit readiness CI to run with `RUN_BSARCH=0` so the lane stays focused on xEdit/readiness checks
 - added optional headless smoke script `linux/native-port/smoke-test-xedit-headless.sh` and wired CI to run it when `linux/bin/xedit-core` is available
+- smoke script now supports multi-case runs (`XEDIT_HEADLESS_CASES`, default `-h|-dummy`) and treats non-zero exit codes as failures
 - added `linux/native-port/ci-preflight.sh` as shared CI entry point to run all native-port checks with consistent permissions and strict-style gating
 - started xDump CLI decoupling:
   - guarded Windows-only imports and PE flags behind `MSWINDOWS`
@@ -145,6 +151,7 @@ This document tracks what is already done for the native Linux path and what com
 
 - Large VCL surface area still blocks direct xEdit GUI port.
 - Script host and plugin assumptions may still include Windows-only behavior.
+- FPC/Linux still requires reduced definition bootstrap in headless mode; full `DefineCommon` parity is not complete yet.
 - GUI usability parity with original BSArchPro still needs incremental tuning.
 
 ## Immediate Action List

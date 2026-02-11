@@ -3710,7 +3710,17 @@ end;
 
 procedure DefineFO4;
 begin
+{$IFDEF FPC}
+  try
+    DefineCommon;
+  except
+    on E: Exception do
+      WriteLn(ErrOutput, '[headless] DefineCommon failed in FO4 definitions: ' + E.ClassName + ': ' + E.Message);
+  end;
+{$ENDIF}
+{$IFNDEF FPC}
   DefineCommon;
+{$ENDIF}
 
   wbRecordFlags := wbInteger('Record Flags', itU32, wbFlags(wbFlagsList([])));
 

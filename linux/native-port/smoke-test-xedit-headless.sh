@@ -3,9 +3,9 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 LOG_DIR="/tmp"
-LOG_FILE="${LOG_DIR}/xedit-headless-smoke.log"
 TIMEOUT_SECONDS="${XEDIT_HEADLESS_TIMEOUT:-20}"
-HEADLESS_ARGS="${XEDIT_HEADLESS_ARGS:--h}"
+HEADLESS_ARGS="${XEDIT_HEADLESS_ARGS:-}"
+HEADLESS_CASES="${XEDIT_HEADLESS_CASES:--h|-dummy}"
 
 find_xedit_bin() {
   if [[ -n "${XEDIT_BIN:-}" && -x "${XEDIT_BIN}" ]]; then
@@ -38,19 +38,41 @@ if [[ -z "${XEDIT_BIN_PATH}" ]]; then
 fi
 
 echo "[xedit-smoke] Using binary: ${XEDIT_BIN_PATH}"
-echo "[xedit-smoke] Running: ${XEDIT_BIN_PATH} ${HEADLESS_ARGS}"
 
-set +e
-timeout "${TIMEOUT_SECONDS}"s "${XEDIT_BIN_PATH}" ${HEADLESS_ARGS} >"${LOG_FILE}" 2>&1
-exit_code=$?
-set -e
-
-if [[ "${exit_code}" -eq 124 ]]; then
-  echo "[xedit-smoke] FAILED: command timed out after ${TIMEOUT_SECONDS}s"
-  echo "[xedit-smoke] Log: ${LOG_FILE}"
-  exit 1
+cases=()
+if [[ -n "${HEADLESS_ARGS}" ]]; then
+  cases+=("${HEADLESS_ARGS}")
+else
+  IFS='|' read -r -a cases <<< "${HEADLESS_CASES}"
 fi
 
-echo "[xedit-smoke] Exit code: ${exit_code}"
-echo "[xedit-smoke] Log: ${LOG_FILE}"
-echo "[xedit-smoke] PASS (process started and returned without hanging)"
+for case_args in "${cases[@]}"; do
+  safe_name="$(echo "${case_args}" | tr -cs '[:alnum:]' '_' | sed 's/^_//; s/_$//')"
+  [[ -z "${safe_name}" ]] && safe_name="default"
+  log_file="${LOG_DIR}/xedit-headless-smoke-${safe_name}.log"
+
+  echo "[xedit-smoke] Running: ${XEDIT_BIN_PATH} ${case_args}"
+  set +e
+  # shellcheck disable=SC2206
+  cmd_args=( ${case_args} )
+  timeout "${TIMEOUT_SECONDS}"s "${XEDIT_BIN_PATH}" "${cmd_args[@]}" >"${log_file}" 2>&1
+  exit_code=$?
+  set -e
+
+  if [[ "${exit_code}" -eq 124 ]]; then
+    echo "[xedit-smoke] FAILED: command timed out after ${TIMEOUT_SECONDS}s (${case_args})"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if [[ "${exit_code}" -ne 0 ]]; then
+    echo "[xedit-smoke] FAILED: non-zero exit code ${exit_code} (${case_args})"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  echo "[xedit-smoke] Exit code: ${exit_code}"
+  echo "[xedit-smoke] Log: ${log_file}"
+done
+
+echo "[xedit-smoke] PASS (all cases completed successfully)"
