@@ -7552,11 +7552,19 @@ begin
     .IncludeFlag(dfCollapsed, wbCollapseOther));
 {$IFDEF FPC}
 {$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbCellGrid.');
-  Exit;
+  WriteLn(ErrOutput, '[headless] DefineCommon: passed wbCellGrid.');
 {$ENDIF}
 {$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+  wbDATAPosRot :=
+    IwbRecordMemberDef(wbByteArray(DATA, 'Position/Rotation (headless fallback)', 24).SetRequired);
+{$ELSE}
   wbDATAPosRot := wbVec3PosRot(DATA).SetRequired;
+{$ENDIF}
+{$ELSE}
+  wbDATAPosRot := wbVec3PosRot(DATA).SetRequired;
+{$ENDIF}
 
   wbFaction :=
     IwbRecordMemberDef(wbStructSK(SNAM, [0], 'Faction', [
@@ -7617,6 +7625,12 @@ begin
         .IncludeFlag(dfSummaryMembersNoName)
         .IncludeFlag(dfSummaryNoSortKey)
       )).SetCountPath(CS2H);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbActorSounds.');
+  Exit;
+{$ENDIF}
+{$ENDIF}
 
   wbMagicEffectSounds :=
     wbArrayS(SNDD, 'Sounds',
