@@ -19446,11 +19446,12 @@ begin
       Result :=
         wbInteger(aSignature, aName, itS16,
           function(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string
+          var
+            lMainRecord: IwbMainRecord;
+            lElement: IwbElement;
           begin
-            var lMainRecord: IwbMainRecord;
-
             if wbTryGetContainingMainRecord(aElement, lMainRecord) then begin
-              var lElement := lMainRecord.ElementBySignature[SPQU];
+              lElement := lMainRecord.ElementBySignature[SPQU];
               if not wbTryGetMainRecord(lElement, lMainRecord) then
                 lMainRecord := nil;
             end else
@@ -19522,8 +19523,10 @@ begin
     wbSoundReference(WED0, 'Star Sound')
   ])
   .SetBuildIndexKeys(procedure(const aMainRecord: IwbMainRecord; var aIndexKeys: TwbIndexKeys)
+  var
+    lStarID: Variant;
   begin
-    var lStarID := aMainRecord.ElementNativeValues[DNAM];
+    lStarID := aMainRecord.ElementNativeValues[DNAM];
     if not VarIsOrdinal(lStarID) then
       Exit;
 
