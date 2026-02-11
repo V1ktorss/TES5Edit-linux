@@ -219,6 +219,9 @@ var
   wbEFIT: IwbSubRecordWithStructDef;
   wbREFLColorEnum: IwbEnumDef;
   wbREFLFloatEnum: IwbEnumDef;
+  wbRaceOverrideDontShow: function(aFlag: Byte): TwbDontShowCallback;
+  wbRACEDAT2Flags: IwbFlagsDef;
+  wbRaceSizeEnum: IwbEnumDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -13326,7 +13329,7 @@ begin
      ]), cpNormal, True).IncludeFlag(dfCollapsed, wbCollapseFlags)
   ]);
 
-  var wbRaceOverrideDontShow :=
+  wbRaceOverrideDontShow :=
     function(aFlag: Byte): TwbDontShowCallback
     begin
       Result :=
@@ -13350,7 +13353,7 @@ begin
         end;
     end;
 
-  var wbRACEDAT2Flags :=
+  wbRACEDAT2Flags :=
     wbFlags([
       {0x0000000000000001} 'Playable',
       {0x0000000000000002} 'FaceGen Head',
@@ -13418,7 +13421,7 @@ begin
       {0x8000000000000000} 'Unknown 63'
     ]);
 
-  var wbRaceSizeEnum :=
+  wbRaceSizeEnum :=
     wbEnum([], [
      -1, 'Unknown',
       0, 'Small',
