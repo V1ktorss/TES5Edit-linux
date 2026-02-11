@@ -192,6 +192,7 @@ This document tracks what is already done for the native Linux path and what com
   - gated xDump `{$APPTYPE CONSOLE}` to Windows to avoid unsupported-directive note noise in Linux/FPC builds
   - replaced `wbDefProfiles` pointer/integer object-state hack in `xDump.dpr` with typed `TProfileState` objects and explicit cleanup to avoid pointer/ordinal portability warnings in profile tracking paths
   - normalized several pointer-arithmetic counters in `Core/wbDefinitionsTES5Saves.pas` (`ChangedForm*`, `DumpCounter`, `DataLengthRemainderCounter`) to `PtrUInt`-based math for better cross-platform portability in FPC builds
+  - moved `TxeScriptHost.Create` to public API (`reintroduce`) in `xEdit/xeScriptHost.pas` to remove FPC visibility warning while keeping dynamic host construction paths intact
   - extended compatibility wrappers used by xDump path:
     - `System.Classes`: `TFiler`/`TReader`/`TWriter`, lightweight `TDataModule`
     - `System.SysUtils`: `FileExists`

@@ -31,12 +31,10 @@ type
   protected
     class procedure Register;
     class function GetName: string; virtual; abstract;
-
-    constructor Create; virtual;
-
     class function CreateForName(const aName: string): TxeScriptHost;
     function CreateScriptInternal(const aScriptName, aScript: string): IxeScript; virtual; abstract;
   public
+    constructor Create; reintroduce; virtual;
     class procedure Init(const aName: string);
     class function CreateScript(const aScriptName, aScript: string): IxeScript;
   end;
