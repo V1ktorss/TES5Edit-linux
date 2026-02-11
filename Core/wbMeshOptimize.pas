@@ -930,17 +930,22 @@ var
   end;
 
   function generateHardBoundaries(var destination: array of Cardinal; cache_size: Cardinal; var cache_timestamps: array of Cardinal): Integer;
+  var
+    timestamp: Cardinal;
+    face_count: Cardinal;
+    i: Cardinal;
+    m: Cardinal;
   begin
     FillChar(cache_timestamps, Length(cache_timestamps) * SizeOf(cache_timestamps[0]), 0);
 
-    var timestamp := cache_size + 1;
+    timestamp := cache_size + 1;
 
-    var face_count := index_count div 3;
+    face_count := index_count div 3;
 
     Result := 0;
 
-    for var i := 0 to Pred(face_count) do begin
-      var m := updateCache(indices[i * 3 + 0], indices[i * 3 + 1], indices[i * 3 + 2], cache_size, cache_timestamps, timestamp);
+    for i := 0 to Pred(face_count) do begin
+      m := updateCache(indices[i * 3 + 0], indices[i * 3 + 1], indices[i * 3 + 2], cache_size, cache_timestamps, timestamp);
 
       // when all three vertices are not in the cache it's usually relatively safe to assume that this is a new patch in the mesh
       // that is disjoint from previous vertices; sometimes it might come back to reference existing vertices but that frequently
@@ -959,30 +964,40 @@ var
   function generateSoftBoundaries(var destination: array of Cardinal;
     const clusters: array of Cardinal; cluster_count: Integer;
     cache_size: Cardinal; var cache_timestamps: array of Cardinal): Integer;
+  var
+    timestamp: Cardinal;
+    it: Integer;
+    start, end_: Cardinal;
+    cluster_misses: Cardinal;
+    i: Cardinal;
+    m: Cardinal;
+    cluster_threshold: Single;
+    running_misses: Cardinal;
+    running_faces: Cardinal;
   begin
     FillChar(cache_timestamps, Length(cache_timestamps) * SizeOf(cache_timestamps[0]), 0);
 
-    var timestamp: Cardinal := 0;
+    timestamp := 0;
     Result := 0;
 
-    for var it := 0 to Pred(cluster_count) do begin
-      var start := clusters[it];
-      var end_ := IfThen(it + 1 < cluster_count, clusters[it + 1], index_count div 3);
+    for it := 0 to Pred(cluster_count) do begin
+      start := clusters[it];
+      end_ := IfThen(it + 1 < cluster_count, clusters[it + 1], index_count div 3);
       Assert(start < end_);
 
       // reset cache
       Inc(timestamp, cache_size + 1);
 
       // measure cluster ACMR
-      var cluster_misses: Cardinal := 0;
+      cluster_misses := 0;
 
-      for var i := start to Pred(end_) do begin
-        var m := updateCache(indices[i * 3 + 0], indices[i * 3 + 1], indices[i * 3 + 2], cache_size, cache_timestamps, timestamp);
+      for i := start to Pred(end_) do begin
+        m := updateCache(indices[i * 3 + 0], indices[i * 3 + 1], indices[i * 3 + 2], cache_size, cache_timestamps, timestamp);
 
         Inc(cluster_misses, m);
       end;
 
-      var cluster_threshold := aThreshold * (Single(cluster_misses) / Single(end_ - start));
+      cluster_threshold := aThreshold * (Single(cluster_misses) / Single(end_ - start));
 
       // first cluster always starts from the hard cluster boundary
       destination[Result] := Cardinal(start);
@@ -991,11 +1006,11 @@ var
       // reset cache
       Inc(timestamp, cache_size + 1);
 
-      var running_misses: Cardinal := 0;
-      var running_faces: Cardinal := 0;
+      running_misses := 0;
+      running_faces := 0;
 
-      for var i := start to Pred(end_) do begin
-        var m := updateCache(indices[i * 3 + 0], indices[i * 3 + 1], indices[i * 3 + 2], cache_size, cache_timestamps, timestamp);
+      for i := start to Pred(end_) do begin
+        m := updateCache(indices[i * 3 + 0], indices[i * 3 + 1], indices[i * 3 + 2], cache_size, cache_timestamps, timestamp);
 
         Inc(running_misses, m);
         Inc(running_faces);
