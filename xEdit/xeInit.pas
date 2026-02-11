@@ -65,12 +65,12 @@ implementation
 uses
 {$IFNDEF XEDIT_HEADLESS}
   System.UITypes,
+  IOUtils,
   Dialogs,
   Themes,
   Styles,
 {$ENDIF}
   SysUtils,
-  IOUtils,
   IniFiles,
   wbPlatform,
   wbHelpers,
