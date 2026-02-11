@@ -12,7 +12,9 @@
 
 program xedit_core;
 
+{$IFNDEF FPC}
 {$RTTI EXPLICIT METHODS([vcPrivate, vcProtected, vcPublic, vcPublished]) PROPERTIES([vcPrivate, vcProtected, vcPublic, vcPublished]) FIELDS([vcPrivate, vcProtected, vcPublic, vcPublished])}
+{$ENDIF}
 
 uses
   SysUtils,

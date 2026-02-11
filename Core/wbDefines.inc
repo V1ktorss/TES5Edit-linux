@@ -19,7 +19,9 @@
 {$ENDIF}
 
 {$TYPEINFO ON}
-{$METHODINFO ON}
+{$IFNDEF FPC}
+  {$METHODINFO ON}
+{$ENDIF}
 
 {$IFDEF FPC}
   {$mode delphi}
