@@ -7438,7 +7438,7 @@ begin
     ]);
 {$IFDEF FPC}
 {$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbTemplateFlags.');
+  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbXLOD.');
   Exit;
 {$ENDIF}
 {$ENDIF}
@@ -7665,6 +7665,12 @@ begin
     )).SetRequired;
 
   wbXLOD := wbArray(XLOD, 'Distant LOD Data', wbFloat('Unknown'), 3);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbXLOD.');
+  Exit;
+{$ENDIF}
+{$ENDIF}
 
 {$IFDEF FPC}
   wbMHDTCELL := wbByteArray(MHDT, 'Max Height Data');
