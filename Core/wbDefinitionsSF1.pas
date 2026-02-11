@@ -264,6 +264,7 @@ var
   wbRepairComponents: IwbSubRecordArrayDef;
   wbBIOMMaskNameStringEnum: IwbEnumDef;
   wbBIOMMaskNamesEnum: IwbEnumDef;
+  wbSPCHQuestStage: function(aSignature: TwbSignature; const aName: string): IwbRecordMemberDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -19746,7 +19747,7 @@ begin
     wbString(NAM1, 'Filter').IncludeFlag(dfNoCopyAsOverride)   // CK does not copy this on overrides
   ]);
 
-  var wbSPCHQuestStage :=
+  wbSPCHQuestStage :=
     function(aSignature: TwbSignature; const aName: string): IwbRecordMemberDef
     begin
       Result :=
