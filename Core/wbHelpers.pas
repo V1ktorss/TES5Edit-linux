@@ -14,17 +14,13 @@ interface
 
 uses
   Classes,
-  System.UITypes,
-  System.AnsiStrings,
-  {$IFDEF FPC}System.SysUtils,{$ENDIF}
   SysUtils,
   {$IFNDEF FPC}Graphics, Controls, Forms,{$ENDIF}
   IniFiles,
   {$IFDEF FPC}RegExpr{$ELSE}RegularExpressionsCore{$ENDIF},
   wbInterface,
   wbPlatform,
-  Imaging,
-  ImagingTypes;
+  Imaging;
 
 Const
   CRCSeed = $ffffffff;
@@ -194,8 +190,6 @@ procedure wbTwiddleHeight(aControl: TControl);
 implementation
 
 uses
-  System.SyncObjs,
-  System.IOUtils,
   StrUtils,
   {$IFNDEF MSWINDOWS}tfTypes, tfMD5, tfSHA1,{$ENDIF}
   wbSort;

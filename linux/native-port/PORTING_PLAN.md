@@ -205,6 +205,7 @@ This document tracks what is already done for the native Linux path and what com
   - removed additional unused imports from definition units (`Types` in `Core/wbDefinitionsTES4Saves.pas`, `IOUtils` in `Core/wbDefinitionsFO76.pas`) while keeping xEdit/xDump headless smokes green
   - removed unused `wbBSA`/`WideStrUtils` imports from `Core/wbLocalization.pas`; normalized `Core/wbImplementation.pas` zlib unit reference to `ZlibEx` for Linux/FPC file-case compatibility
   - gated `Core/wbInterface.pas` `System.Types`/`System.SysUtils`/`System.UITypes` imports to non-FPC builds to eliminate FPC headless unused-unit hints without changing Delphi behavior
+  - cleaned `Core/wbHelpers.pas` unused import surface (removed unused `System.*` and `ImagingTypes` refs in interface/implementation uses lists) while keeping xEdit/xDump headless smoke lanes passing
   - moved `TxeScriptHost.Create` to public API (`reintroduce`) in `xEdit/xeScriptHost.pas` to remove FPC visibility warning while keeping dynamic host construction paths intact
   - extended compatibility wrappers used by xDump path:
     - `System.Classes`: `TFiler`/`TReader`/`TWriter`, lightweight `TDataModule`
