@@ -692,17 +692,11 @@ end;
 
 function wbAlphaBlend(DestDC, X, Y, Width, Height,
   SrcDC, SrcX, SrcY, SrcWidth, SrcHeight, Alpha: integer): Boolean;
-var
-  BlendFunc: TBlendFunction;
 begin
-  BlendFunc.BlendOp := AC_SRC_OVER;
-  BlendFunc.BlendFlags := 0;
-  BlendFunc.SourceConstantAlpha := Alpha;
-  if Alpha = 255 then
-    BlendFunc.AlphaFormat := AC_SRC_ALPHA
-  else
-    BlendFunc.AlphaFormat := 0;
-  Result := Windows.AlphaBlend(DestDC, X, Y, Width, Height, SrcDC, SrcX, SrcY, SrcWidth, SrcHeight, BlendFunc);
+  Result := wbPlatformAlphaBlend(
+    DestDC, X, Y, Width, Height,
+    SrcDC, SrcX, SrcY, SrcWidth, SrcHeight, Alpha
+  );
 end;
 
 procedure SaveFont(aIni: TMemIniFile; aSection, aName: string; aFont: TFont);

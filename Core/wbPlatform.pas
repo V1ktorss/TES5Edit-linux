@@ -42,6 +42,10 @@ function wbTryReadRegistryString(
 function wbTryInitializeMOHook(const aHookDll, aProfile: string): Boolean;
 function wbGetClipboardText: string;
 procedure wbSetClipboardText(const aText: string);
+function wbPlatformAlphaBlend(
+  DestDC, X, Y, Width, Height: Integer;
+  SrcDC, SrcX, SrcY, SrcWidth, SrcHeight, Alpha: Integer
+): Boolean;
 function wbShowWindowNoActivate(const aHandle: THandle): Boolean;
 procedure wbLockWindowUpdate(const aHandle: THandle);
 function wbOpenUrl(const aUrl: string): Boolean;
@@ -162,6 +166,33 @@ begin
   Exit;
   {$ENDIF}
   Result := 0;
+end;
+
+function wbPlatformAlphaBlend(
+  DestDC, X, Y, Width, Height: Integer;
+  SrcDC, SrcX, SrcY, SrcWidth, SrcHeight, Alpha: Integer
+): Boolean;
+{$IFDEF MSWINDOWS}
+var
+  lBlendFunc: TBlendFunction;
+{$ENDIF}
+begin
+  {$IFDEF MSWINDOWS}
+  lBlendFunc.BlendOp := AC_SRC_OVER;
+  lBlendFunc.BlendFlags := 0;
+  lBlendFunc.SourceConstantAlpha := Alpha;
+  if Alpha = 255 then
+    lBlendFunc.AlphaFormat := AC_SRC_ALPHA
+  else
+    lBlendFunc.AlphaFormat := 0;
+  Result := Windows.AlphaBlend(
+    DestDC, X, Y, Width, Height,
+    SrcDC, SrcX, SrcY, SrcWidth, SrcHeight,
+    lBlendFunc
+  );
+  Exit;
+  {$ENDIF}
+  Result := False;
 end;
 
 function wbIsVirtualKeyPressed(const aVirtualKey: Integer): Boolean;
