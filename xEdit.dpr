@@ -23,7 +23,9 @@ uses
   {$IFDEF EXCEPTION_LOGGING_ENABLED}
   nxExceptionHook,
   {$ENDIF }
+  {$IFDEF MSWINDOWS}
   Winapi.Windows,
+  {$ENDIF}
   Forms,
   Dialogs,
   SysUtils,
@@ -108,12 +110,18 @@ uses
 {$MAXSTACKSIZE 2097152}
 
 const
+  {$IFDEF MSWINDOWS}
   IMAGE_FILE_LARGE_ADDRESS_AWARE = $0020;
+  {$ENDIF}
 
+{$IFDEF MSWINDOWS}
 {$SetPEFlags IMAGE_FILE_LARGE_ADDRESS_AWARE}
+{$ENDIF}
 
 var
+  {$IFDEF MSWINDOWS}
   lIconHandle: HICON;
+  {$ENDIF}
 
 begin
   UseLatestCommonDialogs := True;
@@ -129,11 +137,13 @@ begin
   if not xeDoInit then
     Exit;
 
+  {$IFDEF MSWINDOWS}
   if xeIconResource <> '' then begin
     lIconHandle := LoadIcon(HInstance, PChar(xeIconResource));
     if lIconHandle <> 0 then
       Application.Icon.Handle := lIconHandle;
   end;
+  {$ENDIF}
 
   {$IFDEF EXCEPTION_LOGGING_ENABLED}
   nxEHAppVersion := wbApplicationTitle;
