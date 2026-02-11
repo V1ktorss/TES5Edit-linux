@@ -6598,6 +6598,7 @@ end;
 
 function TwbContainer.IsElementRemovable(const aElement: IwbElement): Boolean;
 begin
+  wbIgnoreUnused(@aElement);
   Result := False;
 end;
 
@@ -7088,6 +7089,8 @@ var
   ValueDef : IwbValueDef;
   KAC      : PwbKeepAliveContext;
 begin
+  wbIgnoreUnused(@aNeedSorted);
+
   if esDestroying in eStates then
     Exit;
   if csInit in cntStates then
@@ -8869,6 +8872,7 @@ end;
 
 procedure TwbRecord.InformPrevMainRecord(const aPrevMainRecord: IwbMainRecord);
 begin
+  wbIgnoreUnused(@aPrevMainRecord);
   {can be overriden}
 end;
 
@@ -18989,6 +18993,14 @@ end;
 
 function TwbElement.AddIfMissingInternal(const aElement: IwbElement; aAsNew, aDeepCopy : Boolean; const aPrefixRemove, aSuffixRemove, aPrefix, aSuffix: string; aAllowOverwrite: Boolean): IwbElement;
 begin
+  wbIgnoreUnused(@aElement);
+  wbIgnoreUnused(@aAsNew);
+  wbIgnoreUnused(@aDeepCopy);
+  wbIgnoreUnused(@aPrefixRemove);
+  wbIgnoreUnused(@aSuffixRemove);
+  wbIgnoreUnused(@aPrefix);
+  wbIgnoreUnused(@aSuffix);
+  wbIgnoreUnused(@aAllowOverwrite);
   raise Exception.Create(ClassName + '.AddIfMissingInternal is not implemented');
 end;
 
@@ -19289,6 +19301,8 @@ end;
 
 function TwbElement.CompareExchangeFormID(aOldFormID, aNewFormID: TwbFormID): Boolean;
 begin
+  wbIgnoreUnused(@aOldFormID);
+  wbIgnoreUnused(@aNewFormID);
   Result := False;
 end;
 
@@ -19439,6 +19453,7 @@ end;
 
 procedure TwbElement.DoReset(aForce: Boolean);
 begin
+  wbIgnoreUnused(@aForce);
   {nothing}
 end;
 
@@ -19489,6 +19504,7 @@ end;
 
 procedure TwbElement.FindUsedMasters(aMasters: PwbUsedMasters);
 begin
+  wbIgnoreUnused(@aMasters);
   {can be overriden}
 end;
 
@@ -20183,6 +20199,8 @@ end;
 
 function TwbElement.MastersUpdated(const aOld, aNew: TwbFileIDs; aOldCount, aNewCount: Byte): Boolean;
 begin
+  wbIgnoreUnused(@aOldCount);
+  wbIgnoreUnused(@aNewCount);
   Result := False;
   Assert( Length(aOld) = Length(aNew) );
 end;
@@ -20335,6 +20353,7 @@ end;
 
 function TwbElement.RemoveInjected(aCanRemove: Boolean): Boolean;
 begin
+  wbIgnoreUnused(@aCanRemove);
   Result := GetReferencesInjected;
   if Result and GetIsRemovable then begin
     Result := False;
@@ -20424,11 +20443,13 @@ end;
 
 procedure TwbElement.SetDataSize(aSize: Integer);
 begin
+  wbIgnoreUnused(@aSize);
   Assert(False, 'Can''t SetDataSize on ' + ClassName);
 end;
 
 procedure TwbElement.SetEditValue(const aValue: string);
 begin
+  wbIgnoreUnused(@aValue);
   raise Exception.Create(GetName + ' can not be edited.');
 end;
 
@@ -20532,6 +20553,7 @@ end;
 
 procedure TwbElement.SetNativeValue(const aValue: Variant);
 begin
+  wbIgnoreUnused(@aValue);
   raise Exception.Create(GetName + ' can not be edited.');
 end;
 
@@ -20543,6 +20565,7 @@ end;
 
 procedure TwbElement.SetSkipped(aValue: Boolean);
 begin
+  wbIgnoreUnused(@aValue);
   { can be overridden }
 end;
 
@@ -20676,6 +20699,7 @@ end;
 
 procedure TwbElement.WriteToStreamInternal(aStream: TStream; aResetModified: TwbResetModified);
 begin
+  wbIgnoreUnused(@aStream);
   Exclude(eStates, esUnsaved);
   case aResetModified of
     rmYes: begin
@@ -24021,6 +24045,7 @@ end;
 
 constructor TwbDataContainer.Create(const aContainer: IwbContainer; var aBasePtr: Pointer; var aEndPtr: Pointer; const aPrevMainRecord : IwbMainRecord);
 begin
+  wbIgnoreUnused(@aPrevMainRecord);
   dcBasePtr := aBasePtr;
   dcEndPtr := aEndPtr;
   dcDataBasePtr := aBasePtr;
