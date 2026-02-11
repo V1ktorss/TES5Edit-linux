@@ -1428,6 +1428,7 @@ end;
 function GlobalDataSizer(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; var CompressedSize: Integer): Cardinal;
 begin
   wbIgnoreElementRange(aBasePtr, aEndPtr);
+  if Assigned(aElement) then;
   CompressedSize := PCardinal(PByte(aBasePtr) + SizeOf(cardinal))^ + 2*SizeOf(Cardinal);
   Result := CompressedSize;
 end;
@@ -2322,12 +2323,14 @@ end;
 function SkipCounter(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Cardinal;
 begin
   wbIgnoreElementRange(aBasePtr, aEndPtr);
+  if Assigned(aElement) then;
   Result := wbBytesToSkip;
 end;
 
 function DumpCounter(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Cardinal;
 begin
   wbIgnoreElementRange(aBasePtr, aEndPtr);
+  if Assigned(aElement) then;
   if wbBytesToDump = $FFFFFFFF then
     Result := Cardinal((wbPtrDiffNative(aEndPtr, aBasePtr) div wbBytesToGroup) + 1)
   else
@@ -2480,6 +2483,7 @@ function SKSERegKeyDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: 
 begin
   Result := 0;
   wbIgnoreElementRange(aBasePtr, aEndPtr);
+  if Assigned(aElement) then;
   case LastRegistrationStart of
     5, 7, 8 : Result := 1;  // String
     6, 11:    Result := 2;  // UInt32
@@ -2491,6 +2495,7 @@ function SKSERegDataDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement:
 begin
   Result := 0;
   wbIgnoreElementRange(aBasePtr, aEndPtr);
+  if Assigned(aElement) then;
   case LastRegistrationStart of
     8:
       Result := 1;  // String
