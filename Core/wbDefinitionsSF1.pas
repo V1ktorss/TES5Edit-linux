@@ -76,6 +76,9 @@ const
 var
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
+  wbArmorPropertyEnum: IwbEnumDef;
+  wbActorPropertyEnum: IwbEnumDef;
+  wbWeaponPropertyEnum: IwbEnumDef;
   wbAIDT: IwbRecordMemberDef;
   wbMNAMFurnitureMarker: IwbRecordMemberDef;
   wbMarkerEntryExitTypes: IwbFlagsDef;
@@ -7225,7 +7228,7 @@ begin
       wbFromVersion(555, wbUnused(3)) // padding
     ], cpNormal, False, nil, 4));
 
-  var wbArmorPropertyEnum := wbEnum([
+  wbArmorPropertyEnum := wbEnum([
     { 0} 'Enchantments',
     { 1} 'BashImpactDataSet',
     { 2} 'BlockMaterial',
@@ -7242,7 +7245,7 @@ begin
     {13} 'MaterialSwaps'
   ]);
 
-  var wbActorPropertyEnum := wbEnum([
+  wbActorPropertyEnum := wbEnum([
     { 0} 'Keywords',
     { 1} 'ForcedInventory',
     { 2} 'XPOffset',
@@ -7251,7 +7254,7 @@ begin
     { 5} 'MaterialSwaps'
   ]);
 
-  var wbWeaponPropertyEnum := wbEnum([
+  wbWeaponPropertyEnum := wbEnum([
     { 0} 'Speed',
     { 1} 'Reach',
     { 2} 'MinRange',
