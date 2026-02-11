@@ -25,10 +25,6 @@ uses
   TypInfo,
   Classes,
   SysUtils,
-  {$IFDEF MSWINDOWS}
-  Windows,
-  Registry,
-  {$ENDIF}
   IniFiles,
   wbBSA in 'Core/wbBSA.pas',
   wbCommandLine in 'Core/wbCommandLine.pas',
