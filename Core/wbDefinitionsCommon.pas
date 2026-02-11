@@ -6325,11 +6325,6 @@ var
   wbLandFlags       : IwbFlagsDef;
   wbLandLayerDefault: Variant;
 begin
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: FPC branch active.');
-{$ENDIF}
-{$ENDIF}
   wbIdxAddonNode := wbNamedIndex('AddonNode', True);
   wbIdxCollisionLayer := wbNamedIndex('CollisionLayer', True);
 {$IFDEF FPC}
@@ -8328,9 +8323,6 @@ Can't properly represent that with current record definition methods.
   wbWorldOffsetData := IwbRecordMemberDef(wbByteArray(OFST, 'Offsets', 0, cpIgnore).SetDontShow(wbNeverShow));
   wbWorldCellSizeData := IwbRecordMemberDef(wbByteArray(CLSZ, 'Cell Sizes', 0, cpIgnore).SetDontShow(wbNeverShow));
   wbWorldVisibleCellsData := IwbRecordMemberDef(wbByteArray(VISI, 'Visible Cells', 0, cpIgnore).SetDontShow(wbNeverShow));
-{$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: completed FPC definitions (through wbWorldVisibleCellsData).');
-{$ENDIF}
 {$ELSE}
   wbWeatherImageSpaces :=
     wbStruct(IMSP, 'Image Spaces', [
