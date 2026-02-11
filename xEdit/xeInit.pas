@@ -599,10 +599,12 @@ begin
       wbMyGamesTheGamePath := xeMyProfileName + 'My Games' + PathDelim + wbGameName2 + PathDelim;
     end;
 
+    {$IFDEF MSWINDOWS}
     if (wbGameMode in [gmFNV]) and FileExists(IncludeTrailingPathDelimiter(ExtractFilePath(ExcludeTrailingPathDelimiter(wbDataPath))) + 'EOSSDK-Win32-Shipping.dll') then begin
-        wbMyGamesTheGamePath := xeMyProfileName + 'My Games' + PathDelim + 'FalloutNV_Epic' + PathDelim;
-        isEpicNV := true;
+      wbMyGamesTheGamePath := xeMyProfileName + 'My Games' + PathDelim + 'FalloutNV_Epic' + PathDelim;
+      isEpicNV := true;
     end;
+    {$ENDIF}
   end;
 
   if not wbFindCmdLineParam('I', wbTheGameIniFileName) then begin
