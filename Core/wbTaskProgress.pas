@@ -99,18 +99,6 @@ implementation
 
 {$R *.dfm}
 
-uses
-{$IFDEF MSWINDOWS}
-  ComObj, ShlObj;
-{$ENDIF}
-
-{$IFDEF MSWINDOWS}
-var
-  TaskbarList: ITaskbarList;
-  TaskbarList3: ITaskbarList3;
-{$ENDIF}
-
-
 //============================================================================
 procedure TProgressBarWithText.WMPaint(var Message: TWMPaint);
 var
@@ -184,61 +172,6 @@ begin
   finally
     Free;
   end;
-end;
-
-//============================================================================
-procedure InitializeTaskbars;
-begin
-{$IFDEF MSWINDOWS}
-  if not wbSupportsTaskbarProgress then
-    Exit;
-
-  if Assigned(TaskbarList) then
-    Exit;
-
-  try
-    TaskbarList := CreateComObject(CLSID_TaskbarList) as ITaskbarList;
-  except
-    Exit;
-  end;
-
-  TaskbarList.HrInit;
-  Supports(TaskbarList, IID_ITaskbarList3, TaskbarList3);
-{$ENDIF}
-end;
-
-//============================================================================
-procedure TaskbarShowProgress(Handle: THandle; ProgressPos, ProgressMax: Integer);
-begin
-{$IFDEF MSWINDOWS}
-  if not Assigned(TaskbarList3) then
-    Exit;
-
-  TaskbarList3.SetProgressState(Handle, TBPF_NORMAL);
-  TaskbarList3.SetProgressValue(Handle, ProgressPos, ProgressMax);
-{$ENDIF}
-end;
-
-//============================================================================
-procedure TaskbarErrorProgress(Handle: THandle);
-begin
-{$IFDEF MSWINDOWS}
-  if not Assigned(TaskbarList3) then
-    Exit;
-
-  TaskbarList3.SetProgressState(Handle, TBPF_ERROR);
-{$ENDIF}
-end;
-
-//============================================================================
-procedure TaskbarHideProgress(Handle: THandle);
-begin
-{$IFDEF MSWINDOWS}
-  if not Assigned(TaskbarList3) then
-    Exit;
-
-  TaskbarList3.SetProgressState(Handle, TBPF_NOPROGRESS);
-{$ENDIF}
 end;
 
 //============================================================================
@@ -365,14 +298,14 @@ begin
   //  fProgressProc(msg.WParam);
 
   ProgressBar.Position := msg.WParam;
-  TaskbarShowProgress(Application.MainForm.Handle, ProgressBar.Position, ProgressBar.Max);
+  wbTaskbarProgressShow(Application.MainForm.Handle, ProgressBar.Position, ProgressBar.Max);
 end;
 
 //============================================================================
 procedure TFormTaskProgress.WMProgressError(var msg: TMessage);
 begin
   ProgressBar.State := pbsError;
-  TaskbarErrorProgress(Application.MainForm.Handle);
+  wbTaskbarProgressError(Application.MainForm.Handle);
 
   Height := fHeight;
   pnlError.Visible := True;
@@ -405,7 +338,7 @@ begin
   if fError then
     ModalResult := mrAbort;
 
-  TaskbarHideProgress(Application.MainForm.Handle);
+  wbTaskbarProgressHide(Application.MainForm.Handle);
 end;
 
 //============================================================================
@@ -431,7 +364,7 @@ end;
 //============================================================================
 procedure TFormTaskProgress.FormActivate(Sender: TObject);
 begin
-  InitializeTaskbars;
+  wbTaskbarProgressInitialize;
   ProgressBar.Min := 1;
   ProgressBar.Max := fHighIndex - fLowIndex + 1;
   TThread.CreateAnonymousThread(StartProcessing).Start;

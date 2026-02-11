@@ -43,6 +43,10 @@ function wbTryInitializeMOHook(const aHookDll, aProfile: string): Boolean;
 function wbGetClipboardText: string;
 procedure wbSetClipboardText(const aText: string);
 function wbSupportsTaskbarProgress: Boolean;
+procedure wbTaskbarProgressInitialize;
+procedure wbTaskbarProgressShow(const aHandle: THandle; const aProgressPos, aProgressMax: Integer);
+procedure wbTaskbarProgressError(const aHandle: THandle);
+procedure wbTaskbarProgressHide(const aHandle: THandle);
 function wbPlatformAlphaBlend(
   DestDC, X, Y, Width, Height: Integer;
   SrcDC, SrcX, SrcY, SrcWidth, SrcHeight, Alpha: Integer
@@ -99,12 +103,19 @@ uses
   IOUtils
   {$IFDEF MSWINDOWS}
   , Windows,
+  ComObj,
   Registry,
   ShellAPI,
   ShlObj,
   Vcl.Clipbrd
   {$ENDIF}
   ;
+
+{$IFDEF MSWINDOWS}
+var
+  wbTaskbarList: ITaskbarList;
+  wbTaskbarList3: ITaskbarList3;
+{$ENDIF}
 
 function wbPathCombine(const aBase, aChild: string): string;
 begin
@@ -203,6 +214,57 @@ begin
   Exit;
   {$ENDIF}
   Result := False;
+end;
+
+procedure wbTaskbarProgressInitialize;
+begin
+  {$IFDEF MSWINDOWS}
+  if not wbSupportsTaskbarProgress then
+    Exit;
+
+  if Assigned(wbTaskbarList) then
+    Exit;
+
+  try
+    wbTaskbarList := CreateComObject(CLSID_TaskbarList) as ITaskbarList;
+  except
+    Exit;
+  end;
+
+  wbTaskbarList.HrInit;
+  Supports(wbTaskbarList, IID_ITaskbarList3, wbTaskbarList3);
+  {$ENDIF}
+end;
+
+procedure wbTaskbarProgressShow(const aHandle: THandle; const aProgressPos, aProgressMax: Integer);
+begin
+  {$IFDEF MSWINDOWS}
+  if not Assigned(wbTaskbarList3) then
+    Exit;
+
+  wbTaskbarList3.SetProgressState(aHandle, TBPF_NORMAL);
+  wbTaskbarList3.SetProgressValue(aHandle, aProgressPos, aProgressMax);
+  {$ENDIF}
+end;
+
+procedure wbTaskbarProgressError(const aHandle: THandle);
+begin
+  {$IFDEF MSWINDOWS}
+  if not Assigned(wbTaskbarList3) then
+    Exit;
+
+  wbTaskbarList3.SetProgressState(aHandle, TBPF_ERROR);
+  {$ENDIF}
+end;
+
+procedure wbTaskbarProgressHide(const aHandle: THandle);
+begin
+  {$IFDEF MSWINDOWS}
+  if not Assigned(wbTaskbarList3) then
+    Exit;
+
+  wbTaskbarList3.SetProgressState(aHandle, TBPF_NOPROGRESS);
+  {$ENDIF}
 end;
 
 function wbIsVirtualKeyPressed(const aVirtualKey: Integer): Boolean;
