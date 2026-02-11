@@ -15474,7 +15474,7 @@ begin
   UniqueString(t);
   p := Pointer(t);
   Pointer(t) := nil;
-  PostMessage(Handle, WM_USER, UInt64(p), 0);
+  Self.PostMessage(WM_USER, UInt64(p), 0);
 end;
 
 procedure TfrmMain.PostPluggyChange(aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID);
@@ -15484,7 +15484,7 @@ begin
   PluggyInventoryFormID := aInventoryFormID;
   PluggyEnchantmentFormID := aEnchantmentFormID;
   PluggySpellFormID := aSpellFormID;
-  PostMessage(Handle, WM_USER + 4, 0, 0);
+  Self.PostMessage(WM_USER + 4, 0, 0);
 end;
 
 procedure TfrmMain.UpdateTreeLineColor;
@@ -15507,7 +15507,7 @@ procedure TfrmMain.PostResetActiveTree;
 begin
   if Length(PendingMainRecords) < 1 then begin
     PendingResetActiveTree := True;
-    PostMessage(Handle, WM_USER + 3, 0, 0);
+    Self.PostMessage(WM_USER + 3, 0, 0);
   end;
 end;
 
@@ -16203,12 +16203,12 @@ end;
 
 procedure TfrmMain.SendAddFile(const aFile: IwbFile);
 begin
-  SendMessage(Handle, WM_USER + 1, UInt64(Pointer(aFile)), 0);
+  Perform(WM_USER + 1, UInt64(Pointer(aFile)), 0);
 end;
 
 procedure TfrmMain.SendLoaderDone(const aStartTime: TDateTime; aLoadOrder: Integer);
 begin
-  SendMessage(Handle, WM_USER + 2, NativeUInt(@aStartTime), aLoadOrder);
+  Perform(WM_USER + 2, NativeUInt(@aStartTime), aLoadOrder);
 end;
 
 procedure TfrmMain.DoSetActiveContainer(const aContainer: IwbDataContainer);
@@ -17952,7 +17952,7 @@ begin
         NodeDatas[i].Container.Def.Collapsed := True;
         NodeDatas[i].Container.Collapsed := tbUnknown;
         DelayedExpandView := True;
-        PostMessage(Handle, WM_USER + 5, 0, 0);
+        Self.PostMessage(WM_USER + 5, 0, 0);
       end else begin
         NodeDatas[i].Container.Collapsed := tbTrue;
         UpdateColumnWidths;
@@ -18423,7 +18423,7 @@ begin
         NodeDatas[i].Container.Def.Collapsed := False;
         NodeDatas[i].Container.Collapsed := tbUnknown;
         DelayedExpandView := True;
-        PostMessage(Handle, WM_USER + 5, 0, 0);
+        Self.PostMessage(WM_USER + 5, 0, 0);
       end else begin
         NodeDatas[i].Container.Collapsed := tbFalse;
         UpdateColumnWidths;
