@@ -652,10 +652,12 @@ procedure CalculateMinMax(
   var vmin: TVector3;
   var vmax: TVector3
 );
+var
+  v : TVector3;
 begin
   vmin.x := MaxSingle; vmin.y := MaxSingle; vmin.z := MaxSingle;
   vmax.x := -MaxSingle; vmax.y := -MaxSingle; vmax.z := -MaxSingle;
-  for var v in verts do begin
+  for v in verts do begin
     if v.x < vmin.x then vmin.x := v.x;
     if v.x > vmax.x then vmax.x := v.x;
     if v.y < vmin.y then vmin.y := v.y;
