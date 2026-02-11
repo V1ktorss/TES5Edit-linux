@@ -4071,6 +4071,8 @@ begin
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
+  PropertyValue := '';
+
   PropertyTypeElement := Container.ElementByName['Type'];
 
   // 0 = None
@@ -6027,6 +6029,8 @@ var
   Members : array of IwbRecordMemberDef;
   i       : Integer;
 begin
+
+  Members := nil;
 
   SetLength(Members,
     Length(aTextureSubRecords) +
