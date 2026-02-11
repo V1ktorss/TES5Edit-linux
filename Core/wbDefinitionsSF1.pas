@@ -262,6 +262,8 @@ var
   wbComponent: IwbSubRecordStructDef;
   wbComponents: IwbSubRecordArrayDef;
   wbRepairComponents: IwbSubRecordArrayDef;
+  wbBIOMMaskNameStringEnum: IwbEnumDef;
+  wbBIOMMaskNamesEnum: IwbEnumDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -18440,7 +18442,7 @@ begin
     wbFormIDCK(NAM3, 'Production Interval (hours)', [NULL, GLOB])
   ]);
 
-  var wbBIOMMaskNameStringEnum := wbStringEnum([
+  wbBIOMMaskNameStringEnum := wbStringEnum([
     'Base',
     'Solid',
     'FlatOuter',
@@ -18450,7 +18452,7 @@ begin
     'Path'
   ]);
 
-  var wbBIOMMaskNamesEnum := wbEnum([
+  wbBIOMMaskNamesEnum := wbEnum([
     'Base',
     'Solid',
     'FlatOuter',
