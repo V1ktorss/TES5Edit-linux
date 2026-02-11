@@ -203,6 +203,13 @@ var
   wbHeadtracking: IwbSubRecordStructDef;
   wbVatsValueFunctionEnum: IwbEnumDef;
   wbActorValueEnum: IwbEnumDef;
+  wbCastEnum: IwbEnumDef;
+  wbTargetEnum: IwbEnumDef;
+  wbCastingSourceEnum: IwbEnumDef;
+  wbKeywordTypeEnum: IwbEnumDef;
+  wbETYP: IwbSubRecordDef;
+  wbETYPReq: IwbSubRecordDef;
+  wbFormTypeEnum: IwbEnumDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -5246,13 +5253,13 @@ begin
         -1, 'None'
       ]);
 
-  var wbCastEnum := wbEnum([
+  wbCastEnum := wbEnum([
     {0} 'Constant Effect',
     {1} 'Fire and Forget',
     {2} 'Concentration'
   ]);
 
-  var wbTargetEnum := wbEnum([
+  wbTargetEnum := wbEnum([
     {0} 'Self',
     {1} 'Touch',
     {2} 'Aimed',
@@ -5260,14 +5267,14 @@ begin
     {4} 'Target Location'
   ]);
 
-  var wbCastingSourceEnum := wbEnum([
+  wbCastingSourceEnum := wbEnum([
     'Left',
     'Right',
     'Voice',
     'Instant'
   ]);
 
-  var wbKeywordTypeEnum :=
+  wbKeywordTypeEnum :=
     wbEnum([
       {00} 'None',
       {01} 'Component Tech Level',
@@ -5357,10 +5364,10 @@ begin
 
     ]);
 
-  var wbETYP := wbFormIDCk(ETYP, 'Equipment Type', [EQUP, NULL]);
-  var wbETYPReq := wbFormIDCk(ETYP, 'Equipment Type', [EQUP, NULL], False, cpNormal, True);
+  wbETYP := wbFormIDCk(ETYP, 'Equipment Type', [EQUP, NULL]);
+  wbETYPReq := wbFormIDCk(ETYP, 'Equipment Type', [EQUP, NULL], False, cpNormal, True);
 
-  var wbFormTypeEnum := wbEnum([], [
+  wbFormTypeEnum := wbEnum([], [
      0, 'Activator',
      1, 'Armor',
      2, 'Book',
