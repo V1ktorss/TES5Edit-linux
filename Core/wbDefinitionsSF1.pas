@@ -76,6 +76,7 @@ const
 var
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
+  wbAIDT: IwbRecordMemberDef;
   wbMNAMFurnitureMarker: IwbRecordMemberDef;
   wbMarkerEntryExitTypes: IwbFlagsDef;
   wbSNAMMarkerParams: IwbRecordMemberDef;
@@ -8418,7 +8419,7 @@ begin
     wbFormIDCk(ONAM, 'Contains Only Filter', [FLST])
   ]);
 
-  var wbAIDT :=
+  wbAIDT :=
     wbStruct(AIDT, 'AI Data', [
      {00} wbInteger('Aggression', itU8, wbAggressionEnum),
      {01} wbInteger('Confidence', itU8, wbConfidenceEnum),
