@@ -221,6 +221,7 @@ This document tracks what is already done for the native Linux path and what com
 - Extended xEdit Winapi guard with direct-call regression checks (`GetKeyState`, `CreateProcess`, `ShellExecute`, `MessageBox`, `SendMessage`, `PostMessage`, `Windows.AlphaBlend`, `Windows.LockWindowUpdate`) while allowlisting platform-layer implementations in `Core/wbPlatform.pas`
 - Tightened xEdit Winapi guard import allowlist to `Core/wbPlatform.pas` and `Core/MSHeap.pas` only
 - Added Core Winapi-import regression guard: `linux/native-port/check-core-winapi-imports.sh` (wired via `RUN_CORE_WINAPI_GUARD=1` in `run-all-checks.sh`, allowlisted only for `Core/wbPlatform.pas` and `Core/MSHeap.pas`)
+- Added xDump Winapi-import regression guard: `linux/native-port/check-xdump-winapi-imports.sh` (wired via `RUN_XDUMP_WINAPI_GUARD=1` in `run-all-checks.sh` for `xDump.dpr` import/direct-call checks)
 - Runner now builds `xDump` before xDump headless smoke when `RUN_XDUMP_HEADLESS=1`, mirroring xEdit headless flow.
 - Runner now degrades gracefully when `fpc` is unavailable: xDump smoke is skipped only if no prebuilt xDump binary exists.
 - xEdit/xDump build helpers now use per-target `flock` locks (`linux/bin/.xedit-core.build.lock`, `linux/bin/.xdump-core.build.lock`) so parallel local/CI checks do not race in shared build output.
