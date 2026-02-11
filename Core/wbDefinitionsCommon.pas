@@ -7064,12 +7064,6 @@ begin
     ]);
 {$ENDIF}
 {$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-  Exit;
-{$ENDIF}
-{$ENDIF}
-
-{$IFDEF FPC}
   wbMenuModeEnum :=
     wbEnum([
       {0} 'Any',
@@ -7164,11 +7158,6 @@ begin
       1084, IsFNV ('Character Creation Traits', '')
     ]);
 {$ENDIF}
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
-
   wbMoodEnum :=
     wbEnum([
       {0}       'Neutral',
@@ -7344,6 +7333,12 @@ begin
       7, 'Greater Than or Equal To',
       8, 'Always Show'
     ]);
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbZTestFuncEnum.');
+  Exit;
+{$ENDIF}
+{$ENDIF}
 
   wbFurnitureEntryTypeFlags :=
     wbFlags([
