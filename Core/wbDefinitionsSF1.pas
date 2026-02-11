@@ -79,6 +79,12 @@ var
   wbObjectModProperties: IwbArrayDef;
   wbObjectTemplate: IwbSubRecordStructDef;
   wbOBTSReq: IwbSubRecordDef;
+  wbBSMPSequence: IwbSubRecordArrayDef;
+  wbArmorAddonBSMPSequence: IwbSubRecordArrayDef;
+  wbEffectsReq: IwbSubRecordArrayDef;
+  wbBoneDataItem: IwbRecordMemberDef;
+  wbArmorAddonBoneDataItem: IwbRecordMemberDef;
+  wbEffect: IwbRecordMemberDef;
   wbArmorPropertyEnum: IwbEnumDef;
   wbActorPropertyEnum: IwbEnumDef;
   wbWeaponPropertyEnum: IwbEnumDef;
@@ -7438,7 +7444,7 @@ begin
   ]).SetSummaryKey([1]);
 
   // sorting /should/ be applicable, but will need testing first
-  var wbBoneDataItem :=
+  wbBoneDataItem :=
       wbRStruct('Bone Data Set', [
         wbRStruct('Bone Weight Scale Data', [
           wbInteger(BSMP, 'Weight Scale Target Gender', itU32, wbSexEnum),
@@ -7488,7 +7494,7 @@ begin
         ])
       ]);
 
-  var wbArmorAddonBoneDataItem :=
+  wbArmorAddonBoneDataItem :=
       wbRStruct('Bone Scale Modifier Set', [
         wbInteger(BSMP, 'Target Gender', itU32, wbSexEnum),
         wbRArray('Bone Scale Modifiers',
@@ -7502,12 +7508,12 @@ begin
         )
       ]);
 
-  var wbBSMPSequence := wbRArray('Bone Scale Data', wbBoneDataItem);
+  wbBSMPSequence := wbRArray('Bone Scale Data', wbBoneDataItem);
 
-  var wbArmorAddonBSMPSequence := wbRArray('Sculpt Data', wbArmorAddonBoneDataItem);
+  wbArmorAddonBSMPSequence := wbRArray('Sculpt Data', wbArmorAddonBoneDataItem);
 
   {subrecords checked against Starfield.esm}
-  var wbEffect :=
+  wbEffect :=
     wbRStruct('Effect', [
       wbEFID,
       wbEFIT,
@@ -7527,7 +7533,7 @@ begin
   var wbEffects :=
     wbRArrayS('Effects', wbEffect);
 
-  var wbEffectsReq :=
+  wbEffectsReq :=
     wbRArrayS('Effects', wbEffect, cpNormal, True);
 
   var wbMOLM :=
