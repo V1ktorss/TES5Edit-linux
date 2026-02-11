@@ -54,8 +54,7 @@ uses
   SysUtils,
   Variants,
   wbHelpers,
-  wbDefinitionsCommon,
-  wbDefinitionsSignatures;
+  wbDefinitionsCommon;
 
 type
   TVarRecs = array of TVarRec;
@@ -231,7 +230,6 @@ type
     {57} ptWorldspace       //WRLD
   );
 
-  PConditionFunction = ^TConditionFunction;
   TConditionFunction = record
     Index: Integer;
     Name: string;

@@ -1012,6 +1012,7 @@ begin
   if _SimulatedLoadDisabled then
     raise Exception.Create('Simulated Load has been disabled');
 
+  NewLoadOrder := nil;
   for lModuleIdx := Low(_Modules) to High(_Modules) do
     with _Modules[lModuleIdx] do begin
       Exclude(miFlags, mfLoaded);
