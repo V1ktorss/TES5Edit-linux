@@ -2199,6 +2199,7 @@ begin
 
     { TCustomIniFile }
     AddClass('IniFiles', TCustomIniFile, 'TCustomIniFile');
+    AddClass('wbPlatform', TCustomIniFile, 'TCustomIniFile');
     AddGet(TCustomIniFile, 'ReadString', TCustomIniFile_ReadString, 3, [varEmpty, varEmpty, varEmpty], varEmpty);
     AddGet(TCustomIniFile, 'ReadInteger', TCustomIniFile_ReadInteger, 3, [varEmpty, varEmpty, varEmpty], varEmpty);
     AddGet(TCustomIniFile, 'ReadFloat', TCustomIniFile_ReadFloat, 3, [varEmpty, varEmpty, varEmpty], varEmpty);
@@ -2218,10 +2219,12 @@ begin
 
     { TIniFile }
     AddClass('IniFiles', TIniFile, 'TIniFile');
+    AddClass('wbPlatform', TIniFile, 'TIniFile');
     AddGet(TIniFile, 'Create', TIniFile_Create, 1, [varEmpty], varEmpty);
 
     { TMemIniFile }
     AddClass('IniFiles', TMemIniFile, 'TMemIniFile');
+    AddClass('wbPlatform', TMemIniFile, 'TMemIniFile');
     AddGet(TMemIniFile, 'Create', TMemIniFile_Create, 1, [varEmpty], varEmpty);
     AddGet(TMemIniFile, 'GetStrings', TMemIniFile_GetStrings, 1, [varEmpty], varEmpty);
     AddGet(TMemIniFile, 'SetStrings', TMemIniFile_SetStrings, 1, [varEmpty], varEmpty);

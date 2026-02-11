@@ -146,6 +146,7 @@ This document tracks what is already done for the native Linux path and what com
   - replaced direct `SendMessage` usage with control `Perform` calls in `xeScriptForm` and `xePushLikeButton` to reduce API-coupled UI message calls
   - replaced remaining direct form-handle `SendMessage`/`PostMessage` calls in `xeMainForm` with `Perform` / `Self.PostMessage`
   - added `wbPlatform.TRegistryIniFile` script class alias in `xejviScriptAdapterMisc` alongside legacy `Registry.TRegistryIniFile` for cross-platform script namespace migration
+  - added `wbPlatform` class aliases for `TCustomIniFile`/`TIniFile`/`TMemIniFile` in `xejviScriptAdapterMisc` to support namespace-neutral script migration
   - extended readiness audit core blocker patterns to flag regressions to global API `SendMessage(...)` / `PostMessage(...)` usage (while allowing method calls like `Self.PostMessage(...)`)
   - updated readiness audit to split core blockers (WinAPI/Registry/Shell) from style-only namespace usage for clearer Linux-port tracking
   - replaced remaining `Vcl.Styles.*` namespace usages with `Styles.*` equivalents across key forms; readiness audit now reports zero core blockers and zero style-namespace matches
