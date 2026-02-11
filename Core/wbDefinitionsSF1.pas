@@ -155,6 +155,14 @@ var
   wbVMADFragmentedQUST: IwbSubRecordWithStructDef;
   wbVMADFragmentedSCEN: IwbSubRecordWithStructDef;
   wbVMADFragmentedINFO: IwbSubRecordWithStructDef;
+  wbAttackData: IwbSubRecordStructDef;
+  wbLocationEnum: IwbEnumDef;
+  wbObjectTypeEnum: IwbEnumDef;
+  wbLocation: function(aSignature: TwbSignature; aName: string = 'Location'): IwbSubRecordDef;
+  wbPLDT: IwbSubRecordDef;
+  wbPLVD: IwbSubRecordDef;
+  wbPTDA: IwbSubRecordWithStructDef;
+  wbXLOC: IwbSubRecordWithStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -4456,7 +4464,7 @@ begin
   ], cpNormal, False, nil, 3)
   .SetSummaryKeyOnValue([2, 3]);
 
-  var wbAttackData := wbRStructSK([1], 'Attack', [
+  wbAttackData := wbRStructSK([1], 'Attack', [
     wbStruct(ATKD, 'Attack Data', [
       wbFloat('Damage Mult'),
       wbFloat('Attack Chance'),
@@ -4516,7 +4524,7 @@ begin
     wbString(ATKT, 'Description')
   ]);
 
-  var wbLocationEnum := wbEnum([
+  wbLocationEnum := wbEnum([
     {0} 'Near reference', // string dump: '%s' in '%s' radius %u
     {1} 'In cell', // string dump: In cell '%s'
     {2} 'Near package start location', // string dump: Near package start location, radius %u
@@ -4536,7 +4544,7 @@ begin
    {16} 'Unknown 16'
   ]);
 
-  var wbObjectTypeEnum := wbEnum([
+  wbObjectTypeEnum := wbEnum([
     { 0} ' NONE',
     { 1} 'Activators',
     { 2} 'Armor',
@@ -4569,7 +4577,7 @@ begin
     {29} 'Headtrack Markers'
   ]);
 
-  var wbLocation :=
+  wbLocation :=
     function(aSignature : TwbSignature; aName: string = 'Location'): IwbSubRecordDef
     begin
       Result := wbStruct(aSignature, aName, [
@@ -4602,10 +4610,10 @@ begin
        .IncludeFlagOnValue(dfSummaryMembersNoName);
     end;
 
-  var wbPLDT := wbLocation(PLDT);
-  var wbPLVD := wbLocation(PLVD, 'Vendor Location');
+  wbPLDT := wbLocation(PLDT);
+  wbPLVD := wbLocation(PLVD, 'Vendor Location');
 
-  var wbPTDA := wbStruct(PTDA, 'Target Data', [
+  wbPTDA := wbStruct(PTDA, 'Target Data', [
     wbInteger('Type', itS32,
       wbEnum([], [
         0, 'Specific Reference',
@@ -4635,7 +4643,7 @@ begin
     wbInteger('Count / Distance / Index', itS32)
   ]);
 
-  var wbXLOC := wbStruct(XLOC, 'Lock Data', [
+  wbXLOC := wbStruct(XLOC, 'Lock Data', [
     wbInteger('Level', itU8, wbEnum([], [
        0, 'None',
        1, 'Novice 1',
