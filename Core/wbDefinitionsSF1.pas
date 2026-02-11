@@ -806,16 +806,19 @@ begin
 end;
 
 function wbConditionFunctionToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  Desc : PConditionFunction;
+  i    : Integer;
 begin
   Result := '';
-  var Desc := wbConditionDescFromIndex(aInt);
+  Desc := wbConditionDescFromIndex(aInt);
   case aType of
     ctEditType: Result := 'ComboBox';
     ctToSortKey: Result := IntToHex(aInt, 8);
     ctCheck: if not Assigned(Desc) then Result := '<Unknown: '+aInt.ToString+'>';
     ctEditInfo: begin
       with TStringList.Create do try
-        for var i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
+        for i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
           Add(wbConditionFunctions[i].Name);
         Sort;
         Result := CommaText;
@@ -838,8 +841,10 @@ begin
 end;
 
 function wbConditionFunctionToInt(const aString: string; const aElement: IwbElement): Int64;
+var
+  i : Integer;
 begin
-  for var i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
+  for i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
     with wbConditionFunctions[i] do
       if SameText(Name, aString) then
         Exit(Index);
@@ -850,17 +855,20 @@ end;
 function wbConditionParam1Decider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 var
   Container: IwbContainer;
+  Desc     : PConditionFunction;
+  ParamType: TConditionParameterType;
+  ParamFlag: Integer;
 begin
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
 
-  var Desc := wbConditionDescFromIndex(Container.ElementByName['Function'].NativeValue);
+  Desc := wbConditionDescFromIndex(Container.ElementByName['Function'].NativeValue);
   if not Assigned(Desc) then
     Exit;
 
-  var ParamType := Desc.ParamType1;
-  var ParamFlag := Container.ElementByName['Type'].NativeValue;
+  ParamType := Desc.ParamType1;
+  ParamFlag := Container.ElementByName['Type'].NativeValue;
 
   if ParamType in [ptReference, ptActor, ptPackage] then begin
     if ParamFlag and $02 > 0 then begin
@@ -881,17 +889,20 @@ end;
 function wbConditionParam2Decider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 var
   Container: IwbContainer;
+  Desc     : PConditionFunction;
+  ParamType: TConditionParameterType;
+  ParamFlag: Integer;
 begin
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
 
-  var Desc := wbConditionDescFromIndex(Container.ElementByName['Function'].NativeValue);
+  Desc := wbConditionDescFromIndex(Container.ElementByName['Function'].NativeValue);
   if not Assigned(Desc) then
     Exit;
 
-  var ParamType := Desc.ParamType2;
-  var ParamFlag := Container.ElementByName['Type'].NativeValue;
+  ParamType := Desc.ParamType2;
+  ParamFlag := Container.ElementByName['Type'].NativeValue;
 
   if ParamType in [ptReference, ptActor, ptPackage] then begin
     if ParamFlag and $02 > 0 then ParamType := ptAlias else {>>> 'use aliases' is set <<<}
@@ -902,10 +913,18 @@ begin
 end;
 
 function wbConditionEventToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
+var
+  EventFunction : Int64;
+  EventMember   : Int64;
+  s1            : string;
+  s2            : string;
+  slMember      : TStringList;
+  i             : Integer;
+  j             : Integer;
 begin
   Result := '';
-  var EventFunction := aInt and $FFFF;
-  var EventMember := aInt shr 16;
+  EventFunction := aInt and $FFFF;
+  EventMember := aInt shr 16;
   case aType of
     ctEditType: Result := 'ComboBox';
     ctToSortKey: Result := IntToHex(aInt, 8);
@@ -914,21 +933,21 @@ begin
       Result := Result + ':' + wbEventMemberEnum.ToEditValue(EventMember, nil);
     end;
     ctCheck: begin
-      var s1 := wbEventFunctionEnum.Check(EventFunction, nil);
+      s1 := wbEventFunctionEnum.Check(EventFunction, nil);
       if s1 <> '' then
         s1 := 'EventFunction' + s1;
-      var s2 := wbEventMemberEnum.Check(EventMember, nil);
+      s2 := wbEventMemberEnum.Check(EventMember, nil);
       if s2 <> '' then
         s2 := 'EventMember' + s2;
       if (s1 <> '') or (s2 <> '') then
         Result := s1 + ':' + s2;
     end;
     ctEditInfo: begin
-      var slMember := TStringList.Create;
+      slMember := TStringList.Create;
       slMember.AddStrings(wbEventMemberEnum.EditInfo[nil]);
       with TStringList.Create do try
-        for var i := 0 to Pred(wbEventFunctionEnum.NameCount) do
-          for var j := 0 to Pred(slMember.Count) do
+        for i := 0 to Pred(wbEventFunctionEnum.NameCount) do
+          for j := 0 to Pred(slMember.Count) do
             Add(wbEventFunctionEnum.Names[i] + ':' + slMember[j]);
         Sort;
         Result := CommaText;
@@ -942,8 +961,9 @@ end;
 function wbConditionEventToInt(const aString: string; const aElement: IwbElement): Int64;
 var
   EventFunction, EventMember: Integer;
+  i: Integer;
 begin
-  var i := Pos(':', aString);
+  i := Pos(':', aString);
   if i > 0 then begin
     EventFunction := wbEventFunctionEnum.FromEditValue(Copy(aString, 1, i-1), nil);
     EventMember := wbEventMemberEnum.FromEditValue(Copy(aString, i+1, Length(aString)), nil);
@@ -959,13 +979,14 @@ function wbConditionQuestOverlay(aInt: Int64; const aElement: IwbElement; aType:
 var
   GroupRecord : IwbGroupRecord;
   Element     : IwbElement;
+  MainRecord  : IwbMainRecord;
 begin
   Result := aInt;
   if (aInt = 0) and (aType in [ctCheck, ctToStr, ctToSummary, ctToSortKey, ctLinksTo]) then begin
     if not Assigned(aElement) then
       Exit;
 
-    var MainRecord := aElement.ContainingMainRecord;
+    MainRecord := aElement.ContainingMainRecord;
     if not Assigned(MainRecord) then
       Exit;
 
