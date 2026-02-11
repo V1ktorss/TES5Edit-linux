@@ -18419,10 +18419,13 @@ begin
       wbRStruct('Entry', [
         wbString(LNAM, 'Name')
           .SetLinksToCallbackOnValue(function(const aElement: IwbElement): IwbElement
+          var
+            lContainer: IwbContainer;
+            lAVMDName: Variant;
+            lFile: IwbFile;
           begin
             Result := nil;
 
-            var lContainer: IwbContainer;
             if not wbTryGetContainerFromUnion(aElement, lContainer) then
               Exit;
 
@@ -18432,11 +18435,11 @@ begin
             if lContainer.ElementExists['..\VNAM'] then
               Exit;
 
-            var lAVMDName := aElement.NativeValue;
+            lAVMDName := aElement.NativeValue;
             if not VarIsStr(lAVMDName) then
               Exit;
 
-            var lFile := aElement._File;
+            lFile := aElement._File;
             if not Assigned(lFile) then
               Exit;
 
@@ -18447,8 +18450,9 @@ begin
               Result := lFile.RecordFromIndexByKey[wbIdxModulation, lAVMDName];
           end)
           .SetToStr(procedure(var aValue:string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType)
+          var
+            lContainer: IwbContainer;
           begin
-            var lContainer: IwbContainer;
             if not wbTryGetContainerFromUnion(aElement, lContainer) then
               Exit;
 
@@ -18462,28 +18466,35 @@ begin
           end),
         wbString(VNAM, 'Value')
           .SetLinksToCallbackOnValue(function(const aElement: IwbElement): IwbElement
+          var
+            lContainer: IwbContainer;
+            lAVMDNameValue: Variant;
+            lAVMDName: string;
+            lUnderlinePos: Integer;
+            lPrefix: string;
+            lIndex: TwbNamedIndex;
+            lFile: IwbFile;
           begin
             Result := nil;
 
-            var lContainer: IwbContainer;
             if not wbTryGetContainerFromUnion(aElement, lContainer) then
               Exit;
 
             if lContainer.ElementValues['...\MNAM'] <> 'Complex Group' then
               Exit;
 
-            var lAVMDNameValue := aElement.NativeValue;
+            lAVMDNameValue := aElement.NativeValue;
             if not VarIsStr(lAVMDNameValue) then
               Exit;
 
-            var lAVMDName: string := lAVMDNameValue;
-            var lUnderlinePos := Pos('_', lAVMDName);
+            lAVMDName := lAVMDNameValue;
+            lUnderlinePos := Pos('_', lAVMDName);
             if lUnderlinePos < 11 then
               Exit;
 
-            var lPrefix := Copy(lAVMDName, 1, Pred(lUnderlinePos));
+            lPrefix := Copy(lAVMDName, 1, Pred(lUnderlinePos));
 
-            var lIndex: TwbNamedIndex := -1;
+            lIndex := -1;
             if lPrefix = 'SimpleGroup' then
               lIndex := wbIdxSimpleGroup
             else if lPrefix = 'ComplexGroup' then
@@ -18499,15 +18510,16 @@ begin
             if lAVMDName = '' then
               Exit;
 
-            var lFile := aElement._File;
+            lFile := aElement._File;
             if not Assigned(lFile) then
               Exit;
 
             Result := lFile.RecordFromIndexByKey[lIndex, lAVMDName];
           end)
           .SetToStr(procedure(var aValue:string; aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; aType: TwbCallbackType)
+          var
+            lContainer: IwbContainer;
           begin
-            var lContainer: IwbContainer;
             if not wbTryGetContainerFromUnion(aElement, lContainer) then
               Exit;
 
@@ -18517,16 +18529,18 @@ begin
             wbToStringFromLinksToMainRecordName(aValue, aBasePtr, aEndPtr, aElement, aType);
           end)
           .SetDontShow(function(const aElement: IwbElement): Boolean
+          var
+            lContainer: IwbContainer;
           begin
-            var lContainer: IwbContainer;
             if not wbTryGetContainerFromUnion(aElement, lContainer) then
               Exit(False);
             Result := lContainer.ElementValues['...\MNAM'] = 'Modulation';
           end),
         wbByteABGR(NNAM, 'Color')
           .SetDontShow(function(const aElement: IwbElement): Boolean
+          var
+            lContainer: IwbContainer;
           begin
-            var lContainer: IwbContainer;
             if not wbTryGetContainerFromUnion(aElement, lContainer) then
               Exit(False);
             Result := lContainer.ElementValues['...\MNAM'] <> 'Modulation';
