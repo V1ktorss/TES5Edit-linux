@@ -927,11 +927,13 @@ function wbCRC32File(aFileName: string): TwbCRC32;
 var
   Data: TBytes;
 begin
+  Data := nil;
   Result := 0;
   if FileExists(aFileName) then
     with TFileStream.Create(aFileName, fmOpenRead + fmShareDenyNone) do try
       SetLength(Data, Size);
-      ReadBuffer(Data[0], Length(Data));
+      if Length(Data) > 0 then
+        ReadBuffer(Data[0], Length(Data));
       Result := wbCRC32Data(Data);
     finally
       Free;
@@ -1058,9 +1060,6 @@ end;
 {$ENDIF}
 
 const
-  ALG_CRC32 = $0001;
-  ALG_MD2 = $8001;
-  ALG_MD4 = $8002;
   ALG_MD5 = $8003;
   ALG_SHA = $8004;
 
@@ -1086,6 +1085,7 @@ function wbCryptoApiHashData(aData: TBytes; aALG: Cardinal): string;
     i: Integer;
     p: PByte;
   begin
+    Result := '';
     SetLength(Result, aSize * 2);
     p := pDigest;
     for i := 0 to aSize - 1 do begin
@@ -1146,11 +1146,13 @@ function wbSHA1File(aFileName: string): string;
 var
   Data: TBytes;
 begin
+  Data := nil;
   Result := '';
   if FileExists(aFileName) then
     with TFileStream.Create(aFileName, fmOpenRead + fmShareDenyNone) do try
       SetLength(Data, Size);
-      ReadBuffer(Data[0], Length(Data));
+      if Length(Data) > 0 then
+        ReadBuffer(Data[0], Length(Data));
       Result := wbSHA1Data(Data);
     finally
       Free;
@@ -1174,11 +1176,13 @@ function wbMD5File(aFileName: string): string;
 var
   Data: TBytes;
 begin
+  Data := nil;
   Result := '';
   if FileExists(aFileName) then
     with TFileStream.Create(aFileName, fmOpenRead + fmShareDenyNone) do try
       SetLength(Data, Size);
-      ReadBuffer(Data[0], Length(Data));
+      if Length(Data) > 0 then
+        ReadBuffer(Data[0], Length(Data));
       Result := wbMD5Data(Data);
     finally
       Free;
@@ -1686,6 +1690,7 @@ var
   Elements : array of Variant;
   i        : Integer;
 begin
+  Elements := nil;
   SetLength(Elements, Length(aElements));
   for i := Low(aElements) to High(aElements) do
     Elements[i] := aElements[i];
