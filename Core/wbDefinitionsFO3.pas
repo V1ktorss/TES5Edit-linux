@@ -2629,6 +2629,10 @@ begin
 end;
 
 procedure DefineFO3;
+var
+  wbEffect: IwbRecordMemberDef;
+  wbHeadParts: IwbRecordMemberDef;
+  wbBodyParts: IwbRecordMemberDef;
 begin
   DefineCommon;
 
@@ -3274,7 +3278,7 @@ begin
     ]).SetAfterLoad(wbEFITAfterLoad)
       .SetRequired;
 
-  var wbEffect :=
+  wbEffect :=
     wbRStruct('Effect', [
       wbEFID,
       wbEFIT,
@@ -3287,7 +3291,7 @@ begin
   wbEffectsReq :=
     wbRArray('Effects', wbEffect).SetRequired;
 
-  var wbHeadParts :=
+  wbHeadParts :=
     wbRArrayS('Parts',
       wbHeadPart(
         wbEnum([
@@ -3314,7 +3318,7 @@ begin
     wbString(MICO, 'Small Icon FileName')
   ]).SetRequired;
 
-  var wbBodyParts :=
+  wbBodyParts :=
     wbRArrayS('Parts',
       wbRStructSK([0], 'Part', [
         wbInteger(INDX, 'Index', itU32, wbBodyPartIndexEnum),
