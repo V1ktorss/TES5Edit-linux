@@ -6327,7 +6327,7 @@ var
 begin
 {$IFDEF FPC}
 {$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap mode enabled (FPC).');
+  WriteLn(ErrOutput, '[headless] DefineCommon: FPC branch active.');
 {$ENDIF}
 {$ENDIF}
   wbIdxAddonNode := wbNamedIndex('AddonNode', True);
@@ -7552,11 +7552,6 @@ begin
     .IncludeFlag(dfCollapsed, wbCollapseOther));
 {$IFDEF FPC}
 {$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: passed wbCellGrid.');
-{$ENDIF}
-{$ENDIF}
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
   wbDATAPosRot :=
     IwbRecordMemberDef(wbByteArray(DATA, 'Position/Rotation (headless fallback)', 24).SetRequired);
 {$ELSE}
@@ -7918,11 +7913,6 @@ begin
         ]).IncludeFlag(dfCollapsed, wbCollapseOther)
       ]));
 {$ENDIF}
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: passed wbLandLayers.');
-{$ENDIF}
-{$ENDIF}
 
 
 {>>>Navmesh Common Defs<<<}
@@ -8011,11 +8001,6 @@ Can't properly represent that with current record definition methods.
           wbUnknown(ANAM),
           nil)
       ]));
-{$ENDIF}
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: passed wbRegionAreas.');
-{$ENDIF}
 {$ENDIF}
 
 {>>>Weather Common Defs<<<}
@@ -8344,8 +8329,7 @@ Can't properly represent that with current record definition methods.
   wbWorldCellSizeData := IwbRecordMemberDef(wbByteArray(CLSZ, 'Cell Sizes', 0, cpIgnore).SetDontShow(wbNeverShow));
   wbWorldVisibleCellsData := IwbRecordMemberDef(wbByteArray(VISI, 'Visible Cells', 0, cpIgnore).SetDontShow(wbNeverShow));
 {$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbWorldVisibleCellsData.');
-  Exit;
+  WriteLn(ErrOutput, '[headless] DefineCommon: completed FPC definitions (through wbWorldVisibleCellsData).');
 {$ENDIF}
 {$ELSE}
   wbWeatherImageSpaces :=

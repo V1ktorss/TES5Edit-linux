@@ -25,7 +25,7 @@ This document tracks what is already done for the native Linux path and what com
 - FPC headless init no longer crashes in early FO4 common definitions:
   - `DefineCommon` uses a reduced bootstrap path under `FPC + XEDIT_HEADLESS`
   - keeps `xedit-core -dummy` stable for headless smoke checks
-  - reduced bootstrap currently advances through common setup up to `wbWorldVisibleCellsData`
+  - FPC branch now completes through `wbWorldVisibleCellsData` without early `DefineCommon` exit
   - `wbDATAPosRot` uses a headless FPC fallback (`DATA` byte-array) to avoid `wbVec3PosRot` init crash
 
 ## Completed Milestones
@@ -153,7 +153,7 @@ This document tracks what is already done for the native Linux path and what com
 
 - Large VCL surface area still blocks direct xEdit GUI port.
 - Script host and plugin assumptions may still include Windows-only behavior.
-- FPC/Linux still requires reduced definition bootstrap in headless mode (currently exits after `wbWorldVisibleCellsData`); full `DefineCommon` parity is not complete yet.
+- FPC/Linux still relies on reduced/simplified definition handling in multiple sections (byte-array fallbacks, reduced structures); full `DefineCommon` parity is not complete yet.
 - GUI usability parity with original BSArchPro still needs incremental tuning.
 
 ## Immediate Action List
