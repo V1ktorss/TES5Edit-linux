@@ -76,6 +76,7 @@ const
 var
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
+  wbCSTYPowerWeightingStruct: IwbStructDef;
   lDOBJUsesVarRecs1: TwbVarRecs;
   lDOBJUsesVarRecs2: TwbVarRecs;
   lDOBJUsesVarRecs3: TwbVarRecs;
@@ -8425,7 +8426,7 @@ begin
           wbInteger('Has Reaction Radius Behavior', itU8, wbBoolEnum)
     ], cpNormal, True);
 
-    var wbCSTYPowerWeightingStruct := wbStruct('Power Weighting', [
+    wbCSTYPowerWeightingStruct := wbStruct('Power Weighting', [
       wbFloat('Engines', cpNormal, True, 1, -1, nil, wbFloatScale0to10),
       wbFloat('Shields', cpNormal, True, 1, -1, nil, wbFloatScale0to10),
       wbFloat('Guns', cpNormal, True, 1, -1, nil, wbFloatScale0to10),
@@ -8441,21 +8442,6 @@ begin
       ])
     ]);
 
-    var wbCSTYNormalizeFloat30 := wbNormalizeToRange(0.0, 30.0);
-    var wbCSTYNormalizeFloat600 := wbNormalizeToRange(0.0, 600.0);
-    var wbCSTYManneuverTimingStruct := function(aName: string = 'Timings'):IwbStructDef
-    begin
-      Result := wbStruct(aName, [
-        wbFloat('Engage', cpNormal, True, 1, -1, nil, wbCSTYNormalizeFloat600),
-        wbFloat('Evade', cpNormal, True, 1, -1, nil, wbCSTYNormalizeFloat600),
-        wbFloat('Acquire', cpNormal, True, 1, -1, nil, wbCSTYNormalizeFloat600),
-        wbFloat('Persue', cpNormal, True, 1, -1, nil, wbCSTYNormalizeFloat600),
-        wbFloat('Disengage', cpNormal, True, 1, -1, nil, wbCSTYNormalizeFloat600),
-        wbFloat('Surround', cpNormal, True, 1, -1, nil, wbCSTYNormalizeFloat600),
-        wbUnknown(4),
-        wbFloat('Break Stalemate', cpNormal, True, 1, -1, nil, wbCSTYNormalizeFloat600)
-      ]);
-    end;
   {subrecords checked against Starfield.esm}
   wbRecord(CSTY, 'Combat Style',
     wbFlags(wbFlagsList([
@@ -8544,10 +8530,10 @@ begin
       wbFloat('Chance', cpNormal, True, 1, -1, nil, wbFloatScale0to1),
       wbFloat('Max Distance', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 1000.0)),
       wbFloat('Speed Mult', cpNormal, True, 1, -1, nil, wbFloatScale0to10),
-      wbFloat('Min Time', cpNormal, True, 1, -1, nil, wbCSTYNormalizeFloat30),
-      wbFloat('Max Time', cpNormal, True, 1, -1, nil, wbCSTYNormalizeFloat30),
-      wbFloat('Maximum Time', cpNormal, True, 1, -1, nil, wbCSTYNormalizeFloat30),
-      wbFloat('Cooldown', cpNormal, True, 1, -1, nil, wbCSTYNormalizeFloat30)
+      wbFloat('Min Time', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 30.0)),
+      wbFloat('Max Time', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 30.0)),
+      wbFloat('Maximum Time', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 30.0)),
+      wbFloat('Cooldown', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 30.0))
     ]),
     wbStruct(CSSG, 'Space General', [
       wbFloat('Pilot Skill', cpNormal, True, 1, -1, nil, wbFloatScale0to1),
@@ -8582,8 +8568,26 @@ begin
       wbCSTYPowerWeightingStruct
     ]),
     wbStruct(CSSM, 'Space Manneuver Types', [
-      wbCSTYManneuverTimingStruct('Max Time'),
-      wbCSTYManneuverTimingStruct('Reentry Delays')
+      wbStruct('Max Time', [
+        wbFloat('Engage', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0)),
+        wbFloat('Evade', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0)),
+        wbFloat('Acquire', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0)),
+        wbFloat('Persue', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0)),
+        wbFloat('Disengage', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0)),
+        wbFloat('Surround', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0)),
+        wbUnknown(4),
+        wbFloat('Break Stalemate', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0))
+      ]),
+      wbStruct('Reentry Delays', [
+        wbFloat('Engage', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0)),
+        wbFloat('Evade', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0)),
+        wbFloat('Acquire', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0)),
+        wbFloat('Persue', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0)),
+        wbFloat('Disengage', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0)),
+        wbFloat('Surround', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0)),
+        wbUnknown(4),
+        wbFloat('Break Stalemate', cpNormal, True, 1, -1, nil, wbNormalizeToRange(0.0, 600.0))
+      ])
     ]),
     wbStruct(CSSR, 'Space Repair', [
       wbFloat('Damage Threshold', cpNormal, True, 1, -1, nil, wbFloatScale0to1),
