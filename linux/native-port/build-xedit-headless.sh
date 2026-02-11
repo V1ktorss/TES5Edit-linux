@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 OUT_DIR="${ROOT_DIR}/linux/bin"
 OUT_BIN="${OUT_DIR}/xedit-core"
 FPC_BIN="${FPC:-fpc}"
+LOCK_FILE="${OUT_DIR}/.xedit-core.build.lock"
 
 log() {
   echo "[xedit-build] $*"
@@ -53,13 +54,25 @@ for p in "${UNIT_PATHS[@]}"; do
   UNIT_ARGS+=("-Fu${p}")
 done
 
-log "Building xEdit headless (output: ${OUT_BIN})"
-log "Unit paths: ${UNIT_PATHS[*]}"
-"$FPC_BIN" "${FPC_FLAGS[@]}" "${UNIT_ARGS[@]}" \
-  -Fi"${ROOT_DIR}" \
-  -Fi"${ROOT_DIR}/Core" \
-  -Fi"${ROOT_DIR}/xEdit" \
-  "${ROOT_DIR}/xEdit/xedit-core.dpr"
+build_impl() {
+  log "Building xEdit headless (output: ${OUT_BIN})"
+  log "Unit paths: ${UNIT_PATHS[*]}"
+  "$FPC_BIN" "${FPC_FLAGS[@]}" "${UNIT_ARGS[@]}" \
+    -Fi"${ROOT_DIR}" \
+    -Fi"${ROOT_DIR}/Core" \
+    -Fi"${ROOT_DIR}/xEdit" \
+    "${ROOT_DIR}/xEdit/xedit-core.dpr"
+}
+
+if command -v flock >/dev/null 2>&1; then
+  exec 9>"${LOCK_FILE}"
+  log "Acquiring build lock: ${LOCK_FILE}"
+  flock 9
+  build_impl
+else
+  log "flock not found, continuing without build lock"
+  build_impl
+fi
 
 if [[ -x "$OUT_BIN" ]]; then
   log "Build ok: ${OUT_BIN}"

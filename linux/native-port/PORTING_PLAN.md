@@ -198,6 +198,7 @@ This document tracks what is already done for the native Linux path and what com
 - Runner now also supports readiness mode toggle (`ENFORCE_STYLE=1` strict, `ENFORCE_STYLE=0` core-only)
 - Runner now builds `xDump` before xDump headless smoke when `RUN_XDUMP_HEADLESS=1`, mirroring xEdit headless flow.
 - Runner now degrades gracefully when `fpc` is unavailable: xDump smoke is skipped only if no prebuilt xDump binary exists.
+- xEdit/xDump build helpers now use per-target `flock` locks (`linux/bin/.xedit-core.build.lock`, `linux/bin/.xdump-core.build.lock`) so parallel local/CI checks do not race in shared build output.
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`

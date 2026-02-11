@@ -6,6 +6,7 @@ OUT_DIR="${ROOT_DIR}/linux/bin"
 OUT_BIN="${OUT_DIR}/xdump-core"
 ALT_OUT_BIN="${OUT_DIR}/xDump"
 FPC_BIN="${FPC:-fpc}"
+LOCK_FILE="${OUT_DIR}/.xdump-core.build.lock"
 
 log() {
   echo "[xdump-build] $*"
@@ -50,15 +51,27 @@ for p in "${UNIT_PATHS[@]}"; do
   UNIT_ARGS+=("-Fu${p}")
 done
 
-log "Building xDump (output: ${OUT_BIN})"
-log "Unit paths: ${UNIT_PATHS[*]}"
-"$FPC_BIN" "${FPC_FLAGS[@]}" "${UNIT_ARGS[@]}" \
-  "-Fu${ROOT_DIR}/xDump" \
-  -Fi"${ROOT_DIR}/xDump" \
-  -Fi"${ROOT_DIR}/Core" \
-  -Fi"${ROOT_DIR}/External/ImagingLib/Source" \
-  -Fi"${ROOT_DIR}/External/TForge/Source/Include" \
-  "${ROOT_DIR}/xDump.dpr"
+build_impl() {
+  log "Building xDump (output: ${OUT_BIN})"
+  log "Unit paths: ${UNIT_PATHS[*]}"
+  "$FPC_BIN" "${FPC_FLAGS[@]}" "${UNIT_ARGS[@]}" \
+    "-Fu${ROOT_DIR}/xDump" \
+    -Fi"${ROOT_DIR}/xDump" \
+    -Fi"${ROOT_DIR}/Core" \
+    -Fi"${ROOT_DIR}/External/ImagingLib/Source" \
+    -Fi"${ROOT_DIR}/External/TForge/Source/Include" \
+    "${ROOT_DIR}/xDump.dpr"
+}
+
+if command -v flock >/dev/null 2>&1; then
+  exec 9>"${LOCK_FILE}"
+  log "Acquiring build lock: ${LOCK_FILE}"
+  flock 9
+  build_impl
+else
+  log "flock not found, continuing without build lock"
+  build_impl
+fi
 
 # FPC names the binary after the program identifier (`xDump`) by default.
 # Normalize to the expected Linux artifact name.
