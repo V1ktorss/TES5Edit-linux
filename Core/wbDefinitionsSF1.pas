@@ -121,6 +121,8 @@ var
   wbXALD: IwbSubRecordWithStructDef;
   wbFLRDReq: IwbSubRecordWithStructDef;
   wbXLRD: IwbSubRecordWithStructDef;
+  wbRACEDAT2Size: function(aName: string = 'Size'): IwbIntegerDef;
+  wbWMKFDecider: function:TwbRUnionDecider;
   wbLongitudeDouble: IwbFloatDef;
   wbLatitudeDouble: IwbFloatDef;
   lDOBJUsesVarRecs1: TwbVarRecs;
@@ -13277,7 +13279,7 @@ begin
       3, 'Extra Large'
     ]);
 
-  var wbRACEDAT2Size := function(aName: string = 'Size'): IwbIntegerDef
+  wbRACEDAT2Size := function(aName: string = 'Size'): IwbIntegerDef
   begin
     Result := wbInteger(aName, itS32, wbRaceSizeEnum);
   end;
@@ -19885,7 +19887,7 @@ begin
     ])
   ]);
 
-  var wbWMKFDecider := function:TwbRUnionDecider
+  wbWMKFDecider := function:TwbRUnionDecider
   begin
     Result := function(const aContainer: IwbContainerElementRef): Integer
     var
