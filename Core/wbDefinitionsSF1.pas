@@ -76,6 +76,9 @@ const
 var
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
+  wbMNAMFurnitureMarker: IwbRecordMemberDef;
+  wbMarkerEntryExitTypes: IwbFlagsDef;
+  wbSNAMMarkerParams: IwbRecordMemberDef;
   wbCSTYPowerWeightingStruct: IwbStructDef;
   lDOBJUsesVarRecs1: TwbVarRecs;
   lDOBJUsesVarRecs2: TwbVarRecs;
@@ -7161,7 +7164,7 @@ begin
     .IncludeFlag(dfCollapsed, wbCollapseBaseFormComponent)
   );
 
-  var wbMNAMFurnitureMarker := wbInteger(MNAM, 'Active Markers / Flags', itU32, wbFlags([
+  wbMNAMFurnitureMarker := wbInteger(MNAM, 'Active Markers / Flags', itU32, wbFlags([
     {0x00000001} 'Interaction Point 0',
     {0x00000002} 'Interaction Point 1',
     {0x00000004} 'Interaction Point 2',
@@ -7196,7 +7199,7 @@ begin
     {0x80000000} 'Is Sleep Furniture'
   ])).IncludeFlag(dfCollapsed, wbCollapseFlags);
 
-  var wbMarkerEntryExitTypes :=
+  wbMarkerEntryExitTypes :=
     wbFlags([
       'Front',
       'Rear',
@@ -7208,7 +7211,7 @@ begin
       ''
     ], True); // storage memory is initialized to FF so bits 6-8 are always set
 
-  var wbSNAMMarkerParams :=
+  wbSNAMMarkerParams :=
     wbArray(SNAM, 'Marker Parameters', wbStruct('Marker', [
       wbFloat('Offset X'),
       wbFloat('Offset Y'),
