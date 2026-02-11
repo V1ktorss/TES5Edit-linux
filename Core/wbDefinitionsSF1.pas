@@ -1572,19 +1572,22 @@ end;
 function wbTMLMTypeDontShowCallback(const aElement: IwbElement): Boolean;
 var
   lContainer: IwbContainerElementRef;
+  lType     : Variant;
 begin
   Result := True;
   if not Supports(aElement, IwbContainerElementRef, lContainer) then
     Exit;
-  var lType := lContainer.ElementNativeValues['ISET\Type'];
+  lType := lContainer.ElementNativeValues['ISET\Type'];
   case lType of
     0{Display Text}, 1{Submenu}, 5{DataSlate}: Result := False;
   end;
 end;
 
 function wbTMLMTypeUnionDeciderCallback(const aContainer: IwbContainerElementRef): Integer;
+var
+  lType : Variant;
 begin
-  var lType := aContainer.ElementNativeValues['...\ISET\Type'];
+  lType := aContainer.ElementNativeValues['...\ISET\Type'];
   case lType of
     0: Result := 0; // Display Text
     1: Result := 1; // Submenu
@@ -1598,6 +1601,7 @@ var
   lContainer: IwbContainerElementRef;
   lTemplate: TwbTemplateElements;
   lElement: IwbElement;
+  lSettingData: IwbElement;
 begin
   if not (VarIsOrdinal(aOldValue) and VarIsOrdinal(aNewValue)) then
     Exit;
@@ -1607,7 +1611,7 @@ begin
     Exit;
   if not Assigned(lContainer.Container)  then
     Exit;
-  var lSettingData := lContainer.Container.ElementBySortOrder[5];
+  lSettingData := lContainer.Container.ElementBySortOrder[5];
   if Assigned(lSettingData) then
     lSettingData.Remove;
 
@@ -1624,6 +1628,7 @@ var
   lContainer: IwbContainerElementRef;
   lTemplate: TwbTemplateElements;
   lElement: IwbElement;
+  lSettingData: IwbElement;
 begin
   if not (VarIsOrdinal(aOldValue) and VarIsOrdinal(aNewValue)) then
     Exit;
@@ -1631,7 +1636,7 @@ begin
     Exit;
   if not Assigned(aElement) or not Supports(aElement.Container, IwbContainerElementRef, lContainer) then
     Exit;
-  var lSettingData := lContainer.ElementBySortOrder[1];
+  lSettingData := lContainer.ElementBySortOrder[1];
   if Assigned(lSettingData) then
     lSettingData.Remove;
 
@@ -1646,6 +1651,7 @@ var
   lContainer: IwbContainerElementRef;
   lTemplate: TwbTemplateElements;
   lElement: IwbElement;
+  lSettingData: IwbElement;
 begin
   if not (VarIsOrdinal(aOldValue) and VarIsOrdinal(aNewValue)) then
     Exit;
@@ -1653,7 +1659,7 @@ begin
     Exit;
   if not Assigned(aElement) or not Supports(aElement.Container, IwbContainerElementRef, lContainer) then
     Exit;
-  var lSettingData := lContainer.ElementBySortOrder[1];
+  lSettingData := lContainer.ElementBySortOrder[1];
   if Assigned(lSettingData) then
     lSettingData.Remove;
 
@@ -1668,6 +1674,7 @@ var
   lContainer: IwbContainerElementRef;
   lTemplate: TwbTemplateElements;
   lElement: IwbElement;
+  lSettingData: IwbElement;
 begin
   if not (VarIsOrdinal(aOldValue) and VarIsOrdinal(aNewValue)) then
     Exit;
@@ -1675,7 +1682,7 @@ begin
     Exit;
   if not Assigned(aElement) or not Supports(aElement.Container, IwbContainerElementRef, lContainer) then
     Exit;
-  var lSettingData := lContainer.ElementBySortOrder[2];
+  lSettingData := lContainer.ElementBySortOrder[2];
   if Assigned(lSettingData) then
     lSettingData.Remove;
 
@@ -1802,6 +1809,7 @@ var
   lContainer           : IwbContainer;
   lContainerElementRef :  IwbContainerElementRef;
   lComponentName       : string;
+  lBFCB                : IwbElement;
 begin
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, lContainer) then
@@ -1817,7 +1825,7 @@ begin
   if lContainerElementRef.ElementCount < 2 then
     Exit;
 
-  var lBFCB := lContainerElementRef.Elements[0];
+  lBFCB := lContainerElementRef.Elements[0];
   if not Assigned(lBFCB) then
     Exit;
 
@@ -1842,6 +1850,7 @@ var
   lContainer           : IwbContainer;
   lContainerElementRef :  IwbContainerElementRef;
   lComponentName       : string;
+  lBFCB                : IwbElement;
 begin
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, lContainer) then
@@ -1857,7 +1866,7 @@ begin
   if lContainerElementRef.ElementCount < 2 then
     Exit;
 
-  var lBFCB := lContainerElementRef.Elements[0];
+  lBFCB := lContainerElementRef.Elements[0];
   if not Assigned(lBFCB) then
     Exit;
 
