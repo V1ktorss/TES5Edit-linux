@@ -119,6 +119,12 @@ var
   wbTaskbarList3: ITaskbarList3;
 {$ENDIF}
 
+procedure wbIgnoreUnused(const aParam: Pointer); inline;
+begin
+  if aParam <> nil then
+    Exit;
+end;
+
 function wbPathCombine(const aBase, aChild: string): string;
 begin
   if aBase = '' then
@@ -142,6 +148,12 @@ var
 begin
   Result := False;
   aExitCode := Cardinal(-1);
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@aFileName);
+  wbIgnoreUnused(@aParams);
+  wbIgnoreUnused(@aShowWindow);
+  wbIgnoreUnused(@aTimeout);
+  {$ENDIF}
 
   {$IFDEF MSWINDOWS}
   FillChar(lStartUpInfo, SizeOf(TStartUpInfo), 0);
@@ -179,6 +191,7 @@ begin
   Result := GetKeyState(aVirtualKey);
   Exit;
   {$ENDIF}
+  wbIgnoreUnused(@aVirtualKey);
   Result := 0;
 end;
 
@@ -191,6 +204,19 @@ var
   lBlendFunc: TBlendFunction;
 {$ENDIF}
 begin
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@DestDC);
+  wbIgnoreUnused(@X);
+  wbIgnoreUnused(@Y);
+  wbIgnoreUnused(@Width);
+  wbIgnoreUnused(@Height);
+  wbIgnoreUnused(@SrcDC);
+  wbIgnoreUnused(@SrcX);
+  wbIgnoreUnused(@SrcY);
+  wbIgnoreUnused(@SrcWidth);
+  wbIgnoreUnused(@SrcHeight);
+  wbIgnoreUnused(@Alpha);
+  {$ENDIF}
   {$IFDEF MSWINDOWS}
   lBlendFunc.BlendOp := AC_SRC_OVER;
   lBlendFunc.BlendFlags := 0;
@@ -240,6 +266,11 @@ end;
 
 procedure wbTaskbarProgressShow(const aHandle: THandle; const aProgressPos, aProgressMax: Integer);
 begin
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@aHandle);
+  wbIgnoreUnused(@aProgressPos);
+  wbIgnoreUnused(@aProgressMax);
+  {$ENDIF}
   {$IFDEF MSWINDOWS}
   if not Assigned(wbTaskbarList3) then
     Exit;
@@ -251,6 +282,9 @@ end;
 
 procedure wbTaskbarProgressError(const aHandle: THandle);
 begin
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@aHandle);
+  {$ENDIF}
   {$IFDEF MSWINDOWS}
   if not Assigned(wbTaskbarList3) then
     Exit;
@@ -261,6 +295,9 @@ end;
 
 procedure wbTaskbarProgressHide(const aHandle: THandle);
 begin
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@aHandle);
+  {$ENDIF}
   {$IFDEF MSWINDOWS}
   if not Assigned(wbTaskbarList3) then
     Exit;
@@ -275,6 +312,7 @@ begin
   Result := (GetAsyncKeyState(aVirtualKey) and $8000) <> 0;
   Exit;
   {$ENDIF}
+  wbIgnoreUnused(@aVirtualKey);
   Result := False;
 end;
 
@@ -376,6 +414,9 @@ var
 {$ENDIF}
 begin
   Result := 31;
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@aShowWindow);
+  {$ENDIF}
 
   {$IFDEF MSWINDOWS}
   Result := ShellExecute(0, PWideChar(aVerb), PWideChar(aFileName), PWideChar(aParams), PWideChar(aWorkingDir), aShowWindow);
@@ -425,6 +466,9 @@ var
 begin
   Result := False;
   aExitCode := Cardinal(-1);
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@aShowWindow);
+  {$ENDIF}
 
   {$IFDEF MSWINDOWS}
   FillChar(lExecInfo, SizeOf(lExecInfo), 0);
@@ -490,6 +534,9 @@ var
 begin
   aValue := '';
   Result := False;
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@aCurrentUser);
+  {$ENDIF}
   if (aRegPath = '') or (aValueName = '') then
     Exit;
 
@@ -528,6 +575,9 @@ var
 {$ENDIF}
 begin
   Result := False;
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@aProfile);
+  {$ENDIF}
   if (aHookDll = '') or (not FileExists(aHookDll)) then
     Exit;
 
@@ -554,6 +604,9 @@ end;
 
 procedure wbSetClipboardText(const aText: string);
 begin
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@aText);
+  {$ENDIF}
   {$IFDEF MSWINDOWS}
   if aText <> '' then
     Clipboard.AsText := aText
@@ -574,6 +627,9 @@ end;
 
 procedure wbLockWindowUpdate(const aHandle: THandle);
 begin
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@aHandle);
+  {$ENDIF}
   {$IFDEF MSWINDOWS}
   Windows.LockWindowUpdate(aHandle);
   {$ENDIF}
@@ -685,6 +741,9 @@ var
 {$ENDIF}
 begin
   Result := False;
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@aExecPath);
+  {$ENDIF}
   if aExt = '' then
     Exit;
 
@@ -711,6 +770,12 @@ var
 {$ENDIF}
 begin
   Result := False;
+  {$IFNDEF MSWINDOWS}
+  wbIgnoreUnused(@aExt);
+  wbIgnoreUnused(@aName);
+  wbIgnoreUnused(@aDescr);
+  wbIgnoreUnused(@aExecPath);
+  {$ENDIF}
 
   {$IFDEF MSWINDOWS}
   lExt := Trim(aExt);
