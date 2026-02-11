@@ -1570,6 +1570,7 @@ function ChangedFormGetChapterType(aBasePtr: Pointer; aEndPtr: Pointer; const aE
 var
   Element : IwbElement;
 begin
+  wbIgnoreElementRange(aBasePtr, aEndPtr);
   Element := aElement;
   Result := ChangedFormGetRawType(Element);
   if Result >=0 then
