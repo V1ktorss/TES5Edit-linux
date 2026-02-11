@@ -626,12 +626,43 @@ type
 
 var
   index_count, vertex_count, face_count: Cardinal;
+  cache_size: Integer;
   adjacency: TTriangleAdjacency;
   emitted_flags: array of Boolean;
   VertexScoreCache: ^TScoreCache;
   VertexScoreLive: ^TScoreLive;
+  live_triangles: PCardinal;
+  vertex_scores: array of Single;
+  triangle_scores: array of Single;
+  cache_holder: array [0..1, 0..(kCacheSizeMax + 4) - 1] of Cardinal;
+  cache: PCardinal;
+  cache_new: PCardinal;
+  cache_count: Integer;
+  current_triangle: Cardinal;
+  input_cursor: Cardinal;
+  output_triangle: Cardinal;
+  cache_write: Integer;
+  i: Integer;
+  k: Integer;
+  a, b, c: Cardinal;
+  index: Cardinal;
+  neighbors: PCardinal;
+  neighbors_size: Cardinal;
+  tri: Cardinal;
+  best_triangle: Cardinal;
+  best_score: Single;
+  cache_position: Integer;
+  score: Single;
+  score_diff: Single;
+  neighbors_begin: PCardinal;
+  neighbors_end: PCardinal;
+  it: PCardinal;
 
   procedure buildTriangleAdjacency;
+  var
+    i: Cardinal;
+    offset: Cardinal;
+    a, b, c: Cardinal;
   begin
     // allocate arrays
     SetLength(adjacency.counts, vertex_count);
@@ -639,20 +670,22 @@ var
     SetLength(adjacency.data, index_count);
 
     // fill triangle counts
-    for var i in indices do
+    for i in indices do
       Inc(adjacency.counts[i]);
 
     // fill offset table
-    var offset: Cardinal := 0;
-    for var i := Low(adjacency.counts) to High(adjacency.counts) do begin
+    offset := 0;
+    for i := Low(adjacency.counts) to High(adjacency.counts) do begin
       adjacency.offsets[i] := offset;
       Inc(offset, adjacency.counts[i]);
     end;
     Assert(offset = index_count);
 
     // fill triangle data
-    for var i: Cardinal := 0 to Pred(face_count) do begin
-      var a := indices[i * 3 + 0]; var b := indices[i * 3 + 1]; var c := indices[i * 3 + 2];
+    for i := 0 to Pred(face_count) do begin
+      a := indices[i * 3 + 0];
+      b := indices[i * 3 + 1];
+      c := indices[i * 3 + 2];
 
       adjacency.data[adjacency.offsets[a]] := i;
       Inc(adjacency.offsets[a]);
@@ -663,17 +696,19 @@ var
     end;
 
     // fix offsets that have been disturbed by the previous pass
-    for var i := 0 to Pred(vertex_count) do begin
+    for i := 0 to Pred(vertex_count) do begin
       Assert(adjacency.offsets[i] >= adjacency.counts[i]);
       Dec(adjacency.offsets[i], adjacency.counts[i]);
     end;
   end;
 
   function vertexScore(cache_position: Integer; live_triangles: Cardinal): Single;
+  var
+    live_triangles_clamped: Cardinal;
   begin
     Assert( (cache_position >= -1) and (cache_position < int(kCacheSizeMax)) );
 
-    var live_triangles_clamped := IfThen(live_triangles < kValenceMax, live_triangles, kValenceMax);
+    live_triangles_clamped := IfThen(live_triangles < kValenceMax, live_triangles, kValenceMax);
     Result := vertexScoreCache[1 + cache_position] + vertexScoreLive[live_triangles_clamped];
   end;
 
@@ -702,7 +737,7 @@ begin
 
   face_count := index_count div 3;
 
-  var cache_size := 16;
+  cache_size := 16;
   Assert(cache_size <= kCacheSizeMax);
 
   if aStrip then begin
@@ -719,43 +754,42 @@ begin
 
   {$POINTERMATH ON}
   // live triangle counts; note, we alias adjacency.counts as we remove triangles after emitting them so the counts always match
-  var live_triangles: PCardinal := @adjacency.counts[0];
+  live_triangles := @adjacency.counts[0];
 
   // emitted flags
   SetLength(emitted_flags, face_count);
 
   // compute initial vertex scores
-  var vertex_scores: array of Single;
   SetLength(vertex_scores, vertex_count);
-  for var i := 0 to Pred(vertex_count) do
+  for i := 0 to Pred(vertex_count) do
     vertex_scores[i] := vertexScore(-1, live_triangles[i]);
 
   // compute triangle scores
-  var triangle_scores: array of Single;
   SetLength(triangle_scores, face_count);
 
-  for var i := 0 to Pred(face_count) do begin
-    var a := indices[i * 3 + 0]; var b := indices[i * 3 + 1]; var c := indices[i * 3 + 2];
+  for i := 0 to Pred(face_count) do begin
+    a := indices[i * 3 + 0];
+    b := indices[i * 3 + 1];
+    c := indices[i * 3 + 2];
 
     triangle_scores[i] := vertex_scores[a] + vertex_scores[b] + vertex_scores[c];
   end;
 
-  var cache_holder: array [0..1, 0..(kCacheSizeMax + 4) - 1] of Cardinal;
-  var cache: PCardinal := @cache_holder[0];
-  var cache_new: PCardinal := @cache_holder[1];
-  var cache_count := 0;
+  cache := @cache_holder[0];
+  cache_new := @cache_holder[1];
+  cache_count := 0;
 
-  var current_triangle: Cardinal := 0;
-  var input_cursor: Cardinal := 1;
+  current_triangle := 0;
+  input_cursor := 1;
 
-  var output_triangle: Cardinal := 0;
+  output_triangle := 0;
 
   while (current_triangle <> High(Cardinal)) do begin
     Assert(output_triangle < face_count);
 
-    var a := indices[current_triangle * 3 + 0];
-    var b := indices[current_triangle * 3 + 1];
-    var c := indices[current_triangle * 3 + 2];
+    a := indices[current_triangle * 3 + 0];
+    b := indices[current_triangle * 3 + 1];
+    c := indices[current_triangle * 3 + 2];
 
     // output indices
     Result[output_triangle * 3 + 0] := a;
@@ -768,22 +802,24 @@ begin
     triangle_scores[current_triangle] := 0;
 
     // new triangle
-    var cache_write := 0;
+    cache_write := 0;
     cache_new[cache_write] := a; Inc(cache_write);
     cache_new[cache_write] := b; Inc(cache_write);
     cache_new[cache_write] := c; Inc(cache_write);
 
     // old triangles
-    for var i := 0 to Pred(cache_count) do begin
-      var index := cache[i];
+    for i := 0 to Pred(cache_count) do begin
+      index := cache[i];
 
       cache_new[cache_write] := index;
       if (index <> a) and (index <> b) and (index <> c) then
         Inc(cache_write);
     end;
 
-    var cache_temp := cache;
-    cache := cache_new; cache_new := cache_temp;
+    cache := cache_new;
+    cache_new := @cache_holder[0];
+    if cache = @cache_holder[0] then
+      cache_new := @cache_holder[1];
 
     if cache_write > cache_size then
       cache_count := cache_size
@@ -793,13 +829,13 @@ begin
     // remove emitted triangle from adjacency data
     // this makes sure that we spend less time traversing these lists on subsequent iterations
     // live triangle counts are updated as a byproduct of these adjustments
-    for var k := 0 to 2 do begin
-      var index := indices[current_triangle * 3 + k];
-      var neighbors: PCardinal := @adjacency.data[adjacency.offsets[index]];
-      var neighbors_size := adjacency.counts[index];
+    for k := 0 to 2 do begin
+      index := indices[current_triangle * 3 + k];
+      neighbors := @adjacency.data[adjacency.offsets[index]];
+      neighbors_size := adjacency.counts[index];
 
-      for var i := 0 to Pred(neighbors_size) do begin
-        var tri := neighbors[i];
+      for i := 0 to Pred(neighbors_size) do begin
+        tri := neighbors[i];
 
         if tri = current_triangle then begin
           neighbors[i] := neighbors[neighbors_size - 1];
@@ -809,45 +845,42 @@ begin
       end;
     end;
 
-    var best_triangle := High(Cardinal);
-    var best_score: Single := 0;
+    best_triangle := High(Cardinal);
+    best_score := 0;
 
     // update cache positions, vertex scores and triangle scores, and find next best triangle
-    for var i := 0 to Pred(cache_write) do begin
-      var index := cache[i];
+    for i := 0 to Pred(cache_write) do begin
+      index := cache[i];
 
       // no need to update scores if we are never going to use this vertex
       if adjacency.counts[index] = 0 then
         Continue;
 
-      var cache_position: Integer;
       if i >= cache_size then
         cache_position := -1
       else
         cache_position := i;
 
       // update vertex score
-      var score := vertexScore(cache_position, live_triangles[index]);
-      var score_diff := score - vertex_scores[index];
+      score := vertexScore(cache_position, live_triangles[index]);
+      score_diff := score - vertex_scores[index];
 
       vertex_scores[index] := score;
 
       // update scores of vertex triangles
-      var neighbors_begin: PCardinal := @adjacency.data[adjacency.offsets[index]];
-      var neighbors_end := neighbors_begin + adjacency.counts[index];
+      neighbors_begin := @adjacency.data[adjacency.offsets[index]];
+      neighbors_end := neighbors_begin + adjacency.counts[index];
 
-      var it := neighbors_begin;
+      it := neighbors_begin;
       while it < neighbors_end do begin
-        var tri := it^;
+        tri := it^;
         Assert(not emitted_flags[tri]);
 
-        var tri_score := triangle_scores[tri] + score_diff;
-        Assert(tri_score > 0);
-
-        best_triangle := IfThen(best_score < tri_score, tri, best_triangle);
-        best_score := IfThen(best_score < tri_score, tri_score, best_score);
-
-        triangle_scores[tri] := tri_score;
+        score := triangle_scores[tri] + score_diff;
+        Assert(score > 0);
+        best_triangle := IfThen(best_score < score, tri, best_triangle);
+        best_score := IfThen(best_score < score, score, best_score);
+        triangle_scores[tri] := score;
 
         Inc(it);
       end;
