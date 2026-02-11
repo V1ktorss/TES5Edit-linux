@@ -1604,7 +1604,7 @@ begin
 {$IFDEF MSWINDOWS}
     function: Boolean
     begin
-      Result := wbForceTerminate or ((GetKeyState(VK_ESCAPE) and 128) = 128);
+      Result := wbForceTerminate or wbPlatform.wbIsVirtualKeyPressed(vkEscape);
       if Result then
         wbProgressCallback('Interrupted by user!');
     end
