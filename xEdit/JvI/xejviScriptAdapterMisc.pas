@@ -1941,7 +1941,6 @@ begin
     AddConst('Controls', 'akRight', Ord(akRight));
     AddConst('Controls', 'akTop', Ord(akTop));
     AddConst('Controls', 'akBottom', Ord(akBottom));
-    {$IFDEF MSWINDOWS}
     AddConst('Windows', 'SW_HIDE', Ord(SW_HIDE));
     AddConst('Windows', 'SW_MAXIMIZE', Ord(SW_MAXIMIZE));
     AddConst('Windows', 'SW_MINIMIZE', Ord(SW_MINIMIZE));
@@ -1954,7 +1953,6 @@ begin
     AddConst('Windows', 'SW_SHOWNA', Ord(SW_SHOWNA));
     AddConst('Windows', 'SW_SHOWNOACTIVATE', Ord(SW_SHOWNOACTIVATE));
     AddConst('Windows', 'SW_SHOWNORMAL', Ord(SW_SHOWNORMAL));
-    {$ENDIF}
 
     AddConst('wbPlatform', 'SW_HIDE', Ord(SW_HIDE));
     AddConst('wbPlatform', 'SW_MAXIMIZE', Ord(SW_MAXIMIZE));
@@ -2020,14 +2018,13 @@ begin
     AddFunction('SysUtils', 'IncludeTrailingBackslash', JvInterpreter_IncludeTrailingBackslash, 1, [varEmpty], varEmpty);
     AddFunction('SysUtils', 'ExcludeTrailingBackslash', JvInterpreter_ExcludeTrailingBackslash, 1, [varEmpty], varEmpty);
     AddFunction('System', 'StringOfChar', JvInterpreter_StringOfChar, 2, [varEmpty, varEmpty], varEmpty);
-    {$IFDEF MSWINDOWS}
+    { Legacy script namespace aliases kept for cross-platform compatibility. }
     AddFunction('Windows', 'CopyFile', JvInterpreter_CopyFile, 3, [varEmpty, varEmpty, varEmpty], varEmpty);
     AddFunction('ShellApi', 'ShellExecute', JvInterpreter_ShellExecute, 6, [varEmpty, varEmpty, varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);
     AddFunction('ShellApi', 'ShellExecuteWait', JvInterpreter_ShellExecuteWait, 6, [varEmpty, varEmpty, varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);
     AddFunction('Windows', 'CreateProcessWait', JvInterpreter_CreateProcessWait, 4, [varEmpty, varEmpty, varEmpty, varEmpty], varEmpty);
     AddFunction('Windows', 'Sleep', JvInterpreter_Sleep, 1, [varEmpty], varEmpty);
     AddFunction('Windows', 'GetKeyState', JvInterpreter_GetKeyState, 1, [varEmpty], varEmpty);
-    {$ENDIF}
 
     AddFunction('wbPlatform', 'CopyFile', JvInterpreter_CopyFile, 3, [varEmpty, varEmpty, varEmpty], varEmpty);
     AddFunction('wbPlatform', 'OpenUrl', JvInterpreter_wbOpenUrl, 1, [varEmpty], varEmpty);
