@@ -268,6 +268,7 @@ var
   wbQUSTLocationAliasFlags: IwbSubRecordDef;
   wbQUSTReferenceAliasFlags: IwbSubRecordDef;
   wbRACEDAT2UnknownStruct: IwbStructDef;
+  wbStaticPart: IwbSubRecordStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -17430,7 +17431,7 @@ begin
     wbUnknown(VNAM)
   ]);
 
-  var wbStaticPart :=
+  wbStaticPart :=
     wbRStructSK([0], 'Part', [
       wbStructSK(ONAM, [0], 'Unknown', [
         wbFormIDCk('Static', [ACTI, ALCH, AMMO, BOOK, CONT, DOOR, FURN, MISC, MSTT, STAT, TERM, WEAP, FLOR]).IncludeFlag(dfUnmappedFormID, wbStarfieldIsABugInfestedHellhole),
