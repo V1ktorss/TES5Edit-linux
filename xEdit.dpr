@@ -112,6 +112,9 @@ const
 
 {$SetPEFlags IMAGE_FILE_LARGE_ADDRESS_AWARE}
 
+var
+  lIconHandle: HICON;
+
 begin
   UseLatestCommonDialogs := True;
   SysUtils.FormatSettings.DecimalSeparator := '.';
@@ -127,7 +130,7 @@ begin
     Exit;
 
   if xeIconResource <> '' then begin
-    var lIconHandle := LoadIcon(HInstance, PChar(xeIconResource));
+    lIconHandle := LoadIcon(HInstance, PChar(xeIconResource));
     if lIconHandle <> 0 then
       Application.Icon.Handle := lIconHandle;
   end;
