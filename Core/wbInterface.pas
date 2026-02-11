@@ -5254,9 +5254,6 @@ var
 implementation
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows,
-{$ENDIF}
   Math,
   TypInfo,
   wbSort,
