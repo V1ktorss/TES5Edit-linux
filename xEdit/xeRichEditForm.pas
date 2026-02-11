@@ -64,6 +64,7 @@ implementation
 
 uses
   wbInterface,
+  wbPlatform,
   TOM2,
   xeMainForm,
   Styles.Utils.SystemMenu;
@@ -330,12 +331,12 @@ begin
   if NeedToggleTOC then begin
     NeedToggleTOC := False;
     if btnTOC.Checked then begin
-      LockWindowUpdate(Handle);
+      wbLockWindowUpdate(Handle);
       try
         btnTOC.Checked := not btnTOC.Checked;
         btnTOC.Checked := not btnTOC.Checked;
       finally
-        LockWindowUpdate(0);
+        wbLockWindowUpdate(0);
       end;
     end;
   end;

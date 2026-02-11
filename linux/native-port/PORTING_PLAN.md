@@ -136,6 +136,7 @@ This document tracks what is already done for the native Linux path and what com
   - reduced readiness audit output to mostly style/theme namespaces (`Vcl.Styles.*`, `Vcl.Themes`, and `Vcl.Samples.Spin`) rather than raw WinAPI dependencies
   - replaced `Vcl.Themes`/`Vcl.Styles` with `Themes`/`Styles` in `xeMainForm`
   - replaced `Vcl.Samples.Spin` with `Spin` (and normalized theme unit names) in options/cell-details forms
+  - moved `xeRichEditForm` non-activating refresh lock from direct `LockWindowUpdate` to `wbPlatform.wbLockWindowUpdate`
   - updated readiness audit to split core blockers (WinAPI/Registry/Shell) from style-only namespace usage for clearer Linux-port tracking
   - replaced remaining `Vcl.Styles.*` namespace usages with `Styles.*` equivalents across key forms; readiness audit now reports zero core blockers and zero style-namespace matches
   - added readiness gate script `linux/native-port/check-xedit-readiness.sh` and CI workflow `.github/workflows/xedit-readiness-ci.yml` to enforce zero core blockers on push/PR
