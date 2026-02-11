@@ -267,6 +267,7 @@ var
   wbSPCHQuestStage: function(aSignature: TwbSignature; const aName: string): IwbRecordMemberDef;
   wbQUSTLocationAliasFlags: IwbSubRecordDef;
   wbQUSTReferenceAliasFlags: IwbSubRecordDef;
+  wbRACEDAT2UnknownStruct: IwbStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -15176,7 +15177,7 @@ begin
     wbString(SCCM, 'Script Comment')
   ]);
 
-  var wbRACEDAT2UnknownStruct :=
+  wbRACEDAT2UnknownStruct :=
     wbStruct('Unknown', [
       wbUnknown(1),
       wbFloat,
