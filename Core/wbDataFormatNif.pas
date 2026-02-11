@@ -2535,6 +2535,8 @@ begin
 end;
 
 function TwbNifFile.GetAssetsList: TStringDynArray;
+var
+  Asset: TdfElement;
 
   procedure AddAsset(const aFileName: string);
   var
@@ -2554,11 +2556,15 @@ function TwbNifFile.GetAssetsList: TStringDynArray;
 begin
   Result := nil;
 
-  for var Asset in GetAssets do
+  for Asset in GetAssets do
     AddAsset(Asset.EditValue);
 end;
 
 function TwbNifFile.GetLinkArrays: TdfElements;
+var
+  i, j: Integer;
+  block: TwbNifBlock;
+  el: TdfElement;
 
   procedure AddArray(el: TdfElement);
   begin
@@ -2568,8 +2574,8 @@ function TwbNifFile.GetLinkArrays: TdfElements;
 
 begin
   AddArray(Self.Footer.Elements['Roots']);
-  for var i := 0 to Pred(Self.BlocksCount) do begin
-    var block := Self.Blocks[i];
+  for i := 0 to Pred(Self.BlocksCount) do begin
+    block := Self.Blocks[i];
 
     if block.IsNiObject('NiObjectNET', True) then
       AddArray(block.Elements['Extra Data List']);
@@ -2621,14 +2627,14 @@ begin
       AddArray(block.Elements['Affected Nodes']);
 
     if block.IsNiObject('NiBoneLODController', True) then begin
-      var el := block.Elements['Node Groups'];
+      el := block.Elements['Node Groups'];
       if Assigned(el) then
-        for var j: Integer := 0 to Pred(el.Count) do
+        for j := 0 to Pred(el.Count) do
           AddArray(el[j]);
 
       el := block.Elements['Shade Groups 2'];
       if Assigned(el) then
-        for var j: Integer := 0 to Pred(el.Count) do
+        for j := 0 to Pred(el.Count) do
           AddArray(el[j]);
     end;
 
