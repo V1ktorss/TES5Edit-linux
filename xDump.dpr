@@ -30,9 +30,6 @@ uses
   Registry,
   {$ENDIF}
   IniFiles,
-  ZlibEx,
-  lz4,
-  wbPlatform,
   wbBSA in 'Core/wbBSA.pas',
   wbCommandLine in 'Core/wbCommandLine.pas',
   wbSort in 'Core/wbSort.pas',
@@ -63,10 +60,10 @@ uses
 {$ENDIF}
 {$MAXSTACKSIZE 2097152}
 
+{$IFDEF MSWINDOWS}
 const
   IMAGE_FILE_LARGE_ADDRESS_AWARE = $0020;
 
-{$IFDEF MSWINDOWS}
 {$SetPEFlags IMAGE_FILE_LARGE_ADDRESS_AWARE}
 {$ENDIF}
 
@@ -95,7 +92,6 @@ end;
 
 type
   TExportFormat = (efUESPWiki, efRaw);
-  TwbDefProfile = string;
   TwbExportPass = ( epRead, epSimple, epShared, epChapters, epRemaining, epNothing);
 var
   wbDefProfiles : TStringList = nil;
@@ -839,11 +835,8 @@ const
 
 var
   regPath, regKey: string;
-  ProgramPath : String;
   DataPath    : String;
 begin
-  ProgramPath := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0)));
-
   if not wbFindCmdLineParam('D', DataPath) then begin
     DataPath := CheckAppPath;
 
@@ -888,11 +881,6 @@ begin
     DataPath := IncludeTrailingPathDelimiter(DataPath);
 
   wbDataPath := DataPath;
-end;
-
-function isMode(aMode: String): Boolean;
-begin
-  Result := FindCmdLineSwitch(aMode) or (Pos(Uppercase(aMode), UpperCase(ExtractFileName(ParamStr(0))))<>0);
 end;
 
 function isFormatValid(aFormatName: String): Boolean;
