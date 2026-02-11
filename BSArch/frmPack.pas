@@ -80,6 +80,8 @@ end;
 
 //============================================================================
 procedure TFormPack.btnBrowseClick(Sender: TObject);
+var
+  f: string;
 begin
   with TFileSaveDialog.Create(Self) do try
     with FileTypes.Add do begin
@@ -90,7 +92,7 @@ begin
     DefaultFolder := ExtractFilePath(edFileName.Text);
     FileName := ExtractFileName(edFileName.Text);
     if Execute then begin
-      var f := FileName;
+      f := FileName;
       if TPath.GetExtension(f) = '' then
         f := f + cArchiveTypeExtensions[po.ArchiveType];
       edFileName.Text := f;
@@ -102,10 +104,12 @@ end;
 
 //============================================================================
 procedure TFormPack.chkAutodetectFlagsClick(Sender: TObject);
+var
+  i: Integer;
 begin
-  for var i := 0 to Pred(pnlArchiveFlags.ControlCount) do
+  for i := 0 to Pred(pnlArchiveFlags.ControlCount) do
     pnlArchiveFlags.Controls[i].Enabled := not chkAutodetectFlags.Checked;
-  for var i := 0 to Pred(pnlFileFlags.ControlCount) do
+  for i := 0 to Pred(pnlFileFlags.ControlCount) do
     pnlFileFlags.Controls[i].Enabled := not chkAutodetectFlags.Checked;
 end;
 
@@ -119,6 +123,8 @@ end;
 
 //============================================================================
 procedure TFormPack.FormClose(Sender: TObject; var Action: TCloseAction);
+var
+  i: Integer;
 begin
   if ModalResult = mrOk then begin
 
@@ -171,12 +177,12 @@ begin
     if chkAutodetectFlags.Visible and not chkAutodetectFlags.Checked then begin
 
       po.ArchiveFlags := 3; // 'Include Directory Names' and 'Include File Names' always set
-      for var i := 0 to Pred(pnlArchiveFlags.ControlCount) do
+      for i := 0 to Pred(pnlArchiveFlags.ControlCount) do
         if TCheckBox(pnlArchiveFlags.Controls[i]).Checked then
           po.ArchiveFlags := po.ArchiveFlags or (1 shl pnlArchiveFlags.Controls[i].Tag);
 
       po.FileFlags := 0;
-      for var i := 0 to Pred(pnlFileFlags.ControlCount) do
+      for i := 0 to Pred(pnlFileFlags.ControlCount) do
         if TCheckBox(pnlFileFlags.Controls[i]).Checked then
           po.FileFlags := po.FileFlags or (1 shl pnlFileFlags.Controls[i].Tag);
 
@@ -194,14 +200,19 @@ end;
 
 //============================================================================
 procedure TFormPack.FormShow(Sender: TObject);
+var
+  t: TBSArchiveType;
+  r: TRadioButton;
+  i: Integer;
+  c: TCheckBox;
 begin
   edFileName.Text := po.ArchiveFileName;
   chkAutodetectFlags.Checked := po.bAutodetectFlags;
   chkMultiThreaded.Checked := po.bMultiThreaded;
   chkSharedData.Checked := po.bSharedData;
 
-  for var t := High(TBSArchiveType) downto Succ(Low(TBSArchiveType)) do begin
-    var r := TRadioButton.Create(Self);
+  for t := High(TBSArchiveType) downto Succ(Low(TBSArchiveType)) do begin
+    r := TRadioButton.Create(Self);
     r.Parent := pnlArchiveType;
     r.Width := pnlArchiveType.Width;
     r.Height := r.Height + 8;
@@ -214,8 +225,8 @@ begin
       rbArchiveTypeClick(r);
   end;
 
-  for var i := 3 to 9 do begin
-    var c := TCheckBox.Create(Self);
+  for i := 3 to 9 do begin
+    c := TCheckBox.Create(Self);
     c.Parent := pnlArchiveFlags;
     c.Width := pnlArchiveFlags.Width;
     c.Caption := cArchiveFlagNames[i];
@@ -228,8 +239,8 @@ begin
       c.Checked := ((po.ArchiveFlags shr i) and 1) <> 0;
   end;
 
-  for var i := 0 to 8 do begin
-    var c := TCheckBox.Create(Self);
+  for i := 0 to 8 do begin
+    c := TCheckBox.Create(Self);
     c.Parent := pnlFileFlags;
     c.Width := pnlFileFlags.Width;
     c.Caption := cFileFlagNames[i];
