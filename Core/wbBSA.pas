@@ -236,7 +236,6 @@ const
   _OtherCount = 500000;
 
 procedure TwbContainerHandler.BuildCache;
-{$IFDEF FPC}
 var
   lPath: string;
   lHashSeedName: string;
@@ -247,7 +246,6 @@ var
   lFolderHash: Int64;
   lFile: string;
   lFileHash: Int64;
-{$ENDIF}
 begin
   InvalidateCache;
   with chCache do begin
@@ -277,14 +275,14 @@ begin
       Free;
     end;
 {$ELSE}
-    var lPath :=  IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0)));
-    var lHashSeedName := lPath + wbGameName + '.HashSeed.txt';
+    lPath :=  IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0)));
+    lHashSeedName := lPath + wbGameName + '.HashSeed.txt';
 
     if FileExists(lHashSeedName) then
     with TStringList.Create do try
       LoadFromFile(lHashSeedName);
-      for var lHashSeedIdx := Pred(Count) downto 0 do begin
-        var lHashSeed := Strings[lHashSeedIdx].ToLowerInvariant.Replace('/', '\');
+      for lHashSeedIdx := Pred(Count) downto 0 do begin
+        lHashSeed := Strings[lHashSeedIdx].ToLowerInvariant.Replace('/', '\');
         if not ccAll.TryAdd(lHashSeed, wbNothing) then
           Delete(lHashSeedIdx);
       end;
@@ -329,10 +327,9 @@ begin
       end;
     end;
 {$ELSE}
-    for var lFullName in ccAll.Keys do begin
-      var lFolder := ExcludeTrailingBackslash(ExtractFilePath(lFullName)).ToLowerInvariant.Replace('/', '\');
+    for lFullName in ccAll.Keys do begin
+      lFolder := ExcludeTrailingBackslash(ExtractFilePath(lFullName)).ToLowerInvariant.Replace('/', '\');
       if ccFolders.TryAdd(lFolder, wbNothing) then begin
-        var lFolderHash: Int64;
         if wbGameMode >= gmTES5 then
           lFolderHash := CreateHashFO4(lFolder)
         else
@@ -340,12 +337,11 @@ begin
         ccFolderHashes.TryAdd(lFolderHash, lFolder);
       end;
 
-      var lFile := ExtractFileName(lFullName).ToLowerInvariant;
+      lFile := ExtractFileName(lFullName).ToLowerInvariant;
       if wbGameMode >= gmTES5 then
         lFile := ChangeFileExt(lFile, '');
 
       if ccFiles.TryAdd(lFile, wbNothing) then begin
-        var lFileHash: Int64;
         if wbGameMode >= gmTES5 then
           lFileHash := CreateHashFO4(lFile)
         else
@@ -665,7 +661,7 @@ begin
       lFileName := LowerCase(Copy(FileName, Length(fPath) + 1, Length(FileName)));
       aDict.TryAdd(lFileName, wbNothing);
 {$ELSE}
-      var lFileName := LowerCase(Copy(FileName, Length(fPath) + 1, Length(FileName)));
+      lFileName := LowerCase(Copy(FileName, Length(fPath) + 1, Length(FileName)));
       aDict.TryAdd(lFileName, wbNothing);
 {$ENDIF}
     end;
