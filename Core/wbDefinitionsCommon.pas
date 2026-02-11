@@ -7790,13 +7790,6 @@ begin
         wbUnknown(IDLB)
       ))
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbIdleAnimation.');
-  Exit;
-{$ENDIF}
-{$ENDIF}
-
 {>>>Landscape Common Defs<<<}
   //TES4,FO3,FNV,TES5,FO4,FO76,SF1
 {$IFDEF FPC}
@@ -7924,6 +7917,12 @@ begin
             ).IncludeFlag(dfCollapsed, wbCollapseOther))
         ]).IncludeFlag(dfCollapsed, wbCollapseOther)
       ]));
+{$ENDIF}
+{$IFDEF FPC}
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbLandLayers.');
+  Exit;
+{$ENDIF}
 {$ENDIF}
 
 
