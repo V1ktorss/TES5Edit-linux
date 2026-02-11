@@ -280,6 +280,7 @@ var
   wbLGDIFiltersToStr: TwbIntToStrCallback;
   wbStrToLGDIFilter: TwbStrToIntCallback;
   wbLGDIFilter: function(aSignature: TwbSignature; const aName: string): IwbRecordMemberDef;
+  wbSPIT: IwbSubRecordWithStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -16232,7 +16233,7 @@ begin
     ])
   ]).SetSummaryKey([5]);
 
-  var wbSPIT := wbStruct(SPIT, 'Data', [
+  wbSPIT := wbStruct(SPIT, 'Data', [
     { 0} wbInteger('Base Cost', itU32),
     { 4} wbInteger('Flags', itU32, wbFlags([
            {0x00000001} 'Manual Cost Calc',
