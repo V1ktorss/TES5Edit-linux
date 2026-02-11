@@ -6921,13 +6921,22 @@ begin
 end;
 
 function TfrmMain.GetSourceElement(Source: TObject; out SourceElement: IwbElement): Boolean;
+var
+  lSourceTree: TVirtualEditTree;
+  lSourceViewNodeDatas: PViewNodeDatas;
+  lDragSelection: TNodeArray;
+  lDragSelectionLength: Integer;
+  lElements: IwbElements;
+  lElementCount: Integer;
+  lDragSelectionIdx: Integer;
+  lSourceNavNodeData: PNavNodeData;
 begin
   Result := False;
   SourceElement := nil;
 
   if not (Source is TVirtualEditTree) then
     Exit;
-  var lSourceTree := TVirtualEditTree(Source);
+  lSourceTree := TVirtualEditTree(Source);
 
   if lSourceTree = vstView then begin
     if Length(lSourceTree.DragSelection) <> 1 then
@@ -6938,7 +6947,7 @@ begin
     if Pred(lSourceTree.DragColumn) > High(ActiveRecords) then
       Exit;
 
-    var lSourceViewNodeDatas: PViewNodeDatas := lSourceTree.GetNodeData(lSourceTree.DragSelection[0]);
+    lSourceViewNodeDatas := lSourceTree.GetNodeData(lSourceTree.DragSelection[0]);
     if not Assigned(lSourceViewNodeDatas) then
       Exit;
 
@@ -6948,17 +6957,16 @@ begin
 
     Result := True;
   end else if lSourceTree = vstNav then begin
-    var lDragSelection := lSourceTree.DragSelection;
-    var lDragSelectionLength := Length(lDragSelection);
+    lDragSelection := lSourceTree.DragSelection;
+    lDragSelectionLength := Length(lDragSelection);
 
     if lDragSelectionLength < 1 then
       Exit;
 
-    var lElements: IwbElements;
     SetLength(lElements, lDragSelectionLength);
-    var lElementCount := 0;
-    for var lDragSelectionIdx := 0 to Pred(lDragSelectionLength) do begin
-      var lSourceNavNodeData: PNavNodeData := lSourceTree.GetNodeData(lSourceTree.DragSelection[lDragSelectionIdx]);
+    lElementCount := 0;
+    for lDragSelectionIdx := 0 to Pred(lDragSelectionLength) do begin
+      lSourceNavNodeData := lSourceTree.GetNodeData(lSourceTree.DragSelection[lDragSelectionIdx]);
       if not Assigned(lSourceNavNodeData) then
         Continue;
       lElements[lElementCount] := lSourceNavNodeData.Element as IwbElement;
@@ -8336,10 +8344,15 @@ end;
 procedure TfrmMain.ApplyScriptToSelection(aSelection: TNodeArray; aCount: Cardinal; const abShowMessages: boolean);
 var
   Node        : PVirtualNode;
+  i           : Integer;
+  StartNode   : PVirtualNode;
+  NextNode    : PVirtualNode;
+  NodeData    : PNavNodeData;
+  Result      : Variant;
 begin
-  for var i := Low(aSelection) to High(aSelection) do
+  for i := Low(aSelection) to High(aSelection) do
   begin
-    var StartNode: PVirtualNode := aSelection[i];
+    StartNode := aSelection[i];
 
     if Assigned(StartNode) then
     begin
@@ -8353,14 +8366,12 @@ begin
 
     while Assigned(Node) do
     begin
-      var NextNode: PVirtualNode := vstNav.GetPrevious(Node);
-      var NodeData: PNavNodeData := vstNav.GetNodeData(Node);
+      NextNode := vstNav.GetPrevious(Node);
+      NodeData := vstNav.GetNodeData(Node);
 
       if Assigned(NodeData.Element) then
         if NodeData.Element.ElementType in ScriptProcessElements then
         begin
-          var Result: Variant;
-
           if not abShowMessages then
             wbProgressUnlock;
 
@@ -8399,15 +8410,17 @@ begin
 end;
 
 procedure TfrmMain.ApplyScriptToSelection(aSelection: TDynElements; aCount: Cardinal; const abShowMessages: boolean);
+var
+  i: Integer;
+  Element: IwbElement;
+  Result: Variant;
 begin
-  for var i := Low(aSelection) to High(aSelection) do
+  for i := Low(aSelection) to High(aSelection) do
   begin
-    var Element: IwbElement := aSelection[i];
+    Element := aSelection[i];
 
     if Element.ElementType in ScriptProcessElements then
     begin
-      var Result: Variant;
-
       if not abShowMessages then
         wbProgressUnlock;
 
