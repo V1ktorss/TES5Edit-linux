@@ -193,6 +193,7 @@ This document tracks what is already done for the native Linux path and what com
     - `ZlibEx`: added `ZDecompressStream`
   - updated xDump smoke/build scripts:
     - `smoke-test-xdump-headless.sh` now detects `linux/bin/xDump` fallback
+    - `smoke-test-xdump-headless.sh` now supports multi-case runs (`XDUMP_HEADLESS_CASES`, default `-h|-dummy`) and fails on non-zero exit codes
     - `build-xdump.sh` now normalizes FPC default `xDump` output to `linux/bin/xdump-core`
   - verified:
     - `linux/native-port/build-xdump.sh` succeeds and produces `linux/bin/xdump-core`

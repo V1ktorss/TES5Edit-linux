@@ -3,9 +3,9 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 LOG_DIR="/tmp"
-LOG_FILE="${LOG_DIR}/xdump-headless-smoke.log"
 TIMEOUT_SECONDS="${XDUMP_HEADLESS_TIMEOUT:-20}"
-HEADLESS_ARGS="${XDUMP_HEADLESS_ARGS:--h}"
+HEADLESS_ARGS="${XDUMP_HEADLESS_ARGS:-}"
+HEADLESS_CASES="${XDUMP_HEADLESS_CASES:--h|-dummy}"
 
 find_xdump_bin() {
   if [[ -n "${XDUMP_BIN:-}" && -x "${XDUMP_BIN}" ]]; then
@@ -39,19 +39,41 @@ if [[ -z "${XDUMP_BIN_PATH}" ]]; then
 fi
 
 echo "[xdump-smoke] Using binary: ${XDUMP_BIN_PATH}"
-echo "[xdump-smoke] Running: ${XDUMP_BIN_PATH} ${HEADLESS_ARGS}"
 
-set +e
-timeout "${TIMEOUT_SECONDS}"s "${XDUMP_BIN_PATH}" ${HEADLESS_ARGS} >"${LOG_FILE}" 2>&1
-exit_code=$?
-set -e
-
-if [[ "${exit_code}" -eq 124 ]]; then
-  echo "[xdump-smoke] FAILED: command timed out after ${TIMEOUT_SECONDS}s"
-  echo "[xdump-smoke] Log: ${LOG_FILE}"
-  exit 1
+cases=()
+if [[ -n "${HEADLESS_ARGS}" ]]; then
+  cases+=("${HEADLESS_ARGS}")
+else
+  IFS='|' read -r -a cases <<< "${HEADLESS_CASES}"
 fi
 
-echo "[xdump-smoke] Exit code: ${exit_code}"
-echo "[xdump-smoke] Log: ${LOG_FILE}"
-echo "[xdump-smoke] PASS (process started and returned without hanging)"
+for case_args in "${cases[@]}"; do
+  safe_name="$(echo "${case_args}" | tr -cs '[:alnum:]' '_' | sed 's/^_//; s/_$//')"
+  [[ -z "${safe_name}" ]] && safe_name="default"
+  log_file="${LOG_DIR}/xdump-headless-smoke-${safe_name}.log"
+
+  echo "[xdump-smoke] Running: ${XDUMP_BIN_PATH} ${case_args}"
+  set +e
+  # shellcheck disable=SC2206
+  cmd_args=( ${case_args} )
+  timeout "${TIMEOUT_SECONDS}"s "${XDUMP_BIN_PATH}" "${cmd_args[@]}" >"${log_file}" 2>&1
+  exit_code=$?
+  set -e
+
+  if [[ "${exit_code}" -eq 124 ]]; then
+    echo "[xdump-smoke] FAILED: command timed out after ${TIMEOUT_SECONDS}s (${case_args})"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if [[ "${exit_code}" -ne 0 ]]; then
+    echo "[xdump-smoke] FAILED: non-zero exit code ${exit_code} (${case_args})"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  echo "[xdump-smoke] Exit code: ${exit_code}"
+  echo "[xdump-smoke] Log: ${log_file}"
+done
+
+echo "[xdump-smoke] PASS (all cases completed successfully)"
