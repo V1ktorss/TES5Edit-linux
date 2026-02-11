@@ -2228,6 +2228,7 @@ begin
 
     { TRegistryIniFile }
     AddClass('Registry', TMemIniFile, 'TRegistryIniFile');
+    AddClass('wbPlatform', TMemIniFile, 'TRegistryIniFile');
     AddGet(TMemIniFile, 'Create', TMemIniFile_Create, 1, [varEmpty], varEmpty);
 
     { TControl }
