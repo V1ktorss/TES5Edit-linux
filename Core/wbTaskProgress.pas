@@ -107,9 +107,7 @@ uses
 {$IFDEF MSWINDOWS}
 var
   TaskbarList: ITaskbarList;
-  TaskbarList2: ITaskbarList2;
   TaskbarList3: ITaskbarList3;
-  TaskbarList4: ITaskbarList4;
 {$ENDIF}
 
 
@@ -205,9 +203,7 @@ begin
   end;
 
   TaskbarList.HrInit;
-  Supports(TaskbarList, IID_ITaskbarList2, TaskbarList2);
   Supports(TaskbarList, IID_ITaskbarList3, TaskbarList3);
-  Supports(TaskbarList, IID_ITaskbarList4, TaskbarList4);
 {$ENDIF}
 end;
 
