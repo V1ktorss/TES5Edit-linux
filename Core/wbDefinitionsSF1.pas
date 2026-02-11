@@ -79,6 +79,10 @@ var
   wbObjectModProperties: IwbArrayDef;
   wbObjectTemplate: IwbSubRecordStructDef;
   wbOBTSReq: IwbSubRecordDef;
+  wbXLKRs: IwbRecordMemberDef;
+  wbLinkedReferences: IwbRecordMemberDef;
+  wbXPCS: IwbRecordMemberDef;
+  wbXPLKs: IwbRecordMemberDef;
   wbBSMPSequence: IwbSubRecordArrayDef;
   wbArmorAddonBSMPSequence: IwbSubRecordArrayDef;
   wbEffects: IwbSubRecordArrayDef;
@@ -8053,21 +8057,21 @@ begin
     wbFormIDCk(GNAM, 'Scene', [SCEN])
   ]);
 
-  var wbXLKRs :=
+  wbXLKRs :=
     wbRArrayS('Linked References', wbStruct(XLKR, 'Linked Reference', [
       wbFormIDCk('Keyword/Ref', [KYWD] + sigReferences),
       wbFormIDCk('Ref', sigReferences)
     ], cpNormal, False, nil, 1));
 
-  var wbLinkedReferences :=
+  wbLinkedReferences :=
     wbRStruct('Linked References', [
       wbXLKRs,
       wbEmpty(XLKT, 'Transient')
     ]);
 
-  var wbXPCS := wbFormIDCk(XPCS, 'Source Pack-in', [PKIN]);
+  wbXPCS := wbFormIDCk(XPCS, 'Source Pack-in', [PKIN]);
 
-  var wbXPLKs :=
+  wbXPLKs :=
     wbRArray('Power Links', wbStruct(XPLK, 'Power Link', [
       wbFormIDCk('Ref', [REFR, ACHR]),
       wbInteger('Unknown', itU32, wbEnum([
