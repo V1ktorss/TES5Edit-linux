@@ -8014,8 +8014,7 @@ Can't properly represent that with current record definition methods.
 {$ENDIF}
 {$IFDEF FPC}
 {$IFDEF XEDIT_HEADLESS}
-  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbRegionAreas.');
-  Exit;
+  WriteLn(ErrOutput, '[headless] DefineCommon: passed wbRegionAreas.');
 {$ENDIF}
 {$ENDIF}
 
@@ -8344,6 +8343,10 @@ Can't properly represent that with current record definition methods.
   wbWorldOffsetData := IwbRecordMemberDef(wbByteArray(OFST, 'Offsets', 0, cpIgnore).SetDontShow(wbNeverShow));
   wbWorldCellSizeData := IwbRecordMemberDef(wbByteArray(CLSZ, 'Cell Sizes', 0, cpIgnore).SetDontShow(wbNeverShow));
   wbWorldVisibleCellsData := IwbRecordMemberDef(wbByteArray(VISI, 'Visible Cells', 0, cpIgnore).SetDontShow(wbNeverShow));
+{$IFDEF XEDIT_HEADLESS}
+  WriteLn(ErrOutput, '[headless] DefineCommon: reduced bootstrap reached wbWorldVisibleCellsData.');
+  Exit;
+{$ENDIF}
 {$ELSE}
   wbWeatherImageSpaces :=
     wbStruct(IMSP, 'Image Spaces', [
