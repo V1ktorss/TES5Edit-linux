@@ -81,6 +81,7 @@ end;
 
 function TwbVMTypeFormaterToString(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
 begin
+  if Assigned(aElement) then;
   if aType = ctToSortKey then
     Result := IntToHex64(aInt, 8)
   else if (aInt >= 0) and (aInt < Length(sifVMTypeArray)) then
@@ -153,11 +154,14 @@ end;
 
 function TwbHandleFormaterToString(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
 begin
+  if Assigned(aElement) then;
+  if aType = ctToSortKey then;
   Result := IntToHex64(aInt, 16)
 end;
 
 function TwbObjectHandleFormaterToString(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
 begin
+  if Assigned(aElement) then;
   if aType = ctToSortKey then
     Result := IntToHex64(aInt, 8)
   else begin
@@ -240,6 +244,7 @@ end;
 
 function TwbSaveWorldspaceIndexFormaterToString(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
 begin
+  if Assigned(aElement) then;
   if aType = ctToSortKey then
     Result := IntToHex64(aInt, 8)
   else if (aInt > 0) and (aInt <= Length(sifSaveWorldspaceArray)) then begin
@@ -331,6 +336,7 @@ end;
 
 function wbDontShowBranch(const aElement: IwbElement): Boolean;
 begin
+  if Assigned(aElement) then;
   Result := wbHideNeverShow;
 end;
 
@@ -339,6 +345,8 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if Assigned(aBasePtr) then;
+  if Assigned(aEndPtr) then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Chunk', aElement);
@@ -356,6 +364,8 @@ var
   Container : IwbDataContainer;
   aFile     : IwbFile;
 begin
+  if Assigned(aBasePtr) then;
+  if Assigned(aEndPtr) then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   aFile := aElement.GetFile;
@@ -374,6 +384,8 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if Assigned(aBasePtr) then;
+  if Assigned(aEndPtr) then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Plugin', aElement);
@@ -387,6 +399,8 @@ end;
 
 function wbCoSaveChunkType(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aEndPtr) then;
+  if Assigned(aElement) then;
   Result := -1;
   if not Assigned(aBasePtr) then Exit;
   Result := PCardinal(aBasePtr)^;
@@ -394,6 +408,8 @@ end;
 
 function wbCoSaveChunkTypeName(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): String;
 begin
+  if Assigned(aEndPtr) then;
+  if Assigned(aElement) then;
   Result := '';
   if not Assigned(aBasePtr) then Exit;
   Result := wbStr4ToString(PCardinal(aBasePtr)^);
@@ -404,6 +420,8 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if Assigned(aBasePtr) then;
+  if Assigned(aEndPtr) then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Array_var', aElement);
@@ -424,6 +442,8 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if Assigned(aBasePtr) then;
+  if Assigned(aEndPtr) then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Element', aElement);
@@ -442,6 +462,8 @@ end;
 
 function wbCoSaveArrayType(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aEndPtr) then;
+  if Assigned(aElement) then;
   Result := -1;
   if not Assigned(aBasePtr) then Exit;
   Result := PCardinal(aBasePtr)^;
@@ -449,6 +471,8 @@ end;
 
 function wbCoSaveArrayTypeName(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): String;
 begin
+  if Assigned(aEndPtr) then;
+  if Assigned(aElement) then;
   Result := '';
   if not Assigned(aBasePtr) then Exit;
   Result := IntToHex(PCardinal(aBasePtr)^, 8);
@@ -456,16 +480,25 @@ end;
 
 function ToBeDeterminedDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aBasePtr) then;
+  if Assigned(aEndPtr) then;
+  if Assigned(aElement) then;
   Result := 0;
 end;
 
 function ToBeDeterminedCounter(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Cardinal;
 begin
+  if Assigned(aBasePtr) then;
+  if Assigned(aEndPtr) then;
+  if Assigned(aElement) then;
   Result := 0;
 end;
 
 function ToBeDeterminedCountCallback(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Cardinal;
 begin
+  if Assigned(aBasePtr) then;
+  if Assigned(aEndPtr) then;
+  if Assigned(aElement) then;
   Result := 0;
 end;
 
