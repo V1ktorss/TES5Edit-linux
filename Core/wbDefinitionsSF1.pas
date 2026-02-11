@@ -104,6 +104,7 @@ var
   wbSNAMMarkerParams: IwbRecordMemberDef;
   wbCSTYPowerWeightingStruct: IwbStructDef;
   wbAngleToStr: TwbToStrCallback;
+  wbLonLanFunc: function(aIsLat: Boolean): TwbToStrCallback;
   wbLongitudeToStr: TwbToStrCallback;
   wbLatitudeToStr: TwbToStrCallback;
   wbLongitudeDouble: IwbFloatDef;
@@ -6206,7 +6207,7 @@ begin
       end;
     end;
 
-  var wbLonLanFunc :=
+  wbLonLanFunc :=
     function(aIsLat: Boolean): TwbToStrCallback
     var
       loFull: Integer;
