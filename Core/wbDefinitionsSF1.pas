@@ -136,6 +136,25 @@ var
   wbPropTypeEnum: IwbEnumDef;
   wbScriptFlags: IwbIntegerDef;
   wbScriptPropertyObject: IwbValueDef;
+  wbScriptPropertyStruct: IwbArrayDef;
+  wbScriptProperty: IwbStructDef;
+  wbScriptProperties: IwbArrayDef;
+  wbScriptEntry: IwbStructDef;
+  wbScriptFragmentsInfo: IwbStructDef;
+  wbScriptFragmentsPack: IwbStructDef;
+  wbScriptFragmentsQuest: IwbStructDef;
+  wbScriptFragmentsScen: IwbStructDef;
+  wbScriptFragments: IwbStructDef;
+  wbVMADVersion: IwbIntegerDef;
+  wbVMADObjectFormat: IwbIntegerDef;
+  wbVMADScripts: IwbArrayDef;
+  wbVMAD: IwbSubRecordWithStructDef;
+  wbVMADFragmentedTMLM: IwbSubRecordWithStructDef;
+  wbVMADFragmentedPERK: IwbSubRecordWithStructDef;
+  wbVMADFragmentedPACK: IwbSubRecordWithStructDef;
+  wbVMADFragmentedQUST: IwbSubRecordWithStructDef;
+  wbVMADFragmentedSCEN: IwbSubRecordWithStructDef;
+  wbVMADFragmentedINFO: IwbSubRecordWithStructDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -4129,7 +4148,7 @@ begin
       .IncludeFlag(dfSummaryMembersNoName)
   ]);
 
-  var wbScriptPropertyStruct :=
+  wbScriptPropertyStruct :=
     wbArrayS('Struct', wbStructSK([0], 'Member', [
       wbLenString('memberName', 2),
       wbInteger('Type', itU8, wbPropTypeEnum, cpNormal, False, nil, wbScriptPropertyTypeAfterSet),
@@ -4158,7 +4177,7 @@ begin
       ])
     ]), -1, cpNormal, False);
 
-  var wbScriptProperty :=
+  wbScriptProperty :=
     wbStructSK([0], 'Property', [
       wbLenString('propertyName', 2),
       wbInteger('Type', itU8, wbPropTypeEnum, cpNormal, False, nil, wbScriptPropertyTypeAfterSet),
@@ -4192,12 +4211,12 @@ begin
     .IncludeFlag(dfSummaryMembersNoName)
     .IncludeFlag(dfCollapsed, wbCollapseScriptProperties);
 
-  var wbScriptProperties :=
+  wbScriptProperties :=
     wbArrayS('Properties', wbScriptProperty, -2, cpNormal, False, nil, nil, nil, wbCanAddScriptProperties)
     .SetSummaryPassthroughMaxLength(80)
     .SetSummaryPassthroughMaxDepth(1);
 
-  var wbScriptEntry := wbStructSK([0], 'Script', [
+  wbScriptEntry := wbStructSK([0], 'Script', [
     wbLenString('ScriptName', 2),
     wbScriptFlags,
     wbScriptProperties
@@ -4208,7 +4227,7 @@ begin
   .IncludeFlag(dfCollapsed, wbCollapseScriptEntry)
   .IncludeFlag(dfSummaryMembersNoName);
 
-  var wbScriptFragmentsInfo := wbStruct('Script Fragments', [
+  wbScriptFragmentsInfo := wbStruct('Script Fragments', [
     wbInteger('Extra bind data version', itS8).SetDefaultNativeValue(3).IncludeFlag(dfSkipImplicitEdit),
     wbInteger('Flags', itU8, wbFlags([
       {1} 'OnBegin',
@@ -4231,7 +4250,7 @@ begin
   .SetSummaryKey([1, 2, 3])
   .IncludeFlag(dfSummaryMembersNoName);
 
-  var wbScriptFragmentsPack := wbStruct('Script Fragments', [
+  wbScriptFragmentsPack := wbStruct('Script Fragments', [
     wbInteger('Extra bind data version', itS8).SetDefaultNativeValue(3).IncludeFlag(dfSkipImplicitEdit),
     wbInteger('Flags', itU8, wbFlags([
       {1} 'OnBegin',
@@ -4255,7 +4274,7 @@ begin
   .SetSummaryKey([1, 2, 3])
   .IncludeFlag(dfSummaryMembersNoName);
 
-  var wbScriptFragmentsQuest := wbStruct('Script Fragments', [
+  wbScriptFragmentsQuest := wbStruct('Script Fragments', [
     wbInteger('Extra bind data version', itS8).SetDefaultNativeValue(3).IncludeFlag(dfSkipImplicitEdit),
     wbInteger('FragmentCount', itU16, nil, cpBenign).IncludeFlag(dfSkipImplicitEdit),
     wbLenString('ScriptName', 2).SetAfterSet(wbScriptFragmentsQuestScriptNameAfterSet),
@@ -4294,7 +4313,7 @@ begin
   .SetSummaryKey([2, 3])
   .IncludeFlag(dfSummaryMembersNoName);
 
-  var wbScriptFragmentsScen := wbStruct('Script Fragments', [
+  wbScriptFragmentsScen := wbStruct('Script Fragments', [
     wbInteger('Extra bind data version', itS8).SetDefaultNativeValue(3).IncludeFlag(dfSkipImplicitEdit),
     wbInteger('Flags', itU8, wbFlags([
       {1} 'OnBegin',
@@ -4338,7 +4357,7 @@ begin
   .SetSummaryKey([1, 2, 3, 4])
   .IncludeFlag(dfSummaryMembersNoName);
 
-  var wbScriptFragments := wbStruct('Script Fragments', [
+  wbScriptFragments := wbStruct('Script Fragments', [
     wbInteger('Extra bind data version', itS8).SetDefaultNativeValue(3),
     wbScriptEntry,
     wbArrayS('Fragments',
@@ -4362,24 +4381,24 @@ begin
 
   {>>> http://www.uesp.net/wiki/Tes5Mod:Mod_File_Format/VMAD_Field <<<}
 
-  var wbVMADVersion :=
+  wbVMADVersion :=
     wbInteger('Version', itS16, nil, cpIgnore).SetDefaultNativeValue(6).IncludeFlag(dfSkipImplicitEdit);
 
-  var wbVMADObjectFormat :=
+  wbVMADObjectFormat :=
     wbInteger('Object Format', itS16, nil, cpIgnore).SetDefaultNativeValue(2).IncludeFlag(dfSkipImplicitEdit);
 
-  var wbVMADScripts :=
+  wbVMADScripts :=
     wbArrayS('Scripts', wbScriptEntry, -2, cpNormal, False, nil, nil, nil, wbCanAddScripts)
     .SetSummaryPassthroughMaxLength(100);
 
-  var wbVMAD := wbStruct(VMAD, 'Virtual Machine Adapter', [
+  wbVMAD := wbStruct(VMAD, 'Virtual Machine Adapter', [
     wbVMADVersion,
     wbVMADObjectFormat,
     wbVMADScripts
   ])
   .SetSummaryKeyOnValue([2]);
 
-  var wbVMADFragmentedTMLM := wbStruct(VMAD, 'Virtual Machine Adapter',[
+  wbVMADFragmentedTMLM := wbStruct(VMAD, 'Virtual Machine Adapter',[
     wbVMADVersion,
     wbVMADObjectFormat,
     wbVMADScripts,
@@ -4387,7 +4406,7 @@ begin
   ], cpNormal, False, nil, 3{some records are missing the fragments part})
   .SetSummaryKeyOnValue([2]);
 
-  var wbVMADFragmentedPERK := wbStruct(VMAD, 'Virtual Machine Adapter', [
+  wbVMADFragmentedPERK := wbStruct(VMAD, 'Virtual Machine Adapter', [
     wbVMADVersion,
     wbVMADObjectFormat,
     wbVMADScripts,
@@ -4395,7 +4414,7 @@ begin
   ], cpNormal, False, nil, 3)
   .SetSummaryKeyOnValue([2, 3]);
 
-  var wbVMADFragmentedPACK := wbStruct(VMAD, 'Virtual Machine Adapter', [
+  wbVMADFragmentedPACK := wbStruct(VMAD, 'Virtual Machine Adapter', [
     wbVMADVersion,
     wbVMADObjectFormat,
     wbVMADScripts,
@@ -4403,7 +4422,7 @@ begin
   ], cpNormal, False, nil, 3)
   .SetSummaryKeyOnValue([2, 3]);
 
-  var wbVMADFragmentedQUST := wbStruct(VMAD, 'Virtual Machine Adapter', [
+  wbVMADFragmentedQUST := wbStruct(VMAD, 'Virtual Machine Adapter', [
     wbVMADVersion,
     wbVMADObjectFormat,
     wbVMADScripts,
@@ -4421,7 +4440,7 @@ begin
   ], cpNormal, False, nil, 3)
   .SetSummaryKeyOnValue([2, 3, 4]);
 
-  var wbVMADFragmentedSCEN := wbStruct(VMAD, 'Virtual Machine Adapter', [
+  wbVMADFragmentedSCEN := wbStruct(VMAD, 'Virtual Machine Adapter', [
     wbVMADVersion,
     wbVMADObjectFormat,
     wbVMADScripts,
@@ -4429,7 +4448,7 @@ begin
   ], cpNormal, False, nil, 3)
   .SetSummaryKeyOnValue([2, 3]);
 
-  var wbVMADFragmentedINFO := wbStruct(VMAD, 'Virtual Machine Adapter', [
+  wbVMADFragmentedINFO := wbStruct(VMAD, 'Virtual Machine Adapter', [
     wbVMADVersion,
     wbVMADObjectFormat,
     wbVMADScripts,
