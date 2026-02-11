@@ -447,9 +447,6 @@ const
 
 var
   s: string;
-{$IFDEF MSWINDOWS}
-  regPath, regKey, client, regValue: string;
-{$ENDIF}
   isEpicNV : Boolean;
   IniFile : TMemIniFile;
   lIDs: TStringList;
@@ -457,13 +454,52 @@ var
   lID: string;
 
 {$IFDEF MSWINDOWS}
-  function TryReadInstallPathFromRegistry(
-    const aCurrentUser: Boolean;
-    const aPath, aValue: string;
-    out aInstallPath: string
-  ): Boolean;
+  function TryResolveWindowsInstallPathFromRegistry(out aDataPath: string): Boolean;
+  var
+    lRegPath, lRegKey, lClient, lRegValue, lErr: string;
+    lCurrentUser: Boolean;
   begin
-    Result := wbTryReadRegistryString(aCurrentUser, aPath, aValue, aInstallPath);
+    Result := False;
+    aDataPath := '';
+    lClient := 'Steam';
+    lRegPath := '';
+    lRegKey := '';
+    lRegValue := '';
+
+    case wbGameMode of
+      gmTES3, gmTES4, gmFO3, gmFNV, gmTES5, gmFO4, gmSSE, gmTES5VR, gmFO4VR: begin
+        lRegPath := sBethRegKey + wbGameNameReg + '\';
+        lRegKey := 'Installed Path';
+      end;
+      gmEnderal, gmEnderalSE: begin
+        lRegPath := sSureAIRegKey + wbGameNameReg + '\';
+        lRegKey := 'Install_Path';
+      end;
+      gmFO76, gmSF1, gmTES4R: begin
+        lRegPath := sUninstallRegKey + wbGameNameReg + '\';
+        lRegKey := 'InstallLocation';
+      end;
+    end;
+
+    if lRegPath <> '' then begin
+      lCurrentUser := wbGameMode in [gmEnderal, gmEnderalSE];
+      if not wbTryReadRegistryString(lCurrentUser, lRegPath, lRegKey, lRegValue) then begin
+        lErr := 'Fatal: Could not open registry key: ' + lRegPath;
+        xeShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [lErr, lClient]));
+        wbDontSave := True;
+        Exit;
+      end;
+    end;
+
+    aDataPath := lRegValue;
+    if aDataPath = '' then begin
+      lErr := Format('Fatal: Could not determine %s installation path, no "%s" registry key', [wbGameName2, lRegKey]);
+      xeShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [lErr, lClient]));
+      wbDontSave := True;
+      Exit;
+    end;
+
+    Result := True;
   end;
 {$ENDIF}
 begin
@@ -507,50 +543,8 @@ begin
 
     if (wbDataPath = '') then begin
       {$IFDEF MSWINDOWS}
-      client := 'Steam';
-      regPath := '';
-      regKey := '';
-
-      case wbGameMode of
-        gmTES3, gmTES4, gmFO3, gmFNV, gmTES5, gmFO4, gmSSE, gmTES5VR, gmFO4VR: begin
-          regPath := sBethRegKey + wbGameNameReg + '\';
-          regKey := 'Installed Path';
-        end;
-        gmEnderal, gmEnderalSE: begin
-          regPath := sSureAIRegKey + wbGameNameReg + '\';
-          regKey := 'Install_Path';
-        end;
-        gmFO76, gmSF1, gmTES4R: begin
-          regPath := sUninstallRegKey + wbGameNameReg + '\';
-          regKey := 'InstallLocation';
-        end;
-      end;
-
-      if regPath <> '' then begin
-        case wbGameMode of
-          gmEnderal, gmEnderalSE:
-            if not TryReadInstallPathFromRegistry(True, regPath, regKey, regValue) then begin
-              s := 'Fatal: Could not open registry key: ' + regPath;
-              xeShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
-              wbDontSave := True;
-              Exit;
-            end;
-        else
-          if not TryReadInstallPathFromRegistry(False, regPath, regKey, regValue) then begin
-            s := 'Fatal: Could not open registry key: ' + regPath;
-            xeShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
-            wbDontSave := True;
-            Exit;
-          end;
-        end;
-      end;
-
-      wbDataPath := regValue;
-      if (wbDataPath = '') then begin
-        s := Format('Fatal: Could not determine %s installation path, no "%s" registry key', [wbGameName2, regKey]);
-        xeShowMessage(Format('%s'#13#10'This can happen after %s updates, run the game''s launcher to restore registry settings', [s, client]));
-        wbDontSave := True;
-      end;
+      if not TryResolveWindowsInstallPathFromRegistry(wbDataPath) then
+        Exit;
       {$ELSE}
       if wbDataPath = '' then begin
         xeShowMessage(Format('Could not determine %s installation path. Pass -D "<DataPath>" or set your game path in the settings file.', [wbGameName2]));
