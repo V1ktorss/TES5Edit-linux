@@ -259,6 +259,9 @@ var
   wbFilterKeywordChances: IwbSubRecordArrayDef;
   wbMGEFType: IwbIntegerDef;
   wbMGEFData: IwbSubRecordWithStructDef;
+  wbComponent: IwbSubRecordStructDef;
+  wbComponents: IwbSubRecordArrayDef;
+  wbRepairComponents: IwbSubRecordArrayDef;
   wbEventFunctionEnum : IwbEnumDef;
   wbEventMemberEnum : IwbEnumDef;
   wbObjectModProperties: IwbArrayDef;
@@ -13283,7 +13286,7 @@ begin
     wbLStringKC(NNAM, 'Short Name', 0, cpTranslate)
   ], False, nil, cpNormal, False);
 
-  var wbComponent :=
+  wbComponent :=
     wbStructSK([0], 'Component', [
       wbFormIDCkNoReach('Component', sigBaseObjects),
       wbInteger('Count', itU32),
@@ -13297,8 +13300,8 @@ begin
       .IncludeFlag(dfSummaryNoSortKey)
       .IncludeFlag(dfSummaryMembersNoName);
 
-  var wbComponents := wbArrayS(FVPA, 'Components', wbComponent);
-  var wbRepairComponents := wbArrayS(REPR, 'Repair Components', wbComponent);
+  wbComponents := wbArrayS(FVPA, 'Components', wbComponent);
+  wbRepairComponents := wbArrayS(REPR, 'Repair Components', wbComponent);
   {subrecords checked against Starfield.esm}
   wbRecord(COBJ, 'Constructible Object',
     wbFlags(wbFlagsList([
