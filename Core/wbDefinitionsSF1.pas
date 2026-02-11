@@ -109,6 +109,7 @@ var
   wbLatitudeToStr: TwbToStrCallback;
   wbSPEDRotationSpeedAngles: function(aName: string = 'Unknown'): IwbStructDef;
   wbSPEDMovementSpeeds: function(aName: string = 'Unknown'): IwbStructDef;
+  wbSPED: IwbRecordMemberDef;
   wbLongitudeDouble: IwbFloatDef;
   wbLatitudeDouble: IwbFloatDef;
   lDOBJUsesVarRecs1: TwbVarRecs;
@@ -12039,7 +12040,7 @@ begin
       ]);
   end;
 
-  var wbSPED := wbStruct(SPED, 'Movement Data', [
+  wbSPED := wbStruct(SPED, 'Movement Data', [
         wbStruct('Max Speed Forward', [
   {  0}   wbFloat('Unused'),
   {  4}   wbFloat('Walk'),
