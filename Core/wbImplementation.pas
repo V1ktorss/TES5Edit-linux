@@ -18,7 +18,6 @@ uses
   Variants,
   Classes,
   SysUtils,
-  Contnrs,
   Math,
   wbInterface,
   wbLoadOrder,
@@ -30,9 +29,6 @@ uses
   {$IFDEF USE_CODESITE}
   CodeSiteLogging,
   {$ENDIF}
-{$IFDEF USE_PARALLEL_BUILD_REFS}
-  System.SyncObjs,
-{$ENDIF}
   ZlibEx,
   lz4;
 
