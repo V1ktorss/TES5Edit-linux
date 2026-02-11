@@ -357,6 +357,16 @@ const
 var
   strip_size, buffer_size: Integer;
   index_offset, parity: Cardinal;
+  index_max: Cardinal;
+  index: Cardinal;
+  next: Integer;
+  i: Integer;
+  a, b, c, v: Cardinal;
+  cont, swap: Integer;
+  ea, eb, ec: Integer;
+  mine: Integer;
+  t: Cardinal;
+  e0, e1: Cardinal;
   buffer: array [0..buffer_capacity-1, 0..2] of Cardinal;
   strip: array [0..2] of Cardinal;
   valence: array of Byte;
@@ -368,13 +378,20 @@ var
   end;
 
   function findStripFirst: Integer;
+  var
+    iv: Cardinal;
+    i: Integer;
+    va, vb, vc: Byte;
+    v: Byte;
   begin
     Result := 0;
-    var iv := High(Cardinal);
+    iv := High(Cardinal);
 
-    for var i := 0 to Pred(buffer_size) do begin
-      var va := valence[buffer[i][0]]; var vb := valence[buffer[i][1]]; var vc := valence[buffer[i][2]];
-      var v := IfThen( (va < vb) and (va < vc), va, IfThen(vb < vc, vb, vc) );
+    for i := 0 to Pred(buffer_size) do begin
+      va := valence[buffer[i][0]];
+      vb := valence[buffer[i][1]];
+      vc := valence[buffer[i][2]];
+      v := IfThen( (va < vb) and (va < vc), va, IfThen(vb < vc, vb, vc) );
 
       if v < iv then begin
         Result := i;
@@ -384,9 +401,14 @@ var
   end;
 
   function findStripNext(e0, e1: Cardinal): Integer;
+  var
+    i: Integer;
+    a, b, c: Cardinal;
   begin
-    for var i := 0 to Pred(buffer_size) do begin
-      var a := buffer[i][0]; var b := buffer[i][1]; var c := buffer[i][2];
+    for i := 0 to Pred(buffer_size) do begin
+      a := buffer[i][0];
+      b := buffer[i][1];
+      c := buffer[i][2];
 
       if (e0 = a) and (e1 = b) then
         Exit( (i shl 2) or 2 )
@@ -417,16 +439,16 @@ begin
   // compute vertex valence; this is used to prioritize starting triangle for strips
   // note: we use 8-bit counters for performance; for outlier vertices the valence is incorrect
   // but that just affects the heuristic
-  var index_max: Cardinal := 0;
-  for var index in indices do
+  index_max := 0;
+  for index in indices do
     if index > index_max then
       index_max := index;
 
   SetLength(valence, Succ(index_max));
-  for var index in indices do
+  for index in indices do
     Inc(valence[index]);
 
-  var next: Integer := -1;
+  next := -1;
 
   while ( (buffer_size > 0) or (index_offset < Cardinal(Length(indices))) ) do begin
     Assert( (next < 0) or ( (next shr 2 < buffer_size) and ( (next and 3) < 3)) );
@@ -443,9 +465,11 @@ begin
     Assert(buffer_size > 0);
 
     if next >= 0 then begin
-      var i := next shr 2;
-      var a := buffer[i][0]; var b := buffer[i][1]; var c := buffer[i][2];
-      var v := buffer[i][next and 3];
+      i := next shr 2;
+      a := buffer[i][0];
+      b := buffer[i][1];
+      c := buffer[i][2];
+      v := buffer[i][next and 3];
 
       // ordered removal from the buffer
       System.Move(buffer[i + 1], buffer[i], (buffer_size - i - 1) * SizeOf(buffer[0]));
@@ -459,8 +483,8 @@ begin
       // find next triangle (note that edge order flips on every iteration)
       // in some cases we need to perform a swap to pick a different outgoing triangle edge
       // for [a b c], the default strip edge is [b c], but we might want to use [a c]
-      var cont := findStripNext(IfThen(parity <> 0, strip[1], v), IfThen(parity <> 0, v, strip[1]));
-      var swap: Integer := -1;
+      cont := findStripNext(IfThen(parity <> 0, strip[1], v), IfThen(parity <> 0, v, strip[1]));
+      swap := -1;
       if cont < 0 then
         swap := findStripNext(IfThen(parity <> 0, v, strip[0]), IfThen(parity <> 0, parity, strip[0]));
 
@@ -492,8 +516,10 @@ begin
     else begin
       // if we didn't find anything, we need to find the next new triangle
       // we use a heuristic to maximize the strip length
-      var i := findStripFirst;
-      var a := buffer[i][0]; var b := buffer[i][1]; var c := buffer[i][2];
+      i := findStripFirst;
+      a := buffer[i][0];
+      b := buffer[i][1];
+      c := buffer[i][2];
 
       // ordered removal from the buffer
       System.Move(buffer[i + 1], buffer[i], (buffer_size - i - 1) * SizeOf(buffer[0]));
@@ -505,14 +531,14 @@ begin
       Dec(valence[c]);
 
       // we need to pre-rotate the triangle so that we will find a match in the existing buffer on the next iteration
-      var ea := findStripNext(c, b);
-      var eb := findStripNext(a, c);
-      var ec := findStripNext(b, a);
+      ea := findStripNext(c, b);
+      eb := findStripNext(a, c);
+      ec := findStripNext(b, a);
 
       // in some cases we can have several matching edges; since we can pick any edge, we pick the one with the smallest
       // triangle index in the buffer. this reduces the effect of stripification on ACMR and additionally - for unclear
       // reasons - slightly improves the stripification efficiency
-      var mine := High(Integer);
+      mine := High(Integer);
       if (ea >= 0) and (mine > ea) then mine := ea;
       if (eb >= 0) and (mine > eb) then mine := eb;
       if (ec >= 0) and (mine > ec) then mine := ec;
@@ -522,14 +548,14 @@ begin
         next := ea
       else if eb = mine then begin
         // abc -> bca
-        var t := a;
+        t := a;
         a := b; b := c; c := t;
 
         next := eb;
       end
       else if ec = mine then begin
         // abc -> cab
-        var t := c;
+        t := c;
         c := b; b := a; a := t;
 
         next := ec;
@@ -557,8 +583,8 @@ begin
 
         // note that we may need to flip the emitted triangle based on parity
         // we always end up with outgoing edge "cb" in the end
-        var e0 := IfThen(parity <> 0, c, b);
-        var e1 := IfThen(parity <> 0, b, c);
+        e0 := IfThen(parity <> 0, c, b);
+        e1 := IfThen(parity <> 0, b, c);
 
         Add(a);
         Add(e0);
