@@ -975,8 +975,11 @@ var
   DataPathEnv: string;
   DataPathEnvName: string;
   DataPathFromEnv: Boolean;
+  DataDirName: string;
+  DataPathCandidate: string;
 begin
   DataPathFromEnv := False;
+  DataDirName := DataName[wbGameMode = gmTES3];
 
   if not wbFindCmdLineParam('D', DataPath) then begin
     DataPathEnvName := '';
@@ -991,7 +994,13 @@ begin
 
     if DataPathEnv <> '' then begin
       if DirectoryExists(DataPathEnv) then begin
-        DataPath := IncludeTrailingPathDelimiter(ExpandFileName(DataPathEnv));
+        DataPathCandidate := IncludeTrailingPathDelimiter(ExpandFileName(DataPathEnv));
+        if SameText(ExtractFileName(ExcludeTrailingPathDelimiter(DataPathCandidate)), DataDirName) then
+          DataPath := DataPathCandidate
+        else if DirectoryExists(DataPathCandidate + DataDirName) then
+          DataPath := IncludeTrailingPathDelimiter(DataPathCandidate + DataDirName)
+        else
+          DataPath := DataPathCandidate;
         DataPathFromEnv := True;
       end else
         ReportProgress(Format('Warning: %s points to missing directory: %s', [DataPathEnvName, DataPathEnv]));
