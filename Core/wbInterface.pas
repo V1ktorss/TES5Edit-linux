@@ -1797,7 +1797,6 @@ type
     ['{6E547F7C-87E4-4917-8F43-4D3CEE5AFE8C}']
     function GetDataBasePtr: Pointer;
     function GetDataEndPtr: Pointer;
-    function GetDataSize: Integer;
     function GetDontCompare: Boolean;
     function GetDontSave: Boolean;
     function IsValidOffset(aBasePtr, aEndPtr: Pointer; anOffset: Integer): Boolean;
@@ -2263,8 +2262,6 @@ type
 
     function GetMainRecordByEditorID(const aEditorID: string): IwbMainRecord;
     function GetMainRecordByFormID(const aFormID: TwbFormID): IwbMainRecord;
-
-    procedure AddElement(const aElement: IwbElement);
 
     procedure Sort(aForce: Boolean = False);
 

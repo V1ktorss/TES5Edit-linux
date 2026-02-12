@@ -269,9 +269,6 @@ type
   IwbElementInternal = interface(IwbElement)
     ['{556DF03C-2723-46FC-99C6-F50BB5E66F86}']
     procedure SetContainer(const aContainer: IwbContainer);
-    procedure SetSortOrder(aIndex: Integer);
-    procedure SetMemoryOrder(aIndex: Integer);
-    function GetMemoryOrder: Integer;
     procedure SetNameSuffix(const aSuffix: string);
     function GetNameSuffix: string;
     procedure SetModified(aValue: Boolean);
@@ -733,7 +730,6 @@ type
     procedure InjectMainRecord(const aRecord: IwbMainRecord);
     procedure RemoveInjectedMainRecord(const aRecord: IwbMainRecord);
     procedure ForceClosed;
-    procedure GetMasters(aMasters: TStrings);
     procedure IncGeneration;
     function GetFileGeneration: Integer;
     procedure UpdateIndexKeys(const aMainRecord: IwbMainRecord; const aChangedKeys: TwbChangedKeys);
