@@ -255,12 +255,16 @@ This document tracks what is already done for the native Linux path and what com
   - baseline file `linux/native-port/baselines/headless-warning-budget.env`
   - baseline updater `linux/native-port/update-headless-warning-budget.sh` (refuses budget increases unless `ALLOW_INCREASE=1`)
   - summary report generator `linux/native-port/report-headless-warning-summary.sh` (writes `linux/native-port/reports/headless-warning-summary.txt`)
+  - history append helper `linux/native-port/append-headless-warning-history.sh` (writes `linux/native-port/reports/headless-warning-history.tsv`)
+  - trend report generator `linux/native-port/report-headless-warning-trend.sh` (writes `linux/native-port/reports/headless-warning-trend.txt`)
   - integrated into `run-all-checks.sh` via `RUN_WARNING_BUDGET_GUARD=1`
   - integrated into `run-all-checks.sh` via `RUN_WARNING_SUMMARY_REPORT=1`
+  - integrated into `run-all-checks.sh` via `RUN_WARNING_HISTORY_APPEND=1`
+  - integrated into `run-all-checks.sh` via `RUN_WARNING_TREND_REPORT=1`
   - currently enforces:
-    - `MAX_WARNING_LINES=5152`
+    - `MAX_WARNING_LINES=5110`
     - `MAX_ACTIONABLE_WARNING_LINES=0`
-    - `MAX_UNIQUE_WARNING_LINES=2600`
+    - `MAX_UNIQUE_WARNING_LINES=2579`
     - `MAX_UNIQUE_ACTIONABLE_WARNING_LINES=0`
 
 2. Add basic CI job (Linux) for:
