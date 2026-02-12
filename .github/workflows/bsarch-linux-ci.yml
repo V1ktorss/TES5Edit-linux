@@ -50,6 +50,20 @@ jobs:
           path: linux/native-port/reports/headless-warning-summary.txt
           if-no-files-found: ignore
 
+      - name: Upload warning trend report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bsarch-ci-headless-warning-trend
+          path: linux/native-port/reports/headless-warning-trend.txt
+          if-no-files-found: ignore
+
+      - name: Upload warning hotspots report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bsarch-ci-headless-warning-hotspots
+          path: linux/native-port/reports/headless-warning-hotspots.txt
+          if-no-files-found: ignore
+
       - name: Upload headless smoke log
         uses: actions/upload-artifact@v4
         with:
