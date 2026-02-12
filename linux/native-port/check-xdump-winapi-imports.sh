@@ -6,9 +6,10 @@ cd "${ROOT_DIR}"
 
 IMPORT_PATTERN='^[[:space:]]*(Winapi\.(Windows|Messages|ShellAPI)|Windows|Messages|ShellAPI|Registry)\b'
 CALL_PATTERN='Windows\.(AlphaBlend|LockWindowUpdate)|(^|[^.[:alnum:]_])(GetKeyState|CreateProcess|ShellExecute|MessageBox|SendMessage|PostMessage)\s*\('
+TARGETS=(xDump.dpr xDump)
 
-import_matches="$(rg -n -e "${IMPORT_PATTERN}" xDump.dpr || true)"
-call_matches="$(rg -n -e "${CALL_PATTERN}" xDump.dpr || true)"
+import_matches="$(rg -n -e "${IMPORT_PATTERN}" "${TARGETS[@]}" || true)"
+call_matches="$(rg -n -e "${CALL_PATTERN}" "${TARGETS[@]}" || true)"
 
 if [[ -n "${import_matches}" ]]; then
   echo "xDump Winapi import regressions found." >&2
