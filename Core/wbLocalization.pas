@@ -230,7 +230,7 @@ var
   idx: integer;
 begin
   s := '';
-  idx := fStrings.IndexOfObject(Pointer(ID));
+  idx := fStrings.IndexOfObject(Pointer(PtrUInt(ID)));
   Result := idx >= 0;
   if Result then
     s := fStrings[idx]
@@ -364,7 +364,7 @@ begin
         s := ReadZString(aStream)
       else
         s := ReadLenZString(aStream);
-      fStrings.AddObject(s, pointer(id));
+      fStrings.AddObject(s, Pointer(PtrUInt(id)));
       if Succ(id) > fNextID then
         fNextID := Succ(id);
       aStream.Position := oldPos;
@@ -384,7 +384,7 @@ begin
   dir.WriteBuffer(c, SizeOf(c)); // dataSize, will overwrite later
   try
     for i := 0 to Pred(fStrings.Count) do begin
-      c := Cardinal(fStrings.Objects[i]);
+      c := Cardinal(PtrUInt(fStrings.Objects[i]));
       dir.WriteBuffer(c, SizeOf(c)); // ID
       c := data.Position;
       dir.WriteBuffer(c, SizeOf(c)); // relative position
@@ -413,14 +413,14 @@ end;
 function TwbLocalizationFile.IndexToID(Index: Integer): Cardinal;
 begin
   if Index < Count then
-    Result := Cardinal(fStrings.Objects[Index])
+    Result := Cardinal(PtrUInt(fStrings.Objects[Index]))
   else
     Result := 0;
 end;
 
 function TwbLocalizationFile.IDExists(ID: Cardinal): Boolean;
 begin
-  Result := fStrings.IndexOfObject(Pointer(ID)) >= 0;
+  Result := fStrings.IndexOfObject(Pointer(PtrUInt(ID))) >= 0;
 end;
 
 function TwbLocalizationFile.Get(Index: Cardinal): string;
@@ -428,7 +428,7 @@ var
   idx: integer;
 begin
   Result := '';
-  idx := fStrings.IndexOfObject(Pointer(Index));
+  idx := fStrings.IndexOfObject(Pointer(PtrUInt(Index)));
   if idx >= 0 then
     Result := fStrings[idx]
   else
@@ -439,7 +439,7 @@ procedure TwbLocalizationFile.Put(Index: Cardinal; const S: string);
 var
   idx: integer;
 begin
-  idx := fStrings.IndexOfObject(Pointer(Index));
+  idx := fStrings.IndexOfObject(Pointer(PtrUInt(Index)));
   if idx >= 0 then
     if fStrings[idx] <> S then begin
       fStrings[idx] := S;
@@ -453,7 +453,7 @@ begin
   if ID < NextID then
     Exit;
 
-  fStrings.AddObject(S, Pointer(ID));
+  fStrings.AddObject(S, Pointer(PtrUInt(ID)));
   fNextID := Succ(ID);
   fModified := true;
 
