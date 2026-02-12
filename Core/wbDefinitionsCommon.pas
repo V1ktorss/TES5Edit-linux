@@ -4865,6 +4865,7 @@ end;
 
 function wbCombineVarRecs(const a, b : array of const): TwbVarRecs;
 begin
+  Result := nil;
   SetLength(Result, Length(a) + Length(b));
   if Length(a) > 0 then
     Move(a[0], Result[0], SizeOf(TVarRec) * Length(a));
@@ -4874,6 +4875,7 @@ end;
 
 function wbMakeVarRecs(const a : array of const): TwbVarRecs;
 begin
+  Result := nil;
   SetLength(Result, Length(a));
   if Length(a) > 0 then
     Move(a[0], Result[0], SizeOf(TVarRec) * Length(a));
