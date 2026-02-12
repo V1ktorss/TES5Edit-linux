@@ -1285,12 +1285,12 @@ type
 
 const
   wbPERKCondition : array[TPERKEntryPointConditionType] of TPERKCondition = (
-    (Count: 1; Caption1: 'Perk Owner'),
-    (Count: 2; Caption1: 'Perk Owner'; Caption2: 'Item'),
-    (Count: 2; Caption1: 'Perk Owner'; Caption2: 'Weapon'),
+    (Count: 1; Caption1: 'Perk Owner'; Caption2: ''; Caption3: ''),
+    (Count: 2; Caption1: 'Perk Owner'; Caption2: 'Item'; Caption3: ''),
+    (Count: 2; Caption1: 'Perk Owner'; Caption2: 'Weapon'; Caption3: ''),
     (Count: 3; Caption1: 'Perk Owner'; Caption2: 'Weapon'; Caption3: 'Target'),
-    (Count: 2; Caption1: 'Perk Owner'; Caption2: 'Target'),
-    (Count: 2; Caption1: 'Perk Owner'; Caption2: 'Attacker'),
+    (Count: 2; Caption1: 'Perk Owner'; Caption2: 'Target'; Caption3: ''),
+    (Count: 2; Caption1: 'Perk Owner'; Caption2: 'Attacker'; Caption3: ''),
     (Count: 3; Caption1: 'Perk Owner'; Caption2: 'Attacker'; Caption3: 'Attackee'),
     (Count: 3; Caption1: 'Perk Owner'; Caption2: 'Attacker'; Caption3: 'Attacker Weapon')
   );
