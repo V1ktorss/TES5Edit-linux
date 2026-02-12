@@ -6191,6 +6191,9 @@ type
 
     procedure recBuildReferences;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aPriority        : TwbConflictPriority;
                        aRequired        : Boolean;
@@ -6204,6 +6207,9 @@ type
                        aAfterLoad       : TwbAfterLoadCallback;
                        aAfterSet        : TwbAfterSetCallback;
                        aIsReference     : Boolean);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     procedure AfterClone(const aSource: TwbDef); override;
     destructor Destroy; override;
 
@@ -6827,6 +6833,9 @@ type
     rdLevelsUp: Integer;
     rdCached: IwbValueDef;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aPriority : TwbConflictPriority;
                        aRequired : Boolean;
@@ -6835,6 +6844,9 @@ type
                        aDontShow : TwbDontShowCallback;
                        aAfterSet : TwbAfterSetCallback;
                        aGetCP    : TwbGetConflictPriority); reintroduce;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     {---IwbResolvableDef---}
     function ResolveDef(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): IwbValueDef; override;
@@ -6846,6 +6858,9 @@ type
     udMembers: array of IwbValueDef;
     udMemberTypes: TwbDefTypes;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aPriority : TwbConflictPriority;
                        aRequired : Boolean;
@@ -6855,6 +6870,9 @@ type
                        aDontShow : TwbDontShowCallback;
                        aAfterSet : TwbAfterSetCallback;
                        aGetCP    : TwbGetConflictPriority); reintroduce;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     {---IwbDef---}
     function GetDefType: TwbDefType; override;
@@ -6925,6 +6943,9 @@ type
     sdSize     : Integer;
     sdForward  : Boolean;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aPriority   : TwbConflictPriority;
                        aRequired   : Boolean;
@@ -6936,6 +6957,9 @@ type
                        aGetCP      : TwbGetConflictPriority;
                        aTerminator : Boolean;
                        aForward    : Boolean = False); virtual;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     procedure AfterClone(const aSource: TwbDef); override;
 
     function ToStringNative(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; aTransformType: TwbStringTransformType): string; virtual;
@@ -7007,6 +7031,9 @@ type
 
   TwbLStringDef = class(TwbStringDef)
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Create(aPriority   : TwbConflictPriority;
                        aRequired   : Boolean;
                  const aName       : string;
@@ -7017,6 +7044,9 @@ type
                        aGetCP      : TwbGetConflictPriority;
                        aTerminator : Boolean;
                        aForward    : Boolean = False); override;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     function GetDefType: TwbDefType; override;
     function GetDefTypeName: string; override;
     function ToStringNative(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; aTransformType: TwbStringTransformType): string; override;
@@ -7033,6 +7063,9 @@ type
   TwbLenStringDef = class(TwbBaseStringDef, IwbLenStringDef)
   protected
     Prefix: Integer;
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aPriority   : TwbConflictPriority;
                        aRequired   : Boolean;
@@ -7043,6 +7076,9 @@ type
                        aDontShow   : TwbDontShowCallback;
                        aGetCP      : TwbGetConflictPriority;
                        aTerminator : Boolean);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     {---IwbDef---}
     function GetDefType: TwbDefType; override;
@@ -7110,6 +7146,9 @@ type
 
     badCountCallback        : TwbCountCallBack;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aPriority      : TwbConflictPriority;
                        aRequired      : Boolean;
@@ -7119,6 +7158,9 @@ type
                        aCountCallback : TwbCountCallback;
                        aGetCP         : TwbGetConflictPriority;
                        aTerminator    : Boolean); reintroduce;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     procedure AfterClone(const aSource: TwbDef); override;
 
     function ToStringInternal(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): string;
@@ -7150,6 +7192,9 @@ type
   protected {private}
     edSorted: Boolean;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aPriority  : TwbConflictPriority;
                        aRequired  : Boolean;
@@ -7158,6 +7203,9 @@ type
                        aDontShow  : TwbDontShowCallback;
                        aSorted    : Boolean;
                        aGetCP     : TwbGetConflictPriority); reintroduce;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     {---IwbDef---}
     function GetDefType: TwbDefType; override;
@@ -7183,6 +7231,9 @@ type
     inDefault         : Int64;
     inOverlayCallback : TwbIntOverlayCallback;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aPriority   : TwbConflictPriority;
                        aRequired   : Boolean;
@@ -7194,6 +7245,9 @@ type
                        aDefault    : Int64;
                        aGetCP      : TwbGetConflictPriority;
                        aTerminator : Boolean); reintroduce;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     procedure AfterClone(const aSource: TwbDef); override;
 
     {---IwbDef---}
@@ -7262,7 +7316,13 @@ type
     fdNormalizer : TwbFloatNormalizer;
     fdKind       : TwbFloatKind;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     {---IwbDef---}
     function GetDefType: TwbDefType; override;
     function GetDefTypeName: string; override;
@@ -7325,6 +7385,9 @@ type
     arSummaryPassthroughMaxLength : Integer;
     arSummaryPassthroughMaxDepth  : Integer;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
 
     constructor Create(aPriority   : TwbConflictPriority;
@@ -7356,6 +7419,9 @@ type
                        aCanAddTo      : Boolean;
                        aTerminator    : Boolean;
                        aTerminated    : Boolean); reintroduce; overload;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     procedure AfterClone(const aSource: TwbDef); override;
 
     {---IwbDef---}
