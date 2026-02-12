@@ -1873,7 +1873,7 @@ type
     {--- IwbContainedIn ---}
     procedure ContainerChanged;
   public
-    constructor Create(const aMainRecord: IwbMainRecord);
+    constructor Create(const aMainRecord: IwbMainRecord); reintroduce;
   end;
 
   TwbStringListTerminator = class(TwbElement, IwbStringListTerminator)

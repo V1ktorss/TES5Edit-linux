@@ -918,8 +918,8 @@ type
   strict private
     fdGeneration: Cardinal;
   public
-    constructor Create;
-    procedure Clear;
+    constructor Create; reintroduce;
+    procedure Clear; reintroduce;
 
     property Generation: Cardinal
       read fdGeneration;
@@ -6206,7 +6206,7 @@ type
                        aAddInfoCallback : TwbAddInfoCallback;
                        aAfterLoad       : TwbAfterLoadCallback;
                        aAfterSet        : TwbAfterSetCallback;
-                       aIsReference     : Boolean);
+                       aIsReference     : Boolean); reintroduce;
   {$IFDEF FPC}
   protected
   {$ENDIF}
