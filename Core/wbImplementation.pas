@@ -133,7 +133,13 @@ type
     procedure Setup;
     procedure Teardown;
 
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Create;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     destructor Destroy; override;
 
     {---IwbKeepAliveRoot---}
@@ -492,7 +498,13 @@ type
     function EndUpdate: Integer;
     procedure UpdateEnded; virtual;
 
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Create(const aContainer: IwbContainer);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     procedure BeforeDestruction; override;
     procedure AfterConstruction; override;
     class function NewInstance: TObject; override;
@@ -970,9 +982,15 @@ type
 
     procedure UpdateModuleMasters;
 
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Create(const aFileName: string; aLoadOrder: Integer; aCompareTo: string; aStates: TwbFileStates; aData: TBytes);
     constructor CreateNew(const aFileName: string; aLoadOrder: Integer; aIsLight, aIsMedium: Boolean); overload;
     constructor CreateNew(const aFileName: string; aLoadOrder: Integer; aTemplate: PwbModuleInfo); overload;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
   public
     destructor Destroy; override;
   end;
@@ -980,7 +998,13 @@ type
   TwbFileSource = class(TwbFile)
   protected
     procedure Scan; override;
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor CreateNew(const aFileName: string; aLoadOrder: Integer);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     procedure GetMasters(aMasters: TStrings); override;
   end;
 
@@ -1008,10 +1032,16 @@ type
     dcDataStorage   : TBytes;
     dcFlags         : TwbDataContainerFlags;
 
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Create(const aContainer      : IwbContainer;
                          var aBasePtr        : Pointer;
                          var aEndPtr         : Pointer;
                        const aPrevMainRecord : IwbMainRecord); virtual;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     procedure AfterConstruction; override;
     procedure InitDataPtr; virtual; abstract;
     function GetDataPrefixSize: Integer; virtual;
@@ -1060,10 +1090,16 @@ type
   protected
     recSkipped          : Boolean;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Create(const aContainer      : IwbContainer;
                          var aBasePtr        : Pointer;
                          var aEndPtr         : Pointer;
                        const aPrevMainRecord : IwbMainRecord); overload; override;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     function GetSignature: TwbSignature;
     function GetDisplaySignature: string; virtual;
@@ -1525,8 +1561,14 @@ type
     srStates             : TwbSubRecordStates;
     srArraySizePrefix    : Integer;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Create(const aContainer : IwbContainer;
                        const aSubRecordDef: IwbSubRecordDef); overload;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     destructor Destroy; override;
 
     procedure SetDef(const aDef: IwbSubRecordDef);
@@ -1858,12 +1900,18 @@ type
     fLastDefID  : Cardinal;
     fIndex      : Integer;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Create(const aContainer  : IwbContainer;
                              aBasePtr    : Pointer;
                              aEndPtr     : Pointer;
                        const aIntegerDef : IwbIntegerDef;
                        const aFlagsDef   : IwbFlagsDef;
                              aIndex      : Integer);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     function GetName: string; override;
     function GetDef: IwbNamedDef; override;
@@ -1928,6 +1976,9 @@ type
     grStates      : TwbGroupStates;
     grDuplicateOf : IwbGroupRecord;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Create(const aContainer  : IwbContainer;
                        const aSignature  : TwbSignature); overload;
     constructor Create(const aContainer  : IwbContainer;
@@ -1936,6 +1987,9 @@ type
     constructor Create(const aContainer  : IwbContainer;
                              aType       : Integer;
                              aLabel      : Cardinal); overload;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     destructor Destroy; override;
     procedure AfterConstruction; override;
 
@@ -2010,10 +2064,16 @@ type
     arcSortInvalid : Boolean;
     arcNameGen     : Integer;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Create(const aOwner     : IwbContainer;
                        const aContainer : IwbContainer;
                              aPos       : Integer;
                        const aDef       : IwbSubRecordArrayDef);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     procedure DoProcess(const aContainer : IwbContainer;
                               aPos       : Integer);
@@ -2061,10 +2121,16 @@ type
   protected {private}
     srcDef: IwbRecordDef;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Create(const aOwner     : IwbContainer;
                        const aContainer : IwbContainer;
                              aPos       : Integer;
                        const aDef       : IwbSubRecordStructDef);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     procedure TryAssignMembers(const aSource: IwbElement); override;
 
