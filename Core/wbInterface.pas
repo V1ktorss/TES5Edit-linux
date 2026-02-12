@@ -10250,12 +10250,14 @@ function TwbDef.Assign(const aTarget : IwbElement;
                              aOnlySK : Boolean)
                                      : IwbElement;
 begin
+  if (aIndex <> 0) or aOnlySK then;
   Result := nil;
   aTarget.SetEditValue(aSource.EditValue);
 end;
 
 function TwbDef.CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean;
 begin
+  if Assigned(aElement) and (aIndex >= 0) and Assigned(aDef) then;
   Result := False;
 end;
 
@@ -10302,6 +10304,7 @@ end;
 
 function TwbDef.GetAssignTemplates(const aContainer: IwbContainerElementRef; aIndex: Integer): TwbDefs;
 begin
+  if Assigned(aContainer) then;
   Result := nil;
   if dfDontAssign in defFlags then
     Exit;
@@ -10311,6 +10314,7 @@ end;
 
 function TwbDef.GetChildPos(const aChild: IwbDef): Integer;
 begin
+  if Assigned(aChild) then;
   Result := -1;
 end;
 
@@ -10348,6 +10352,7 @@ end;
 
 function TwbDef.GetDontShow(const aElement: IwbElement): Boolean;
 begin
+  if Assigned(aElement) then;
   Result := False;
 end;
 
@@ -12397,6 +12402,7 @@ var
   lIdx: Integer;
 begin
   lDifferent := False;
+  lNewCountPaths := nil;
 
   lOldLength := Length(sraCountPaths);
   lValuesLength := Length(aValues);
@@ -12570,6 +12576,7 @@ var
   SkipSigs : TwbSignatures;
   i        : Integer;
 begin
+  SkipSigs := nil;
   with aSource as TwbSubRecordStructDef do begin
     if Assigned(srsSkipSignatures) then begin
       SetLength(SkipSigs, srsSkipSignatures.Count);
@@ -12912,6 +12919,7 @@ var
   SkipSigs : TwbSignatures;
   i        : Integer;
 begin
+  SkipSigs := nil;
   with aSource as TwbSubRecordUnionDef do begin
     if Assigned(sruSkipSignatures) then begin
       SetLength(SkipSigs, sruSkipSignatures.Count);
@@ -13159,6 +13167,7 @@ var
   Buffer : array[0..3] of Byte;
 begin
   Result := 0;
+  FillChar(Buffer, SizeOf(Buffer), 0);
   Buffer[3] := 0;
   Buffer[2] := PByte(aBasePtr)^; aBasePtr := PByte(aBasePtr) + 1;
   Buffer[1] := PByte(aBasePtr)^; aBasePtr := PByte(aBasePtr) + 1;
@@ -14552,6 +14561,7 @@ var
   lCountPath: string;
 begin
   Result := 0;
+  if Assigned(aEndPtr) then;
   if not Assigned(aBasePtr) then
     Exit;
 
@@ -14583,6 +14593,7 @@ var
   lCount: Variant;
 begin
 {$IFDEF FPC}
+  if aPath <> '' then;
   Result := @_GetCountCallbackForPathFPC;
 {$ELSE}
   Result :=
@@ -14643,6 +14654,7 @@ var
   lSetOn: TwbArrayDef;
 begin
   lDifferent := False;
+  lNewCountPaths := nil;
 
   lOldLength := Length(arCountPaths);
   lValuesLength := Length(aValues);
@@ -15008,6 +15020,7 @@ var
   Element   : IwbElement;
 begin
   Result := 0;
+  Size := 0;
   if Assigned(stSizeCallback) then
     Exit(stSizeCallback(aBasePtr, aEndPtr, aElement));
   if Supports(Self, IwbStructCDef, scDef) then begin
@@ -16023,6 +16036,7 @@ var
   EnumDef: IwbEnumDef;
   i: Integer;
 begin
+  i := 0;
   if dfDontAssign in defFlags then
     Exit(False);
 
@@ -16622,6 +16636,7 @@ var
   lPath: Variant;
   lPathIndex: Integer;
 begin
+  lPathIndex := -1;
   if aString = '' then
     Exit(aString);
 
@@ -16682,6 +16697,7 @@ var
   s: string;
   i: Integer;
 begin
+  i := -1;
   Result := '';
 
   if (aInt >= Low(enNames)) and (aInt <= High(enNames)) then begin
@@ -16984,6 +17000,7 @@ var
   MainRecord : IwbMainRecord;
 begin
   Result := '';
+  b := nil;
   Len := NativeUInt(aEndPtr) - NativeUInt(aBasePtr);
   if (Len > 0) and ndTerminator then
     if PByte(aBasePtr)[Pred(Len)] = wbTerminator then
