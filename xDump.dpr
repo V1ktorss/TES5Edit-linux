@@ -994,16 +994,20 @@ begin
 
     if DataPathEnv <> '' then begin
       if DirectoryExists(DataPathEnv) then begin
-        DataPathCandidate := IncludeTrailingPathDelimiter(ExpandFileName(DataPathEnv));
-        if SameText(ExtractFileName(ExcludeTrailingPathDelimiter(DataPathCandidate)), DataDirName) then
-          DataPath := DataPathCandidate
-        else if DirectoryExists(DataPathCandidate + DataDirName) then
-          DataPath := IncludeTrailingPathDelimiter(DataPathCandidate + DataDirName)
-        else
-          DataPath := DataPathCandidate;
+        DataPath := DataPathEnv;
         DataPathFromEnv := True;
       end else
         ReportProgress(Format('Warning: %s points to missing directory: %s', [DataPathEnvName, DataPathEnv]));
+    end;
+
+    if DataPath <> '' then begin
+      DataPathCandidate := IncludeTrailingPathDelimiter(ExpandFileName(DataPath));
+      if SameText(ExtractFileName(ExcludeTrailingPathDelimiter(DataPathCandidate)), DataDirName) then
+        DataPath := DataPathCandidate
+      else if DirectoryExists(DataPathCandidate + DataDirName) then
+        DataPath := IncludeTrailingPathDelimiter(DataPathCandidate + DataDirName)
+      else
+        DataPath := DataPathCandidate;
     end;
 
     if DataPath = '' then
@@ -1051,8 +1055,15 @@ begin
     if (DataPath <> '') and not DataPathFromEnv then
       DataPath := IncludeTrailingPathDelimiter(DataPath) + 'Data' + PathDelim;
 
-  end else
-    DataPath := IncludeTrailingPathDelimiter(DataPath);
+  end else begin
+    DataPathCandidate := IncludeTrailingPathDelimiter(ExpandFileName(DataPath));
+    if SameText(ExtractFileName(ExcludeTrailingPathDelimiter(DataPathCandidate)), DataDirName) then
+      DataPath := DataPathCandidate
+    else if DirectoryExists(DataPathCandidate + DataDirName) then
+      DataPath := IncludeTrailingPathDelimiter(DataPathCandidate + DataDirName)
+    else
+      DataPath := DataPathCandidate;
+  end;
 
   wbDataPath := DataPath;
 end;
