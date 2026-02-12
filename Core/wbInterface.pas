@@ -8206,7 +8206,7 @@ function wbStringForward(const aSignature : TwbSignature;           // When the 
                                aGetCP     : TwbGetConflictPriority = nil)
                                           : IwbSubRecordWithBaseStringDef; overload;
 begin
-  Result := wbSubRecord(aSignature, aName, wbString(True, '', aSize, aPriority, aRequired, aDontShow, aAfterSet), nil, aAfterSet, aPriority, aRequired, False, aDontShow) as IwbSubRecordWithBaseStringDef;
+  Result := wbSubRecord(aSignature, aName, wbString(True, '', aSize, aPriority, aRequired, aDontShow, aAfterSet), nil, aAfterSet, aPriority, aRequired, False, aDontShow, aGetCP) as IwbSubRecordWithBaseStringDef;
 end;
 
 function wbString(      aForward   : Boolean = False;
@@ -8676,7 +8676,7 @@ function wbInteger(const aSignature : TwbSignature;
 begin
   if Assigned(aToStr) then
     Callback := wbCallback(aToStr, aToInt);
-  Result := wbInteger(aSignature, aName, aIntType, Callback, aPriority, aRequired, False, aDontShow, aAfterSet, aDefault);
+  Result := wbInteger(aSignature, aName, aIntType, Callback, aPriority, aRequired, False, aDontShow, aAfterSet, aDefault, aGetCP);
 end;
 
 function wbIntegerT(const aSignature : TwbSignature;
@@ -8715,7 +8715,7 @@ var
 begin
   if Assigned(aToStr) then
     Callback := wbCallback(aToStr, aToInt);
-  Result := wbInteger(aName, aIntType, Callback, aPriority, aRequired, aDontShow, aAfterSet, aDefault);
+  Result := wbInteger(aName, aIntType, Callback, aPriority, aRequired, aDontShow, aAfterSet, aDefault, aGetCP);
 end;
 
 function wbIntegerT(const aName     : string;
@@ -9364,7 +9364,7 @@ function wbArrayS(const aSignature : TwbSignature;
                         aGetCP     : TwbGetConflictPriority = nil)
                                    : IwbSubRecordWithArrayDef; overload;
 begin
-  Result := wbSubRecord(aSignature, aName, wbArrayS('', aElement, aLabels, aPriority, False, aAfterLoad), nil, nil, aPriority, aRequired, False, aDontShow, aGetCP) as IwbSubRecordWithArrayDef;
+  Result := wbSubRecord(aSignature, aName, wbArrayS('', aElement, aLabels, aPriority, False, aAfterLoad, aAfterSet, nil, aGetCP), nil, nil, aPriority, aRequired, False, aDontShow, aGetCP) as IwbSubRecordWithArrayDef;
 end;
 
 function wbArrayS(const aName      : string;
@@ -20873,17 +20873,24 @@ end;
 procedure TwbIntegerDefFormater.BuildRef(aInt: Int64;
   const aElement: IwbElement);
 begin
+  if aInt = Low(Int64) then ;
+  if Assigned(aElement) then ;
   { nothing }
 end;
 
 function TwbIntegerDefFormater.CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean;
 begin
+  if Assigned(aElement) then ;
+  if aIndex = High(Integer) then ;
+  if Assigned(aDef) then ;
   Result := False;
 end;
 
 function TwbIntegerDefFormater.Check(aInt: Int64;
   const aElement: IwbElement): string;
 begin
+  if aInt = Low(Int64) then ;
+  if Assigned(aElement) then ;
   Result := '';
 end;
 
@@ -20898,6 +20905,9 @@ end;
 function TwbIntegerDefFormater.CompareExchangeFormID(var aInt: Int64;
   aOldFormID, aNewFormID: TwbFormID; const aElement: IwbElement): Boolean;
 begin
+  if aInt = Low(Int64) then ;
+  if aOldFormID = aNewFormID then ;
+  if Assigned(aElement) then ;
   Result := False; // ? Should be overriden
 end;
 
@@ -20908,17 +20918,24 @@ end;
 
 procedure TwbIntegerDefFormater.FindUsedMasters(aInt: Int64; aMasters: PwbUsedMasters; const aElement: IwbElement);
 begin
+  if aInt = Low(Int64) then ;
+  if Assigned(aMasters) then ;
+  if Assigned(aElement) then ;
   {can be overriden}
 end;
 
 function TwbIntegerDefFormater.FromEditValue(const aValue: string;
   const aElement: IwbElement): Int64;
 begin
+  if aValue = '' then ;
+  if Assigned(aElement) then ;
   raise Exception.Create(Classname + ' does not support editing');
 end;
 
 function TwbIntegerDefFormater.FromLinksTo(const aValue, aElement: IwbElement): Int64;
 begin
+  if Assigned(aValue) then ;
+  if Assigned(aElement) then ;
   raise Exception.Create(Classname + ' does not support editing');
 end;
 
@@ -20934,16 +20951,19 @@ end;
 
 function TwbIntegerDefFormater.GetEditInfo(const aElement: IwbElement): TwbStringArray;
 begin
+  if Assigned(aElement) then ;
   Result := nil;
 end;
 
 function TwbIntegerDefFormater.GetEditType(const aElement: IwbElement): TwbEditType;
 begin
+  if Assigned(aElement) then ;
   Result := etDefault;
 end;
 
 function TwbIntegerDefFormater.GetIsEditable(aInt: Int64; const aElement: IwbElement): Boolean;
 begin
+  if aInt = Low(Int64) then ;
   Result := wbIsInternalEdit;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -20952,6 +20972,8 @@ end;
 
 function TwbIntegerDefFormater.GetLinksTo(aInt: Int64; const aElement: IwbElement): IwbElement;
 begin
+  if aInt = Low(Int64) then ;
+  if Assigned(aElement) then ;
   Result := nil;
 end;
 
@@ -20962,12 +20984,17 @@ end;
 
 function TwbIntegerDefFormater.MastersUpdated(aInt: Int64; const aOld, aNew: TwbFileIDs; aOldCount, aNewCount: Byte; const aElement: IwbElement): Int64;
 begin
+  if Length(aOld) = Length(aNew) then ;
+  if aOldCount = aNewCount then ;
+  if Assigned(aElement) then ;
   Result := aInt;
 end;
 
 function TwbIntegerDefFormater.ToEditValue(aInt: Int64;
   const aElement: IwbElement): string;
 begin
+  if aInt = Low(Int64) then ;
+  if Assigned(aElement) then ;
   Result := '';
 end;
 
