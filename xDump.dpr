@@ -894,10 +894,34 @@ const
 
 var
   regPath, regKey: string;
-  DataPath    : String;
+  DataPath: string;
+  DataPathEnv: string;
+  DataPathEnvName: string;
+  DataPathFromEnv: Boolean;
 begin
+  DataPathFromEnv := False;
+
   if not wbFindCmdLineParam('D', DataPath) then begin
-    DataPath := CheckAppPath;
+    DataPathEnvName := '';
+    DataPathEnv := Trim(GetEnvironmentVariable('XDUMP_DATA_PATH'));
+    if DataPathEnv <> '' then
+      DataPathEnvName := 'XDUMP_DATA_PATH'
+    else begin
+      DataPathEnv := Trim(GetEnvironmentVariable('XEDIT_DATA_PATH'));
+      if DataPathEnv <> '' then
+        DataPathEnvName := 'XEDIT_DATA_PATH';
+    end;
+
+    if DataPathEnv <> '' then begin
+      if DirectoryExists(DataPathEnv) then begin
+        DataPath := IncludeTrailingPathDelimiter(ExpandFileName(DataPathEnv));
+        DataPathFromEnv := True;
+      end else
+        ReportProgress(Format('Warning: %s points to missing directory: %s', [DataPathEnvName, DataPathEnv]));
+    end;
+
+    if DataPath = '' then
+      DataPath := CheckAppPath;
 
     if (DataPath = '') then begin
       regPath := '';
@@ -933,7 +957,7 @@ begin
       end;
     end;
 
-    if (DataPath <> '') then
+    if (DataPath <> '') and not DataPathFromEnv then
       DataPath := IncludeTrailingPathDelimiter(DataPath) + 'Data' + PathDelim;
 
   end else

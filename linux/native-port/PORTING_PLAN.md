@@ -217,6 +217,7 @@ This document tracks what is already done for the native Linux path and what com
   - updated xDump smoke/build scripts:
     - `smoke-test-xdump-headless.sh` now detects `linux/bin/xDump` fallback
     - `smoke-test-xdump-headless.sh` now supports multi-case runs (`XDUMP_HEADLESS_CASES`, default `-h|-dummy`) and fails on non-zero exit codes
+    - `smoke-test-xdump-headless.sh` now supports optional env-override smoke lane (`XDUMP_ENV_OVERRIDE_TEST=1`, `XDUMP_ENV_OVERRIDE_PATH=...`, `XDUMP_ENV_OVERRIDE_ARGS=...`) to validate `XDUMP_DATA_PATH`
     - `build-xdump.sh` now normalizes FPC default `xDump` output to `linux/bin/xdump-core`
   - added consolidated headless loop runner: `linux/native-port/headless-build-smoke.sh` (`RUN_XEDIT`/`RUN_XDUMP`/`BUILD_ONLY` toggles) for faster xEdit/xDump decoupling verification
   - `headless-build-smoke.sh` now writes a deterministic current transcript (`/tmp/xedit-headless-current.log`) and syncs the legacy path (`/tmp/xedit-headless.log`) for stable follow-up parsing
@@ -254,6 +255,8 @@ This document tracks what is already done for the native Linux path and what com
   - `linux/native-port/check-headless-warning-budget.sh`
   - baseline file `linux/native-port/baselines/headless-warning-budget.env`
   - baseline updater `linux/native-port/update-headless-warning-budget.sh` (refuses budget increases unless `ALLOW_INCREASE=1`)
+  - tracks both total warning counters and project-only counters (`*.pas(...) Warning:`)
+  - total warning budget enforcement is optional via `ENFORCE_TOTAL_WARNING_BUDGET=1` (default `0`)
   - summary report generator `linux/native-port/report-headless-warning-summary.sh` (writes `linux/native-port/reports/headless-warning-summary.txt`)
   - history append helper `linux/native-port/append-headless-warning-history.sh` (writes `linux/native-port/reports/headless-warning-history.tsv`)
   - trend report generator `linux/native-port/report-headless-warning-trend.sh` (writes `linux/native-port/reports/headless-warning-trend.txt`)
