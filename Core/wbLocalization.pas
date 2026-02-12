@@ -204,7 +204,7 @@ begin
     fEncoding[True] := nil;
 
   if Assigned(fEncoding[True]) then
-    s := s + ' with fallback (from languange) to: ' + fEncoding[True].EncodingName;
+    s := s + ' with fallback (from languange) to: ' + AnsiString(fEncoding[True].EncodingName);
 
   wbProgress(s);
 
@@ -261,12 +261,12 @@ begin
     b := BytesOf(p, i);
 {$ENDIF}
     try
-      Result := fEncoding[False].GetString(b);
+      Result := AnsiString(fEncoding[False].GetString(b));
     except
       on E: EEncodingError do begin
         if not Assigned(fEncoding[True]) then
           raise;
-        Result := fEncoding[True].GetString(b);
+        Result := AnsiString(fEncoding[True].GetString(b));
       end;
     end;
   end else
@@ -296,12 +296,12 @@ begin
     b := BytesOf(p, i);
 {$ENDIF}
     try
-      Result := fEncoding[False].GetString(b);
+      Result := AnsiString(fEncoding[False].GetString(b));
     except
       on E: EEncodingError do begin
         if not Assigned(fEncoding[True]) then
           raise;
-        Result := fEncoding[True].GetString(b);
+        Result := AnsiString(fEncoding[True].GetString(b));
       end;
     end;
   end else
