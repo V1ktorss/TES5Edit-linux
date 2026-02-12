@@ -19040,6 +19040,7 @@ begin
   wbIgnoreUnused(@aPrefix);
   wbIgnoreUnused(@aSuffix);
   wbIgnoreUnused(@aAllowOverwrite);
+  Result := nil;
   raise Exception.Create(ClassName + '.AddIfMissingInternal is not implemented');
 end;
 

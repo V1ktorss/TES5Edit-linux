@@ -20973,6 +20973,7 @@ function TwbIntegerDefFormater.FromEditValue(const aValue: string;
 begin
   if aValue = '' then ;
   if Assigned(aElement) then ;
+  Result := 0;
   raise Exception.Create(Classname + ' does not support editing');
 end;
 
@@ -20980,6 +20981,7 @@ function TwbIntegerDefFormater.FromLinksTo(const aValue, aElement: IwbElement): 
 begin
   if Assigned(aValue) then ;
   if Assigned(aElement) then ;
+  Result := 0;
   raise Exception.Create(Classname + ' does not support editing');
 end;
 
