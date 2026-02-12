@@ -5740,6 +5740,9 @@ begin
 
   Include(flStates, fsScanning);
   TopGroups := nil;
+  GroupRecord := nil;
+  DialRecord := nil;
+  CellRecord := nil;
   try
     CurrentPtr := flView;
     TwbRecord.CreateForPtr(CurrentPtr, flEndPtr, Self, nil);
@@ -7619,7 +7622,7 @@ var
   Name      : string;
   Container : IwbContainerElementRef;
 begin
-  VarClear(Result);
+  Result := Unassigned;
 
   SelfRef := Self as IwbContainerElementRef;
   DoInit(False);
@@ -7739,7 +7742,7 @@ var
   s          : string;
   i          : Integer;
 begin
-  VarClear(Result);
+  Result := Unassigned;
   if Supports(GetValueDef, IwbIntegerDef, IntegerDef) then
     if Supports(IntegerDef.Formater[Self], IwbFlagsDef, FlagsDef) then
       if FlagsDef.FindFlag(aName, FlagDef) then begin
@@ -11855,6 +11858,7 @@ var
   _File : IwbFile;
   LastID  : Pointer;
 begin
+  Result := nil;
   SetLength(Result, Length(mrReferences));
   if Length(Result) > 0 then begin
     _File := GetFile;
