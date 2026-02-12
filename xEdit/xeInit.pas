@@ -449,6 +449,9 @@ var
   s: string;
   lDataPathOverridden: Boolean;
   lDataPathFromEnv: Boolean;
+  lDataDirName: string;
+  lDataPathCandidate: string;
+  lObvRDataSuffix: string;
   isEpicNV : Boolean;
   IniFile : TMemIniFile;
   lIDs: TStringList;
@@ -508,6 +511,13 @@ begin
   wbModGroupFileName := wbProgramPath + wbAppName + wbToolName + '.modgroups';
   isEpicNV := false;
   lDataPathFromEnv := False;
+  lDataDirName := DataName[wbGameMode = gmTES3];
+  lObvRDataSuffix :=
+    'OblivionRemastered' + PathDelim +
+    'Content' + PathDelim +
+    'Dev' + PathDelim +
+    'ObvData' + PathDelim +
+    'Data';
 
   if not wbFindCmdLineParam('S', wbScriptsPath) then
     wbScriptsPath := wbProgramPath + 'Edit Scripts' + PathDelim;
@@ -521,7 +531,22 @@ begin
   if not lDataPathOverridden then begin
     s := Trim(GetEnvironmentVariable('XEDIT_DATA_PATH'));
     if s <> '' then begin
-      wbDataPath := ExpandFileName(s);
+      lDataPathCandidate := IncludeTrailingPathDelimiter(ExpandFileName(s));
+      if wbIsOblivionR then begin
+        if SameText(ExtractFileName(ExcludeTrailingPathDelimiter(lDataPathCandidate)), 'Data') then
+          wbDataPath := lDataPathCandidate
+        else if DirectoryExists(lDataPathCandidate + lObvRDataSuffix) then
+          wbDataPath := IncludeTrailingPathDelimiter(lDataPathCandidate + lObvRDataSuffix)
+        else
+          wbDataPath := lDataPathCandidate;
+      end else begin
+        if SameText(ExtractFileName(ExcludeTrailingPathDelimiter(lDataPathCandidate)), lDataDirName) then
+          wbDataPath := lDataPathCandidate
+        else if DirectoryExists(lDataPathCandidate + lDataDirName) then
+          wbDataPath := IncludeTrailingPathDelimiter(lDataPathCandidate + lDataDirName)
+        else
+          wbDataPath := lDataPathCandidate;
+      end;
       lDataPathOverridden := True;
       lDataPathFromEnv := True;
     end;
