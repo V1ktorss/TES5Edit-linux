@@ -2410,14 +2410,14 @@ begin
 
     with TStringList.Create do try
       for i := 0 to Pred(lMasterKeys.ElementCount) do
-        AddObject(lMasterKeys.Elements[i].SortKey[True], Pointer(i));
+        AddObject(lMasterKeys.Elements[i].SortKey[True], Pointer(PtrUInt(i)));
       Sorted := True;
 
       NeedsSort := False;
       j := lMasterKeys.ElementCount;
       for i := 0 to Pred(lKeys.ElementCount) do
         if Find(lKeys.Elements[i].SortKey[True], k) then begin
-          k := Integer(Objects[k]);
+          k := Integer(PtrUInt(Objects[k]));
           if k <> i then
             NeedsSort := True;
           lKeys.Elements[i].SortOrder := k;
