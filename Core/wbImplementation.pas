@@ -19777,7 +19777,7 @@ end;
 function TwbElement.GetElementType: TwbElementType;
 begin
   Assert(False, 'This method is abstract');
-  Result := TwbElementType(-1);
+  Result := Low(TwbElementType);
 end;
 
 function TwbElement.GetFile: IwbFile;
