@@ -872,6 +872,83 @@ begin
   end;
 end;
 
+{$IFNDEF MSWINDOWS}
+function CheckSteamPath: string;
+
+  function IsValidGameRoot(const aPath: string): Boolean;
+  var
+    lRoot: string;
+  begin
+    lRoot := IncludeTrailingPathDelimiter(aPath);
+    Result :=
+      FileExists(lRoot + wbGameExeName) and
+      DirectoryExists(lRoot + DataName[wbGameMode = gmTES3]);
+  end;
+
+  function TryFindInSteamCommon(const aCommonPath: string): string;
+  var
+    F: TSearchRec;
+    lFolder: string;
+    lCommonRoot: string;
+  begin
+    Result := '';
+    lCommonRoot := IncludeTrailingPathDelimiter(aCommonPath);
+    if not DirectoryExists(lCommonRoot) then
+      Exit;
+
+    if IsValidGameRoot(lCommonRoot) then begin
+      Result := lCommonRoot;
+      Exit;
+    end;
+
+    if FindFirst(lCommonRoot + '*', faDirectory, F) = 0 then
+      try
+        repeat
+          if (F.Name = '.') or (F.Name = '..') then
+            Continue;
+          if (F.Attr and faDirectory) = 0 then
+            Continue;
+
+          lFolder := lCommonRoot + F.Name;
+          if IsValidGameRoot(lFolder) then begin
+            Result := IncludeTrailingPathDelimiter(lFolder);
+            Exit;
+          end;
+        until FindNext(F) <> 0;
+      finally
+        FindClose(F);
+      end;
+  end;
+
+var
+  lHome: string;
+begin
+  Result := '';
+
+  lHome := Trim(GetEnvironmentVariable('HOME'));
+  if lHome = '' then
+    Exit;
+  lHome := ExcludeTrailingPathDelimiter(lHome);
+
+  Result := TryFindInSteamCommon(
+    lHome + PathDelim + '.steam' + PathDelim + 'steam' + PathDelim + 'steamapps' + PathDelim + 'common'
+  );
+  if Result <> '' then
+    Exit;
+
+  Result := TryFindInSteamCommon(
+    lHome + PathDelim + '.local' + PathDelim + 'share' + PathDelim + 'Steam' + PathDelim + 'steamapps' + PathDelim + 'common'
+  );
+  if Result <> '' then
+    Exit;
+
+  Result := TryFindInSteamCommon(
+    lHome + PathDelim + '.var' + PathDelim + 'app' + PathDelim + 'com.valvesoftware.Steam' + PathDelim +
+    '.local' + PathDelim + 'share' + PathDelim + 'Steam' + PathDelim + 'steamapps' + PathDelim + 'common'
+  );
+end;
+{$ENDIF}
+
 function CheckParamPath: string; // for Dump, do we have bsa in the same directory
 var
   s: string;
@@ -922,6 +999,11 @@ begin
 
     if DataPath = '' then
       DataPath := CheckAppPath;
+
+    {$IFNDEF MSWINDOWS}
+    if DataPath = '' then
+      DataPath := CheckSteamPath;
+    {$ENDIF}
 
     if (DataPath = '') then begin
       regPath := '';
