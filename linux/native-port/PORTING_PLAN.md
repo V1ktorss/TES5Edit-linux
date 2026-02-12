@@ -277,6 +277,7 @@ This document tracks what is already done for the native Linux path and what com
   - readiness-focused checks otherwise
 - Uploads readiness report artifact (`bsarch-ci-xedit-readiness-report`) for each run
 - Uploads headless smoke log artifact (`bsarch-ci-headless-log`) for each run when available
+- Uploads headless warning summary/trend/hotspot artifacts for each run when available
 
 3. Finalize launcher behavior:
 - `BSArch-linux` should remain the single entry point for users.
