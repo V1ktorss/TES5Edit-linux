@@ -257,10 +257,12 @@ This document tracks what is already done for the native Linux path and what com
   - summary report generator `linux/native-port/report-headless-warning-summary.sh` (writes `linux/native-port/reports/headless-warning-summary.txt`)
   - history append helper `linux/native-port/append-headless-warning-history.sh` (writes `linux/native-port/reports/headless-warning-history.tsv`)
   - trend report generator `linux/native-port/report-headless-warning-trend.sh` (writes `linux/native-port/reports/headless-warning-trend.txt`)
+  - hotspot report generator `linux/native-port/report-headless-warning-hotspots.sh` (writes `linux/native-port/reports/headless-warning-hotspots.txt`)
   - integrated into `run-all-checks.sh` via `RUN_WARNING_BUDGET_GUARD=1`
   - integrated into `run-all-checks.sh` via `RUN_WARNING_SUMMARY_REPORT=1`
   - integrated into `run-all-checks.sh` via `RUN_WARNING_HISTORY_APPEND=1`
   - integrated into `run-all-checks.sh` via `RUN_WARNING_TREND_REPORT=1`
+  - integrated into `run-all-checks.sh` via `RUN_WARNING_HOTSPOT_REPORT=1`
   - currently enforces:
     - `MAX_WARNING_LINES=5110`
     - `MAX_ACTIONABLE_WARNING_LINES=0`
