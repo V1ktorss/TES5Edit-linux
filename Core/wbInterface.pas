@@ -7423,6 +7423,9 @@ type
     stSummaryDelimiter    : string;
     stSizeCallback        : TwbStructSizeCallback;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aPriority            : TwbConflictPriority;
                        aRequired            : Boolean;
@@ -7436,6 +7439,9 @@ type
                        aAfterLoad           : TwbAfterLoadCallback;
                        aAfterSet            : TwbAfterSetCallback;
                        aGetCP               : TwbGetConflictPriority); reintroduce;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     procedure AfterClone(const aSource: TwbDef); override;
 
     {---IwbDef---}
@@ -7479,6 +7485,9 @@ type
     scGetChapterTypeName : TwbGetChapterTypeNameCallback;
     scGetChapterName     : TwbGetChapterNameCallback;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aPriority            : TwbConflictPriority;
                        aRequired            : Boolean;
@@ -7495,6 +7504,9 @@ type
                        aGetChapterTypeName  : TwbGetChapterTypeNameCallback;
                        aGetChapterName      : TwbGetChapterNameCallback;
                        aGetCP               : TwbGetConflictPriority);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     function GetDefType: TwbDefType; override;
     function GetDefTypeName: string; override;
   public
@@ -7512,8 +7524,14 @@ type
 
   TwbIntegerDefFormater = class(TwbNamedDef, IwbIntegerDefFormater)
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Create; reintroduce;
     constructor Clone(const aSource: TwbDef); override;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     {---IwbDef---}
     function GetDefType: TwbDefType; override;
@@ -7550,9 +7568,15 @@ type
     idfuDecider: TwbIntegerDefFormaterUnionDecider;
     idfuMembers: array of IwbIntegerDefFormater;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aDecider  : TwbIntegerDefFormaterUnionDecider;
                  const aMembers  : array of IwbIntegerDefFormater);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     {---IwbDef---}
     function GetDefType: TwbDefType; override;
@@ -7609,7 +7633,13 @@ type
   protected
     fidExactIdent: Integer;
 
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     function IsValid(const aSignature: TwbSignature): Boolean; virtual;
     function IsValidFlst(const aSignature: TwbSignature): Boolean; virtual;
@@ -7668,11 +7698,17 @@ type
     fidcPersistent       : Boolean;
     fidcNoReach          : Boolean;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(const aValidRefs     : TwbSignatures;
                        const aValidFlstRefs : TwbSignatures;
                              aPersistent    : Boolean;
                              aNoReach       : Boolean = False);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     destructor Destroy; override;
 
     function IsValid(const aSignature: TwbSignature): Boolean; override;
@@ -7701,7 +7737,13 @@ type
 
   TwbChar4 = class(TwbIntegerDefFormater, IwbChar4)
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     {---IwbIntegerDefFormater---}
     function ToString(aInt: Int64; const aElement: IwbElement; aForSummary: Boolean): string; overload; override;
@@ -7720,7 +7762,13 @@ type
 
   TwbStr4 = class(TwbIntegerDefFormater, IwbStr4)
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     {---IwbIntegerDefFormater---}
     function ToString(aInt: Int64; const aElement: IwbElement; aForSummary: Boolean): string; overload; override;
@@ -7753,6 +7801,9 @@ type
     UnknownFlags       : array[0..63] of Integer;
     HasUnknownFlags    : Boolean;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aHasSummary      : Boolean;
                  const aBaseFlagsDef    : IwbFlagsDef;
@@ -7761,6 +7812,9 @@ type
                        aUnknownIsUnused : Boolean;
                        aIgnoreMask      : Int64;
                  const aGetCPs          : array of TwbGetConflictPriority);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     procedure AfterClone(const aSource: TwbDef); override;
 
     {---IwbDef---}
@@ -7812,6 +7866,9 @@ type
   private
     fdFlagIndex : Integer;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aPriority   : TwbConflictPriority;
                        aRequired   : Boolean;
@@ -7822,6 +7879,9 @@ type
                        aGetCP      : TwbGetConflictPriority;
                        aTerminator : Boolean;
                        aFlagIndex  : Integer); reintroduce;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     {---IwbDef---}
     function GetDefType: TwbDefType; override;
@@ -7862,10 +7922,16 @@ type
 
     UnknownEnums: TStringList;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aHasSummary  : Boolean;
                  const aNames       : array of string;
                  const aSparseNames : array of const);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     destructor Destroy; override;
 
     function FindSparseName(aSearchIndex: Int64; var Index: Integer): Boolean;
@@ -7922,8 +7988,14 @@ type
     ddValue: Integer;
     ddPrecision: Integer;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aValue: Integer; aPrecision: Integer);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     {---IwbIntegerDefFormater---}
     function ToString(aInt: Int64; const aElement: IwbElement; aForSummary: Boolean): string; overload; override;
@@ -7939,8 +8011,14 @@ type
   private
     mdValue: Integer;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(aValue: Integer);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     {---IwbIntegerDefFormater---}
     function ToString(aInt: Int64; const aElement: IwbElement; aForSummary: Boolean): string; override;
@@ -7957,9 +8035,15 @@ type
     cdToStr: TwbIntToStrCallback;
     cdToInt: TwbStrToIntCallback;
   protected
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     constructor Clone(const aSource: TwbDef); override;
     constructor Create(const aToStr : TwbIntToStrCallback;
                        const aToInt : TwbStrToIntCallback);
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
 
     {---IwbIntegerDefFormater---}
     function Check(aInt: Int64; const aElement: IwbElement): string; override;
