@@ -781,6 +781,7 @@ var
   Desc: PConditionFunction;
   i: Integer;
 begin
+  if Assigned(aElement) then;
   Result := '';
   Desc := wbConditionDescFromIndex(aInt);
   case aType of
@@ -815,6 +816,7 @@ function wbConditionFunctionToInt(const aString: string; const aElement: IwbElem
 var
   i: Integer;
 begin
+  if Assigned(aElement) then;
   for i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
     with wbConditionFunctions[i] do
       if SameText(Name, aString) then begin
@@ -832,6 +834,7 @@ var
   ParamType: Integer;
   ParamFlag: Int64;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -864,6 +867,7 @@ var
   ParamType: Integer;
   ParamFlag: Int64;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -893,6 +897,7 @@ var
   i: Integer;
   j: Integer;
 begin
+  if Assigned(aElement) then;
   Result := '';
   EventFunction := aInt and $FFFF;
   EventMember := aInt shr 16;
@@ -934,6 +939,7 @@ var
   EventFunction, EventMember: Integer;
   i: Integer;
 begin
+  if Assigned(aElement) then;
   i := Pos(':', aString);
   if i > 0 then begin
     EventFunction := wbEventFunctionEnum.FromEditValue(Copy(aString, 1, i-1), nil);
@@ -1223,6 +1229,7 @@ end;
 
 function wbStringToInt(const aString: string; const aElement: IwbElement): Int64;
 begin
+  if Assigned(aElement) then;
   Result := StrToIntDef(aString, 0);
 end;
 
@@ -1356,6 +1363,9 @@ end;
 
 procedure wbAfterSet(const aElement: IwbElement; const aOldValue, aNewValue: Variant);
 begin
+  if Assigned(aElement) then;
+  if VarIsEmpty(aOldValue) then;
+  if VarIsEmpty(aNewValue) then;
   Exit;
 end;
 
@@ -1402,6 +1412,7 @@ function wbShortXYtoStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallb
 var
   x, y: SmallInt;
 begin
+  if Assigned(aElement) then;
   y := aInt and $FFFF;
   x := aInt shr 16 and $FFFF;
   Result := '';
@@ -1416,6 +1427,7 @@ var
   x, y: SmallInt;
   Value: Cardinal;
 begin
+  if Assigned(aElement) then;
   y := StrToIntDef(Copy(aString, 1, Pred(Pos(', ', aString))), 0);
   x := StrToIntDef(Copy(aString, Pos(', ', aString) + 2, Length(aString)), 0);
   PWord(@Value)^ := x;
@@ -1427,6 +1439,7 @@ function wbINFOGroupDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement:
 var
   MainRecord: IwbMainRecord;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then
     Exit;
@@ -1486,6 +1499,7 @@ var
   Container : IwbContainer;
   Element   : IwbElement;
 begin
+  if VarIsEmpty(aOldValue) then;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
 
@@ -1503,6 +1517,7 @@ var
   Container : IwbContainer;
   Element   : IwbElement;
 begin
+  if VarIsEmpty(aOldValue) then;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
 
