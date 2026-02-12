@@ -1857,6 +1857,7 @@ var
   Container  : IwbContainer;
   MainRecord : IwbMainRecord;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -1891,6 +1892,7 @@ var
   F             : Integer;
   i             : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if aElement.ElementType = etValue then
     Container := aElement.Container
@@ -1930,6 +1932,7 @@ var
   F             : Integer;
   i             : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if aElement.ElementType = etValue then
     Container := aElement.Container
@@ -1969,6 +1972,7 @@ var
   F             : Integer;
   i             : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if aElement.ElementType = etValue then
     Container := aElement.Container
@@ -1997,6 +2001,7 @@ function wbScriptFragmentsEmptyScriptDecider(aBasePtr: Pointer; aEndPtr: Pointer
 var
   Container  : IwbContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -2010,6 +2015,7 @@ var
   Container: IwbContainer;
   i: Int64;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -2531,6 +2537,8 @@ procedure wbCELLDATAAfterSet(const aElement: IwbElement; const aOldValue, aNewVa
 var
   Container : IwbContainer;
 begin
+  if VarIsEmpty(aOldValue) then;
+  if VarIsEmpty(aNewValue) then;
   if not Assigned(aElement) then
     Exit;
 
@@ -2689,6 +2697,7 @@ var
   rANAM: IwbRecord;
   ctype: string;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
 
   if not Assigned(aElement) then
@@ -2710,6 +2719,7 @@ var
   Container : IwbContainer;
   Element   : IwbElement;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
 
   if not wbTryGetContainerFromUnion(aElement, Container) then
@@ -2822,6 +2832,7 @@ var
   Container     : IwbContainer;
   ValueType      : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
 
   if not wbTryGetContainerFromUnion(aElement, Container) then
@@ -2845,6 +2856,7 @@ var
   lValueType: Integer;
   lPropName: string;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
 
   if not wbTryGetContainerFromUnion(aElement, lContainer) then
@@ -2873,6 +2885,7 @@ var
   Container     : IwbContainer;
   ValueType      : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
 
   if not wbTryGetContainerFromUnion(aElement, Container) then
@@ -2893,6 +2906,7 @@ function wbCELLCombinedRefsCounter(aBasePtr: Pointer; aEndPtr: Pointer; const aE
 var
   Container       : IwbContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   // the counter is double of entries (each member of struct is counted)
   if Supports(aElement.Container, IwbContainer, Container) then
@@ -2905,6 +2919,8 @@ var
   Container       : IwbContainer;
   SelfAsContainer : IwbContainer;
 begin
+  if VarIsEmpty(aOldValue) then;
+  if VarIsEmpty(aNewValue) then;
   // the counter is double of entries (each member of struct is counted)
   if wbBeginInternalEdit(True) then try
     if not Supports(aElement.Container, IwbContainer, Container) then
@@ -2954,6 +2970,7 @@ var
   s, f: string;
   i: Integer;
 begin
+  if Assigned(aElement) then;
   Result := 0;
 
   // hex number between first and second underscore in the file name
@@ -3025,6 +3042,7 @@ end;
 
 function wbIntToHexStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
 begin
+  if Assigned(aElement) then;
   case aType of
     ctToStr, ctToSummary, ctToSortKey, ctToEditValue: Result := IntToHex(aInt, 8);
   else
@@ -3037,6 +3055,7 @@ var
   s: string;
   i: integer;
 begin
+  if Assigned(aElement) then;
   // ignore anything after space or :
   i := Pos(' ', aString);
   if i = 0 then
