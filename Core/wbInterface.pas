@@ -2035,6 +2035,7 @@ type
     function GetIsUpdate: Boolean;
     procedure SetIsUpdate(aValue: Boolean);
 
+    procedure SetNoUpdateRefs(aValue: Boolean);
     procedure UpdateRefs;
 
     function GetPosition(out aPosition: TwbVector): Boolean;

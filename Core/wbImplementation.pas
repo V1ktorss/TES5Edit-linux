@@ -1402,6 +1402,7 @@ type
     function GetIsUpdate: Boolean;
     procedure SetIsUpdate(aValue: Boolean);
 
+    procedure SetNoUpdateRefs(aValue: Boolean);
     procedure UpdateRefs;
     procedure UpdateKeys;
 
@@ -5281,7 +5282,7 @@ begin
         INCC.EditValue := Cells.ToString;
       end;
 
-      Include(TwbMainRecord(FileHeader).mrStates, mrsNoUpdateRefs);
+      FileHeader.SetNoUpdateRefs(True);
       BeginUpdate;
       try
         while FileHeader.RemoveElement('ONAM') <> nil do
@@ -5377,7 +5378,7 @@ begin
         EndUpdate;
       end;
       if not (fsIsDeltaPatch in flStates) then begin
-        Exclude(TwbMainRecord(FileHeader).mrStates, mrsNoUpdateRefs);
+        FileHeader.SetNoUpdateRefs(False);
         FileHeader.UpdateRefs;
       end;
     end;
@@ -14768,6 +14769,14 @@ begin
         lFile.UpdateIndexKeys(Self, lChangedKeys);
     end;
   end;
+end;
+
+procedure TwbMainRecord.SetNoUpdateRefs(aValue: Boolean);
+begin
+  if aValue then
+    Include(mrStates, mrsNoUpdateRefs)
+  else
+    Exclude(mrStates, mrsNoUpdateRefs);
 end;
 
 procedure TwbMainRecord.UpdateRefs;
