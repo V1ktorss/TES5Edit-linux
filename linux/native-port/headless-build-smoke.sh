@@ -6,16 +6,30 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 RUN_XEDIT="${RUN_XEDIT:-1}"
 RUN_XDUMP="${RUN_XDUMP:-1}"
 BUILD_ONLY="${BUILD_ONLY:-0}"
+HEADLESS_LOG="${HEADLESS_LOG:-/tmp/xedit-headless-current.log}"
+HEADLESS_LOG_LEGACY="${HEADLESS_LOG_LEGACY:-/tmp/xedit-headless.log}"
+
+if [[ -n "${HEADLESS_LOG}" ]]; then
+  mkdir -p "$(dirname "${HEADLESS_LOG}")"
+  : > "${HEADLESS_LOG}"
+fi
 
 log() {
   echo "[headless] $*"
+  if [[ -n "${HEADLESS_LOG}" ]]; then
+    echo "[headless] $*" >> "${HEADLESS_LOG}"
+  fi
 }
 
 run_step() {
   local title="$1"
   shift
   log "${title}"
-  "$@"
+  if [[ -n "${HEADLESS_LOG}" ]]; then
+    "$@" >> "${HEADLESS_LOG}" 2>&1
+  else
+    "$@"
+  fi
 }
 
 if [[ "${RUN_XEDIT}" != "1" && "${RUN_XDUMP}" != "1" ]]; then
@@ -40,3 +54,8 @@ if [[ "${RUN_XDUMP}" == "1" ]]; then
 fi
 
 log "PASS"
+
+# Keep the legacy path in sync for existing workflows.
+if [[ -n "${HEADLESS_LOG}" && -n "${HEADLESS_LOG_LEGACY}" && "${HEADLESS_LOG}" != "${HEADLESS_LOG_LEGACY}" ]]; then
+  cp -f "${HEADLESS_LOG}" "${HEADLESS_LOG_LEGACY}" || true
+fi
