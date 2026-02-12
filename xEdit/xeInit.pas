@@ -531,24 +531,28 @@ begin
   if not lDataPathOverridden then begin
     s := Trim(GetEnvironmentVariable('XEDIT_DATA_PATH'));
     if s <> '' then begin
-      lDataPathCandidate := IncludeTrailingPathDelimiter(ExpandFileName(s));
-      if wbIsOblivionR then begin
-        if SameText(ExtractFileName(ExcludeTrailingPathDelimiter(lDataPathCandidate)), 'Data') then
-          wbDataPath := lDataPathCandidate
-        else if DirectoryExists(lDataPathCandidate + lObvRDataSuffix) then
-          wbDataPath := IncludeTrailingPathDelimiter(lDataPathCandidate + lObvRDataSuffix)
-        else
-          wbDataPath := lDataPathCandidate;
-      end else begin
-        if SameText(ExtractFileName(ExcludeTrailingPathDelimiter(lDataPathCandidate)), lDataDirName) then
-          wbDataPath := lDataPathCandidate
-        else if DirectoryExists(lDataPathCandidate + lDataDirName) then
-          wbDataPath := IncludeTrailingPathDelimiter(lDataPathCandidate + lDataDirName)
-        else
-          wbDataPath := lDataPathCandidate;
-      end;
+      wbDataPath := s;
       lDataPathOverridden := True;
       lDataPathFromEnv := True;
+    end;
+  end;
+
+  if lDataPathOverridden then begin
+    lDataPathCandidate := IncludeTrailingPathDelimiter(ExpandFileName(wbDataPath));
+    if wbIsOblivionR then begin
+      if SameText(ExtractFileName(ExcludeTrailingPathDelimiter(lDataPathCandidate)), 'Data') then
+        wbDataPath := lDataPathCandidate
+      else if DirectoryExists(lDataPathCandidate + lObvRDataSuffix) then
+        wbDataPath := IncludeTrailingPathDelimiter(lDataPathCandidate + lObvRDataSuffix)
+      else
+        wbDataPath := lDataPathCandidate;
+    end else begin
+      if SameText(ExtractFileName(ExcludeTrailingPathDelimiter(lDataPathCandidate)), lDataDirName) then
+        wbDataPath := lDataPathCandidate
+      else if DirectoryExists(lDataPathCandidate + lDataDirName) then
+        wbDataPath := IncludeTrailingPathDelimiter(lDataPathCandidate + lDataDirName)
+      else
+        wbDataPath := lDataPathCandidate;
     end;
   end;
 
