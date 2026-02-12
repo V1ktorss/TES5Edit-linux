@@ -1440,7 +1440,7 @@ begin
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
 
-  VarClear(ArchType);
+  ArchType := Unassigned;
   Element := Container.ElementByName['Archtype'];
   if Assigned(Element) then
     ArchType := Element.NativeValue

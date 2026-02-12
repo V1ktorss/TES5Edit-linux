@@ -1431,7 +1431,7 @@ begin
   y := StrToIntDef(Copy(aString, 1, Pred(Pos(', ', aString))), 0);
   x := StrToIntDef(Copy(aString, Pos(', ', aString) + 2, Length(aString)), 0);
   PWord(@Value)^ := x;
-  PWord(Cardinal(@Value) + SizeOf(SmallInt))^ := y;
+  PWord(PByte(@Value) + SizeOf(SmallInt))^ := y;
   Result := Value;
 end;
 
@@ -1465,7 +1465,7 @@ begin
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
 
-  VarClear(ArchType);
+  ArchType := Unassigned;
   Element := Container.ElementByName['Archetype'];
 
   if Assigned(Element) then

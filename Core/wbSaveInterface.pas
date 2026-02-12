@@ -218,6 +218,7 @@ function TwbVMArrayHandleFormaterToString(aInt: Int64; const aElement: IwbElemen
 var
   Count : Int64;
 begin
+  if Assigned(aElement) then;
   if aType = ctToSortKey then
     Result := IntToHex64(aInt, 8)
   else begin

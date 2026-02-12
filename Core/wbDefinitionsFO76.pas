@@ -2152,7 +2152,7 @@ begin
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
 
-  VarClear(ArchType);
+  ArchType := Unassigned;
   Element := Container.ElementByName['Archetype'];
 
   if Assigned(Element) then

@@ -1056,7 +1056,6 @@ type
     procedure UpdateStorageFromElements; virtual;
   end;
 
-  TwbRecordClass = class of TwbRecord;
   TwbRecord = class(TwbDataContainer, IwbRecord, IwbHasSignature)
   protected
     recSkipped          : Boolean;
