@@ -9,6 +9,9 @@ HEADLESS_CASES="${XDUMP_HEADLESS_CASES:--h|-dummy}"
 ENV_OVERRIDE_TEST="${XDUMP_ENV_OVERRIDE_TEST:-0}"
 ENV_OVERRIDE_PATH="${XDUMP_ENV_OVERRIDE_PATH:-}"
 ENV_OVERRIDE_ARGS="${XDUMP_ENV_OVERRIDE_ARGS:--dummy}"
+CLI_OVERRIDE_TEST="${XDUMP_CLI_OVERRIDE_TEST:-0}"
+CLI_OVERRIDE_PATH="${XDUMP_CLI_OVERRIDE_PATH:-}"
+CLI_OVERRIDE_ARGS="${XDUMP_CLI_OVERRIDE_ARGS:--dummy}"
 
 find_xdump_bin() {
   if [[ -n "${XDUMP_BIN:-}" && -x "${XDUMP_BIN}" ]]; then
@@ -110,6 +113,40 @@ if [[ "${ENV_OVERRIDE_TEST}" == "1" ]]; then
   fi
 
   echo "[xdump-smoke] Env override case exit code: ${exit_code}"
+  echo "[xdump-smoke] Log: ${log_file}"
+fi
+
+if [[ "${CLI_OVERRIDE_TEST}" == "1" ]]; then
+  if [[ -z "${CLI_OVERRIDE_PATH}" ]]; then
+    echo "[xdump-smoke] FAILED: XDUMP_CLI_OVERRIDE_TEST=1 requires XDUMP_CLI_OVERRIDE_PATH"
+    exit 1
+  fi
+
+  safe_name="$(echo "cli_${CLI_OVERRIDE_ARGS}" | tr -cs '[:alnum:]' '_' | sed 's/^_//; s/_$//')"
+  [[ -z "${safe_name}" ]] && safe_name="cli_override"
+  log_file="${LOG_DIR}/xdump-headless-smoke-${safe_name}.log"
+
+  echo "[xdump-smoke] Running CLI override case: ${XDUMP_BIN_PATH} -D ${CLI_OVERRIDE_PATH} ${CLI_OVERRIDE_ARGS}"
+  set +e
+  # shellcheck disable=SC2206
+  cli_args=( ${CLI_OVERRIDE_ARGS} )
+  timeout "${TIMEOUT_SECONDS}"s "${XDUMP_BIN_PATH}" -D "${CLI_OVERRIDE_PATH}" "${cli_args[@]}" >"${log_file}" 2>&1
+  exit_code=$?
+  set -e
+
+  if [[ "${exit_code}" -eq 124 ]]; then
+    echo "[xdump-smoke] FAILED: CLI override case timed out after ${TIMEOUT_SECONDS}s"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if [[ "${exit_code}" -ne 0 ]]; then
+    echo "[xdump-smoke] FAILED: CLI override case exit code ${exit_code}"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  echo "[xdump-smoke] CLI override case exit code: ${exit_code}"
   echo "[xdump-smoke] Log: ${log_file}"
 fi
 

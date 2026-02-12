@@ -148,7 +148,9 @@ This document tracks what is already done for the native Linux path and what com
   - normalized `XEDIT_DATA_PATH` handling to accept both game-root paths and direct data-folder paths
   - unified xEdit override normalization so both `-D` and `XEDIT_DATA_PATH` accept game-root or direct data-folder paths
   - added optional xEdit headless smoke env-override lane (`XEDIT_ENV_OVERRIDE_TEST=1`, `XEDIT_ENV_OVERRIDE_PATH=...`, `XEDIT_ENV_OVERRIDE_ARGS=...`) to validate `XEDIT_DATA_PATH` behavior on demand
+  - added optional xEdit headless smoke CLI-override lane (`XEDIT_CLI_OVERRIDE_TEST=1`, `XEDIT_CLI_OVERRIDE_PATH=...`, `XEDIT_CLI_OVERRIDE_ARGS=...`) to validate `-D` path behavior
   - wired `run-all-checks.sh` to forward xEdit env-override smoke knobs (`XEDIT_ENV_OVERRIDE_TEST`, `XEDIT_ENV_OVERRIDE_PATH`, `XEDIT_ENV_OVERRIDE_ARGS`) and print them in run config
+  - wired `run-all-checks.sh` to forward xEdit CLI-override smoke knobs (`XEDIT_CLI_OVERRIDE_TEST`, `XEDIT_CLI_OVERRIDE_PATH`, `XEDIT_CLI_OVERRIDE_ARGS`) and print them in run config
   - converted additional Delphi inline-variable usages in xEdit/Core hot paths (`xeInitStyles`, `xeScriptForm` indent/dedent, `xeRichEditForm` TOC build, `wbTaskProgressExecute`, `xejviScriptHost` namespace rewrite/error reporting + selected-files branch, `xejviScriptAdapterMisc` math/string-set helpers, `xejviScriptAdapter` template/master helpers, `xeMainForm` message/master/template menu + focused-element/copy helpers + nav popup/formid/header-remove/WMUser + source-drag/apply-script + main-record-compare/nav-add/view-link paths, `xeModuleSelectForm` simulate-load path) to classic declarations for better FPC compatibility
   - gated Delphi-only reflection directives for FPC headless path (`{$METHODINFO ON}` in `Core/wbDefines.inc`, `{$RTTI ...}` in `xEdit/xedit-core.dpr`) to remove illegal-directive warning noise from Linux builds
   - completed `wbDefinitionsSF1.pas` helper decoupling pass for `var <name> := function(...)` patterns (hoisted to classic declarations/assignments for FPC compatibility)
@@ -220,6 +222,7 @@ This document tracks what is already done for the native Linux path and what com
     - `smoke-test-xdump-headless.sh` now detects `linux/bin/xDump` fallback
     - `smoke-test-xdump-headless.sh` now supports multi-case runs (`XDUMP_HEADLESS_CASES`, default `-h|-dummy`) and fails on non-zero exit codes
     - `smoke-test-xdump-headless.sh` now supports optional env-override smoke lane (`XDUMP_ENV_OVERRIDE_TEST=1`, `XDUMP_ENV_OVERRIDE_PATH=...`, `XDUMP_ENV_OVERRIDE_ARGS=...`) to validate `XDUMP_DATA_PATH`
+    - `smoke-test-xdump-headless.sh` now supports optional CLI-override smoke lane (`XDUMP_CLI_OVERRIDE_TEST=1`, `XDUMP_CLI_OVERRIDE_PATH=...`, `XDUMP_CLI_OVERRIDE_ARGS=...`) to validate `-D` path behavior
     - `build-xdump.sh` now normalizes FPC default `xDump` output to `linux/bin/xdump-core`
   - normalized `XDUMP_DATA_PATH` handling to accept both game-root paths and direct data-folder paths
   - unified xDump override normalization so both `-D` and `XDUMP_DATA_PATH` accept game-root or direct data-folder paths

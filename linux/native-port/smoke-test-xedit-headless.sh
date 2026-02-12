@@ -9,6 +9,9 @@ HEADLESS_CASES="${XEDIT_HEADLESS_CASES:--h|-dummy}"
 ENV_OVERRIDE_TEST="${XEDIT_ENV_OVERRIDE_TEST:-0}"
 ENV_OVERRIDE_PATH="${XEDIT_ENV_OVERRIDE_PATH:-}"
 ENV_OVERRIDE_ARGS="${XEDIT_ENV_OVERRIDE_ARGS:--dummy}"
+CLI_OVERRIDE_TEST="${XEDIT_CLI_OVERRIDE_TEST:-0}"
+CLI_OVERRIDE_PATH="${XEDIT_CLI_OVERRIDE_PATH:-}"
+CLI_OVERRIDE_ARGS="${XEDIT_CLI_OVERRIDE_ARGS:--dummy}"
 
 find_xedit_bin() {
   if [[ -n "${XEDIT_BIN:-}" && -x "${XEDIT_BIN}" ]]; then
@@ -109,6 +112,40 @@ if [[ "${ENV_OVERRIDE_TEST}" == "1" ]]; then
   fi
 
   echo "[xedit-smoke] Env override case exit code: ${exit_code}"
+  echo "[xedit-smoke] Log: ${log_file}"
+fi
+
+if [[ "${CLI_OVERRIDE_TEST}" == "1" ]]; then
+  if [[ -z "${CLI_OVERRIDE_PATH}" ]]; then
+    echo "[xedit-smoke] FAILED: XEDIT_CLI_OVERRIDE_TEST=1 requires XEDIT_CLI_OVERRIDE_PATH"
+    exit 1
+  fi
+
+  safe_name="$(echo "cli_${CLI_OVERRIDE_ARGS}" | tr -cs '[:alnum:]' '_' | sed 's/^_//; s/_$//')"
+  [[ -z "${safe_name}" ]] && safe_name="cli_override"
+  log_file="${LOG_DIR}/xedit-headless-smoke-${safe_name}.log"
+
+  echo "[xedit-smoke] Running CLI override case: ${XEDIT_BIN_PATH} -D ${CLI_OVERRIDE_PATH} ${CLI_OVERRIDE_ARGS}"
+  set +e
+  # shellcheck disable=SC2206
+  cli_args=( ${CLI_OVERRIDE_ARGS} )
+  timeout "${TIMEOUT_SECONDS}"s "${XEDIT_BIN_PATH}" -D "${CLI_OVERRIDE_PATH}" "${cli_args[@]}" >"${log_file}" 2>&1
+  exit_code=$?
+  set -e
+
+  if [[ "${exit_code}" -eq 124 ]]; then
+    echo "[xedit-smoke] FAILED: CLI override case timed out after ${TIMEOUT_SECONDS}s"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if [[ "${exit_code}" -ne 0 ]]; then
+    echo "[xedit-smoke] FAILED: CLI override case exit code ${exit_code}"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  echo "[xedit-smoke] CLI override case exit code: ${exit_code}"
   echo "[xedit-smoke] Log: ${log_file}"
 fi
 
