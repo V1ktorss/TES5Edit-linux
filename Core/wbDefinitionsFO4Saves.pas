@@ -320,6 +320,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := aElement;
@@ -347,6 +348,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := aElement;
@@ -369,6 +371,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := aElement;
@@ -407,6 +410,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Weather', aElement);
@@ -427,6 +431,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Weather', aElement);
@@ -447,6 +452,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Reference Effect', aElement);
@@ -469,6 +475,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Temp Effect Screen Space Decal', aElement);
@@ -489,6 +496,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Reference Effect', aElement);
@@ -509,6 +517,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Remain', aElement);
@@ -529,6 +538,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Unknown 02 struct', aElement);
@@ -549,6 +559,7 @@ var
   Element    : IwbElement;
   Container  : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   Element := wbFindSaveElement('SubBuffer', aElement);
 
@@ -566,6 +577,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Unknown struct', aElement);
@@ -587,6 +599,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := aElement;
@@ -610,6 +623,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := aElement;
@@ -655,6 +669,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
 
   if not Assigned(aElement) then Exit;
@@ -685,6 +700,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Array Entry Data', aElement);
