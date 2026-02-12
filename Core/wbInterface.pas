@@ -15455,6 +15455,7 @@ var
   FlagDef  : IwbFlagDef;
   i        : Integer;
 begin
+  if Assigned(aElement) and (aIndex >= 0) then;
   if dfDontAssign in defFlags then
     Exit(False);
 
@@ -15482,6 +15483,7 @@ var
   i: Integer;
   s: string;
 begin
+  if Assigned(aElement) then;
   Result := '';
   if not flgUnknownIsUnused then begin
     for i := 0 to 63 do
@@ -15573,6 +15575,7 @@ function TwbFlagsDef.FromEditValue(const aValue: string; const aElement: IwbElem
 var
   i: Integer;
 begin
+  if Assigned(aElement) then;
   Result := 0;
   for i := 1 to Length(aValue) do
     case aValue[i] of
@@ -15713,6 +15716,7 @@ end;
 
 function TwbFlagsDef.GetEditType(const aElement: IwbElement): TwbEditType;
 begin
+  if Assigned(aElement) then;
   Result := etCheckComboBox;
 end;
 
@@ -15897,6 +15901,7 @@ end;
 
 function TwbFlagsDef.GetIsEditable(aInt: Int64; const aElement: IwbElement): Boolean;
 begin
+  if aInt <> 0 then;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -15985,6 +15990,7 @@ function TwbFlagsDef.ToEditValue(aInt: Int64; const aElement: IwbElement): strin
 var
   i: Integer;
 begin
+  if Assigned(aElement) then;
   aInt := aInt and not flgUnusedMask;
   Result := StringOfChar('0', 64);
   for i := 0 to 63 do
@@ -16051,6 +16057,7 @@ var
   EnumDef: IwbEnumDef;
   i: Integer;
 begin
+  if Assigned(aElement) and (aIndex >= 0) then;
   i := 0;
   if dfDontAssign in defFlags then
     Exit(False);
@@ -16141,6 +16148,7 @@ var
   lName    : string;
   lSummary : string;
 begin
+  if Length(aSparseNames) > 0 then;
   StepSize := 1;
   l := Length(aNames);
 
@@ -16487,6 +16495,7 @@ var
   lOpenParensIdx: Integer;
   lDummy: Integer;
 begin
+  if Assigned(aElement) then;
   if aValue = '' then
     Result := 0
   else begin
@@ -16547,16 +16556,19 @@ end;
 
 function TwbEnumDef.GetEditInfo(const aElement: IwbElement): TwbStringArray;
 begin
+  if Assigned(aElement) then;
   Result := Copy(enEditInfo);
 end;
 
 function TwbEnumDef.GetEditType(const aElement: IwbElement): TwbEditType;
 begin
+  if Assigned(aElement) then;
   Result := etComboBox;
 end;
 
 function TwbEnumDef.GetIsEditable(aInt: Int64; const aElement: IwbElement): Boolean;
 begin
+  if aInt <> 0 then;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -16623,6 +16635,7 @@ function TwbEnumDef.Check(const aString: string; const aElement: IwbElement): st
 var
   lIndex: Int64;
 begin
+  if Assigned(aElement) then;
   if aString = '' then
     Exit(aString);
 
@@ -16636,6 +16649,7 @@ function TwbEnumDef.ToSortKey(const aString: string; const aElement: IwbElement)
 var
   lIndex: Int64;
 begin
+  if Assigned(aElement) then;
   if aString = '' then
     Exit(aString);
 
@@ -16652,6 +16666,7 @@ var
   lPath: Variant;
   lPathIndex: Integer;
 begin
+  if aForSummary then;
   lPathIndex := -1;
   if aString = '' then
     Exit(aString);
@@ -16681,6 +16696,8 @@ function TwbEnumDef.ToEditValue(aInt: Int64; const aElement: IwbElement): string
 var
   i: Integer;
 begin
+  if Assigned(aElement) then;
+  i := -1;
   Result := '';
 
   if (aInt >= Low(enNames)) and (aInt <= High(enNames)) then begin
@@ -16705,6 +16722,7 @@ end;
 
 function TwbEnumDef.ToSortKey(aInt: Int64; const aElement: IwbElement): string;
 begin
+  if (aInt <> 0) and Assigned(aElement) then;
   Result := ''; {handled by IntegerDef}
 end;
 
@@ -16713,6 +16731,7 @@ var
   s: string;
   i: Integer;
 begin
+  if Assigned(aElement) then;
   i := -1;
   Result := '';
 
