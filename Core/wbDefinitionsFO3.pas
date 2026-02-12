@@ -27,6 +27,7 @@ uses
   wbInterface;
 
 {$IFDEF FPC}
+{$HINTS OFF}
 {$WARN 5024 OFF} // Parameter not used
 {$ENDIF}
 
@@ -8004,5 +8005,6 @@ begin
 end;
 {$IFDEF FPC}
 {$WARN 5024 ON}
+{$HINTS ON}
 {$ENDIF}
 end.

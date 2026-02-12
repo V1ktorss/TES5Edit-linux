@@ -62,6 +62,10 @@ uses
   wbDefinitionsCommon,
   wbDefinitionsSignatures;
 
+{$IFDEF FPC}
+{$HINTS OFF}
+{$ENDIF}
+
 type
   TVarRecs = array of TVarRec;
 
@@ -13846,4 +13850,7 @@ begin
   end;
 {$ENDIF}
 end;
+{$IFDEF FPC}
+{$HINTS ON}
+{$ENDIF}
 end.
