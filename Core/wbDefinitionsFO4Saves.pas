@@ -27,6 +27,10 @@ uses
   wbDefinitionsCommon,
   wbDefinitionsFO4;
 
+{$IFDEF FPC}
+{$WARN 5024 OFF} // Parameter not used
+{$ENDIF}
+
 var
   wbExtraTypeEnum    : IwbEnumDef;
   wbCodeTypeEnum     : IwbEnumDef;
@@ -7486,4 +7490,7 @@ begin
 end;
 
 initialization
+{$IFDEF FPC}
+{$WARN 5024 ON}
+{$ENDIF}
 end.
