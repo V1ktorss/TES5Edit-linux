@@ -141,6 +141,7 @@ if [[ "${RUN_XEDIT}" == "1" ]]; then
   if [[ "${BUILD_ONLY}" != "1" ]]; then
     run_step "xEdit headless smoke" "${ROOT_DIR}/linux/native-port/smoke-test-xedit-headless.sh"
   fi
+  check_hints
 fi
 
 if [[ "${RUN_XDUMP}" == "1" ]]; then
@@ -150,7 +151,6 @@ if [[ "${RUN_XDUMP}" == "1" ]]; then
   fi
 fi
 
-check_hints
 summarize_warnings
 
 log "PASS"
