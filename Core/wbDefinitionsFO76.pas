@@ -1056,6 +1056,7 @@ var
   Desc: PConditionFunction;
   i: Integer;
 begin
+  if Assigned(aElement) then;
   Result := '';
   Desc := wbConditionDescFromIndex(aInt);
   case aType of
@@ -1090,6 +1091,7 @@ function wbConditionFunctionToInt(const aString: string; const aElement: IwbElem
 var
   i: Integer;
 begin
+  if Assigned(aElement) then;
   for i := Low(wbConditionFunctions) to High(wbConditionFunctions) do
     with wbConditionFunctions[i] do
       if SameText(Name, aString) then
@@ -1105,6 +1107,7 @@ var
   ParamType: Integer;
   ParamFlag: Int64;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -1137,6 +1140,7 @@ var
   ParamType: Integer;
   ParamFlag: Int64;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -1166,6 +1170,7 @@ var
   i: Integer;
   j: Integer;
 begin
+  if Assigned(aElement) then;
   Result := '';
   EventFunction := aInt and $FFFF;
   EventMember := aInt shr 16;
@@ -1207,6 +1212,7 @@ var
   EventFunction, EventMember: Integer;
   i: Integer;
 begin
+  if Assigned(aElement) then;
   i := Pos(':', aString);
   if i > 0 then begin
     EventFunction := wbEventFunctionEnum.FromEditValue(Copy(aString, 1, i-1), nil);
@@ -1557,6 +1563,7 @@ var
   s: string;
   value: Single;
 begin
+  if Assigned(aElement) then;
   if SameText(Copy(aString, 1, 5), 'rgba(') then begin
     s := Copy(aString, 6, Pos(')', aString) - 6);
     with TStringList.Create do try
@@ -1711,6 +1718,7 @@ end;
 
 function wbStringToInt(const aString: string; const aElement: IwbElement): Int64;
 begin
+  if Assigned(aElement) then;
   Result := StrToIntDef(aString, 0);
 end;
 
@@ -1775,6 +1783,8 @@ var
   ModIndex       : Integer;
   i              : Integer;
 begin
+  if aInt <> 0 then;
+  if aType = ctToStr then;
   Result := 'Unknown Ref';
   if not Assigned(aElement) then
     Exit;
