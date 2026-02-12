@@ -5393,7 +5393,9 @@ begin
   h := 0.0;
   s := 0.0;
   l := 0.0;
-  FillChar(rgb, SizeOf(rgb), 0);
+  rgb.rgbtBlue := 0;
+  rgb.rgbtGreen := 0;
+  rgb.rgbtRed := 0;
   RGBtoHSL(ColToRGBTriple(Color), h, s, l);
 
   l := Min(l + (1.0 - l) * Amount, 1.0);
@@ -5410,7 +5412,9 @@ begin
   h := 0.0;
   s := 0.0;
   l := 0.0;
-  FillChar(rgb, SizeOf(rgb), 0);
+  rgb.rgbtBlue := 0;
+  rgb.rgbtGreen := 0;
+  rgb.rgbtRed := 0;
   RGBtoHSL(ColToRGBTriple(Color), h, s, l);
 
   l := Max(l - l * Amount, 0.0);
@@ -10991,6 +10995,7 @@ function TwbMainRecordDef.ContainsMemberFor(const aContainer     : IwbContainerE
 var
   Dummy: Integer;
 begin
+  if Assigned(aContainer) and Assigned(aDataContainer) then;
   Result := recSignatures.Find(aSignature, Dummy);
 end;
 
@@ -11123,6 +11128,7 @@ function TwbMainRecordDef.GetMemberFor(const aContainer     : IwbContainerElemen
 var
   i: Integer;
 begin
+  if Assigned(aContainer) and Assigned(aDataContainer) then;
   if recSignatures.Find(aSignature, i) then
     Result := recMembers[Integer(recSignatures.Objects[i])]
   else
@@ -11136,6 +11142,7 @@ function TwbMainRecordDef.GetMemberIndexFor(const aContainer     : IwbContainerE
 var
   i: Integer;
 begin
+  if Assigned(aContainer) and Assigned(aDataContainer) then;
   if recSignatures.Find(aSignature, i) then
     Result := Integer(recSignatures.Objects[i])
   else
@@ -11169,6 +11176,7 @@ end;
 
 function TwbMainRecordDef.GetSkipSignature(const aSignature: TwbSignature): Boolean;
 begin
+  if aSignature <> wbNullSignature then;
   Result := False;
 end;
 
@@ -12490,6 +12498,7 @@ end;
 
 function TwbSubRecordStructDef.AdditionalInfoFor(const aMainRecord: IwbMainRecord): string;
 begin
+  if Assigned(aMainRecord) then;
   Result := '';
 end;
 
@@ -12595,6 +12604,7 @@ function TwbSubRecordStructDef.ContainsMemberFor(const aContainer     : IwbConta
 var
   Dummy: Integer;
 begin
+  if Assigned(aContainer) and Assigned(aDataContainer) then;
   Result := srsSignatures.Find(aSignature, Dummy);
 end;
 
@@ -12679,6 +12689,7 @@ function TwbSubRecordStructDef.GetMemberFor(const aContainer     : IwbContainerE
 var
   i: Integer;
 begin
+  if Assigned(aContainer) and Assigned(aDataContainer) then;
   if srsSignatures.Find(aSignature, i) then
     Result := srsMembers[Integer(srsSignatures.Objects[i])]
   else
@@ -12692,6 +12703,7 @@ function TwbSubRecordStructDef.GetMemberIndexFor(const aContainer     : IwbConta
 var
   i: Integer;
 begin
+  if Assigned(aContainer) and Assigned(aDataContainer) then;
   if srsSignatures.Find(aSignature, i) then
     Result := Integer(srsSignatures.Objects[i])
   else
@@ -12849,6 +12861,7 @@ end;
 
 function TwbSubRecordUnionDef.AdditionalInfoFor(const aMainRecord: IwbMainRecord): string;
 begin
+  if Assigned(aMainRecord) then;
   Result := '';
 end;
 
@@ -13179,7 +13192,8 @@ procedure WriteInteger24(aBasePtr: pointer; aValue: Int64);
 var
   Buffer : array[0..3] of Byte;
 begin
-  Move(aValue, Buffer, SizeOf(aValue));
+  FillChar(Buffer, SizeOf(Buffer), 0);
+  Move(aValue, Buffer, SizeOf(Buffer));
   PByte(aBasePtr)^ := Buffer[2]; aBasePtr := PByte(aBasePtr) + 1;
   PByte(aBasePtr)^ := Buffer[1]; aBasePtr := PByte(aBasePtr) + 1;
   PByte(aBasePtr)^ := Buffer[0];
@@ -13224,7 +13238,8 @@ var
   Buffer : array[0..3] of Byte;
 begin
   if Assigned(aBasePtr) then begin
-    Move(aValue, Buffer, SizeOf(aValue));
+    FillChar(Buffer, SizeOf(Buffer), 0);
+    Move(aValue, Buffer, SizeOf(Buffer));
     if Buffer[3] > 0 then begin // 4 bytes counter
       Buffer[3] := (Buffer[3] shl 2 ) or 3;
       PByte(aBasePtr)^ := Buffer[3]; aBasePtr := PByte(aBasePtr) + 1;
@@ -16053,6 +16068,7 @@ function TwbEnumDef.Check(aInt: Int64; const aElement: IwbElement): string;
 var
   i: Integer;
 begin
+  i := -1;
   Result := '';
 
   if (aInt >= Low(enNames)) and (aInt <= High(enNames)) then
