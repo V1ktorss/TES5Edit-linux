@@ -244,3 +244,4 @@ Temp
 Temp/*
 linux/native-port/reports/headless-warning-summary.txt
 linux/native-port/reports/headless-warning-history.tsv
+linux/native-port/reports/headless-warning-trend.txt
