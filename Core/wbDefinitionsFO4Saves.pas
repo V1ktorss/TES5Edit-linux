@@ -1325,6 +1325,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('CallBack', aElement);
@@ -1355,6 +1356,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Papyrus Struct', aElement);
@@ -1386,6 +1388,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Papyrus Struct', aElement);
@@ -1417,6 +1420,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Anim Object', aElement);
@@ -1437,6 +1441,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Papyrus Struct', aElement);
@@ -1458,6 +1463,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Papyrus Struct', aElement);
@@ -1479,6 +1485,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Papyrus Struct', aElement);
@@ -1500,6 +1507,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Papyrus Struct', aElement);
@@ -1551,6 +1559,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement(aName, aElement);
@@ -1578,6 +1587,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Tables', aElement);
@@ -1596,6 +1606,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('LOS event', aElement);
@@ -1617,6 +1628,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Functor', aElement);
@@ -1637,6 +1649,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Dual RefID Table', aElement);
@@ -1654,6 +1667,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Dual RefID Table', aElement);
@@ -1689,6 +1703,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Unknown1000_0000', aElement);
@@ -1712,6 +1727,7 @@ var
   Element    : IwbElement;
   Container : IwbContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := -1;
   if Supports(aElement, IwbContainer, Container) then
     Element := Container.ElementByName['Type'];
@@ -1724,6 +1740,7 @@ var
   Element    : IwbElement;
   Container : IwbContainer;
 begin
+  if aBasePtr = aEndPtr then;
   if Supports(aElement, IwbContainer, Container) then
     Element :=  Container.ElementByPath['Type'];
   if Assigned(aElement) then
@@ -1760,6 +1777,8 @@ end;
 
 function GlobalDataSizer(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement; var CompressedSize: Integer): Cardinal;
 begin
+  if Assigned(aElement) then;
+  if aEndPtr = nil then;
   CompressedSize := PCardinal(PByte(aBasePtr) + SizeOf(cardinal))^ + 2*SizeOf(Cardinal);
   Result := CompressedSize;
 end;
@@ -1774,6 +1793,7 @@ var
   SizeLength : Integer;
   aType      : Integer;
 begin
+  if aEndPtr = nil then;
   Result := 0;
   Element := aElement;
   aType := ChangedFormGetRawType(Element);
@@ -1829,6 +1849,7 @@ function ChangedFormGetChapterType(aBasePtr: Pointer; aEndPtr: Pointer; const aE
 var
   Element : IwbElement;
 begin
+  if aBasePtr = aEndPtr then;
   Element := aElement;
   Result := ChangedFormGetRawType(Element);
   if Result >=0 then
@@ -1854,6 +1875,7 @@ function ChangedFormGetChapterName(aBasePtr: Pointer; aEndPtr: Pointer; const aE
 var
   Element : IwbElement;
 begin
+  if aBasePtr = aEndPtr then;
   Result := '';
   if not Assigned(aElement) then
     Exit;
@@ -1868,6 +1890,7 @@ var
   aType : Integer;
   Element : IwbElement;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 3;
   Element := aElement;
   aType := ChangedFormGetRawType(Element) shr 6;
@@ -1887,6 +1910,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Element := aElement;
   Result := ChangedFormGetRawType(Element);
 
@@ -1903,6 +1927,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   Element := aElement;
   Element := wbFindSaveElement('Change Actor Face', Element);
@@ -1920,6 +1945,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   Element := aElement;
   Element := wbFindSaveElement('Change Actor Face', Element);
@@ -1937,6 +1963,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   Element := aElement;
   Element := wbFindSaveElement('Change Projectile', Element);
@@ -1954,6 +1981,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   Element := aElement;
   Element := wbFindSaveElement('Extra Unknown 12', Element);
@@ -1971,6 +1999,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   Element := aElement;
   Element := wbFindSaveElement('Change Actor', Element);
@@ -1988,6 +2017,7 @@ var
   Element    : IwbElement;
   Container  : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   Element := wbFindSaveElement('Havok Moved SubBuffer', aElement);
 
@@ -2004,6 +2034,7 @@ var
   Element    : IwbElement;
   Container  : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   Element := wbFindSaveElement('Animation SubBuffer', aElement);
 
@@ -2020,6 +2051,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Element := aElement;
   Result := ChangedFormGetRawType(Element) and $3F;
 
@@ -2034,6 +2066,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Changed Form', aElement);
