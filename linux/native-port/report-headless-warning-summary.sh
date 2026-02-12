@@ -33,8 +33,27 @@ warning_lines="$(extract_last_metric "Warning lines")"
 unique_warning_lines="$(extract_last_metric "Unique warning lines")"
 actionable_lines="$(extract_last_metric "Actionable warning lines")"
 unique_actionable_lines="$(extract_last_metric "Unique actionable warning lines")"
+project_warning_lines="$(
+  {
+    rg -n "Warning:" "${HEADLESS_LOG}" \
+      | sed -E 's/^[0-9]+://' \
+      | rg "\.pas\([0-9]+,[0-9]+\) Warning:" || true
+  } \
+    | wc -l \
+    | tr -d '[:space:]'
+)"
+project_unique_warning_lines="$(
+  {
+    rg -n "Warning:" "${HEADLESS_LOG}" \
+      | sed -E 's/^[0-9]+://' \
+      | rg "\.pas\([0-9]+,[0-9]+\) Warning:" || true
+  } \
+    | sort -u \
+    | wc -l \
+    | tr -d '[:space:]'
+)"
 
-if [[ -z "${warning_lines}" || -z "${unique_warning_lines}" || -z "${actionable_lines}" || -z "${unique_actionable_lines}" ]]; then
+if [[ -z "${warning_lines}" || -z "${unique_warning_lines}" || -z "${actionable_lines}" || -z "${unique_actionable_lines}" || -z "${project_warning_lines}" || -z "${project_unique_warning_lines}" ]]; then
   echo "[warning-report] Could not parse counters from ${HEADLESS_LOG}"
   exit 1
 fi
@@ -43,6 +62,8 @@ baseline_warning_lines=""
 baseline_unique_warning_lines=""
 baseline_actionable_lines=""
 baseline_unique_actionable_lines=""
+baseline_project_warning_lines=""
+baseline_project_unique_warning_lines=""
 if [[ -f "${BASELINE_FILE}" ]]; then
   # shellcheck disable=SC1090
   source "${BASELINE_FILE}"
@@ -50,6 +71,8 @@ if [[ -f "${BASELINE_FILE}" ]]; then
   baseline_unique_warning_lines="${MAX_UNIQUE_WARNING_LINES:-}"
   baseline_actionable_lines="${MAX_ACTIONABLE_WARNING_LINES:-}"
   baseline_unique_actionable_lines="${MAX_UNIQUE_ACTIONABLE_WARNING_LINES:-}"
+  baseline_project_warning_lines="${MAX_PROJECT_WARNING_LINES:-}"
+  baseline_project_unique_warning_lines="${MAX_PROJECT_UNIQUE_WARNING_LINES:-}"
 fi
 
 calc_delta() {
@@ -75,12 +98,16 @@ calc_delta() {
   echo "## Counters"
   echo "- Warning lines: ${warning_lines}"
   echo "- Unique warning lines: ${unique_warning_lines}"
+  echo "- Project warning lines (.pas): ${project_warning_lines}"
+  echo "- Project unique warning lines (.pas): ${project_unique_warning_lines}"
   echo "- Actionable warning lines: ${actionable_lines}"
   echo "- Unique actionable warning lines: ${unique_actionable_lines}"
   echo
   echo "## Baseline Delta (current - baseline)"
   echo "- Warning lines: $(calc_delta "${warning_lines}" "${baseline_warning_lines}")"
   echo "- Unique warning lines: $(calc_delta "${unique_warning_lines}" "${baseline_unique_warning_lines}")"
+  echo "- Project warning lines (.pas): $(calc_delta "${project_warning_lines}" "${baseline_project_warning_lines}")"
+  echo "- Project unique warning lines (.pas): $(calc_delta "${project_unique_warning_lines}" "${baseline_project_unique_warning_lines}")"
   echo "- Actionable warning lines: $(calc_delta "${actionable_lines}" "${baseline_actionable_lines}")"
   echo "- Unique actionable warning lines: $(calc_delta "${unique_actionable_lines}" "${baseline_unique_actionable_lines}")"
   echo
