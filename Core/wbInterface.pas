@@ -22153,7 +22153,7 @@ begin
     try
       if (dfHasZeroTerminator in defFlags) and (b[High(b)] = 0) then
         SetLength(b, Pred(Length(b)));
-      Result := bsdGetEncoding(aElement).GetString(b);
+      Result := string(bsdGetEncoding(aElement).GetString(b));
     except
       on E: Exception do begin
         Result := '';
