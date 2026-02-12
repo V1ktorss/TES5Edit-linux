@@ -2007,6 +2007,8 @@ var
 //  wbUnionCHANGE_PACKAGE_CREATED : IwbUnionDef;
 
 begin
+  wbGlobalData := nil;
+  wbChangedForm := nil;
   wbNull := wbByteArray('Unused', -255);
 
 //  wbOtherPathingLocation := wbStruct('Pathing Location', [
