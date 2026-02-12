@@ -255,7 +255,11 @@ This document tracks what is already done for the native Linux path and what com
   - baseline file `linux/native-port/baselines/headless-warning-budget.env`
   - baseline updater `linux/native-port/update-headless-warning-budget.sh` (refuses budget increases unless `ALLOW_INCREASE=1`)
   - integrated into `run-all-checks.sh` via `RUN_WARNING_BUDGET_GUARD=1`
-  - currently enforces `MAX_WARNING_LINES=5152` and `MAX_ACTIONABLE_WARNING_LINES=0`
+  - currently enforces:
+    - `MAX_WARNING_LINES=5152`
+    - `MAX_ACTIONABLE_WARNING_LINES=0`
+    - `MAX_UNIQUE_WARNING_LINES=2600`
+    - `MAX_UNIQUE_ACTIONABLE_WARNING_LINES=0`
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`
