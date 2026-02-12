@@ -253,6 +253,7 @@ This document tracks what is already done for the native Linux path and what com
 - Added headless warning budget guard:
   - `linux/native-port/check-headless-warning-budget.sh`
   - baseline file `linux/native-port/baselines/headless-warning-budget.env`
+  - baseline updater `linux/native-port/update-headless-warning-budget.sh` (refuses budget increases unless `ALLOW_INCREASE=1`)
   - integrated into `run-all-checks.sh` via `RUN_WARNING_BUDGET_GUARD=1`
   - currently enforces `MAX_WARNING_LINES=5152` and `MAX_ACTIONABLE_WARNING_LINES=0`
 
@@ -263,6 +264,7 @@ This document tracks what is already done for the native Linux path and what com
   - full checks when `linux/bin/bsarch-core` exists
   - readiness-focused checks otherwise
 - Uploads readiness report artifact (`bsarch-ci-xedit-readiness-report`) for each run
+- Uploads headless smoke log artifact (`bsarch-ci-headless-log`) for each run when available
 
 3. Finalize launcher behavior:
 - `BSArch-linux` should remain the single entry point for users.
