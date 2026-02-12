@@ -65,6 +65,31 @@ check_hints() {
   log "Hint gate passed (no non-allowlisted Hint lines)"
 }
 
+summarize_warnings() {
+  if [[ -z "${HEADLESS_LOG}" || ! -f "${HEADLESS_LOG}" ]]; then
+    return 0
+  fi
+
+  local warning_count
+  warning_count="$(rg -n "Warning:" "${HEADLESS_LOG}" | wc -l | tr -d '[:space:]')"
+  log "Warning lines: ${warning_count}"
+
+  if [[ "${warning_count}" != "0" ]]; then
+    local top_warnings
+    log "Top warning types:"
+    top_warnings="$(
+      awk -F'Warning: ' '/\.pas\([0-9]+,[0-9]+\) Warning:/{w[$2]++} END{for(k in w) printf "  %6d %s\n", w[k], k}' "${HEADLESS_LOG}" \
+        | sort -nr \
+        | head -n 10
+    )"
+    if [[ -n "${top_warnings}" ]]; then
+      while IFS= read -r line; do
+        log "${line}"
+      done <<< "${top_warnings}"
+    fi
+  fi
+}
+
 if [[ "${RUN_XEDIT}" != "1" && "${RUN_XDUMP}" != "1" ]]; then
   log "Nothing to do. Set RUN_XEDIT=1 and/or RUN_XDUMP=1."
   exit 0
@@ -87,6 +112,7 @@ if [[ "${RUN_XDUMP}" == "1" ]]; then
 fi
 
 check_hints
+summarize_warnings
 
 log "PASS"
 
