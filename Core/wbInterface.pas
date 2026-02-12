@@ -5902,6 +5902,7 @@ var
   i: integer;
   s: string;
 begin
+  Result := nil;
   e := wbEnum([], aFlags);
   SetLength(Result, aSize);
   for i := 0 to Pred(aSize) do
@@ -5920,6 +5921,7 @@ var
   i: integer;
   s: string;
 begin
+  Result := nil;
   e := wbEnum([], aFlags);
   SetLength(Result, 32);
   for i := 0 to 31 do
@@ -13866,7 +13868,7 @@ var
   i: Int64;
 begin
   if Int64(NativeUInt(aEndPtr) - NativeUInt(aBasePtr)) < GetExpectedLength then
-    VarClear(Result)
+    Result := Unassigned
   else
     if Assigned(inOverlayCallback) then begin
 
@@ -17670,7 +17672,7 @@ var
 begin
   Value := ToValue(aBasePtr, aEndPtr, aElement);
   if IsNaN(Value) then
-    VarClear(Result)
+    Result := Unassigned
   else if Value = HalfMaxValue then
     Result := HalfMaxValue
   else if Value = maxDouble then
@@ -18452,6 +18454,8 @@ var
     GroupsProg  : IwbProgress;
     RecordsProg : IwbProgress;
   begin
+    GroupsProg := nil;
+    RecordsProg := nil;
     ProcessedGM := ProcessedGM or (fsIsGameMaster in aFile.FileStates);
 
     if aHardcodedOnly or CheckAll then begin
@@ -20484,7 +20488,7 @@ function TwbValueDef.ToNativeValue(aBasePtr, aEndPtr: Pointer; const aElement: I
 begin
   if aBasePtr = aEndPtr then ;
   if Assigned(aElement) then ;
-  VarClear(Result);
+  Result := Unassigned;
 end;
 
 function TwbValueDef.ToSortKey(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; aExtended: Boolean): string;
@@ -22464,7 +22468,7 @@ begin
           FileID := _File.MasterCount[aElement.MastersUpdated]
         else begin
           for j := 0 to Pred(_File.MasterCount[aElement.MastersUpdated]) do
-            if SameText(t, _File.Masters[j, aElement.MastersUpdated].Name) then begin
+            if SameText(s, _File.Masters[j, aElement.MastersUpdated].Name) then begin
               FileID := j;
               break;
             end;
@@ -23988,6 +23992,7 @@ function TwbMessagesHelper.ToPtrs: TwbMessagePtrs;
 var
   i: Integer;
 begin
+  Result := nil;
   SetLength(Result, Length(Self));
   for i := Low(Self) to High(Self) do
     Result[i] := @Self[i];
@@ -24837,6 +24842,7 @@ var
   lNewIdx: Integer;
   lOldIdx: Integer;
 begin
+  Result := nil;
   lNewHigh := High(ikKeys);
   lOldHigh := High(aOldKeys.ikKeys);
 
@@ -24893,6 +24899,7 @@ var
   lResultIdx: Integer;
   lIdx: Integer;
 begin
+  Result := nil;
   lHigh := High(ikKeys);
   SetLength(Result, Succ(lHigh));
   lResultIdx := 0;
