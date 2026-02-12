@@ -1562,6 +1562,7 @@ function wbSubrecordSizeDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElem
 var
   SubRecord : IwbSubRecord;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then
     Exit;
@@ -1598,6 +1599,7 @@ var
   rPRKE: IwbRecord;
   eType: IwbElement;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then
     Exit;
@@ -1616,6 +1618,7 @@ function wbEPFDDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbE
 var
   Container: IwbContainerElementRef;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then
     Exit;
@@ -1635,6 +1638,7 @@ function wbSceneActionSoundDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aE
 var
   Container: IwbContainerElementRef;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then
     Exit;
@@ -1652,6 +1656,7 @@ var
   rKNAM      : IwbElement;
   s: string;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -1710,6 +1715,7 @@ var
   s: string;
   value: Single;
 begin
+  if Assigned(aElement) then;
   if SameText(Copy(aString, 1, 5), 'rgba(') then begin
     s := Copy(aString, 6, Pos(')', aString) - 6);
     with TStringList.Create do try
@@ -1743,6 +1749,7 @@ var
   Container  : IwbContainer;
   rCNAM      : IwbElement;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -1766,6 +1773,7 @@ function wbScriptPropertyDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aEle
 var
   Container     : IwbContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
 
   if not wbTryGetContainerFromUnion(aElement, Container) then
@@ -1793,6 +1801,7 @@ function wbScriptPropertyStructMemberDecider(aBasePtr: Pointer; aEndPtr: Pointer
 var
   Container     : IwbContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
