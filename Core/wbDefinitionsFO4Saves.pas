@@ -801,6 +801,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Variable', aElement);
@@ -837,6 +838,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Element', aElement);
@@ -879,6 +881,7 @@ var
   Element : IwbElement;
   Container: IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Stack', aElement);
@@ -912,6 +915,7 @@ var
   Container : IwbDataContainer;
 
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   sElement := wbFindSaveElement('Type tables for internal VM save data', aElement);
@@ -931,6 +935,7 @@ var
   Container : IwbDataContainer;
 
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   sElement := wbFindSaveElement('Type tables for internal VM save data', aElement);
@@ -950,6 +955,7 @@ var
   Container : IwbDataContainer;
 
 begin
+  if aBasePtr = aEndPtr then;
   if VMObjectArrayCount<0 then begin
     Result := 0;
     if not Assigned(aElement) then Exit;
@@ -972,6 +978,7 @@ var
   Container : IwbDataContainer;
 
 begin
+  if aBasePtr = aEndPtr then;
   if VMObjectDetachedArrayCount<0 then begin
     Result := 0;
     if not Assigned(aElement) then Exit;
@@ -993,6 +1000,7 @@ var
   Container : IwbDataContainer;
 
 begin
+  if aBasePtr = aEndPtr then;
   if VMArrayTableCount<0 then begin
     Result := 0;
     if not Assigned(aElement) then Exit;
@@ -1014,6 +1022,7 @@ var
   Container : IwbDataContainer;
 
 begin
+  if aBasePtr = aEndPtr then;
   if StackTableCount<0 then begin
     Result := 0;
     if not Assigned(aElement) then Exit;
@@ -1040,6 +1049,7 @@ var
   Handle        : Int64;
   i             : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   Handle := 0;
   if not Assigned(aElement) then Exit;
@@ -1079,6 +1089,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Script', aElement);
@@ -1102,6 +1113,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Grouped', aElement);
@@ -1122,6 +1134,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Parameter', aElement);
@@ -1142,6 +1155,7 @@ var
   Container : IwbDataContainer;
   anOpcode  : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Code', aElement);
@@ -1163,6 +1177,7 @@ var
   Container : IwbDataContainer;
   anOpcode  : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Code', aElement);
@@ -1205,6 +1220,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Frame', aElement);
@@ -1224,6 +1240,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Stack', aElement);
@@ -1249,6 +1266,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('Callback', aElement);
@@ -1280,6 +1298,7 @@ var
   Element   : IwbElement;
   Container : IwbDataContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then Exit;
   Element := wbFindSaveElement('CallBacks', aElement);
