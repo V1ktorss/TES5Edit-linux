@@ -19304,6 +19304,7 @@ end;
 
 function TwbByteArrayDef.GetIsEditable(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Boolean;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -20523,6 +20524,7 @@ end;
 
 function TwbSubRecordStructSKDef.GetSortKey(aIndex: Integer; aExtended: Boolean): Integer;
 begin
+  if aExtended then ;
   if aIndex <= High(srsSortKey) then
     Result := srsSortKey[aIndex]
   else
@@ -20964,6 +20966,7 @@ end;
 function TwbIntegerDefFormater.GetIsEditable(aInt: Int64; const aElement: IwbElement): Boolean;
 begin
   if aInt = Low(Int64) then ;
+  if Assigned(aElement) then ;
   Result := wbIsInternalEdit;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -24157,6 +24160,9 @@ end;
 
 function TwbRecordMemberDef.ToSummaryInternal(aDepth: Integer; const aElement: IwbElement; var aLinksTo: IwbElement): string;
 begin
+  if aDepth < 0 then ;
+  if Assigned(aElement) then ;
+  if Assigned(aLinksTo) then ;
   Result := '';
 end;
 
@@ -24933,6 +24939,8 @@ end;
 
 function TwbGuidDef.CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean;
 begin
+  if Assigned(aElement) then ;
+  if aIndex = High(Integer) then ;
   Result := Supports(aDef, IwbGuidDef);
 end;
 
