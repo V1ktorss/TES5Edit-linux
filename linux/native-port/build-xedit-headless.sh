@@ -61,6 +61,8 @@ build_impl() {
     -Fi"${ROOT_DIR}" \
     -Fi"${ROOT_DIR}/Core" \
     -Fi"${ROOT_DIR}/xEdit" \
+    -Fi"${ROOT_DIR}/External/ImagingLib/Source" \
+    -Fi"${ROOT_DIR}/External/ImagingLib/Source/ZLib" \
     "${ROOT_DIR}/xEdit/xedit-core.dpr"
 }
 
