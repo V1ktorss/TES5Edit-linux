@@ -1225,7 +1225,7 @@ begin
       Exit;
 
     if not aElement._File.IsLocalized then
-      aElement.EditValue := Trim(aNewValue);
+      aElement.EditValue := Trim(VarToStr(aNewValue));
   finally
     wbEndInternalEdit;
   end;
