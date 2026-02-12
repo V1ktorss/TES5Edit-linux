@@ -75,7 +75,20 @@ summarize_warnings() {
   log "Warning lines: ${warning_count}"
 
   if [[ "${warning_count}" != "0" ]]; then
+    local top_warning_files
     local top_warnings
+    log "Top warning files:"
+    top_warning_files="$(
+      awk -F'[()]' '/\.pas\([0-9]+,[0-9]+\) Warning:/{f[$1]++} END{for(k in f) printf "  %6d %s\n", f[k], k}' "${HEADLESS_LOG}" \
+        | sort -nr \
+        | head -n 10
+    )"
+    if [[ -n "${top_warning_files}" ]]; then
+      while IFS= read -r line; do
+        log "${line}"
+      done <<< "${top_warning_files}"
+    fi
+
     log "Top warning types:"
     top_warnings="$(
       awk -F'Warning: ' '/\.pas\([0-9]+,[0-9]+\) Warning:/{w[$2]++} END{for(k in w) printf "  %6d %s\n", w[k], k}' "${HEADLESS_LOG}" \
