@@ -10,6 +10,11 @@ unit wbImplementation;
 
 {$I wbDefines.inc}
 
+{$IFDEF FPC}
+  {$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
+  {$WARN 4056 OFF} // Conversion between ordinals and pointers is not portable
+{$ENDIF}
+
 {$DEFINE DBGSUBREC}
 
 interface
@@ -26097,5 +26102,9 @@ finalization
 
 {$IFDEF USE_PARALLEL_BUILD_REFS}
   DoneCriticalSection(_ResizeLock);
+{$ENDIF}
+{$IFDEF FPC}
+  {$WARN 4056 ON}
+  {$WARN 4055 ON}
 {$ENDIF}
 end.
