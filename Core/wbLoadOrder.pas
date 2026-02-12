@@ -173,7 +173,7 @@ type
 var
   _Modules           : TwbDynModuleInfos;
   _ModulesByName     : TStringList;
-  _InvalidModule     : TwbModuleInfo = (miFlags: [mfInvalid]);
+  _InvalidModule     : TwbModuleInfo;
   _ModulesLoadOrder  : TwbModuleInfos;
 
   _AdditionalModules : TwbModuleInfos;
@@ -1064,6 +1064,11 @@ begin
 end;
 
 initialization
+  FillChar(_InvalidModule, SizeOf(_InvalidModule), 0);
+  _InvalidModule.miName := '<invalid module>';
+  _InvalidModule.miFlags := [mfInvalid];
+  _InvalidModule.miExtension := meESP;
+  _InvalidModule.miFileID := TwbFileID.Invalid;
 finalization
   FreeAndNil(_ModulesByName);
   FreeAllocatedModules(_TemplateModules);
