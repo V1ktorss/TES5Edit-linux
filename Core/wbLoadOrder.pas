@@ -530,7 +530,7 @@ begin
           ThisModule := wbModuleByName(s);
           if ThisModule.IsValid then begin
             sl[i] := s;
-            sl.Objects[i] := Pointer(i);
+            sl.Objects[i] := Pointer(PtrUInt(i));
           end else
             sl.Delete(i);
         end;
@@ -542,7 +542,7 @@ begin
           for i := 1 to Pred(sl.Count) do begin
             ThisModule := wbModuleByName(sl[i]);
             if ThisModule.IsValid then begin
-              ThisModule.miLoadOrderTxtIndex := Integer(sl.Objects[i]);
+              ThisModule.miLoadOrderTxtIndex := Integer(PtrUInt(sl.Objects[i]));
               if not ThisModule.HasIndex then begin
                 PrevModule := @_InvalidModule;
                 for j := Pred(i) downto 0 do begin

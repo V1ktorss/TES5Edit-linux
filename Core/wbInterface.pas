@@ -5862,7 +5862,7 @@ procedure wbAddGroupOrder(const aSignature: TwbSignature);
 begin
   if not Assigned(wbGroupOrder) then
     wbGroupOrder := TwbFastStringListCS.CreateSorted;
-  wbGroupOrder.AddObject(aSignature, Pointer(wbGroupOrder.Count));
+  wbGroupOrder.AddObject(aSignature, Pointer(PtrUInt(wbGroupOrder.Count)));
 end;
 
 function wbGetGroupOrder(const aSignature: TwbSignature): Integer;
@@ -5870,7 +5870,7 @@ begin
   if Assigned(wbGroupOrder) then begin
     Result := wbGroupOrder.IndexOf(aSignature);
     if Result >= 0 then
-      Result := Integer(wbGroupOrder.Objects[Result]);
+      Result := Integer(PtrUInt(wbGroupOrder.Objects[Result]));
   end else
     Result := -1;
 end;
@@ -11090,7 +11090,7 @@ begin
           end;
         end;
         try
-          recSignatures.AddObject(Sig, Pointer(NewLength) );
+          recSignatures.AddObject(Sig, Pointer(PtrUInt(NewLength)) );
         except
           on E: Exception do
             raise Exception.Create('Duplicate definition ' + Sig + ' in allow unordered record ' + aSignature);
@@ -12640,7 +12640,7 @@ begin
         srsMembers[NewLength] := (aMembers[i] as IwbDefInternal).SetParent(Self, False) as IwbRecordMemberDef;
         FoundRequired := FoundRequired or (Assigned(srsMembers[NewLength]) and srsMembers[NewLength].Required);
         for j := 0 to Pred(aMembers[i].SignatureCount) do
-          srsSignatures.AddObject(aMembers[i].Signatures[j], Pointer(NewLength) );
+          srsSignatures.AddObject(aMembers[i].Signatures[j], Pointer(PtrUInt(NewLength)) );
         Inc(NewLength);
       end;
     except
@@ -12973,7 +12973,7 @@ begin
   for i := Low(sruMembers) to High(sruMembers) do begin
     sruMembers[i] := (aMembers[i] as IwbDefInternal).SetParent(Self, False) as IwbRecordMemberDef;
     for j := 0 to Pred(aMembers[i].SignatureCount) do
-      sruSignatures.AddObject(aMembers[i].Signatures[j], Pointer(i));
+      sruSignatures.AddObject(aMembers[i].Signatures[j], Pointer(PtrUInt(i)));
   end;
 
   if Length(aSkipSigs) > 0 then begin
@@ -18682,10 +18682,10 @@ begin
   end;
   ExactIdentString := GetExactIdentString;
   if _ExactIdentMap.Find(ExactIdentString, i) then
-    Result := Integer(_ExactIdentMap.Objects[i])
+    Result := Integer(PtrUInt(_ExactIdentMap.Objects[i]))
   else begin
     Result := _ExactIdentMap.Count;
-    _ExactIdentMap.AddObject(ExactIdentString, Pointer(Result));
+    _ExactIdentMap.AddObject(ExactIdentString, Pointer(PtrUInt(Result)));
   end;
   fidExactIdent := Succ(Result);
 end;

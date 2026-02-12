@@ -6308,7 +6308,7 @@ begin
           Rec := (MasterFiles[i] as IwbContainer).RecordBySignature['MAST'];
           Assert(Assigned(Rec));
           Assert(SameText(Rec.EditValue, flMasters[i].FileName));
-          OldList.AddObject(flMasters[i].FileName, Pointer(i));
+          OldList.AddObject(flMasters[i].FileName, Pointer(PtrUInt(i)));
           MasterFiles[i].SortOrder := i;
         end;
 
@@ -6317,7 +6317,7 @@ begin
         Old := nil;
         New := nil;
         for i := Low(flMasters) to High(flMasters) do begin
-          j := Integer(OldList.Objects[OldList.IndexOf(flMasters[i].FileName)]);
+          j := Integer(PtrUInt(OldList.Objects[OldList.IndexOf(flMasters[i].FileName)]));
           if i <> j then begin
             MasterFiles[j].SortOrder := i;
             SetLength(Old, Succ(Length(Old)));
@@ -10636,7 +10636,7 @@ begin
     if not wbSubRecordErrorsOnly or FoundError then begin
       s := GetSignature + ' -> ' + lGetSubRecordsString();
       CurrentRecPos := SubRecordOrderList.Add(s);
-      SubRecordOrderList.Objects[CurrentRecPos] := Pointer(Succ(Integer(SubRecordOrderList.Objects[CurrentRecPos])));
+      SubRecordOrderList.Objects[CurrentRecPos] := Pointer(Succ(PtrUInt(SubRecordOrderList.Objects[CurrentRecPos])));
     end;
 
 {$IFDEF DBGSUBREC}
@@ -10649,7 +10649,7 @@ begin
   if GetSignature = 'SCPT' then begin
 //    s :=  (GetRecordBySignature('DATA') as IwbContainer).Elements[0].EditValue + s;
     CurrentRecPos := SubRecordOrderList.Add(s);
-    SubRecordOrderList.Objects[CurrentRecPos] := Pointer(Succ(Integer(SubRecordOrderList.Objects[CurrentRecPos])));
+    SubRecordOrderList.Objects[CurrentRecPos] := Pointer(Succ(PtrUInt(SubRecordOrderList.Objects[CurrentRecPos])));
   end;
 }
 
