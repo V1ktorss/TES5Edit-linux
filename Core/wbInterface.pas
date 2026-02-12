@@ -7543,6 +7543,8 @@ type
     function GetRequiresKey: Boolean; virtual;
   end;
 
+  TwbIntegerDefFormaterClass = class of TwbIntegerDefFormater;
+
   TwbIntegerDefFormaterUnion = class(TwbIntegerDefFormater, IwbIntegerDefFormaterUnion)
   private
     idfuDecider: TwbIntegerDefFormaterUnionDecider;
@@ -20946,7 +20948,7 @@ constructor TwbIntegerDefFormater.Clone(const aSource: TwbDef);
 var
   lNew: TwbIntegerDefFormater;
 begin
-  lNew := TwbIntegerDefFormater.Create;
+  lNew := TwbIntegerDefFormaterClass(aSource.ClassType).Create;
   lNew.AfterClone(aSource);
 end;
 
