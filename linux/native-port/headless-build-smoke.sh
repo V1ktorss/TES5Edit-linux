@@ -72,11 +72,21 @@ summarize_warnings() {
   fi
 
   local warning_count
+  local unique_warning_count
   warning_count="$(rg -n "Warning:" "${HEADLESS_LOG}" | wc -l | tr -d '[:space:]')"
+  unique_warning_count="$(
+    rg -n "Warning:" "${HEADLESS_LOG}" \
+      | sed -E 's/^[0-9]+://' \
+      | sort -u \
+      | wc -l \
+      | tr -d '[:space:]'
+  )"
   log "Warning lines: ${warning_count}"
+  log "Unique warning lines: ${unique_warning_count}"
 
   if [[ "${warning_count}" != "0" ]]; then
     local actionable_warning_count
+    local unique_actionable_warning_count
     local actionable_top_warnings
     local top_warning_files
     local top_warnings
@@ -112,7 +122,18 @@ summarize_warnings() {
         | wc -l \
         | tr -d '[:space:]'
     )"
+    unique_actionable_warning_count="$(
+      {
+        rg -n "Warning:" "${HEADLESS_LOG}" \
+          | rg -v "${ACTIONABLE_WARN_EXCLUDE_REGEX}" || true
+      } \
+        | sed -E 's/^[0-9]+://' \
+        | sort -u \
+        | wc -l \
+        | tr -d '[:space:]'
+    )"
     log "Actionable warning lines: ${actionable_warning_count}"
+    log "Unique actionable warning lines: ${unique_actionable_warning_count}"
     if [[ "${actionable_warning_count}" != "0" ]]; then
       log "Top actionable warning types:"
       actionable_top_warnings="$(
