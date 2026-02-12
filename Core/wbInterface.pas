@@ -16881,7 +16881,7 @@ var
   b       : TBytes;
 begin
   if aTransformType = ttToString then;
-  b := bsdGetEncoding(aElement).GetBytes(aValue);
+  b := bsdGetEncoding(aElement).GetBytes(UnicodeString(aValue));
 
   if sdSize > 0 then
     NewSize := sdSize
@@ -17083,7 +17083,7 @@ begin
     SetLength(b, Len);
     Move(aBasePtr^, b[0], Len);
     try
-      Result := bsdGetEncoding(aElement).GetString(b);
+      Result := string(bsdGetEncoding(aElement).GetString(b));
       if aTransformType = ttCheck then
         Result := '';
       {
