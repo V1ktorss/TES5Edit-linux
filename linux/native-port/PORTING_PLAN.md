@@ -146,6 +146,7 @@ This document tracks what is already done for the native Linux path and what com
   - added optional `XEDIT_DATA_PATH` environment override in `xeInit` to provide a direct non-registry/non-probe data path for headless/native runs
   - improved `XEDIT_DATA_PATH` handling to fall back to normal auto-detection when the env path is invalid, while keeping strict failure for invalid explicit `-D` path
   - normalized `XEDIT_DATA_PATH` handling to accept both game-root paths and direct data-folder paths
+  - unified xEdit override normalization so both `-D` and `XEDIT_DATA_PATH` accept game-root or direct data-folder paths
   - added optional xEdit headless smoke env-override lane (`XEDIT_ENV_OVERRIDE_TEST=1`, `XEDIT_ENV_OVERRIDE_PATH=...`, `XEDIT_ENV_OVERRIDE_ARGS=...`) to validate `XEDIT_DATA_PATH` behavior on demand
   - wired `run-all-checks.sh` to forward xEdit env-override smoke knobs (`XEDIT_ENV_OVERRIDE_TEST`, `XEDIT_ENV_OVERRIDE_PATH`, `XEDIT_ENV_OVERRIDE_ARGS`) and print them in run config
   - converted additional Delphi inline-variable usages in xEdit/Core hot paths (`xeInitStyles`, `xeScriptForm` indent/dedent, `xeRichEditForm` TOC build, `wbTaskProgressExecute`, `xejviScriptHost` namespace rewrite/error reporting + selected-files branch, `xejviScriptAdapterMisc` math/string-set helpers, `xejviScriptAdapter` template/master helpers, `xeMainForm` message/master/template menu + focused-element/copy helpers + nav popup/formid/header-remove/WMUser + source-drag/apply-script + main-record-compare/nav-add/view-link paths, `xeModuleSelectForm` simulate-load path) to classic declarations for better FPC compatibility
@@ -221,6 +222,7 @@ This document tracks what is already done for the native Linux path and what com
     - `smoke-test-xdump-headless.sh` now supports optional env-override smoke lane (`XDUMP_ENV_OVERRIDE_TEST=1`, `XDUMP_ENV_OVERRIDE_PATH=...`, `XDUMP_ENV_OVERRIDE_ARGS=...`) to validate `XDUMP_DATA_PATH`
     - `build-xdump.sh` now normalizes FPC default `xDump` output to `linux/bin/xdump-core`
   - normalized `XDUMP_DATA_PATH` handling to accept both game-root paths and direct data-folder paths
+  - unified xDump override normalization so both `-D` and `XDUMP_DATA_PATH` accept game-root or direct data-folder paths
   - added consolidated headless loop runner: `linux/native-port/headless-build-smoke.sh` (`RUN_XEDIT`/`RUN_XDUMP`/`BUILD_ONLY` toggles) for faster xEdit/xDump decoupling verification
   - `headless-build-smoke.sh` now writes a deterministic current transcript (`/tmp/xedit-headless-current.log`) and syncs the legacy path (`/tmp/xedit-headless.log`) for stable follow-up parsing
   - `headless-build-smoke.sh` now enforces a strict hint gate by default (`FAIL_ON_HINTS=1`) and fails on non-allowlisted `Hint:` lines (gate can be disabled with `FAIL_ON_HINTS=0`, allowlist tuned via `HINT_ALLOWLIST_REGEX`)
