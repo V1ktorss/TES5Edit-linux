@@ -400,6 +400,7 @@ var
   i: integer;
   s: AnsiString;
 begin
+  Result := nil;
   with TStringList.Create do try
     if Pos(',', aSignatures) <> 0 then Delimiter := ',' else Delimiter := ' ';
     StrictDelimiter := True;
@@ -515,6 +516,7 @@ var
   MainRecord, Master  : IwbMainRecord;
   i, j, Count         : Integer;
 begin
+  Result := nil;
   Count := 0;
   SetLength(Result, 4096);
   if Supports(aElement, IwbMainRecord, MainRecord) then begin
