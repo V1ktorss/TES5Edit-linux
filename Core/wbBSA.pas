@@ -365,6 +365,7 @@ function TwbContainerHandler.OpenResource(const aFileName: string): TDynResource
 var
   i, j: Integer;
 begin
+  Result := nil;
   SetLength(Result, Length(chContainers));
   j := 0;
   for i := Low(chContainers) to High(chContainers) do begin
@@ -380,6 +381,7 @@ var
   Res : TDynResources;
   i   : Integer;
 begin
+  Result := nil;
   Res := OpenResource(aFileName);
 
   if Length(Res) = 0 then
@@ -711,6 +713,7 @@ end;
 
 function TwbFolderResource.GetData: TBytes;
 begin
+  Result := nil;
   with TFileStream.Create(frFileName, fmOpenRead or fmShareDenyWrite) do try
     SetLength(Result, Size);
     if Length(Result) > 0 then
