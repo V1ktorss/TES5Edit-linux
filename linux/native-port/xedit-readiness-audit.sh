@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 OUT_DIR="${ROOT_DIR}/linux/native-port/reports"
 OUT_FILE="${OUT_DIR}/xedit-readiness.txt"
+TMP_FILE="${OUT_FILE}.tmp"
 
 mkdir -p "${OUT_DIR}"
 
@@ -22,7 +23,6 @@ collect_style_matches() {
 
 {
   echo "# xEdit Native Readiness Audit"
-  echo "# generated: $(date -Iseconds)"
   echo
   echo "## Summary"
   total_core_matches="$(collect_core_matches "${ROOT_DIR}/xEdit" | wc -l)"
@@ -56,6 +56,14 @@ collect_style_matches() {
 
   echo "## Raw style namespace matches (informational)"
   collect_style_matches "${ROOT_DIR}/xEdit"
-} > "${OUT_FILE}"
+} > "${TMP_FILE}"
+
+if [[ -f "${OUT_FILE}" ]] && cmp -s "${TMP_FILE}" "${OUT_FILE}"; then
+  rm -f "${TMP_FILE}"
+  echo "Unchanged: ${OUT_FILE}"
+  exit 0
+fi
+
+mv -f "${TMP_FILE}" "${OUT_FILE}"
 
 echo "Wrote: ${OUT_FILE}"
