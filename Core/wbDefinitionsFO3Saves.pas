@@ -27,6 +27,10 @@ uses
   wbDefinitionsCommon,
   wbDefinitionsFO3;
 
+{$IFDEF FPC}
+{$WARN 5024 OFF} // Parameter not used
+{$ENDIF}
+
 var
   wbActorValueLabels : array of string;
 
@@ -6362,4 +6366,7 @@ begin
 end;
 
 initialization
+{$IFDEF FPC}
+{$WARN 5024 ON}
+{$ENDIF}
 end.
