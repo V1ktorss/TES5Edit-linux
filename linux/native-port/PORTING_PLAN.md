@@ -250,6 +250,11 @@ This document tracks what is already done for the native Linux path and what com
 - Runner now builds `xDump` before xDump headless smoke when `RUN_XDUMP_HEADLESS=1`, mirroring xEdit headless flow.
 - Runner now degrades gracefully when `fpc` is unavailable: xDump smoke is skipped only if no prebuilt xDump binary exists.
 - xEdit/xDump build helpers now use per-target `flock` locks (`linux/bin/.xedit-core.build.lock`, `linux/bin/.xdump-core.build.lock`) so parallel local/CI checks do not race in shared build output.
+- Added headless warning budget guard:
+  - `linux/native-port/check-headless-warning-budget.sh`
+  - baseline file `linux/native-port/baselines/headless-warning-budget.env`
+  - integrated into `run-all-checks.sh` via `RUN_WARNING_BUDGET_GUARD=1`
+  - currently enforces `MAX_WARNING_LINES=5152` and `MAX_ACTIONABLE_WARNING_LINES=0`
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`
