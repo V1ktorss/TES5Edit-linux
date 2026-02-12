@@ -3063,6 +3063,7 @@ function wbConditionStringToStr(aInt: Int64; const aElement: IwbElement; aType: 
 var
   lContainer: IwbContainerElementRef;
 begin
+  if aInt <> 0 then;
   Result := '';
   if not Assigned(aElement) then
     Exit;
@@ -3289,6 +3290,7 @@ end;
 
 function wbFileHashCallback(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
 begin
+  if Assigned(aElement) then;
   Result := '';
   if wbLoaderDone and (aType in [ctToStr, ctToSummary, ctToSortKey] ) then
     Result := wbContainerHandler.ResolveFileHash(aInt);
@@ -3309,6 +3311,7 @@ end;
 
 function wbFolderHashCallback(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
 begin
+  if Assigned(aElement) then;
   Result := '';
   if wbLoaderDone and (aType in [ctToStr, ctToSummary, ctToSortKey] ) then
     Result := wbContainerHandler.ResolveFolderHash(aInt);
@@ -3329,6 +3332,7 @@ end;
 
 function wbHideFFFF(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
 begin
+  if Assigned(aElement) then;
   Result := '';
   if aType = ctToSortKey then
     Result := IntToHex64(aInt, 4)
@@ -3530,6 +3534,7 @@ function wbScaledInt4ToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCa
 const
   PlusMinus : array[Boolean] of string = ('+', '-');
 begin
+  if Assigned(aElement) then;
   Result := '';
   case aType of
     ctToStr, ctToSummary, ctToEditValue: Result := FloatToStrF(aInt / 10000, ffFixed, 99, 4);
@@ -3594,6 +3599,7 @@ var
   Vertices   : IwbContainerElementRef;
   Vertex     : IwbContainerElementRef;
 begin
+  if aVertex = High(Integer) then;
   case aType of
     ctToStr, ctToSummary: begin
       Result := aInt.ToString;
@@ -3679,6 +3685,7 @@ end;
 
 function wbVTXTPosition(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
 begin
+  if Assigned(aElement) then;
   Result := '';
 
   if aType = ctToSortKey then begin
@@ -3699,6 +3706,7 @@ end;
 
 function wbWeatherCloudSpeedToStr(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
 begin
+  if Assigned(aElement) then;
   Result := '';
   case aType of
     ctToStr, ctToSummary, ctToEditValue: Result := FloatToStrF((aInt - 127)/127/10, ffFixed, 99, 4);
@@ -3714,6 +3722,7 @@ var
   A         : IwbElement;
   R, G, B   : string;
 begin
+  if aBasePtr = aEndPtr then;
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
@@ -3738,6 +3747,7 @@ var
   A          : IwbElement;
   R, G, B    : string;
 begin
+  if aBasePtr = aEndPtr then;
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
@@ -3777,6 +3787,7 @@ var
   Conditions: IwbContainerElementRef;
   l         : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
@@ -3859,6 +3870,7 @@ var
   CurveTable: IwbContainerElementRef;
   CurveTableForm: IwbElement;
 begin
+  if aBasePtr = aEndPtr then;
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
@@ -3891,6 +3903,7 @@ var
   Reaction: IwbElement;
   NativeReaction: Variant;
 begin
+  if aBasePtr = aEndPtr then;
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
@@ -3921,6 +3934,7 @@ var
   Container  : IwbContainerElementRef;
   ItemString : string;
 begin
+  if aBasePtr = aEndPtr then;
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
@@ -3942,6 +3956,7 @@ var
   lQNAM: IwbElement;
   lQUSTRecord: IwbMainRecord;
 begin
+  if aBasePtr = aEndPtr then;
   if not Assigned(aElement) then
     Exit;
 
@@ -3970,6 +3985,7 @@ var
   CurveTable: IwbContainerElementRef;
   CurveTableForm: IwbElement;
 begin
+  if aBasePtr = aEndPtr then;
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
@@ -4001,6 +4017,7 @@ var
   A         : IwbElement;
   R, G, B   : string;
 begin
+  if aBasePtr = aEndPtr then;
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
@@ -4034,6 +4051,7 @@ var
   i: Integer;
   s: string;
 begin
+  if aBasePtr = aEndPtr then;
   if not wbTrySetContainer(aElement, aType, CER) then
     Exit;
 
@@ -4086,6 +4104,7 @@ var
   PropertyName: string;
   PropertyType: string;
 begin
+  if aBasePtr = aEndPtr then;
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
@@ -4187,6 +4206,7 @@ var
   lMainRecord: IwbMainRecord;
   lRecordName: string;
 begin
+  if aBasePtr = aEndPtr then;
   case aType of
     ctToStr:
     begin
@@ -4216,6 +4236,7 @@ var
   lMainRecord: IwbMainRecord;
   lRecordName: string;
 begin
+  if aBasePtr = aEndPtr then;
   case aType of
     ctToStr:
     begin
@@ -4249,6 +4270,7 @@ var
   Y: string;
   Z: string;
 begin
+  if aBasePtr = aEndPtr then;
   if not wbTrySetContainer(aElement, aType, Container) then
     Exit;
 
@@ -4304,6 +4326,7 @@ var
   Container: IwbContainer;
   i: Int64;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -4319,6 +4342,7 @@ var
   LinksTo    : IwbElement;
   MainRecord : IwbMainRecord;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -4337,6 +4361,7 @@ function wbConditionCompValueDecider(aBasePtr: Pointer; aEndPtr: Pointer; const 
 var
   Container: IwbContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -4351,6 +4376,7 @@ var
   lContainer : IwbContainer;
   lRunOn     : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, lContainer) then
     Exit;
@@ -4364,6 +4390,7 @@ var
   Container: IwbContainer;
   i        : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -4487,6 +4514,7 @@ var
   i        : Integer;
 begin
 {$IFDEF FPC}
+  if Length(aVersions) > 0 then;
   Result := wbFpcDefaultUnionDecider;
 {$ELSE}
   SetLength(Versions, Length(aVersions));
@@ -4523,6 +4551,7 @@ var
   lEDID     : IwbElement;
   lEditorID : string;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 1; //IntS32 is the most "harmless"
   if Assigned(aElement) then begin;
     lEDID := aElement.Container.RecordBySignature['EDID'];
@@ -4581,6 +4610,7 @@ var
   lFlags    : IwbElement;
   lFlagBits : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   if not wbTryGetContainerRefFromUnionOrValue(aElement, lContainer) then
     Exit(0);
 
@@ -4601,6 +4631,7 @@ var
   rDNAM      : IwbElement;
   i          : Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -4627,6 +4658,7 @@ var
   lContainer: IwbContainer;
   lElement  : IwbElement;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
 
   if not Assigned(aElement) then
@@ -4650,6 +4682,7 @@ var
   lContainer: IwbContainer;
   lElement  : IwbElement;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
 
   if not Assigned(aElement) then
@@ -4675,6 +4708,7 @@ var
   Parent      : IwbElement;
   i           : Int64;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not Assigned(aElement) then
     Exit;
@@ -4695,6 +4729,7 @@ function wbPxDTLocationDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aEleme
 var
   Container: IwbContainer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if not wbTryGetContainerFromUnion(aElement, Container) then
     Exit;
@@ -4705,6 +4740,7 @@ end;
 function wbRecordSizeDecider(aSize: Integer): TwbUnionDecider;
 begin
 {$IFDEF FPC}
+  if aSize >= 0 then;
   Result := wbFpcDefaultUnionDecider;
 {$ELSE}
   if aSize > High(_RecordSizeDeciders) then
@@ -4735,6 +4771,7 @@ end;
 function wbRecordSizeDecider(aMinSize, aMaxSize: Integer): TwbUnionDecider; overload;
 begin
 {$IFDEF FPC}
+  if aMinSize <= aMaxSize then;
   Result := wbFpcDefaultUnionDecider;
 {$ELSE}
   Result :=
@@ -4762,6 +4799,7 @@ var
   i     : Integer;
 begin
 {$IFDEF FPC}
+  if Length(aSizes) > 0 then;
   Result := wbFpcDefaultUnionDecider;
 {$ELSE}
   SetLength(Sizes, Length(aSizes));
@@ -4793,6 +4831,7 @@ end;
 
 function wbScriptObjFormatDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := wbGetScriptObjFormat(aElement);
 end;
 
@@ -4800,6 +4839,7 @@ function wbWeatherTimeOfDayDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aE
 var
   SubRecord: IwbSubRecord;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   if Assigned(aElement) and Supports (aElement, IwbSubRecord, SubRecord) then
     case Integer(SubRecord.SubRecordHeaderSize) of
@@ -4809,6 +4849,7 @@ end;
 
 function wbWwiseKeywordMappingSoundDecider(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if aBasePtr = aEndPtr then;
   Result := 0;
   If not Assigned(aElement) then
     Exit;
