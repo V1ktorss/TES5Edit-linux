@@ -242,3 +242,4 @@ __recovery/*
 /FO76Edit_log.txt
 Temp
 Temp/*
+linux/native-port/reports/headless-warning-summary.txt
