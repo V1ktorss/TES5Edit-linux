@@ -89,7 +89,14 @@ summarize_warnings() {
     local unique_actionable_warning_count
     local actionable_top_warnings
     local top_warning_files
+    local top_unique_warning_files
     local top_warnings
+    local top_unique_warnings
+    local unique_warning_lines
+    unique_warning_lines="$(
+      rg -n "Warning:" "${HEADLESS_LOG}" \
+        | sed -E 's/^[0-9]+://'
+    )"
     log "Top warning files:"
     top_warning_files="$(
       awk -F'[()]' '/\.pas\([0-9]+,[0-9]+\) Warning:/{f[$1]++} END{for(k in f) printf "  %6d %s\n", f[k], k}' "${HEADLESS_LOG}" \
@@ -100,6 +107,18 @@ summarize_warnings() {
       while IFS= read -r line; do
         log "${line}"
       done <<< "${top_warning_files}"
+    fi
+    log "Top unique warning files:"
+    top_unique_warning_files="$(
+      printf "%s\n" "${unique_warning_lines}" \
+        | awk -F'[()]' '/\.pas\([0-9]+,[0-9]+\) Warning:/{f[$1]++} END{for(k in f) printf "  %6d %s\n", f[k], k}' \
+        | sort -nr \
+        | head -n 10
+    )"
+    if [[ -n "${top_unique_warning_files}" ]]; then
+      while IFS= read -r line; do
+        log "${line}"
+      done <<< "${top_unique_warning_files}"
     fi
 
     log "Top warning types:"
@@ -112,6 +131,18 @@ summarize_warnings() {
       while IFS= read -r line; do
         log "${line}"
       done <<< "${top_warnings}"
+    fi
+    log "Top unique warning types:"
+    top_unique_warnings="$(
+      printf "%s\n" "${unique_warning_lines}" \
+        | awk -F'Warning: ' '/\.pas\([0-9]+,[0-9]+\) Warning:/{w[$2]++} END{for(k in w) printf "  %6d %s\n", w[k], k}' \
+        | sort -nr \
+        | head -n 10
+    )"
+    if [[ -n "${top_unique_warnings}" ]]; then
+      while IFS= read -r line; do
+        log "${line}"
+      done <<< "${top_unique_warnings}"
     fi
 
     actionable_warning_count="$(
