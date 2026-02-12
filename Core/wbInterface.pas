@@ -17842,6 +17842,7 @@ end;
 
 function TwbChar4.CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean;
 begin
+  if Assigned(aElement) and (aIndex = High(Integer)) then ;
   if dfDontAssign in defFlags then
     Exit(False);
 
@@ -17881,6 +17882,7 @@ end;
 
 function TwbChar4.GetIsEditable(aInt: Int64; const aElement: IwbElement): Boolean;
 begin
+  if aInt = Low(Int64) then ;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -17908,6 +17910,7 @@ function TwbChar4.ToSortKey(aInt: Int64; const aElement: IwbElement): string;
 var
   U32: Cardinal;
 begin
+  if Assigned(aElement) and False then ;
   U32 := aInt;
   Result := PwbSignature(@U32)^;
 end;
@@ -17918,6 +17921,7 @@ var
   _File: IwbFile;
   Rec: IwbRecord;
 begin
+  if aForSummary and False then ;
   U32 := aInt;
   Result := PwbSignature(@U32)^;
 
@@ -17940,6 +17944,7 @@ end;
 
 function TwbStr4.CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean;
 begin
+  if Assigned(aElement) and (aIndex = High(Integer)) then ;
   if dfDontAssign in defFlags then
     Exit(False);
 
@@ -17977,6 +17982,7 @@ end;
 
 function TwbStr4.GetIsEditable(aInt: Int64; const aElement: IwbElement): Boolean;
 begin
+  if aInt = Low(Int64) then ;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -17990,11 +17996,13 @@ end;
 
 function TwbStr4.ToSortKey(aInt: Int64; const aElement: IwbElement): string;
 begin
+  if Assigned(aElement) and False then ;
   Result := wbStr4ToString(aInt);
 end;
 
 function TwbStr4.ToString(aInt: Int64; const aElement: IwbElement; aForSummary: Boolean): string;
 begin
+  if aForSummary and False then ;
   Result := ToSortKey(aInt, aElement);
   Used(aElement, Result);
 end;
@@ -18080,6 +18088,7 @@ end;
 
 function TwbFormIDDefFormater.CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean;
 begin
+  if Assigned(aElement) and (aIndex = High(Integer)) then ;
   if dfDontAssign in defFlags then
     Exit(False);
 
@@ -18143,6 +18152,7 @@ end;
 
 function TwbFormIDDefFormater.CheckFlst(const aMainRecord: IwbMainRecord): Boolean;
 begin
+  if Assigned(aMainRecord) and False then ;
   Result := True;
 end;
 
@@ -18630,6 +18640,7 @@ end;
 
 function TwbFormIDDefFormater.GetEditType(const aElement: IwbElement): TwbEditType;
 begin
+  if Assigned(aElement) and False then ;
   Result := etComboBox;
 end;
 
@@ -18666,6 +18677,7 @@ end;
 
 function TwbFormIDDefFormater.GetIsEditable(aInt: Int64; const aElement: IwbElement): Boolean;
 begin
+  if aInt = Low(Int64) then ;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -18751,11 +18763,13 @@ end;
 
 function TwbFormIDDefFormater.IsValidFlst(const aSignature: TwbSignature): Boolean;
 begin
+  if aSignature = '' then ;
   Result := True;
 end;
 
 function TwbFormIDDefFormater.IsValidMainRecord(const aMainRecord: IwbMainRecord): Boolean;
 begin
+  if Assigned(aMainRecord) and False then ;
   Result := True;
 end;
 
@@ -19906,6 +19920,7 @@ end;
 
 function TwbDivDef.CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean;
 begin
+  if Assigned(aElement) and (aIndex = High(Integer)) then ;
   if dfDontAssign in defFlags then
     Exit(False);
 
@@ -19930,11 +19945,13 @@ end;
 
 function TwbDivDef.FromEditValue(const aValue: string; const aElement: IwbElement): Int64;
 begin
+  if Assigned(aElement) and False then ;
   Result := Round(StrToFloat(aValue) * ddValue);
 end;
 
 function TwbDivDef.GetIsEditable(aInt: Int64; const aElement: IwbElement): Boolean;
 begin
+  if aInt = Low(Int64) then ;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -19943,6 +19960,7 @@ end;
 
 function TwbDivDef.ToEditValue(aInt: Int64; const aElement: IwbElement): string;
 begin
+  if Assigned(aElement) and False then ;
   Result := FloatToStrF(aInt / ddValue, ffFixed, 99, ddPrecision);
 end;
 
@@ -19950,11 +19968,13 @@ function TwbDivDef.ToSortKey(aInt: Int64; const aElement: IwbElement): string;
 const
   PlusMinus : array[Boolean] of string = ('+', '-');
 begin
+  if Assigned(aElement) and False then ;
   Result := PlusMinus[aInt < 0] + IntToHex64(Abs(aInt), 16);
 end;
 
 function TwbDivDef.ToString(aInt: Int64; const aElement: IwbElement; aForSummary: Boolean): string;
 begin
+  if aForSummary and False then ;
   Result := FloatToStrF(aInt / ddValue, ffFixed, 99, ddPrecision);
   Used(aElement, Result);
 end;
@@ -19963,6 +19983,7 @@ end;
 
 function TwbMulDef.CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean;
 begin
+  if Assigned(aElement) and (aIndex = High(Integer)) then ;
   if dfDontAssign in defFlags then
     Exit(False);
 
@@ -19986,11 +20007,13 @@ end;
 
 function TwbMulDef.FromEditValue(const aValue: string; const aElement: IwbElement): Int64;
 begin
+  if Assigned(aElement) and False then ;
   Result := StrToInt64(aValue) div mdValue;
 end;
 
 function TwbMulDef.GetIsEditable(aInt: Int64; const aElement: IwbElement): Boolean;
 begin
+  if aInt = Low(Int64) then ;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -19999,16 +20022,19 @@ end;
 
 function TwbMulDef.ToEditValue(aInt: Int64; const aElement: IwbElement): string;
 begin
+  if Assigned(aElement) and False then ;
   Result := IntToStr(aInt * mdValue);
 end;
 
 function TwbMulDef.ToSortKey(aInt: Int64; const aElement: IwbElement): string;
 begin
+  if Assigned(aElement) and False then ;
   Result := ''; {handled by integer def}
 end;
 
 function TwbMulDef.ToString(aInt: Int64; const aElement: IwbElement; aForSummary: Boolean): string;
 begin
+  if aForSummary and False then ;
   Result := IntToStr(aInt * mdValue);
   Used(aElement, Result);
 end;
@@ -20019,6 +20045,7 @@ function TwbCallbackDef.CanAssign(const aElement: IwbElement; aIndex: Integer; c
 var
   CallbackDef: IwbCallbackDef;
 begin
+  if Assigned(aElement) and (aIndex = High(Integer)) then ;
   if dfDontAssign in defFlags then
     Exit(False);
 
@@ -20088,6 +20115,7 @@ end;
 
 function TwbCallbackDef.GetIsEditable(aInt: Int64; const aElement: IwbElement): Boolean;
 begin
+  if aInt = Low(Int64) then ;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -20145,22 +20173,26 @@ end;
 
 function TwbValueDef.CompareExchangeFormID(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; aOldFormID, aNewFormID: TwbFormID): Boolean;
 begin
+  if (aBasePtr = aEndPtr) and Assigned(aElement) and (aOldFormID = aNewFormID) and False then ;
   {can be overriden}
   Result := False;
 end;
 
 procedure TwbValueDef.FindUsedMasters(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; aMasters: PwbUsedMasters);
 begin
+  if (aBasePtr = aEndPtr) and Assigned(aElement) and Assigned(aMasters) and False then ;
   {can be overriden}
 end;
 
 procedure TwbValueDef.FromEditValue(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; const aValue: string);
 begin
+  if (aBasePtr = aEndPtr) and Assigned(aElement) and (aValue = '') and False then ;
   raise Exception.Create(GetName + ' is not editable.');
 end;
 
 procedure TwbValueDef.FromNativeValue(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; const aValue: Variant);
 begin
+  if (aBasePtr = aEndPtr) and Assigned(aElement) and VarIsEmpty(aValue) and False then ;
   raise Exception.Create(GetName + ' is not editable.');
 end;
 
@@ -20171,6 +20203,7 @@ end;
 
 function TwbValueDef.GetEditInfo(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): TwbStringArray;
 begin
+  if (aBasePtr = aEndPtr) and Assigned(aElement) and False then ;
   if Assigned(vdEditInfo) then
     Exit(vdEditInfo^);
   Result := nil;
@@ -20178,6 +20211,7 @@ end;
 
 function TwbValueDef.GetEditType(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): TwbEditType;
 begin
+  if (aBasePtr = aEndPtr) and Assigned(aElement) and False then ;
   Result := etDefault;
 end;
 
@@ -20234,6 +20268,8 @@ end;
 
 function TwbValueDef.MastersUpdated(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; const aOld, aNew: TwbFileIDs; aOldCount, aNewCount: Byte): Boolean;
 begin
+  if (aBasePtr = aEndPtr) and Assigned(aElement) and (aOldCount = aNewCount) and False then ;
+  if (Length(aOld) = Length(aNew)) and False then ;
   Result := False;
   {can be overriden}
 end;
@@ -20312,6 +20348,7 @@ end;
 
 procedure TwbValueDef.SetLinksTo(aBasePtr, aEndPtr: Pointer; const aElement, aValue: IwbElement);
 begin
+  if (aBasePtr = aEndPtr) and Assigned(aElement) and Assigned(aValue) and False then ;
   raise Exception.Create(GetName + ' is not editable.');
 end;
 
@@ -20386,11 +20423,13 @@ end;
 function TwbValueDef.ToEditValue(aBasePtr, aEndPtr: Pointer;
   const aElement: IwbElement): string;
 begin
+  if (aBasePtr = aEndPtr) and Assigned(aElement) and False then ;
   Result := '';
 end;
 
 function TwbValueDef.ToNativeValue(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Variant;
 begin
+  if (aBasePtr = aEndPtr) and Assigned(aElement) and False then ;
   VarClear(Result);
 end;
 
@@ -20404,6 +20443,7 @@ end;
 
 function TwbValueDef.ToSummary(aDepth: Integer; aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; var aLinksTo: IwbElement): string;
 begin
+  if aDepth < 0 then ;
   Result := '';
   if Assigned(ndToStr) then
     ndToStr(Result, aBasePtr, aEndPtr, aElement, ctToSummary);
