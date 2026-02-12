@@ -6151,6 +6151,9 @@ type
     function GetSignatureCount: Integer; override;
   end;
 
+  TwbNamedDefClass = class of TwbNamedDef;
+  TwbSignatureDefClass = class of TwbSignatureDef;
+
   TwbRecordDefFlag = (
     rdfAllowUnordered,
     rdfIsReference,
@@ -10276,7 +10279,7 @@ var
   lNew: TwbDef;
 begin
   with aSource do
-    lNew := Create(defPriority, defRequired, defGetCP);
+    lNew := TwbDefClass(aSource.ClassType).Create(defPriority, defRequired, defGetCP);
     lNew.AfterClone(aSource);
 end;
 
@@ -10619,7 +10622,7 @@ var
   lNew: TwbNamedDef;
 begin
   with (aSource as TwbNamedDef) do
-    lNew := Create(defPriority, defRequired, ndName, ndAfterLoad, ndAfterSet, ndDontShow, defGetCP, ndTerminator);
+    lNew := TwbNamedDefClass(aSource.ClassType).Create(defPriority, defRequired, ndName, ndAfterLoad, ndAfterSet, ndDontShow, defGetCP, ndTerminator);
     lNew.AfterClone(aSource);
 end;
 
@@ -10878,7 +10881,7 @@ var
   lNew: TwbSignatureDef;
 begin
   with (aSource as TwbSignatureDef) do
-    lNew := Create(defPriority, defRequired, soSignatures, ndName, ndAfterLoad, ndAfterSet, ndDontShow, defGetCP);
+    lNew := TwbSignatureDefClass(aSource.ClassType).Create(defPriority, defRequired, soSignatures, ndName, ndAfterLoad, ndAfterSet, ndDontShow, defGetCP);
     lNew.AfterClone(aSource);
 end;
 
