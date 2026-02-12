@@ -18695,6 +18695,7 @@ end;
 function TwbFormIDDefFormater.GetIsEditable(aInt: Int64; const aElement: IwbElement): Boolean;
 begin
   if aInt = Low(Int64) then ;
+  if Assigned(aElement) then;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -22439,6 +22440,7 @@ var
   NewSize  : Integer;
   b        : TBytes;
 begin
+  if aTransformType = ttToNativeValue then;
   b := nil;
   SetLength(b, 4);
 
@@ -22563,6 +22565,7 @@ var
   MgefCode  : PCardinal;
   i         : Integer;
 begin
+  if Assigned(aElement) then;
   Result := False;
 
   Len := NativeUInt(aEndPtr) - NativeUInt(aBasePtr);
@@ -24236,6 +24239,8 @@ function TwbBaseSignatureDef.CanHandle(const aContainer     : IwbContainerElemen
                                        const aDataContainer : IwbDataContainer)
                                                             : Boolean;
 begin
+  if Assigned(aContainer) then;
+  if Assigned(aDataContainer) then;
   Result := aSignature = GetDefaultSignature;
 end;
 
@@ -24402,6 +24407,7 @@ end;
 
 function wbNextObjectIDToString(aInt: Int64; const aElement: IwbElement; aType: TwbCallbackType): string;
 begin
+  if Assigned(aElement) then;
   if aType in [ctToStr, ctToSortKey, ctToEditValue] then begin
     Result := IntToHex(aInt, 8);
     if aType = ctToEditValue then
@@ -24677,6 +24683,8 @@ var
   User,
   Index   : Integer;
 begin
+  if aBasePtr = aEndPtr then;
+  if Assigned(aElement) then;
   if aType = ctToStr then begin
     c := PCardinal(aBasePtr)^;
 
@@ -24711,6 +24719,8 @@ var
   User,
   Index   : Integer;
 begin
+  if aBasePtr = aEndPtr then;
+  if Assigned(aElement) then;
   if aType = ctToStr then begin
     c := PCardinal(aBasePtr)^;
 
@@ -24743,6 +24753,8 @@ var
   Month,
   Year    : Integer;
 begin
+  if aBasePtr = aEndPtr then;
+  if Assigned(aElement) then;
   if aType = ctToStr then begin
     c := PWord(aBasePtr)^;
 
@@ -24979,6 +24991,7 @@ end;
 
 function wbNeverShow(const aElement: IwbElement): Boolean;
 begin
+  if Assigned(aElement) then;
   Result := wbHideNeverShow;
 end;
 
@@ -25231,6 +25244,7 @@ end;
 
 function TwbGuidDef.ToSummary(aDepth: Integer; aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; var aLinksTo: IwbElement): string;
 begin
+  if aDepth = High(Integer) then;
   Result := ToStringInternal(aBasePtr, aEndPtr, aElement);
 
   if Assigned(ndToStr) then
