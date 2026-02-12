@@ -7,6 +7,7 @@ cd "${ROOT_DIR}"
 HEADLESS_LOG="${HEADLESS_LOG:-/tmp/xedit-headless-current.log}"
 REPORT_FILE="${REPORT_FILE:-linux/native-port/reports/headless-warning-summary.txt}"
 RUN_SMOKE_IF_MISSING="${RUN_SMOKE_IF_MISSING:-1}"
+BASELINE_FILE="${BASELINE_FILE:-linux/native-port/baselines/headless-warning-budget.env}"
 
 if [[ ! -f "${HEADLESS_LOG}" ]]; then
   if [[ "${RUN_SMOKE_IF_MISSING}" == "1" ]]; then
@@ -38,6 +39,35 @@ if [[ -z "${warning_lines}" || -z "${unique_warning_lines}" || -z "${actionable_
   exit 1
 fi
 
+baseline_warning_lines=""
+baseline_unique_warning_lines=""
+baseline_actionable_lines=""
+baseline_unique_actionable_lines=""
+if [[ -f "${BASELINE_FILE}" ]]; then
+  # shellcheck disable=SC1090
+  source "${BASELINE_FILE}"
+  baseline_warning_lines="${MAX_WARNING_LINES:-}"
+  baseline_unique_warning_lines="${MAX_UNIQUE_WARNING_LINES:-}"
+  baseline_actionable_lines="${MAX_ACTIONABLE_WARNING_LINES:-}"
+  baseline_unique_actionable_lines="${MAX_UNIQUE_ACTIONABLE_WARNING_LINES:-}"
+fi
+
+calc_delta() {
+  local current="$1"
+  local baseline="$2"
+  if [[ -z "${baseline}" ]]; then
+    echo "n/a"
+    return 0
+  fi
+
+  local delta=$((current - baseline))
+  if (( delta > 0 )); then
+    echo "+${delta}"
+  else
+    echo "${delta}"
+  fi
+}
+
 {
   echo "# Headless Warning Summary"
   echo "# generated: $(date -Iseconds)"
@@ -47,6 +77,12 @@ fi
   echo "- Unique warning lines: ${unique_warning_lines}"
   echo "- Actionable warning lines: ${actionable_lines}"
   echo "- Unique actionable warning lines: ${unique_actionable_lines}"
+  echo
+  echo "## Baseline Delta (current - baseline)"
+  echo "- Warning lines: $(calc_delta "${warning_lines}" "${baseline_warning_lines}")"
+  echo "- Unique warning lines: $(calc_delta "${unique_warning_lines}" "${baseline_unique_warning_lines}")"
+  echo "- Actionable warning lines: $(calc_delta "${actionable_lines}" "${baseline_actionable_lines}")"
+  echo "- Unique actionable warning lines: $(calc_delta "${unique_actionable_lines}" "${baseline_unique_actionable_lines}")"
   echo
   echo "## Top warning files"
   awk '
@@ -73,6 +109,39 @@ fi
       }
     }
   ' "${HEADLESS_LOG}"
+  echo
+  echo "## Top unique warning types"
+  awk '
+    BEGIN {in_types=0}
+    /^\[headless\] Top unique warning types:/ {in_types=1; next}
+    /^\[headless\] Actionable warning lines:/ {if (in_types==1) exit}
+    {
+      if (in_types==1 && $0 ~ /^\[headless\] +[0-9]+ /) {
+        sub(/^\[headless\] /, "- ");
+        print;
+      }
+    }
+  ' "${HEADLESS_LOG}"
+  echo
+  echo "## Top actionable warning types"
+  actionable_block="$(
+  awk '
+    BEGIN {in_types=0}
+    /^\[headless\] Top actionable warning types:/ {in_types=1; next}
+    /^\[headless\] PASS$/ {if (in_types==1) exit}
+    {
+      if (in_types==1 && $0 ~ /^\[headless\] +[0-9]+ /) {
+        sub(/^\[headless\] /, "- ");
+        print;
+      }
+    }
+  ' "${HEADLESS_LOG}"
+  )"
+  if [[ -n "${actionable_block}" ]]; then
+    printf "%s\n" "${actionable_block}"
+  else
+    echo "- none"
+  fi
 } > "${REPORT_FILE}"
 
 echo "[warning-report] Wrote ${REPORT_FILE}"
