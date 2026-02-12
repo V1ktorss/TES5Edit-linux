@@ -3014,8 +3014,6 @@ type
     function GetLinksTo(aInt: Int64; const aElement: IwbElement): IwbElement;
     function FromLinksTo(const aValue, aElement: IwbElement): Int64;
 
-    function CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean; reintroduce;
-
     function MastersUpdated(aInt: Int64; const aOld, aNew: TwbFileIDs; aOldCount, aNewCount: Byte; const aElement: IwbElement): Int64;
     procedure FindUsedMasters(aInt: Int64; aMasters: PwbUsedMasters; const aElement: IwbElement);
     function CompareExchangeFormID(var aInt: Int64; aOldFormID: TwbFormID; aNewFormID: TwbFormID; const aElement: IwbElement): Boolean;
@@ -3095,8 +3093,6 @@ type
 
     function ToEditValue(const aString: string; const aElement: IwbElement): string;
     function FromEditValue(const aValue: string; const aElement: IwbElement): string;
-
-    function CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean; reintroduce;
 
     property EditType[const aElement: IwbElement]: TwbEditType
       read GetEditType;
