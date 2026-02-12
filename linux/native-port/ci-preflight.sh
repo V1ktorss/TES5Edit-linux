@@ -12,6 +12,8 @@ chmod +x linux/native-port/check-xedit-readiness.sh
 chmod +x linux/native-port/smoke-test-xedit-headless.sh
 chmod +x linux/native-port/build-xdump.sh
 chmod +x linux/native-port/smoke-test-xdump-headless.sh
+chmod +x linux/native-port/check-headless-warning-budget.sh
+chmod +x linux/native-port/update-headless-warning-budget.sh
 chmod +x linux/native-port/run-all-checks.sh
 
 ENFORCE_STYLE="${ENFORCE_STYLE:-1}" linux/native-port/run-all-checks.sh

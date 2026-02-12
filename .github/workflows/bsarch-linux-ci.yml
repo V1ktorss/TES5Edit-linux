@@ -31,10 +31,10 @@ jobs:
           chmod +x linux/native-port/ci-preflight.sh
           if [[ -x linux/bin/bsarch-core ]]; then
             echo "linux/bin/bsarch-core detected: running full native-port checks."
-            ENFORCE_STYLE=1 RUN_BSARCH=1 linux/native-port/ci-preflight.sh
+            ENFORCE_STYLE=1 RUN_BSARCH=1 RUN_WARNING_BUDGET_GUARD=1 linux/native-port/ci-preflight.sh
           else
             echo "linux/bin/bsarch-core missing: running readiness-focused checks."
-            ENFORCE_STYLE=1 RUN_BSARCH=0 linux/native-port/ci-preflight.sh
+            ENFORCE_STYLE=1 RUN_BSARCH=0 RUN_WARNING_BUDGET_GUARD=1 linux/native-port/ci-preflight.sh
           fi
 
       - name: Upload readiness report
