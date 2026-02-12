@@ -264,9 +264,9 @@ This document tracks what is already done for the native Linux path and what com
   - integrated into `run-all-checks.sh` via `RUN_WARNING_TREND_REPORT=1`
   - integrated into `run-all-checks.sh` via `RUN_WARNING_HOTSPOT_REPORT=1`
   - currently enforces:
-    - `MAX_WARNING_LINES=5110`
+    - `MAX_WARNING_LINES=56`
     - `MAX_ACTIONABLE_WARNING_LINES=0`
-    - `MAX_UNIQUE_WARNING_LINES=2579`
+    - `MAX_UNIQUE_WARNING_LINES=52`
     - `MAX_UNIQUE_ACTIONABLE_WARNING_LINES=0`
 
 2. Add basic CI job (Linux) for:
