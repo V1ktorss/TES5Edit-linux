@@ -16780,6 +16780,7 @@ function TwbStringDef.CanAssign(const aElement: IwbElement; aIndex: Integer; con
 var
   StringDef: IwbStringDef;
 begin
+  if Assigned(aElement) and (aIndex >= 0) then;
   if dfDontAssign in defFlags then
     Exit(False);
 
@@ -16845,6 +16846,7 @@ var
   NewSize : Integer;
   b       : TBytes;
 begin
+  if aTransformType = ttToString then;
   b := bsdGetEncoding(aElement).GetBytes(aValue);
 
   if sdSize > 0 then
@@ -16892,6 +16894,7 @@ end;
 
 function TwbStringDef.GetIsEditable(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Boolean;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -16960,6 +16963,7 @@ end;
 
 function TwbStringDef.GetDefaultSize(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then;
   if sdSize > 0 then
     Result := sdSize + Ord(ndTerminator)
   else
@@ -16991,6 +16995,7 @@ end;
 
 function TwbStringDef.ToSortKey(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; aExtended: Boolean): string;
 begin
+  if aExtended then;
   Result := UpperCase(ToStringTransform(aBasePtr, aEndPtr, aElement, ttToSortKey));
   if Assigned(ndToStr) then
     ndToStr(Result, aBasePtr, aEndPtr, aElement, ctToSortKey);
@@ -17108,6 +17113,7 @@ end;
 
 function TwbStringDef.ToSummary(aDepth: Integer; aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; var aLinksTo: IwbElement): string;
 begin
+  if aDepth > 0 then;
   Result := ToStringTransform(aBasePtr, aEndPtr, aElement, ttToString);
 
   if Assigned(bsdFormater) then
@@ -17124,6 +17130,7 @@ function TwbStringDef.TransformString(const s: string; aTransformType: TwbString
 var
   i: Integer;
 begin
+  if Assigned(aElement) then;
   Result := s;
   if wbShowStringBytes then begin
     if aTransformType = ttToString then begin
@@ -17179,6 +17186,7 @@ function TwbFloatDef.CanAssign(const aElement: IwbElement; aIndex: Integer; cons
 var
   FloatDef: IwbFloatDef;
 begin
+  if Assigned(aElement) and (aIndex >= 0) then;
   if dfDontAssign in defFlags then
     Exit(False);
 
@@ -17427,6 +17435,7 @@ end;
 
 function TwbFloatDef.GetIsEditable(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Boolean;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -17448,6 +17457,7 @@ end;
 
 function TwbFloatDef.GetDefaultSize(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then;
   Result := 0;
   case fdKind of
     fkHalf  : Result := SizeOf(THalfFloat)+Ord(ndTerminator);
@@ -17647,6 +17657,7 @@ var
   lEpsilon: Extended;
   lAbs: Extended;
 begin
+  if aExtended then;
   Result := '';
   lValue := ToValue(aBasePtr, aEndPtr, aElement);
   if IsNan(lValue) then
@@ -17757,6 +17768,7 @@ function TwbFloatDef.ToSummary(aDepth: Integer; aBasePtr, aEndPtr: Pointer; cons
 var
   l: Integer;
 begin
+  if (aDepth > 0) and Assigned(aLinksTo) then;
   Result := ToStringInternal(aBasePtr, aEndPtr, aElement, False);
   if Pos('.', Result) > 0 then begin
     l := Length(Result);
