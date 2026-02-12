@@ -43,6 +43,13 @@ jobs:
           name: bsarch-ci-xedit-readiness-report
           path: linux/native-port/reports/xedit-readiness.txt
 
+      - name: Upload warning summary report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bsarch-ci-headless-warning-summary
+          path: linux/native-port/reports/headless-warning-summary.txt
+          if-no-files-found: ignore
+
       - name: Upload headless smoke log
         uses: actions/upload-artifact@v4
         with:
