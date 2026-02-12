@@ -751,7 +751,7 @@ const
     (Index: 812; Name: 'GetPathingRequestedQuickTurn'; Desc: ''; ParamType1: ptNone; ParamType2: ptNone; ParamType3: ptNone),
     (Index: 813; Name: 'EPIsCalculatingBaseDamage'; Desc: ''; ParamType1: ptNone; ParamType2: ptNone; ParamType3: ptNone),
     (Index: 814; Name: 'GetReanimating'; Desc: ''; ParamType1: ptNone; ParamType2: ptNone; ParamType3: ptNone),
-    (Index: 817; Name: 'IsInRobotWorkbench')
+    (Index: 817; Name: 'IsInRobotWorkbench'; Desc: ''; ParamType1: ptNone; ParamType2: ptNone; ParamType3: ptNone)
   );
 
 function wbConditionDescFromIndex(aIndex: Integer): PConditionFunction;

@@ -643,7 +643,7 @@ const
     (Index: 1025; Name: 'GetSKSEVersionMinor'; ParamType1: ptNone; ParamType2: ptNone; ParamType3: ptNone),
     (Index: 1026; Name: 'GetSKSEVersionBeta'; ParamType1: ptNone; ParamType2: ptNone; ParamType3: ptNone),
     (Index: 1027; Name: 'GetSKSERelease'; ParamType1: ptNone; ParamType2: ptNone; ParamType3: ptNone),
-    (Index: 1028; Name: 'ClearInvalidRegistrations'; ParamType1: ptNone; ParamType2: ptNone)
+    (Index: 1028; Name: 'ClearInvalidRegistrations'; ParamType1: ptNone; ParamType2: ptNone; ParamType3: ptNone)
   );
 
 {$IFNDEF FPC}

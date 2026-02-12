@@ -317,7 +317,7 @@ const
     (Index: 2572; Name: 'GetBaseAV3C'; ParamType1: ptInteger; ParamType2: ptNone),
     (Index: 2573; Name: 'IsNaked'; ParamType1: ptInteger; ParamType2: ptNone),
     (Index: 2577; Name: 'IsMajorRef'; ParamType1: ptActorValue; ParamType2: ptNone),
-    (Index: 2578; Name: 'IsDiseased')
+    (Index: 2578; Name: 'IsDiseased'; ParamType1: ptNone; ParamType2: ptNone)
   );
 
 function wbConditionDescFromIndex(aIndex: Integer): PConditionFunction;
