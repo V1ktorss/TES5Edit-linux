@@ -23831,9 +23831,9 @@ class function TwbFileID.MaxFullSlot: SmallInt;
 begin
   Result := $FE;
   if wbPseudoLight or wbIsLightSupported then begin
-    Dec(Result); //$FD
+    Dec(Result); // FD
     if wbPseudoMedium or wbIsMediumSupported then
-      Dec(Result); //$FC
+      Dec(Result); // FC
   end;
 end;
 

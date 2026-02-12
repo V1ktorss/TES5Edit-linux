@@ -7214,7 +7214,6 @@ begin
   Result := inherited ResetLeafFirst and Result;
 end;
 
-{$D-}
 function TwbContainer.ElementAddRef: Integer; {$IFDEF FPC}cdecl{$ELSE}stdcall{$ENDIF};
 begin
   {$IFDEF WIN64}
@@ -7228,7 +7227,6 @@ begin
   {$ENDIF WIN32}
   Result := inherited _AddRef;
 end;
-{$D+}
 
 procedure TwbContainer.ElementChanged(const aElement: IwbElement; aContainer: Pointer);
 begin
@@ -7236,7 +7234,6 @@ begin
   NotifyChanged(aContainer);
 end;
 
-{$D-}
 function TwbContainer.ElementRelease: Integer; {$IFDEF FPC}cdecl{$ELSE}stdcall{$ENDIF};
 label
   Skip;
@@ -7258,7 +7255,6 @@ Skip:
 
   Result := inherited _Release;
 end;
-{$D+}
 
 function TwbContainer.FindBySortKey(const aSortKey: string; aExtended: Boolean; out aIndex: Integer): Boolean;
 var
@@ -8790,7 +8786,6 @@ begin
   end;
 end;
 
-{$D-}
 function TwbContainer._AddRef: Integer; {$IFDEF FPC}cdecl{$ELSE}stdcall{$ENDIF};
 begin
   if wbSpeedOverMemory then
@@ -8809,7 +8804,6 @@ begin
       DoReset(False);
   end;
 end;
-{$D+}
 
 //------------------------------------------------------------------------------
 // TwbRecord
@@ -20194,7 +20188,6 @@ begin
   {can be overriden}
 end;
 
-{$D-}
 function TwbElement.InternalAddRef: Integer; {$IFDEF FPC}cdecl{$ELSE}stdcall{$ENDIF};
 begin
   Result := inherited _AddRef;
@@ -20204,7 +20197,6 @@ function TwbElement.InternalRelease: Integer; {$IFDEF FPC}cdecl{$ELSE}stdcall{$E
 begin
   Result := inherited _Release;
 end;
-{$D+}
 
 procedure TwbElement.InvalidateParentStorage;
 begin
@@ -20759,7 +20751,6 @@ begin
   end;
 end;
 
-{$D-}
 function TwbElement._AddRef: Integer; {$IFDEF FPC}cdecl{$ELSE}stdcall{$ENDIF};
 label
   Skip;
@@ -20803,7 +20794,6 @@ begin
 Skip:
   Result := inherited _Release;
 end;
-{$D+}
 
 { TwbSubRecordArray }
 
