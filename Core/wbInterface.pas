@@ -20258,6 +20258,7 @@ end;
 
 function TwbValueDef.GetLinksTo(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): IwbElement;
 begin
+  if aBasePtr = aEndPtr then ;
   if Assigned(vdLinksToCallback) then
     Exit(vdLinksToCallback(aElement));
 
@@ -20452,6 +20453,7 @@ end;
 
 function TwbValueDef.ToSortKey(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; aExtended: Boolean): string;
 begin
+  if aExtended then ;
   Result := UpperCase(ToString(aBasePtr, aEndPtr, aElement));
   if dfZeroSortKey in defFlags then
     if Length(Result) > 0 then
@@ -21567,6 +21569,8 @@ end;
 
 procedure TwbEmptyDef.FromEditValue(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; const aValue: string);
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
+  if aValue = '' then ;
 end;
 
 function TwbEmptyDef.GetCanBeZeroSize: Boolean;
@@ -21586,6 +21590,7 @@ end;
 
 function TwbEmptyDef.GetIsEditable(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Boolean;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -21594,11 +21599,13 @@ end;
 
 function TwbEmptyDef.GetSize(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
   Result := 0;
 end;
 
 function TwbEmptyDef.GetDefaultSize(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
   Result := 0;
 end;
 
@@ -21609,6 +21616,7 @@ end;
 
 function TwbEmptyDef.ToSortKey(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; aExtended: Boolean): string;
 begin
+  if aExtended then ;
   Result := '<Empty>';
   if Assigned(ndToStr) then
     ndToStr(Result, aBasePtr, aEndPtr, aElement, ctToSortKey);
@@ -21844,6 +21852,8 @@ end;
 
 function TwbLenStringDef.CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef) : Boolean;
 begin
+  if Assigned(aElement) then ;
+  if aIndex = High(Integer) then ;
   if dfDontAssign in defFlags then
     Exit(False);
 
@@ -21953,6 +21963,7 @@ end;
 
 function TwbLenStringDef.GetIsEditable(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Boolean;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -21982,6 +21993,7 @@ end;
 
 function TwbLenStringDef.GetPrefixValue(aBasePtr: Pointer; aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aEndPtr) and Assigned(aElement) then ;
   case Prefix of
     1, -2: Result := PByte(aBasePtr)^;
     2, -3: Result := PWord(aBasePtr)^;
@@ -22016,6 +22028,7 @@ end;
 
 function TwbLenStringDef.GetDefaultSize(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
   Result := GetPrefixOffset+Ord(ndTerminator);
 end;
 
@@ -22033,6 +22046,7 @@ end;
 
 procedure TwbLenStringDef.SetPrefixValue(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; aValue: Cardinal);
 begin
+  if Assigned(aEndPtr) and Assigned(aElement) then ;
   case Prefix of
     1, -2: PByte(aBasePtr)^ := aValue;
     2, -3: PWord(aBasePtr)^ := aValue;
@@ -22794,11 +22808,14 @@ end;
 
 function TwbDumpIntegerDefFormater.ToSortKey(aInt: Int64; const aElement: IwbElement): string;
 begin
+  if Assigned(aElement) then ;
   Result := IntToHex64(aInt, 8);
 end;
 
 function TwbDumpIntegerDefFormater.ToString(aInt: Int64; const aElement: IwbElement; aForSummary: Boolean): string;
 begin
+  if Assigned(aElement) then ;
+  if aForSummary then ;
   Result := IntToStr(aInt) + ' [' + IntToHex64(aInt, 8) + '] ['+IntToStr(aInt and $03)+':'+IntToStr(aInt shr 2)+']';
 end;
 
@@ -22889,6 +22906,7 @@ end;
 
 function TwbKey2Data6EnumDef.ToSortKey(aInt: Int64; const aElement: IwbElement): string;
 begin
+  if Assigned(aElement) then ;
   Result := IntToHex64(aInt, 2);
 end;
 
@@ -22897,6 +22915,8 @@ var
   key : Integer;
   val : Integer;
 begin
+  if Assigned(aElement) then ;
+  if aForSummary then ;
   key := aInt shr 6;
   val := aInt and $3f;
   if val>=Length(enNames) then
@@ -22914,6 +22934,7 @@ end;
 
 function TwbData6Key2EnumDef.ToSortKey(aInt: Int64; const aElement: IwbElement): string;
 begin
+  if Assigned(aElement) then ;
   Result := IntToHex64(aInt, 2);
 end;
 
@@ -22921,6 +22942,8 @@ function TwbData6Key2EnumDef.ToString(aInt: Int64; const aElement: IwbElement; a
 var
   key : Integer;
 begin
+  if Assigned(aElement) then ;
+  if aForSummary then ;
   if aInt < Power(2, 6) then
     key := 0
   else if aInt < Power(2, 14) then
@@ -23345,6 +23368,7 @@ end;
 
 function TwbFlagDef.GetDefaultSize(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
   Result := 0;
 end;
 
@@ -23380,6 +23404,7 @@ end;
 
 function TwbFlagDef.GetSize(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
   Result := 0;
 end;
 
@@ -24024,6 +24049,7 @@ function TwbRecursiveDef.ResolveDef(aBasePtr, aEndPtr: Pointer; const aElement: 
 var
   i : Integer;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
   if Assigned(rdCached) then
     Exit(rdCached);
 
@@ -24190,6 +24216,7 @@ end;
 
 function TwbBaseSignatureDef.GetSignature(const aIndex: Integer): TwbSignature;
 begin
+  if aIndex = High(Integer) then ;
   Result := GetDefaultSignature;
 end;
 
@@ -25025,6 +25052,7 @@ end;
 
 function TwbGuidDef.GetDefaultSize(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
   Result := 16;
 end;
 
@@ -25078,6 +25106,7 @@ end;
 
 function TwbGuidDef.GetIsEditable(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Boolean;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
   Result := True;
   if defInternalEditOnly then
     if not wbIsInternalEdit then
@@ -25086,6 +25115,7 @@ end;
 
 function TwbGuidDef.GetSize(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Integer;
 begin
+  if Assigned(aBasePtr) and Assigned(aEndPtr) and Assigned(aElement) then ;
   Result := 16;
 end;
 
@@ -25140,6 +25170,7 @@ var
   lLength: NativeInt;
   pInt: PInt64;
 begin
+  if Assigned(aElement) then ;
   Result := '';
 
   lLength := 0;
