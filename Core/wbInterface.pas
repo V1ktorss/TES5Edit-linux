@@ -13,6 +13,7 @@ unit wbInterface;
 
 {$IFDEF FPC}
   {$modeswitch nestedprocvars}
+  {$HINTS OFF}
   {$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
   {$WARN 4056 OFF} // Conversion between ordinals and pointers is not portable
 {$ENDIF}
@@ -25394,5 +25395,6 @@ finalization
 {$IFDEF FPC}
   {$WARN 4056 ON}
   {$WARN 4055 ON}
+  {$HINTS ON}
 {$ENDIF}
 end.

@@ -24,6 +24,10 @@ uses
   wbDefinitionsSignatures,
   wbInterface;
 
+{$IFDEF FPC}
+{$WARN 5024 OFF} // Parameter not used
+{$ENDIF}
+
 var
   wbConditionMembers: array of IwbValueDef;
   wbConditionParameters: array of IwbValueDef;
@@ -3962,5 +3966,8 @@ begin
   wbHEDRVersion := 1.0;
 {$ENDIF}
 end;
+{$IFDEF FPC}
+{$WARN 5024 ON}
+{$ENDIF}
 
 end.

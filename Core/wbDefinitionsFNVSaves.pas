@@ -29,6 +29,8 @@ uses
 
 {$IFDEF FPC}
 {$WARN 5024 OFF} // Parameter not used
+{$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
+{$WARN 4056 OFF} // Conversion between ordinals and pointers is not portable
 {$ENDIF}
 
 var
@@ -6944,6 +6946,8 @@ end;
 
 initialization
 {$IFDEF FPC}
+{$WARN 4056 ON}
+{$WARN 4055 ON}
 {$WARN 5024 ON}
 {$ENDIF}
 end.

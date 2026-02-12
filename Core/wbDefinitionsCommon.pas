@@ -10,6 +10,11 @@ unit wbDefinitionsCommon;
 
 {$I wbDefines.inc}
 
+{$IFDEF FPC}
+{$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
+{$WARN 4056 OFF} // Conversion between ordinals and pointers is not portable
+{$ENDIF}
+
 interface
 uses
   Variants,
@@ -8839,5 +8844,9 @@ Can't properly represent that with current record definition methods.
         .IncludeFlag(dfNoCopyAsOverride));
 {$ENDIF}
 end;
+{$IFDEF FPC}
+{$WARN 4056 ON}
+{$WARN 4055 ON}
+{$ENDIF}
 
 end.

@@ -10,6 +10,11 @@ unit wbDefinitionsFO76;
 
 {$I wbDefines.inc}
 
+{$IFDEF FPC}
+{$WARN 4055 OFF} // Conversion between ordinals and pointers is not portable
+{$WARN 4056 OFF} // Conversion between ordinals and pointers is not portable
+{$ENDIF}
+
 interface
 
 uses
@@ -18048,4 +18053,8 @@ begin
   wbHEDRVersion := 244.0;
 {$ENDIF}
 end;
+{$IFDEF FPC}
+{$WARN 4056 ON}
+{$WARN 4055 ON}
+{$ENDIF}
 end.

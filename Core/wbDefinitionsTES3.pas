@@ -22,6 +22,10 @@ uses
   wbDefinitionsSignatures,
   wbInterface;
 
+{$IFDEF FPC}
+{$WARN 5024 OFF} // Parameter not used
+{$ENDIF}
+
 var
   wbAttributeEnum,
   wbDialogTypeEnum,
@@ -2485,4 +2489,7 @@ begin
   wbHEDRVersion := 1.30;
 {$ENDIF}
 end;
+{$IFDEF FPC}
+{$WARN 5024 ON}
+{$ENDIF}
 end.
