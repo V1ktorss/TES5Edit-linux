@@ -2612,7 +2612,7 @@ type
     function SetDontShow(const aDontShow : TwbDontShowCallback): IwbValueDef;
     {$ENDIF}
 
-    function ToString(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): string; reintroduce;
+    function ToString(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): string; reintroduce; overload;
     function ToSummary(aDepth: Integer; aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; var aLinksTo: IwbElement): string;
     function ToSortKey(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; aExtended: Boolean): string;
     function Check(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): string;
