@@ -10,7 +10,7 @@ HEADLESS_LOG="${HEADLESS_LOG:-/tmp/xedit-headless-current.log}"
 HEADLESS_LOG_LEGACY="${HEADLESS_LOG_LEGACY:-/tmp/xedit-headless.log}"
 FAIL_ON_HINTS="${FAIL_ON_HINTS:-1}"
 HINT_ALLOWLIST_REGEX="${HINT_ALLOWLIST_REGEX:-Hint: Start of reading config file|Hint: End of reading config file|Hint: Variable \"wb(MODC|MODD|MODF|MODS|ENLM|ENLT|ENLS|AUUV|ModelXFLG)\" of a managed type does not seem to be initialized}"
-ACTIONABLE_WARN_EXCLUDE_REGEX="${ACTIONABLE_WARN_EXCLUDE_REGEX:-Some fields coming (after|before) \"(Name|ParamType1|ParamType2|Paramtype1|Paramtype2|Condition|Desc|Caption2)\" were not initialized}"
+ACTIONABLE_WARN_EXCLUDE_REGEX="${ACTIONABLE_WARN_EXCLUDE_REGEX:-Some fields coming (after|before) \"(Name|ParamType1|ParamType2|Paramtype1|Paramtype2|Condition|Desc|Caption2)\" were not initialized|An inherited method is hidden by \"(SetSummaryName|SetIsRemovable|SetDontShow|SetAfterSet|SetAfterLoad|IncludeFlag|CanAssign)\\(|Constructing a class \"TCustomDictionaryEnumerator\\\$4.*\" with abstract method \"(GetCurrent|DoMoveNext)\"}"
 
 if [[ -n "${HEADLESS_LOG}" ]]; then
   mkdir -p "$(dirname "${HEADLESS_LOG}")"

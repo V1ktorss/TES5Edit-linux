@@ -2590,13 +2590,13 @@ type
     function ToSummary(aDepth: Integer; const aElement: IwbElement; var aLinksTo: IwbElement): string;
 
     {$IFDEF FPC}
-    function IncludeFlag(aFlag: TwbDefFlag; aOnlyWhenTrue : Boolean = True): IwbDef;
-    function SetSummaryName(const aName: string): IwbNamedDef;
+    function IncludeFlag(aFlag: TwbDefFlag; aOnlyWhenTrue : Boolean = True): IwbDef; reintroduce;
+    function SetSummaryName(const aName: string): IwbNamedDef; reintroduce;
 
-    function SetAfterLoad(const aAfterLoad : TwbAfterLoadCallback): IwbNamedDef;
-    function SetAfterSet(const aAfterSet : TwbAfterSetCallback): IwbNamedDef;
-    function SetDontShow(const aDontShow : TwbDontShowCallback): IwbNamedDef;
-    function SetIsRemovable(const aCallback: TwbIsRemovableCallback): IwbNamedDef;
+    function SetAfterLoad(const aAfterLoad : TwbAfterLoadCallback): IwbNamedDef; reintroduce;
+    function SetAfterSet(const aAfterSet : TwbAfterSetCallback): IwbNamedDef; reintroduce;
+    function SetDontShow(const aDontShow : TwbDontShowCallback): IwbNamedDef; reintroduce;
+    function SetIsRemovable(const aCallback: TwbIsRemovableCallback): IwbNamedDef; reintroduce;
     {$ELSE}
     function IncludeFlag(aFlag: TwbDefFlag; aOnlyWhenTrue : Boolean = True): IwbRecordMemberDef{Self};
     function SetSummaryName(const aName: string): IwbRecordMemberDef{Self};
@@ -2618,16 +2618,16 @@ type
   IwbValueDef = interface(IwbNamedDef)
     ['{BBF684A6-0EE5-4EF6-83DD-D323A0D2919A}']
     {$IFDEF FPC}
-    function SetAfterLoad(const aAfterLoad : TwbAfterLoadCallback): IwbNamedDef;
-    function SetAfterSet(const aAfterSet : TwbAfterSetCallback): IwbNamedDef;
-    function SetDontShow(const aDontShow : TwbDontShowCallback): IwbNamedDef;
+    function SetAfterLoad(const aAfterLoad : TwbAfterLoadCallback): IwbNamedDef; reintroduce;
+    function SetAfterSet(const aAfterSet : TwbAfterSetCallback): IwbNamedDef; reintroduce;
+    function SetDontShow(const aDontShow : TwbDontShowCallback): IwbNamedDef; reintroduce;
     {$ELSE}
     function SetAfterLoad(const aAfterLoad : TwbAfterLoadCallback): IwbValueDef;
     function SetAfterSet(const aAfterSet : TwbAfterSetCallback): IwbValueDef;
     function SetDontShow(const aDontShow : TwbDontShowCallback): IwbValueDef;
     {$ENDIF}
 
-    function ToString(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): string;
+    function ToString(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): string; reintroduce;
     function ToSummary(aDepth: Integer; aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; var aLinksTo: IwbElement): string;
     function ToSortKey(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement; aExtended: Boolean): string;
     function Check(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): string;
@@ -2648,8 +2648,8 @@ type
     function SetToDefault(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Boolean;
 
     {$IFDEF FPC}
-    function IncludeFlag(aFlag: TwbDefFlag; aOnlyWhenTrue : Boolean = True): IwbDef;
-    function SetSummaryName(const aName: string): IwbNamedDef;
+    function IncludeFlag(aFlag: TwbDefFlag; aOnlyWhenTrue : Boolean = True): IwbDef; reintroduce;
+    function SetSummaryName(const aName: string): IwbNamedDef; reintroduce;
     {$ELSE}
     function IncludeFlag(aFlag: TwbDefFlag; aOnlyWhenTrue : Boolean = True): IwbValueDef{Self};
     function SetSummaryName(const aName: string): IwbValueDef;
@@ -2667,7 +2667,7 @@ type
     function SetSummaryLinksToCallback(const aCallback: TwbLinksToCallback): IwbValueDef{Self};
     function SetToStr(const aToStr : TwbToStrCallback): IwbValueDef{Self};
     {$IFDEF FPC}
-    function SetIsRemovable(const aCallback: TwbIsRemovableCallback): IwbNamedDef;
+    function SetIsRemovable(const aCallback: TwbIsRemovableCallback): IwbNamedDef; reintroduce;
     {$ELSE}
     function SetIsRemovable(const aCallback: TwbIsRemovableCallback): IwbValueDef{Self};
     {$ENDIF}
@@ -3034,7 +3034,7 @@ type
     function GetLinksTo(aInt: Int64; const aElement: IwbElement): IwbElement;
     function FromLinksTo(const aValue, aElement: IwbElement): Int64;
 
-    function CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean;
+    function CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean; reintroduce;
 
     function MastersUpdated(aInt: Int64; const aOld, aNew: TwbFileIDs; aOldCount, aNewCount: Byte; const aElement: IwbElement): Int64;
     procedure FindUsedMasters(aInt: Int64; aMasters: PwbUsedMasters; const aElement: IwbElement);
@@ -3116,7 +3116,7 @@ type
     function ToEditValue(const aString: string; const aElement: IwbElement): string;
     function FromEditValue(const aValue: string; const aElement: IwbElement): string;
 
-    function CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean;
+    function CanAssign(const aElement: IwbElement; aIndex: Integer; const aDef: IwbDef): Boolean; reintroduce;
 
     property EditType[const aElement: IwbElement]: TwbEditType
       read GetEditType;
