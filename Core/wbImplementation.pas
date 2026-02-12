@@ -24225,7 +24225,7 @@ const
   HexDigits: PChar = '0123456789ABCDEF';
 var
   lData : PByte;
-  lDataSize : NativeInt;
+  lDataSize : NativeUInt;
   pResult : PChar;
   lByteIdx : Integer;
   lByte : Byte;
@@ -24235,7 +24235,7 @@ begin
   if not Assigned(lData) then
     Exit;
 
-  lDataSize := NativeInt(dcDataEndPtr) - NativeInt(lData);
+  lDataSize := PtrUInt(dcDataEndPtr) - PtrUInt(lData);
   if lDataSize < 1 then
     Exit;
 

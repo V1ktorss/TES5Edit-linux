@@ -25227,7 +25227,7 @@ end;
 
 function TwbGuidDef.ToStringInternal(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): string;
 var
-  lLength: NativeInt;
+  lLength: NativeUInt;
   pInt: PInt64;
 begin
   if Assigned(aElement) then ;
@@ -25235,7 +25235,7 @@ begin
 
   lLength := 0;
   if Assigned(aBasePtr) and Assigned(aEndPtr) then
-    lLength := NativeInt(aEndPtr) - NativeInt(aBasePtr);
+    lLength := PtrUInt(aEndPtr) - PtrUInt(aBasePtr);
   if lLength < 16 then
     Exit;
 
