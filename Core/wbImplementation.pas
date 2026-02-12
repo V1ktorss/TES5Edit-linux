@@ -140,6 +140,9 @@ type
   {$IFDEF FPC}
   protected
   {$ENDIF}
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     destructor Destroy; override;
 
     {---IwbKeepAliveRoot---}
@@ -711,7 +714,13 @@ type
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
     class function NewInstance: TObject; override;
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     destructor Destroy; override;
+  {$IFDEF FPC}
+  protected
+  {$ENDIF}
     procedure FreeInstance; override;
 
     procedure ResetTags; override;
@@ -1569,6 +1578,9 @@ type
   {$IFDEF FPC}
   protected
   {$ENDIF}
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     destructor Destroy; override;
 
     procedure SetDef(const aDef: IwbSubRecordDef);
@@ -1989,6 +2001,9 @@ type
                              aLabel      : Cardinal); overload;
   {$IFDEF FPC}
   protected
+  {$ENDIF}
+  {$IFDEF FPC}
+  public
   {$ENDIF}
     destructor Destroy; override;
     procedure AfterConstruction; override;

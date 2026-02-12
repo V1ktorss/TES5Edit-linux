@@ -6211,6 +6211,9 @@ type
   protected
   {$ENDIF}
     procedure AfterClone(const aSource: TwbDef); override;
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     destructor Destroy; override;
 
     {---IwbDef---}
@@ -7775,6 +7778,9 @@ type
   {$IFDEF FPC}
   protected
   {$ENDIF}
+  {$IFDEF FPC}
+  public
+  {$ENDIF}
     destructor Destroy; override;
 
     function IsValid(const aSignature: TwbSignature): Boolean; override;
@@ -7997,6 +8003,9 @@ type
                  const aSparseNames : array of const);
   {$IFDEF FPC}
   protected
+  {$ENDIF}
+  {$IFDEF FPC}
+  public
   {$ENDIF}
     destructor Destroy; override;
 
