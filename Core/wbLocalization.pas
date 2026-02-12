@@ -741,6 +741,7 @@ var
   ID: Cardinal;
 begin
   Result := 0;
+  data := nil;
 
   if not Assigned(aElement) then
     Exit;
