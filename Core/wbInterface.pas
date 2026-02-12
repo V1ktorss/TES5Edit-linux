@@ -2586,15 +2586,7 @@ type
     ['{259F3F08-F4ED-439D-8C1A-48137C84E52A}']
     function ToSummary(aDepth: Integer; const aElement: IwbElement; var aLinksTo: IwbElement): string;
 
-    {$IFDEF FPC}
-    function IncludeFlag(aFlag: TwbDefFlag; aOnlyWhenTrue : Boolean = True): IwbDef; reintroduce;
-    function SetSummaryName(const aName: string): IwbNamedDef; reintroduce;
-
-    function SetAfterLoad(const aAfterLoad : TwbAfterLoadCallback): IwbNamedDef; reintroduce;
-    function SetAfterSet(const aAfterSet : TwbAfterSetCallback): IwbNamedDef; reintroduce;
-    function SetDontShow(const aDontShow : TwbDontShowCallback): IwbNamedDef; reintroduce;
-    function SetIsRemovable(const aCallback: TwbIsRemovableCallback): IwbNamedDef; reintroduce;
-    {$ELSE}
+    {$IFNDEF FPC}
     function IncludeFlag(aFlag: TwbDefFlag; aOnlyWhenTrue : Boolean = True): IwbRecordMemberDef{Self};
     function SetSummaryName(const aName: string): IwbRecordMemberDef{Self};
 
@@ -2614,11 +2606,7 @@ type
 
   IwbValueDef = interface(IwbNamedDef)
     ['{BBF684A6-0EE5-4EF6-83DD-D323A0D2919A}']
-    {$IFDEF FPC}
-    function SetAfterLoad(const aAfterLoad : TwbAfterLoadCallback): IwbNamedDef; reintroduce;
-    function SetAfterSet(const aAfterSet : TwbAfterSetCallback): IwbNamedDef; reintroduce;
-    function SetDontShow(const aDontShow : TwbDontShowCallback): IwbNamedDef; reintroduce;
-    {$ELSE}
+    {$IFNDEF FPC}
     function SetAfterLoad(const aAfterLoad : TwbAfterLoadCallback): IwbValueDef;
     function SetAfterSet(const aAfterSet : TwbAfterSetCallback): IwbValueDef;
     function SetDontShow(const aDontShow : TwbDontShowCallback): IwbValueDef;
@@ -2644,10 +2632,7 @@ type
     function GetEditInfo(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): TwbStringArray;
     function SetToDefault(aBasePtr, aEndPtr: Pointer; const aElement: IwbElement): Boolean;
 
-    {$IFDEF FPC}
-    function IncludeFlag(aFlag: TwbDefFlag; aOnlyWhenTrue : Boolean = True): IwbDef; reintroduce;
-    function SetSummaryName(const aName: string): IwbNamedDef; reintroduce;
-    {$ELSE}
+    {$IFNDEF FPC}
     function IncludeFlag(aFlag: TwbDefFlag; aOnlyWhenTrue : Boolean = True): IwbValueDef{Self};
     function SetSummaryName(const aName: string): IwbValueDef;
     {$ENDIF}
@@ -2663,9 +2648,7 @@ type
     function SetLinksToCallback(const aCallback: TwbLinksToCallback): IwbValueDef{Self};
     function SetSummaryLinksToCallback(const aCallback: TwbLinksToCallback): IwbValueDef{Self};
     function SetToStr(const aToStr : TwbToStrCallback): IwbValueDef{Self};
-    {$IFDEF FPC}
-    function SetIsRemovable(const aCallback: TwbIsRemovableCallback): IwbNamedDef; reintroduce;
-    {$ELSE}
+    {$IFNDEF FPC}
     function SetIsRemovable(const aCallback: TwbIsRemovableCallback): IwbValueDef{Self};
     {$ENDIF}
     function SetStaticEditInfo(aEditInfo: PwbStringArray): IwbValueDef{Self};
