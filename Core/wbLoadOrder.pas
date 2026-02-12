@@ -921,6 +921,7 @@ function TwbModuleInfosHelper.FilteredBy(const aFunc: {$IFDEF FPC}TwbModuleInfoP
 var
   i, j: Integer;
 begin
+  Result := nil;
   SetLength(Result, Length(Self));
   j := 0;
   for i := Low(Self) to High(Self) do
@@ -935,6 +936,7 @@ function TwbModuleInfosHelper.FilteredByFlag(aFlag: TwbModuleFlag; aHasFlag: Boo
 var
   i, j: Integer;
 begin
+  Result := nil;
   SetLength(Result, Length(Self));
   j := 0;
   for i := Low(Self) to High(Self) do
@@ -1046,6 +1048,7 @@ function TwbModuleInfosHelper.ToStrings(aInclDesc: Boolean): TDynStrings;
 var
   i: Integer;
 begin
+  Result := nil;
   SetLength(Result ,Length(Self));
   for i := Low(Self) to High(Self) do
     Result[i] := Self[i].ToString(aInclDesc);
