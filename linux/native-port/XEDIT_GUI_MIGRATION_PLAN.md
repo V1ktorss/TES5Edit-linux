@@ -42,6 +42,9 @@ Targets:
   - budget guard:
     - `linux/native-port/check-xemainform-message-surface-budget.sh`
     - `linux/native-port/baselines/xemainform-message-surface-budget.env`
+  - last-mile guard:
+    - `linux/native-port/check-xedit-gui-lastmile-winapi.sh`
+    - enforces that this is the only remaining GUI WinAPI import unit
 
 Completed:
 

@@ -280,6 +280,9 @@ This document tracks what is already done for the native Linux path and what com
 - Added xEdit GUI surface budget guard:
   - `linux/native-port/check-xedit-gui-surface-budget.sh` (wired via `RUN_XEDIT_GUI_BUDGET_GUARD=1` in `run-all-checks.sh`)
   - baseline `linux/native-port/baselines/xedit-gui-surface-budget.env` (fails on regressions in DFM/TForm/VCL-import/WinAPI-import counts)
+- Added xEdit GUI last-mile WinAPI guard:
+  - `linux/native-port/check-xedit-gui-lastmile-winapi.sh` (wired via `RUN_XEDIT_GUI_LASTMILE_GUARD=1` in `run-all-checks.sh`)
+  - enforces that remaining GUI WinAPI import surface is confined to `xEdit/xeMainForm.pas`
 - Added `xeMainForm` message-surface audit lane: `linux/native-port/audit-xemainform-message-surface.sh` (wired via `RUN_XEMAINFORM_MESSAGE_AUDIT=1` in `run-all-checks.sh`)
 - Replaced direct `WM_USER`/`WM_PAINT` usage in `xeMainForm` with local app constants (`xeWmUser*`, `xeWmPaint`) to decouple message IDs from WinAPI names while keeping behavior unchanged.
 - Replaced `xeMainForm` custom `message`-bound handlers with explicit `WndProc` dispatch helpers, reducing `TMessage` usages from 17 to 5.

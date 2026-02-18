@@ -13,6 +13,7 @@ chmod +x linux/native-port/audit-xedit-gui-surface.sh
 chmod +x linux/native-port/audit-xemainform-message-surface.sh
 chmod +x linux/native-port/check-xemainform-message-surface-budget.sh
 chmod +x linux/native-port/check-xedit-gui-surface-budget.sh
+chmod +x linux/native-port/check-xedit-gui-lastmile-winapi.sh
 chmod +x linux/native-port/smoke-test-xedit-headless.sh
 chmod +x linux/native-port/build-xdump.sh
 chmod +x linux/native-port/smoke-test-xdump-headless.sh
