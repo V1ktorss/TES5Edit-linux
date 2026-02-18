@@ -15470,15 +15470,8 @@ begin
 end;
 
 procedure TfrmMain.PostAddMessage(const s: string);
-var
-  t                           : string;
-  p                           : Pointer;
 begin
-  t := s;
-  UniqueString(t);
-  p := Pointer(t);
-  Pointer(t) := nil;
-  Self.PostMessage(xeWmUserAddMessage, UInt64(p), 0);
+  Self.PostMessage(xeWmUserAddMessage, xeDetachPostedStringPayload(s), 0);
 end;
 
 procedure TfrmMain.PostSelectMainRecord;
@@ -20614,13 +20607,11 @@ var
   Strs: TStringDynArray;
   s: string;
 begin
-  Pointer(t) := Pointer(aPayload);
+  t := xeTakePostedStringPayload(aPayload);
   if not Assigned(NewMessages) then
     NewMessages := TStringList.Create;
 
-  Strs := t.Split(CRLF);
-  if Length(Strs) < 1 then
-    SetLength(Strs, 1);
+  Strs := xeSplitPostedMessageLines(t);
 
   for s in Strs do
     NewMessages.Add(s);

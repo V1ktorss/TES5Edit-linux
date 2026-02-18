@@ -53,6 +53,9 @@ function xeBuildGameLinkSelection(const aRefID, aBaseID: TwbFormID): TxeGameLink
 
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
 function xeTryEnsureSettingsLoaded(var aSettings: TMemIniFile; const aSettingsFileName: string): Boolean;
+function xeDetachPostedStringPayload(const aText: string): NativeUInt;
+function xeTakePostedStringPayload(const aPayload: NativeUInt): string;
+function xeSplitPostedMessageLines(const aText: string): TStringDynArray;
 function xeHandleThreadShutdown(
   const aThread: TThread;
   const aRequestTerminate, aAllowForceTerminate: Boolean
@@ -434,6 +437,28 @@ begin
     aSettings := TMemIniFile.Create(aSettingsFileName);
     Result := Assigned(aSettings);
   end;
+end;
+
+function xeDetachPostedStringPayload(const aText: string): NativeUInt;
+var
+  lText: string;
+begin
+  lText := aText;
+  UniqueString(lText);
+  Result := NativeUInt(Pointer(lText));
+  Pointer(lText) := nil;
+end;
+
+function xeTakePostedStringPayload(const aPayload: NativeUInt): string;
+begin
+  Pointer(Result) := Pointer(aPayload);
+end;
+
+function xeSplitPostedMessageLines(const aText: string): TStringDynArray;
+begin
+  Result := aText.Split(CRLF);
+  if Length(Result) < 1 then
+    SetLength(Result, 1);
 end;
 
 function xeHandleThreadShutdown(
