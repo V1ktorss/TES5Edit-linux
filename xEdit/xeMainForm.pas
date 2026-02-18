@@ -5693,25 +5693,15 @@ var
   FormID                      : TwbFormID;
   MainRecord                  : IwbMainRecord;
   Node                        : PVirtualNode;
-  i, tmp                      : Integer;
+  i                           : Integer;
 
 begin
   if (Key = VK_RETURN) and (Shift = []) then begin
     Key := 0;
 
-    s := Trim(edFormIDSearch.Text);
-
-    if wbConvertIntFormID then
-      if not StartsText('0', s) and not StartsText('0x', s) then
-        if TryStrToInt(s, tmp) then
-        begin
-          s := IntToHex(tmp, 8);
-          edFormIDSearch.Text := s;
-        end else
-          s := '00000000';
-
-    if StartsText('0x', s) then
-      s := ReplaceText(s, '0x', '');
+    xeNormalizeFormIDSearchInput(edFormIDSearch.Text, wbConvertIntFormID, s);
+    if s <> edFormIDSearch.Text then
+      edFormIDSearch.Text := s;
 
     FormID := TwbFormID.FromStrDef(s, 0);
     if xeTryResolveSearchMainRecordFromFormID(Files, FormID, MainRecord) then begin

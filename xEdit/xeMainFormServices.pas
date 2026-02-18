@@ -391,6 +391,11 @@ function xeTryResolveSearchMainRecordFromFormID(
   const aInputFormID: TwbFormID;
   out aMainRecord: IwbMainRecord
 ): Boolean;
+function xeNormalizeFormIDSearchInput(
+  const aInput: string;
+  const aConvertIntFormID: Boolean;
+  out aNormalized: string
+): Boolean;
 function xeCanCreateNewModuleFile(const aDataPath, aFileName: string): Boolean;
 function xeNextLoadOrderFromTail(const aFiles: TwbFiles): Integer;
 function xeNextLoadOrderFromMax(const aFiles: TwbFiles): Integer;
@@ -2045,6 +2050,33 @@ begin
       Inc(i);
     end;
   end;
+end;
+
+function xeNormalizeFormIDSearchInput(
+  const aInput: string;
+  const aConvertIntFormID: Boolean;
+  out aNormalized: string
+): Boolean;
+var
+  lText: string;
+  lValue: Integer;
+begin
+  lText := Trim(aInput);
+  if aConvertIntFormID and (lText <> '') then begin
+    if (lText[1] <> '0') and
+       not ((Length(lText) >= 2) and (lText[1] = '0') and ((lText[2] = 'x') or (lText[2] = 'X'))) then begin
+      if TryStrToInt(lText, lValue) then
+        lText := IntToHex(lValue, 8)
+      else
+        lText := '00000000';
+    end;
+  end;
+
+  if (Length(lText) >= 2) and (lText[1] = '0') and ((lText[2] = 'x') or (lText[2] = 'X')) then
+    Delete(lText, 1, 2);
+
+  aNormalized := lText;
+  Result := aNormalized <> aInput;
 end;
 
 function xeCanCreateNewModuleFile(const aDataPath, aFileName: string): Boolean;
