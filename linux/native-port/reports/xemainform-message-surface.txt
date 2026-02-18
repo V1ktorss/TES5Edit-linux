@@ -2,16 +2,14 @@
 
 ## Summary
 - Handler declarations using message WM_*: 0
-- TMessage parameter usages: 3
+- TMessage parameter usages: 1
 - WM_* references (raw): 0
 
 ## Handler Declarations
 
 
 ## TMessage Usages
-922:    procedure WndProc(var Message: Controls.TMessage); override;
-21230:procedure TfrmMain.WndProc(var Message: Controls.TMessage);
-22077:  TxeMainFormMessage = Controls.TMessage;
+77:  TxeMainFormMessage = Controls.TMessage;
 
 ## WM_* References
 

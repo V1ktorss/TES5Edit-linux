@@ -74,6 +74,7 @@ uses
 
 type
   TMemo = class(TSynMemo);
+  TxeMainFormMessage = Controls.TMessage;
 
 const
   DefaultInterval             = 1 / 24 / 6; // 10 minutes
@@ -919,7 +920,7 @@ type
     procedure SaveModGroupsSelection(const aModGroups: TwbModGroupPtrs);
 
     function FindColors(const s: string; out aColors: TArray<TColor>): Boolean;
-    procedure WndProc(var Message: Controls.TMessage); override;
+    procedure WndProc(var Message: TxeMainFormMessage); override;
   private
     procedure HandleUserAddMessage(aPayload: NativeUInt);
     procedure HandleUserAddFile(aFilePtr: NativeUInt);
@@ -21227,7 +21228,7 @@ begin
   Accept := False;
 end;
 
-procedure TfrmMain.WndProc(var Message: Controls.TMessage);
+procedure TfrmMain.WndProc(var Message: TxeMainFormMessage);
 var
   StyleName: string;
 begin
@@ -22074,7 +22075,6 @@ end;
 
 type
   TWinControlProtectedHacker = class(TWinControl);
-  TxeMainFormMessage = Controls.TMessage;
   TMainWndProc = procedure(var Message: TxeMainFormMessage) of object;
 
 var
