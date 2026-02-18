@@ -52,8 +52,10 @@ function xeBuildPluggySelection(
 function xeBuildGameLinkSelection(const aRefID, aBaseID: TwbFormID): TxeGameLinkSelection;
 
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
-function xeRequestThreadTerminate(const aThread: TThread): Boolean;
-function xeFinalizeBackgroundThread(const aThread: TThread): Boolean;
+function xeHandleThreadShutdown(
+  const aThread: TThread;
+  const aRequestTerminate, aAllowForceTerminate: Boolean
+): Boolean;
 function xeShouldWaitForLoaderShutdown(
   const aLoaderStarted, aLoaderDone: Boolean;
   var aForceTerminate: Boolean
@@ -415,25 +417,25 @@ begin
   aSettings.UpdateFile;
 end;
 
-function xeRequestThreadTerminate(const aThread: TThread): Boolean;
-begin
-  Result := Assigned(aThread);
-  if Result then
-    aThread.Terminate;
-end;
-
-function xeFinalizeBackgroundThread(const aThread: TThread): Boolean;
+function xeHandleThreadShutdown(
+  const aThread: TThread;
+  const aRequestTerminate, aAllowForceTerminate: Boolean
+): Boolean;
 begin
   Result := False;
   if not Assigned(aThread) then
     Exit;
+
+  if aRequestTerminate then
+    aThread.Terminate;
 
   if aThread.Finished then begin
     Result := True;
     Exit;
   end;
 
-  wbForceTerminateThread(aThread.Handle);
+  if aAllowForceTerminate then
+    wbForceTerminateThread(aThread.Handle);
 end;
 
 function xeShouldWaitForLoaderShutdown(

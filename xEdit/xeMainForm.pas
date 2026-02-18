@@ -6271,12 +6271,12 @@ begin
     end;
   end;
 
-  if xeRequestThreadTerminate(PluggyLinkThread) then
+  if xeHandleThreadShutdown(PluggyLinkThread, True, False) then
     FreeAndNil(PluggyLinkThread);
 
-  if xeFinalizeBackgroundThread(CheckGitHubReleaseThread) then
+  if xeHandleThreadShutdown(CheckGitHubReleaseThread, False, True) then
     FreeAndNil(CheckGitHubReleaseThread);
-  if xeFinalizeBackgroundThread(CheckNexusModsReleaseThread) then
+  if xeHandleThreadShutdown(CheckNexusModsReleaseThread, False, True) then
     FreeAndNil(CheckNexusModsReleaseThread);
 
   if SaveChanged >= srAbort then begin
