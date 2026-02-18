@@ -23,7 +23,7 @@ jobs:
       - name: Run xEdit Readiness Check
         run: |
           chmod +x linux/native-port/ci-preflight.sh
-          ENFORCE_STYLE=1 RUN_BSARCH=0 RUN_WARNING_BUDGET_GUARD=1 XDUMP_MODE_SANITY_TEST=1 XDUMP_INVALID_D_TEST=1 linux/native-port/ci-preflight.sh
+          ENFORCE_STYLE=1 RUN_BSARCH=0 RUN_WARNING_BUDGET_GUARD=1 XEDIT_INVALID_D_TEST=1 XDUMP_MODE_SANITY_TEST=1 XDUMP_INVALID_D_TEST=1 linux/native-port/ci-preflight.sh
 
       - name: Upload readiness report
         uses: actions/upload-artifact@v4
@@ -57,6 +57,13 @@ jobs:
         with:
           name: xedit-readiness-headless-log
           path: /tmp/xedit-headless-current.log
+          if-no-files-found: ignore
+
+      - name: Upload xEdit smoke logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: xedit-readiness-xedit-smoke-logs
+          path: /tmp/xedit-headless-smoke-*.log
           if-no-files-found: ignore
 
       - name: Upload xDump smoke logs
