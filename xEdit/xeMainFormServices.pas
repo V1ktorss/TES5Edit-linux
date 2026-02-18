@@ -56,6 +56,11 @@ function xeTryPrepareSourceFileForRename(
   const aUseBackup: Boolean;
   out aResolvedBackupPath, aSourceFile, aErrorText: string
 ): Boolean;
+procedure xeBuildSaveTargetFileName(
+  const aDataPath, aOriginalName, aSuffix: string;
+  out aTargetName: string;
+  out aNeedsRename: Boolean
+);
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
 function xeBuildModuleBackupPath(const aBackupPath, aTargetFileName: string; const aNow: TDateTime): string;
 function xeBuildTempSaveBackupPath(const aBackupPath, aFromFileName: string): string;
@@ -242,6 +247,27 @@ begin
   aResolvedBackupPath := xeEnsureBackupPath(aBackupPath, aDataPath, aUseBackup);
   aSourceFile := aDataPath + aSourceName;
   Result := xeTryValidateSourceFileForRename(aSourceFile, aErrorText);
+end;
+
+procedure xeBuildSaveTargetFileName(
+  const aDataPath, aOriginalName, aSuffix: string;
+  out aTargetName: string;
+  out aNeedsRename: Boolean
+);
+var
+  j: Integer;
+begin
+  aTargetName := aOriginalName;
+  aNeedsRename := FileExists(aDataPath + aOriginalName);
+  if not aNeedsRename then
+    Exit;
+
+  aTargetName := aOriginalName + aSuffix;
+  j := 0;
+  while FileExists(aDataPath + aTargetName) do begin
+    Inc(j);
+    aTargetName := aOriginalName + aSuffix + '_' + j.ToString;
+  end;
 end;
 
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
