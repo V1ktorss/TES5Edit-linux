@@ -54,6 +54,7 @@ function wbPlatformAlphaBlend(
 function wbShowWindowNoActivate(const aHandle: THandle): Boolean;
 procedure wbLockWindowUpdate(const aHandle: THandle);
 function wbOpenUrl(const aUrl: string): Boolean;
+function wbTryDownloadUrlUtf8(const aUrl: string; out aContent: UTF8String): Boolean;
 function wbCopyFile(
   const aSource, aDestination: string;
   const aFailIfExists: Boolean
@@ -108,6 +109,7 @@ uses
   , Windows,
   ComObj,
   Registry,
+  WinInet,
   ShellAPI,
   ShlObj,
   Vcl.Clipbrd
@@ -410,6 +412,46 @@ begin
   end;
   Exit;
   {$ENDIF}
+  {$ENDIF}
+end;
+
+function wbTryDownloadUrlUtf8(const aUrl: string; out aContent: UTF8String): Boolean;
+{$IFDEF MSWINDOWS}
+var
+  lNetHandle: HINTERNET;
+  lUrlHandle: HINTERNET;
+  lBuffer: array[0..1023] of Byte;
+  lBytesRead: DWORD;
+  lChunk: UTF8String;
+{$ENDIF}
+begin
+  Result := False;
+  aContent := '';
+  if Trim(aUrl) = '' then
+    Exit;
+
+  {$IFDEF MSWINDOWS}
+  lNetHandle := InternetOpen('xEdit', INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0);
+  if not Assigned(lNetHandle) then
+    Exit;
+  try
+    lUrlHandle := InternetOpenUrl(lNetHandle, PChar(aUrl), nil, 0, INTERNET_FLAG_RELOAD, 0);
+    if not Assigned(lUrlHandle) then
+      Exit;
+    try
+      repeat
+        InternetReadFile(lUrlHandle, @lBuffer, SizeOf(lBuffer), lBytesRead);
+        SetString(lChunk, PAnsiChar(@lBuffer[0]), lBytesRead);
+        aContent := aContent + lChunk;
+      until lBytesRead = 0;
+      Result := True;
+    finally
+      InternetCloseHandle(lUrlHandle);
+    end;
+  finally
+    InternetCloseHandle(lNetHandle);
+  end;
+  Exit;
   {$ENDIF}
 end;
 
