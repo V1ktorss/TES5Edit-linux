@@ -39,6 +39,9 @@ Targets:
     - 0 `message WM_*` bindings (rewired to app constants)
     - 5 `TMessage` usages
     - 0 raw `WM_*` references
+  - budget guard:
+    - `linux/native-port/check-xemainform-message-surface-budget.sh`
+    - `linux/native-port/baselines/xemainform-message-surface-budget.env`
 
 Completed:
 

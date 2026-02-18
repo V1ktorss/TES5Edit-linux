@@ -82,6 +82,9 @@ This document tracks what is already done for the native Linux path and what com
   - `linux/native-port/audit-xemainform-message-surface.sh`
   - `linux/native-port/reports/xemainform-message-surface.txt`
   - current baseline: 0 `message WM_*` bindings, 5 `TMessage` usages, 0 raw `WM_*` references
+- Added `xeMainForm` message-surface budget guard:
+  - `linux/native-port/check-xemainform-message-surface-budget.sh` (wired via `RUN_XEMAINFORM_MESSAGE_BUDGET_GUARD=1` in `run-all-checks.sh`)
+  - baseline `linux/native-port/baselines/xemainform-message-surface-budget.env` (fails on regressions in handler-bindings / `TMessage` usage / raw `WM_*` refs)
 - Added GUI migration execution plan: `linux/native-port/XEDIT_GUI_MIGRATION_PLAN.md`
 - Started `xeInit` decoupling:
   - moved known-folder and registry-read access behind `wbPlatform` helpers

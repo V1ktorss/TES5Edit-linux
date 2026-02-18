@@ -60,8 +60,8 @@
 /home/v1ktors/TES5Edit-linux/xEdit/xeScriptForm.pas:17:  Dialogs, StdCtrls, ExtCtrls, IOUtils, StrUtils, ComCtrls, System.UITypes,
 /home/v1ktors/TES5Edit-linux/xEdit/xeLegendForm.pas:17:  Controls, Forms, Dialogs, Grids, System.IniFiles,
 /home/v1ktors/TES5Edit-linux/xEdit/xeLocalizationForm.pas:17:  Dialogs, StdCtrls, ExtCtrls, VirtualTrees, VirtualEditTree, ExtDlgs, Menus,
-/home/v1ktors/TES5Edit-linux/xEdit/xeLocalizePluginForm.pas:17:  Dialogs, StdCtrls, CheckLst;
 /home/v1ktors/TES5Edit-linux/xEdit/xeTipForm.pas:17:  Dialogs, StdCtrls, ExtCtrls, FileContainer;
+/home/v1ktors/TES5Edit-linux/xEdit/xeLocalizePluginForm.pas:17:  Dialogs, StdCtrls, CheckLst;
 /home/v1ktors/TES5Edit-linux/xEdit/xeViewElementsForm.pas:17:  Dialogs, wbInterface, ComCtrls, ExtCtrls, StdCtrls, Buttons, Menus, IniFiles,
 /home/v1ktors/TES5Edit-linux/xEdit/xeWaitForm.pas:17:  Dialogs,
 /home/v1ktors/TES5Edit-linux/xEdit/xeLogAnalyzerForm.pas:17:  Dialogs, StdCtrls, ExtCtrls, VirtualTrees, VirtualEditTree, wbInterface;
