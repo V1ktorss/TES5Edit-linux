@@ -223,6 +223,7 @@ This document tracks what is already done for the native Linux path and what com
     - `smoke-test-xdump-headless.sh` now supports multi-case runs (`XDUMP_HEADLESS_CASES`, default `-h|-dummy`) and fails on non-zero exit codes
     - `smoke-test-xdump-headless.sh` now supports optional env-override smoke lane (`XDUMP_ENV_OVERRIDE_TEST=1`, `XDUMP_ENV_OVERRIDE_PATH=...`, `XDUMP_ENV_OVERRIDE_ARGS=...`) to validate `XDUMP_DATA_PATH`
     - `smoke-test-xdump-headless.sh` now supports optional CLI-override smoke lane (`XDUMP_CLI_OVERRIDE_TEST=1`, `XDUMP_CLI_OVERRIDE_PATH=...`, `XDUMP_CLI_OVERRIDE_ARGS=...`) to validate `-D` path behavior
+    - xDump smoke now supports explicit base mode args (`XDUMP_BASE_MODE_ARGS`, default `-tes5 -dump`) so override lanes run with deterministic mode switches
     - `build-xdump.sh` now normalizes FPC default `xDump` output to `linux/bin/xdump-core`
   - normalized `XDUMP_DATA_PATH` handling to accept both game-root paths and direct data-folder paths
   - unified xDump override normalization so both `-D` and `XDUMP_DATA_PATH` accept game-root or direct data-folder paths
