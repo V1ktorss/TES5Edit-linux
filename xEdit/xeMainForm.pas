@@ -1518,6 +1518,8 @@ var
   lFrom       : string;
   lTo         : string;
   lBackup     : string;
+  lActionText : string;
+  lErrorText  : string;
   s           : string;
   OldDateTime : TDateTime;
 begin
@@ -1550,26 +1552,16 @@ begin
         MessageDlg(s, mtError, [mbOK], 0);
     end;
     lBackup := xeBuildModuleBackupPath(wbBackupPath, aTo, Now);
-    if not xeDontBackup then begin
-      // backup original file
-      wbProgress('Renaming "' + lTo + '" to "' + lBackup + '".');
-      if not RenameFile(lTo, lBackup) then begin
-        s := 'Could not rename "' + lTo + '" to "' + lBackup + '".';
-        wbProgress(s);
-        if not aSilent then
-          MessageDlg(s, mtError, [mbOK], 0);
-        Exit;
-      end;
-    end else begin
-      // remove original file
-      wbProgress('Deleting "' + lTo + '".');
-      if not SysUtils.DeleteFile(lTo) then begin
-        s := 'Could not delete "' + lTo + '".';
-        wbProgress(s);
-        if not aSilent then
-          MessageDlg(s, mtError, [mbOK], 0);
-        Exit;
-      end;
+    if xeDontBackup then
+      lActionText := 'Deleting "' + lTo + '".'
+    else
+      lActionText := 'Renaming "' + lTo + '" to "' + lBackup + '".';
+    wbProgress(lActionText);
+    if not xePrepareExistingTargetForRename(lTo, lBackup, xeDontBackup, lErrorText) then begin
+      wbProgress(lErrorText);
+      if not aSilent then
+        MessageDlg(lErrorText, mtError, [mbOK], 0);
+      Exit;
     end;
   end;
 

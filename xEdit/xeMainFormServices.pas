@@ -51,6 +51,11 @@ function xeEnsureBackupPath(const aBackupPath, aDataPath: string; const aUseBack
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
 function xeBuildModuleBackupPath(const aBackupPath, aTargetFileName: string; const aNow: TDateTime): string;
 function xeBuildTempSaveBackupPath(const aBackupPath, aFromFileName: string): string;
+function xePrepareExistingTargetForRename(
+  const aTargetFile, aBackupFile: string;
+  const aDeleteInsteadOfBackup: Boolean;
+  out aErrorText: string
+): Boolean;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -197,6 +202,22 @@ function xeBuildTempSaveBackupPath(const aBackupPath, aFromFileName: string): st
 begin
   Result := aBackupPath + aFromFileName.Replace('.save.', '.backup.');
   Result := xeFindAvailablePath(Result);
+end;
+
+function xePrepareExistingTargetForRename(
+  const aTargetFile, aBackupFile: string;
+  const aDeleteInsteadOfBackup: Boolean;
+  out aErrorText: string
+): Boolean;
+begin
+  if aDeleteInsteadOfBackup then begin
+    aErrorText := 'Could not delete "' + aTargetFile + '".';
+    Result := SysUtils.DeleteFile(aTargetFile);
+    Exit;
+  end;
+
+  aErrorText := 'Could not rename "' + aTargetFile + '" to "' + aBackupFile + '".';
+  Result := RenameFile(aTargetFile, aBackupFile);
 end;
 
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
