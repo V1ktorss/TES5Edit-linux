@@ -54,6 +54,10 @@ function xeBuildGameLinkSelection(const aRefID, aBaseID: TwbFormID): TxeGameLink
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
 function xeRequestThreadTerminate(const aThread: TThread): Boolean;
 function xeFinalizeBackgroundThread(const aThread: TThread): Boolean;
+function xeShouldWaitForLoaderShutdown(
+  const aLoaderStarted, aLoaderDone: Boolean;
+  var aForceTerminate: Boolean
+): Boolean;
 procedure xeWaitUntil(
   const aIsDone: TxeStopPredicate;
   const aPumpMessages: TxeNoArgProc;
@@ -415,6 +419,16 @@ begin
   end;
 
   wbForceTerminateThread(aThread.Handle);
+end;
+
+function xeShouldWaitForLoaderShutdown(
+  const aLoaderStarted, aLoaderDone: Boolean;
+  var aForceTerminate: Boolean
+): Boolean;
+begin
+  Result := aLoaderStarted and (not aLoaderDone);
+  if Result then
+    aForceTerminate := True;
 end;
 
 procedure xeWaitUntil(

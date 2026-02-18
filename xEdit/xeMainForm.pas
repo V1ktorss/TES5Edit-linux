@@ -6282,8 +6282,7 @@ var
 
 begin
   Action := caFree;
-  if LoaderStarted and not wbLoaderDone then begin
-    wbForceTerminate := True;
+  if xeShouldWaitForLoaderShutdown(LoaderStarted, wbLoaderDone, wbForceTerminate) then begin
     Caption := 'Waiting for Background Loader to terminate...';
     pnlClient.Enabled := False;
     try
