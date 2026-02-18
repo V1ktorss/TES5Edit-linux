@@ -49,6 +49,14 @@ function xeBuildPluggySelection(
 function xeBuildGameLinkSelection(const aRefID, aBaseID: TwbFormID): TxeGameLinkSelection;
 
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
+procedure xePersistMainFormLayout(
+  const aSettings: TMemIniFile;
+  const aFormName: string;
+  const aHasNavPanel: Boolean;
+  const aNavPanelWidth: Integer;
+  const aNavColumnWidths: array of Integer;
+  const aWindowState, aLeft, aTop, aWidth, aHeight: Integer
+);
 function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
 function xeEnsureBackupPath(const aBackupPath, aDataPath: string; const aUseBackup: Boolean): string;
@@ -363,6 +371,34 @@ begin
     Exit;
 
   aSettings.WriteString('UI', 'Theme', aStyleName);
+  aSettings.UpdateFile;
+end;
+
+procedure xePersistMainFormLayout(
+  const aSettings: TMemIniFile;
+  const aFormName: string;
+  const aHasNavPanel: Boolean;
+  const aNavPanelWidth: Integer;
+  const aNavColumnWidths: array of Integer;
+  const aWindowState, aLeft, aTop, aWidth, aHeight: Integer
+);
+var
+  i: Integer;
+begin
+  if not Assigned(aSettings) then
+    Exit;
+
+  if aHasNavPanel then
+    aSettings.WriteInteger(aFormName, 'pnlNavWidth', aNavPanelWidth);
+
+  for i := Low(aNavColumnWidths) to High(aNavColumnWidths) do
+    aSettings.WriteInteger(aFormName, 'vstNavColumnWidth' + i.ToString, aNavColumnWidths[i]);
+
+  aSettings.WriteInteger(aFormName, 'WindowState', aWindowState);
+  aSettings.WriteInteger(aFormName, 'Left', aLeft);
+  aSettings.WriteInteger(aFormName, 'Top', aTop);
+  aSettings.WriteInteger(aFormName, 'Width', aWidth);
+  aSettings.WriteInteger(aFormName, 'Height', aHeight);
   aSettings.UpdateFile;
 end;
 

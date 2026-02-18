@@ -6277,6 +6277,8 @@ procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 
 var
   i: Integer;
+  lNavPanelWidth: Integer;
+  lNavColumnWidths: array of Integer;
 
 begin
   Action := caFree;
@@ -6318,20 +6320,28 @@ begin
     Exit;
   end;
 
-  if Assigned(Settings) then begin
-    if Assigned(pnlNav) then
-      Settings.WriteInteger(Name, 'pnlNavWidth', pnlNav.Width);
-    if Assigned(vstNav) then
-      for i := 0 to Pred(vstNav.Header.Columns.Count) do
-        Settings.WriteInteger(Name, 'vstNavColumnWidth' + IntToStr(i), vstNav.Header.Columns[i].Width);
-
-      Settings.WriteInteger(Name, 'WindowState', Integer(WindowState));
-      Settings.WriteInteger(Name, 'Left', Left);
-      Settings.WriteInteger(Name, 'Top', Top);
-      Settings.WriteInteger(Name, 'Width', Width);
-      Settings.WriteInteger(Name, 'Height', Height);
-    Settings.UpdateFile;
+  SetLength(lNavColumnWidths, 0);
+  lNavPanelWidth := 0;
+  if Assigned(pnlNav) then
+    lNavPanelWidth := pnlNav.Width;
+  if Assigned(vstNav) then begin
+    SetLength(lNavColumnWidths, vstNav.Header.Columns.Count);
+    for i := 0 to Pred(vstNav.Header.Columns.Count) do
+      lNavColumnWidths[i] := vstNav.Header.Columns[i].Width;
   end;
+
+  xePersistMainFormLayout(
+    Settings,
+    Name,
+    Assigned(pnlNav),
+    lNavPanelWidth,
+    lNavColumnWidths,
+    Integer(WindowState),
+    Left,
+    Top,
+    Width,
+    Height
+  );
 
   SaveLogs(True);
 
