@@ -176,6 +176,11 @@ procedure xeBuildBackupModuleTempSavePlan(
   const aSourceFile, aSourceName, aBackupPath: string;
   out aBackupFile, aActionText: string
 );
+function xeTryRunBackupModuleFlow(
+  const aDataPath, aFromName, aBackupPath: string;
+  const aUseBackup: Boolean;
+  out aResolvedBackupPath, aActionText, aErrorText: string
+): Boolean;
 procedure xeBuildExistingRenameTargetPlan(
   const aTargetFile, aTargetName, aBackupPath: string;
   const aDeleteInsteadOfBackup: Boolean;
@@ -797,6 +802,31 @@ procedure xeBuildBackupModuleTempSavePlan(
 begin
   aBackupFile := xeBuildTempSaveBackupPath(aBackupPath, aSourceName);
   aActionText := 'Renaming "' + aSourceFile + '" to "' + aBackupFile + '".';
+end;
+
+function xeTryRunBackupModuleFlow(
+  const aDataPath, aFromName, aBackupPath: string;
+  const aUseBackup: Boolean;
+  out aResolvedBackupPath, aActionText, aErrorText: string
+): Boolean;
+var
+  lSourceFile: string;
+  lBackupFile: string;
+begin
+  aActionText := '';
+  if not xeTryPrepareSourceFileForRename(
+    aDataPath,
+    aFromName,
+    aBackupPath,
+    aUseBackup,
+    aResolvedBackupPath,
+    lSourceFile,
+    aErrorText
+  ) then
+    Exit(False);
+
+  xeBuildBackupModuleTempSavePlan(lSourceFile, aFromName, aResolvedBackupPath, lBackupFile, aActionText);
+  Result := xeTryBackupSourceFile(lSourceFile, aFromName, aResolvedBackupPath, lBackupFile, aErrorText);
 end;
 
 procedure xeBuildExistingRenameTargetPlan(
