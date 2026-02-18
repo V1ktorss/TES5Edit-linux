@@ -64,6 +64,7 @@ function xeTryRestoreModuleWriteTime(
 ): Boolean;
 function xeTryValidateSourceFileForRename(const aSourceFile: string; out aErrorText: string): Boolean;
 function xeTryGetModuleWriteTime(const aFileName: string; out aDateTime: TDateTime; out aErrorText: string): Boolean;
+function xeTryRenameFile(const aFromFile, aToFile: string; out aErrorText: string): Boolean;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -273,6 +274,16 @@ begin
     aErrorText := 'Could not get last modified time of "' + aFileName + '".';
     Result := False;
   end;
+end;
+
+function xeTryRenameFile(const aFromFile, aToFile: string; out aErrorText: string): Boolean;
+begin
+  Result := RenameFile(aFromFile, aToFile);
+  if Result then begin
+    aErrorText := '';
+    Exit;
+  end;
+  aErrorText := 'Could not rename "' + aFromFile + '" to "' + aToFile + '".';
 end;
 
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;

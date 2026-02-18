@@ -1563,11 +1563,10 @@ begin
 
   // rename temp save file to original
   wbProgress('Renaming "' + lFrom + '" to "' + lTo + '".');
-  if not RenameFile(lFrom, lTo) then begin
-    s := 'Could not rename "' + lFrom + '" to "' + lTo + '".';
+  if not xeTryRenameFile(lFrom, lTo, s) then begin
     wbProgress(s);
     if not aSilent then
-      MessageDlg('Could not rename "' + lFrom + '" to "' + lTo + '".', mtError, [mbOK], 0);
+      MessageDlg(s, mtError, [mbOK], 0);
     Exit;
   end;
 
@@ -1604,8 +1603,7 @@ begin
   lBackup := xeBuildTempSaveBackupPath(wbBackupPath, aFrom);
 
   wbProgress('Renaming "' + lFrom + '" to "' + lBackup + '".');
-  if not RenameFile(lFrom, lBackup) then begin
-    s := 'Could not rename "' + lFrom + '" to "' + lBackup + '".';
+  if not xeTryRenameFile(lFrom, lBackup, s) then begin
     wbProgress(s);
     if not aSilent then
       MessageDlg(s, mtError, [mbOK], 0);
