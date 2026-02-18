@@ -49,6 +49,8 @@ function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
 function xeEnsureBackupPath(const aBackupPath, aDataPath: string; const aUseBackup: Boolean): string;
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
+function xeBuildModuleBackupPath(const aBackupPath, aTargetFileName: string; const aNow: TDateTime): string;
+function xeBuildTempSaveBackupPath(const aBackupPath, aFromFileName: string): string;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -183,6 +185,18 @@ begin
     Result := aInitialPath + '_' + lTry.ToString;
     Inc(lTry);
   end;
+end;
+
+function xeBuildModuleBackupPath(const aBackupPath, aTargetFileName: string; const aNow: TDateTime): string;
+begin
+  Result := aBackupPath + ExtractFileName(aTargetFileName) + '.backup.' + FormatDateTime('yyyy_mm_dd_hh_nn_ss', aNow);
+  Result := xeFindAvailablePath(Result);
+end;
+
+function xeBuildTempSaveBackupPath(const aBackupPath, aFromFileName: string): string;
+begin
+  Result := aBackupPath + aFromFileName.Replace('.save.', '.backup.');
+  Result := xeFindAvailablePath(Result);
 end;
 
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;

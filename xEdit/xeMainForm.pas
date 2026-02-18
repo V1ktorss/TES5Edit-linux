@@ -1549,8 +1549,7 @@ begin
       if not aSilent then
         MessageDlg(s, mtError, [mbOK], 0);
     end;
-    lBackup := wbBackupPath + ExtractFileName(aTo) + '.backup.' + FormatDateTime('yyyy_mm_dd_hh_nn_ss', Now);
-    lBackup := xeFindAvailablePath(lBackup);
+    lBackup := xeBuildModuleBackupPath(wbBackupPath, aTo, Now);
     if not xeDontBackup then begin
       // backup original file
       wbProgress('Renaming "' + lTo + '" to "' + lBackup + '".');
@@ -1620,8 +1619,7 @@ begin
     Exit;
   end;
 
-  lBackup := wbBackupPath + aFrom.Replace('.save.', '.backup.');
-  lBackup := xeFindAvailablePath(lBackup);
+  lBackup := xeBuildTempSaveBackupPath(wbBackupPath, aFrom);
 
   wbProgress('Renaming "' + lFrom + '" to "' + lBackup + '".');
   if not RenameFile(lFrom, lBackup) then begin
