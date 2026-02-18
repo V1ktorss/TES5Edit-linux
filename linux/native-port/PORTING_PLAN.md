@@ -263,6 +263,7 @@ This document tracks what is already done for the native Linux path and what com
   - restored full enum mappings for selected previously reduced FPC branches in `Core/wbDefinitionsCommon.pas` (`wbArchtypeEnum`, `wbAxisEnum`, `wbBlendModeEnum`, `wbBlendOpEnum`)
   - restored additional full enum mappings in `Core/wbDefinitionsCommon.pas` for FPC parity (`wbAttackAnimationEnum`, `wbBodyLocationEnum`)
   - restored additional full enum mappings in `Core/wbDefinitionsCommon.pas` for FPC parity (`wbCrimeTypeEnum`, `wbEquipTypeEnum`)
+  - restored additional full enum mappings in `Core/wbDefinitionsCommon.pas` for FPC parity (`wbCRCValuesEnum`, `wbMenuModeEnum`)
 
 ## Risks
 

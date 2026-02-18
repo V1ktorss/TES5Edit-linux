@@ -6728,12 +6728,6 @@ begin
 {$ENDIF}
 {$ENDIF}
 
-{$IFDEF FPC}
-  wbCRCValuesEnum :=
-    wbEnum([
-      {0} 'None'
-    ]);
-{$ELSE}
   wbCRCValuesEnum :=
     wbEnum([
       {0}               'None'
@@ -6946,7 +6940,6 @@ begin
       Int64($6AF11190), 'QuestPathingRequest',
       Int64($FCD0CCC3), 'Water'
     ]);
-{$ENDIF}
 {$IFDEF FPC}
 {$IFDEF XEDIT_HEADLESS}
 {$ENDIF}
@@ -7033,15 +7026,6 @@ begin
     ], [
       -1, 'None'
     ]);
-{$IFDEF FPC}
-  wbMenuModeEnum :=
-    wbEnum([
-      {0} 'Any',
-      {1} 'Type: Character Interface',
-      {2} 'Type: Other',
-      {3} 'Type: Console'
-    ]);
-{$ELSE}
   wbMenuModeEnum :=
     wbEnum([
       {0}          'Any',
@@ -7127,7 +7111,6 @@ begin
       1083, IsFNV ('Minigame: Caravan', ''),
       1084, IsFNV ('Character Creation Traits', '')
     ]);
-{$ENDIF}
   wbMoodEnum :=
     wbEnum([
       {0}       'Neutral',
