@@ -22048,13 +22048,13 @@ var
 begin
   glFolder := wbDataPath + 'xEdit' + PathDelim;
   frmMain.PostAddMessage('[GameLink] Starting for: ' + glFolder);
-  LastStamp := xeGetFileWriteStampUtc(glFolder + 'xEditLink.ini');
+  LastStamp := xeGetGameLinkWatchStamp(glFolder);
   if LastStamp >= 0 then
     ChangeDetected;
   try
     repeat
       wbSleepMs(1000);
-      CurrentStamp := xeGetFileWriteStampUtc(glFolder + 'xEditLink.ini');
+      CurrentStamp := xeGetGameLinkWatchStamp(glFolder);
       if (CurrentStamp >= 0) and (CurrentStamp <> LastStamp) then begin
         LastStamp := CurrentStamp;
         ChangeDetected;

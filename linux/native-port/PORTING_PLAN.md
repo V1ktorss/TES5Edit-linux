@@ -299,6 +299,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved release-page parsing from `TwbCheckGitHubReleaseThread`/`TwbCheckNexusModsReleaseThread` into `xeMainFormServices` (`xeParseLatestXEditVersionFromGitHubJson`, `xeParseNexusVersionFromHtml`)
   - moved full Pluggy selection parse (`FormID/Base/Inventory/Enchantment/Spell`) into `xeMainFormServices.xeTryReadPluggySelection`
   - moved Pluggy watch-file timestamp aggregation into `xeMainFormServices.xeGetPluggyWatchStamp`
+  - moved GameLink watch-file timestamp lookup into `xeMainFormServices.xeGetGameLinkWatchStamp`
   - moved GameLink/Pluggy selection-change comparisons into `xeMainFormServices` (`xeHasGameLinkSelectionChanged`, `xeHasPluggySelectionChanged`)
   - introduced service-level selection records (`TxePluggySelection`, `TxeGameLinkSelection`) and switched thread change-detection paths to record-based helpers
 - Reduced GUI WinAPI import sites:
