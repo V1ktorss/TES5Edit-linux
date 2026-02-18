@@ -31,6 +31,13 @@ jobs:
           name: xedit-readiness-report
           path: linux/native-port/reports/xedit-readiness.txt
 
+      - name: Upload GUI surface report
+        uses: actions/upload-artifact@v4
+        with:
+          name: xedit-readiness-gui-surface
+          path: linux/native-port/reports/xedit-gui-surface.txt
+          if-no-files-found: ignore
+
       - name: Upload warning summary report
         uses: actions/upload-artifact@v4
         with:
