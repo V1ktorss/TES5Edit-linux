@@ -74,8 +74,8 @@ else
 fi
 
 # FPC names the binary after the program identifier (`xDump`) by default.
-# Normalize to the expected Linux artifact name.
-if [[ -x "$ALT_OUT_BIN" && ! -x "$OUT_BIN" ]]; then
+# Keep the normalized artifact (`xdump-core`) in sync on every build.
+if [[ -x "$ALT_OUT_BIN" ]]; then
   cp -f "$ALT_OUT_BIN" "$OUT_BIN"
   chmod +x "$OUT_BIN"
 fi
