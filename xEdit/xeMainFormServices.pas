@@ -47,6 +47,7 @@ function xeBuildGameLinkSelection(const aRefID, aBaseID: TwbFormID): TxeGameLink
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
 function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
+function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -159,6 +160,18 @@ begin
     lStamp := xeGetFileWriteStampUtc(aFileNames[i]);
     if lStamp > Result then
       Result := lStamp;
+  end;
+end;
+
+function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
+var
+  lTry: Integer;
+begin
+  Result := aInitialPath;
+  lTry := 1;
+  while FileExists(Result) and (lTry < aMaxAttempts) do begin
+    Result := aInitialPath + '_' + lTry.ToString;
+    Inc(lTry);
   end;
 end;
 

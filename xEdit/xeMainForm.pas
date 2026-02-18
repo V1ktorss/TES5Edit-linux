@@ -1520,7 +1520,6 @@ var
   lBackup     : string;
   s           : string;
   OldDateTime : TDateTime;
-  i           : Integer;
 begin
   Result := False;
 
@@ -1553,12 +1552,7 @@ begin
         MessageDlg(s, mtError, [mbOK], 0);
     end;
     lBackup := wbBackupPath + ExtractFileName(aTo) + '.backup.' + FormatDateTime('yyyy_mm_dd_hh_nn_ss', Now);
-    s := lBackup;
-    i := 1;
-    while FileExists(lBackup) and (i < 1000) do begin
-      lBackup := s + '_' + i.ToString;
-      Inc(i);
-    end;
+    lBackup := xeFindAvailablePath(lBackup);
     if not xeDontBackup then begin
       // backup original file
       wbProgress('Renaming "' + lTo + '" to "' + lBackup + '".');
@@ -1611,7 +1605,6 @@ var
   lFrom       : string;
   lBackup     : string;
   s           : string;
-  i           : Integer;
 begin
   Result := False;
 
@@ -1632,12 +1625,7 @@ begin
   end;
 
   lBackup := wbBackupPath + aFrom.Replace('.save.', '.backup.');
-  s := lBackup;
-  i := 1;
-  while FileExists(lBackup) and (i < 1000) do begin
-    lBackup := s + '_' + i.ToString;
-    Inc(i);
-  end;
+  lBackup := xeFindAvailablePath(lBackup);
 
   wbProgress('Renaming "' + lFrom + '" to "' + lBackup + '".');
   if not RenameFile(lFrom, lBackup) then begin
