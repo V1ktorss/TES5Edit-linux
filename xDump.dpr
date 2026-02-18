@@ -1120,6 +1120,38 @@ var
   Found           : Boolean;
   b               : TBytes;
   SourceName      : string;
+  ForcedToolMode  : string;
+  ForcedGameMode  : string;
+
+  function HasCmdSwitch(const aName: string): Boolean;
+  var
+    k: Integer;
+    p, n: string;
+  begin
+    Result := False;
+    n := LowerCase(aName);
+    for k := 1 to ParamCount do begin
+      p := ParamStr(k);
+      if p = '' then
+        Continue;
+      if not (p[1] in ['-', '/']) then
+        Continue;
+
+      Delete(p, 1, 1);
+      if (p <> '') and (p[1] in ['-', '/']) then
+        Delete(p, 1, 1);
+
+      if Pos(':', p) > 0 then
+        p := Copy(p, 1, Pos(':', p) - 1);
+      if Pos('=', p) > 0 then
+        p := Copy(p, 1, Pos('=', p) - 1);
+
+      if SameText(p, n) then begin
+        Result := True;
+        Exit;
+      end;
+    end;
+  end;
 begin
   {$IFDEF FPC}
   DefaultFormatSettings.DecimalSeparator := '.';
@@ -1146,7 +1178,7 @@ begin
       for ts := Low(TwbToolSource) to High(TwbToolSource) do begin
         s := GetEnumName(TypeInfo(TwbToolSource), Ord(ts) );
         Delete(s, 1, 2);
-        if FindCmdLineSwitch(s) then begin
+        if HasCmdSwitch(s) then begin
           wbToolSource := ts;
           Found := True;
           Break;
@@ -1169,7 +1201,7 @@ begin
       for tm := Low(TwbToolMode) to High(TwbToolMode) do begin
         s := GetEnumName(TypeInfo(TwbToolMode), Ord(tm) );
         Delete(s, 1, 2);
-        if FindCmdLineSwitch(s) then begin
+        if HasCmdSwitch(s) then begin
           wbToolMode := tm;
           Found := True;
           Break;
@@ -1186,15 +1218,28 @@ begin
           end;
         end;
       if not Found then begin
-        WriteLn(ErrOutput, 'Can''t determine ToolMode.');
-        Exit;
+        ForcedToolMode := Trim(GetEnvironmentVariable('XDUMP_FORCE_TOOLMODE'));
+        if ForcedToolMode <> '' then
+          for tm := Low(TwbToolMode) to High(TwbToolMode) do begin
+            s := GetEnumName(TypeInfo(TwbToolMode), Ord(tm));
+            Delete(s, 1, 2);
+            if SameText(s, ForcedToolMode) then begin
+              wbToolMode := tm;
+              Found := True;
+              Break;
+            end;
+          end;
+        if not Found then begin
+          WriteLn(ErrOutput, 'Can''t determine ToolMode.');
+          Exit;
+        end;
       end;
 
       Found := False;
       for gm := Low(TwbGameMode) to High(TwbGameMode) do begin
         s := GetEnumName(TypeInfo(TwbGameMode), Ord(gm) );
         Delete(s, 1, 2);
-        if FindCmdLineSwitch(s) then begin
+        if HasCmdSwitch(s) then begin
           wbGameMode := gm;
           Found := True;
           Break;
@@ -1211,8 +1256,21 @@ begin
           end;
         end;
       if not Found then begin
-        WriteLn(ErrOutput, 'Can''t determine GameMode.');
-        Exit;
+        ForcedGameMode := Trim(GetEnvironmentVariable('XDUMP_FORCE_GAMEMODE'));
+        if ForcedGameMode <> '' then
+          for gm := Low(TwbGameMode) to High(TwbGameMode) do begin
+            s := GetEnumName(TypeInfo(TwbGameMode), Ord(gm));
+            Delete(s, 1, 2);
+            if SameText(s, ForcedGameMode) then begin
+              wbGameMode := gm;
+              Found := True;
+              Break;
+            end;
+          end;
+        if not Found then begin
+          WriteLn(ErrOutput, 'Can''t determine GameMode.');
+          Exit;
+        end;
       end;
 
       wbToolName := GetEnumName(TypeInfo(TwbToolMode), Ord(wbToolMode) );
