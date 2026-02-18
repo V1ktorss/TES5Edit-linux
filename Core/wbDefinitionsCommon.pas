@@ -6458,15 +6458,6 @@ begin
 {$ENDIF}
 {$ENDIF}
 
-{$IFDEF FPC}
-  wbArchtypeEnum :=
-    wbEnum([
-      {0} 'Value Modifier',
-      {1} 'Script',
-      {2} 'Dispel',
-      {3} 'Cure Disease'
-    ]);
-{$ELSE}
   wbArchtypeEnum :=
     wbEnum([
       {0} 'Value Modifier',
@@ -6490,7 +6481,6 @@ begin
       35, IsFNV('Limb Condition', ''),
       36, IsFNV('Turbo', '')
     ]);
-{$ENDIF}
 {$IFDEF FPC}
 {$IFDEF XEDIT_HEADLESS}
 {$ENDIF}
@@ -6638,42 +6628,17 @@ begin
 {$ENDIF}
 {$ENDIF}
 
-{$IFDEF FPC}
-  wbAxisEnum :=
-    wbEnum([
-      {0} 'X',
-      {1} 'Y',
-      {2} 'Z'
-    ]);
-{$ELSE}
   wbAxisEnum :=
     wbEnum([], [
       88, 'X',
       89, 'Y',
       90, 'Z'
     ]);
-{$ENDIF}
 {$IFDEF FPC}
 {$IFDEF XEDIT_HEADLESS}
 {$ENDIF}
 {$ENDIF}
 
-{$IFDEF FPC}
-  wbBlendModeEnum :=
-    wbEnum([
-      {0}  'Zero',
-      {1}  'One',
-      {2}  'Source Color',
-      {3}  'Source Inverse Color',
-      {4}  'Source Alpha',
-      {5}  'Source Inverted Alpha',
-      {6}  'Dest Alpha',
-      {7}  'Dest Inverted Alpha',
-      {8}  'Dest Color',
-      {9}  'Dest Inverse Color',
-      {10} 'Source Alpha SAT'
-    ]);
-{$ELSE}
   wbBlendModeEnum :=
     wbEnum([], [
       1,  'Zero',
@@ -6688,22 +6653,11 @@ begin
       10, 'Dest Inverse Color',
       11, 'Source Alpha SAT'
     ]);
-{$ENDIF}
 {$IFDEF FPC}
 {$IFDEF XEDIT_HEADLESS}
 {$ENDIF}
 {$ENDIF}
 
-{$IFDEF FPC}
-  wbBlendOpEnum :=
-    wbEnum([
-      {0} 'Add',
-      {1} 'Subtract',
-      {2} 'Reverse Subtract',
-      {3} 'Minimum',
-      {4} 'Maximum'
-    ]);
-{$ELSE}
   wbBlendOpEnum :=
     wbEnum([], [
       1, 'Add',
@@ -6712,7 +6666,6 @@ begin
       4, 'Minimum',
       5, 'Maximum'
     ]);
-{$ENDIF}
 {$IFDEF FPC}
 {$IFDEF XEDIT_HEADLESS}
 {$ENDIF}
@@ -7626,16 +7579,7 @@ begin
     .SetDontShow(wbCellInteriorDontShow)
     .SetIsRemovable(wbCellGridIsRemovable)
     .IncludeFlag(dfCollapsed, wbCollapseOther));
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-  wbDATAPosRot :=
-    IwbRecordMemberDef(wbByteArray(DATA, 'Position/Rotation (headless fallback)', 24).SetRequired);
-{$ELSE}
   wbDATAPosRot := wbVec3PosRot(DATA).SetRequired;
-{$ENDIF}
-{$ELSE}
-  wbDATAPosRot := wbVec3PosRot(DATA).SetRequired;
-{$ENDIF}
 
   wbFaction :=
     IwbRecordMemberDef(wbStructSK(SNAM, [0], 'Faction', [

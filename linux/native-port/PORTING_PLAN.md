@@ -259,6 +259,8 @@ This document tracks what is already done for the native Linux path and what com
   - verified:
     - `linux/native-port/build-xdump.sh` succeeds and produces `linux/bin/xdump-core`
     - `linux/native-port/smoke-test-xdump-headless.sh` passes (`-h`, `-dummy`, mode-sanity, invalid-`-D` lane)
+  - removed `wbDATAPosRot` headless byte-array fallback in `Core/wbDefinitionsCommon.pas`; headless/FPC now uses `wbVec3PosRot(DATA)` like non-headless path
+  - restored full enum mappings for selected previously reduced FPC branches in `Core/wbDefinitionsCommon.pas` (`wbArchtypeEnum`, `wbAxisEnum`, `wbBlendModeEnum`, `wbBlendOpEnum`)
 
 ## Risks
 
