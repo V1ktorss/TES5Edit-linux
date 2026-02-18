@@ -21856,40 +21856,32 @@ end;
 
 procedure TPluggyLinkThread.ChangeDetected;
 var
-  FormID, BaseFormID, InventoryFormID, EnchantmentFormID, SpellFormID : TwbFormID;
+  LastSelection: TxePluggySelection;
+  CurrentSelection: TxePluggySelection;
 begin
-  if not xeTryReadPluggySelection(
-    plFolder,
-    wbAppName,
-    FormID,
-    BaseFormID,
-    InventoryFormID,
-    EnchantmentFormID,
-    SpellFormID
-  ) then
+  if not xeTryReadPluggySelection(plFolder, wbAppName, CurrentSelection) then
     Exit;
 
+  LastSelection.FormID := plLastFormID;
+  LastSelection.BaseFormID := plLastBaseFormID;
+  LastSelection.InventoryFormID := plLastInventoryFormID;
+  LastSelection.EnchantmentFormID := plLastEnchantmentFormID;
+  LastSelection.SpellFormID := plLastSpellFormID;
 
-  if xeHasPluggySelectionChanged(
-    plLastFormID,
-    plLastBaseFormID,
-    plLastInventoryFormID,
-    plLastEnchantmentFormID,
-    plLastSpellFormID,
-    FormID,
-    BaseFormID,
-    InventoryFormID,
-    EnchantmentFormID,
-    SpellFormID
-  ) then begin
+  if xeHasPluggySelectionChanged(LastSelection, CurrentSelection) then begin
+    plLastFormID := CurrentSelection.FormID;
+    plLastBaseFormID := CurrentSelection.BaseFormID;
+    plLastInventoryFormID := CurrentSelection.InventoryFormID;
+    plLastEnchantmentFormID := CurrentSelection.EnchantmentFormID;
+    plLastSpellFormID := CurrentSelection.SpellFormID;
 
-    plLastFormID := FormID;
-    plLastBaseFormID := BaseFormID;
-    plLastInventoryFormID := InventoryFormID;
-    plLastEnchantmentFormID := EnchantmentFormID;
-    plLastSpellFormID := SpellFormID;
-
-    frmMain.PostPluggyChange(FormID, BaseFormID, InventoryFormID, EnchantmentFormID, SpellFormID);
+    frmMain.PostPluggyChange(
+      CurrentSelection.FormID,
+      CurrentSelection.BaseFormID,
+      CurrentSelection.InventoryFormID,
+      CurrentSelection.EnchantmentFormID,
+      CurrentSelection.SpellFormID
+    );
   end;
 end;
 
@@ -22032,20 +22024,21 @@ procedure TGameLinkThread.ChangeDetected;
 const
   cGameLinkFile = 'xEditLink.ini';
 var
-  SelectedRefID: TwbFormID;
-  SelectedBaseID: TwbFormID;
+  LastSelection: TxeGameLinkSelection;
+  CurrentSelection: TxeGameLinkSelection;
 begin
-  if not xeTryReadGameLinkSelection(glFolder + cGameLinkFile, SelectedRefID, SelectedBaseID) then
+  if not xeTryReadGameLinkSelection(glFolder + cGameLinkFile, CurrentSelection) then
     Exit;
 
-  if not SelectedRefID.IsNull then
-    if xeHasGameLinkSelectionChanged(glLastFormID, glLastBaseFormID, SelectedRefID, SelectedBaseID) then begin
-
-      glLastFormID := SelectedRefID;
-      glLastBaseFormID := SelectedBaseID;
-
-      frmMain.PostPluggyChange(SelectedRefID, SelectedBaseID, TwbFormID.Null, TwbFormID.Null, TwbFormID.Null);
+  if not CurrentSelection.RefID.IsNull then begin
+    LastSelection.RefID := glLastFormID;
+    LastSelection.BaseID := glLastBaseFormID;
+    if xeHasGameLinkSelectionChanged(LastSelection, CurrentSelection) then begin
+      glLastFormID := CurrentSelection.RefID;
+      glLastBaseFormID := CurrentSelection.BaseID;
+      frmMain.PostPluggyChange(CurrentSelection.RefID, CurrentSelection.BaseID, TwbFormID.Null, TwbFormID.Null, TwbFormID.Null);
     end;
+  end;
 end;
 
 procedure TGameLinkThread.Execute;

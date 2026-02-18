@@ -300,6 +300,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved full Pluggy selection parse (`FormID/Base/Inventory/Enchantment/Spell`) into `xeMainFormServices.xeTryReadPluggySelection`
   - moved Pluggy watch-file timestamp aggregation into `xeMainFormServices.xeGetPluggyWatchStamp`
   - moved GameLink/Pluggy selection-change comparisons into `xeMainFormServices` (`xeHasGameLinkSelectionChanged`, `xeHasPluggySelectionChanged`)
+  - introduced service-level selection records (`TxePluggySelection`, `TxeGameLinkSelection`) and switched thread change-detection paths to record-based helpers
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`

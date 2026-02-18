@@ -22,21 +22,39 @@ uses
   wbInterface,
   wbHelpers;
 
+type
+  TxePluggySelection = record
+    FormID: TwbFormID;
+    BaseFormID: TwbFormID;
+    InventoryFormID: TwbFormID;
+    EnchantmentFormID: TwbFormID;
+    SpellFormID: TwbFormID;
+  end;
+
+  TxeGameLinkSelection = record
+    RefID: TwbFormID;
+    BaseID: TwbFormID;
+  end;
+
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
 function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
 function xeGetPluggyWatchStamp(const aFolder, aAppName: string): Int64;
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
 function xeTryReadGameLinkSelection(const aFileName: string; out aSelectedRefID, aSelectedBaseID: TwbFormID): Boolean;
+function xeTryReadGameLinkSelection(const aFileName: string; out aSelection: TxeGameLinkSelection): Boolean;
 function xeTryReadPluggySelection(const aFolder, aAppName: string;
   out aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID): Boolean;
+function xeTryReadPluggySelection(const aFolder, aAppName: string; out aSelection: TxePluggySelection): Boolean;
 function xeHasPluggySelectionChanged(
   const aLastFormID, aLastBaseFormID, aLastInventoryFormID, aLastEnchantmentFormID, aLastSpellFormID: TwbFormID;
   const aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID
 ): Boolean;
+function xeHasPluggySelectionChanged(const aLast, aCurrent: TxePluggySelection): Boolean;
 function xeHasGameLinkSelectionChanged(
   const aLastRefID, aLastBaseID, aRefID, aBaseID: TwbFormID
 ): Boolean;
+function xeHasGameLinkSelectionChanged(const aLast, aCurrent: TxeGameLinkSelection): Boolean;
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
 function xeParseNexusVersionFromHtml(const aHtml: string): TwbVersion;
 
@@ -176,6 +194,11 @@ begin
   end;
 end;
 
+function xeTryReadGameLinkSelection(const aFileName: string; out aSelection: TxeGameLinkSelection): Boolean;
+begin
+  Result := xeTryReadGameLinkSelection(aFileName, aSelection.RefID, aSelection.BaseID);
+end;
+
 function xeTryReadPluggySelection(const aFolder, aAppName: string;
   out aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID): Boolean;
 const
@@ -216,6 +239,19 @@ begin
   Result := True;
 end;
 
+function xeTryReadPluggySelection(const aFolder, aAppName: string; out aSelection: TxePluggySelection): Boolean;
+begin
+  Result := xeTryReadPluggySelection(
+    aFolder,
+    aAppName,
+    aSelection.FormID,
+    aSelection.BaseFormID,
+    aSelection.InventoryFormID,
+    aSelection.EnchantmentFormID,
+    aSelection.SpellFormID
+  );
+end;
+
 function xeHasPluggySelectionChanged(
   const aLastFormID, aLastBaseFormID, aLastInventoryFormID, aLastEnchantmentFormID, aLastSpellFormID: TwbFormID;
   const aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID
@@ -229,11 +265,32 @@ begin
     (aSpellFormID <> aLastSpellFormID);
 end;
 
+function xeHasPluggySelectionChanged(const aLast, aCurrent: TxePluggySelection): Boolean;
+begin
+  Result := xeHasPluggySelectionChanged(
+    aLast.FormID,
+    aLast.BaseFormID,
+    aLast.InventoryFormID,
+    aLast.EnchantmentFormID,
+    aLast.SpellFormID,
+    aCurrent.FormID,
+    aCurrent.BaseFormID,
+    aCurrent.InventoryFormID,
+    aCurrent.EnchantmentFormID,
+    aCurrent.SpellFormID
+  );
+end;
+
 function xeHasGameLinkSelectionChanged(
   const aLastRefID, aLastBaseID, aRefID, aBaseID: TwbFormID
 ): Boolean;
 begin
   Result := (aRefID <> aLastRefID) or (aBaseID <> aLastBaseID);
+end;
+
+function xeHasGameLinkSelectionChanged(const aLast, aCurrent: TxeGameLinkSelection): Boolean;
+begin
+  Result := xeHasGameLinkSelectionChanged(aLast.RefID, aLast.BaseID, aCurrent.RefID, aCurrent.BaseID);
 end;
 
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
