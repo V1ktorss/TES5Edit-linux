@@ -16004,22 +16004,22 @@ begin
 
             end;
 
-            if SavedThisOne then
-              xeFinalizeSavedModuleRenameFlow(
-                FilesToRename,
-                s,
-                u,
-                wbDataPath,
-                NeedsRename,
-                TryDirectRename,
-                xeDontBackup,
-                aSilent,
-                AnyErrors,
-                BackupWarningGiven,
-                @DoRenameModule,
-                @DoBackupModule,
-                @wbProgress
-              );
+            xeFinalizeSavedModuleRenameFlowIfSaved(
+              SavedThisOne,
+              FilesToRename,
+              s,
+              u,
+              wbDataPath,
+              NeedsRename,
+              TryDirectRename,
+              xeDontBackup,
+              aSilent,
+              AnyErrors,
+              BackupWarningGiven,
+              @DoRenameModule,
+              @DoBackupModule,
+              @wbProgress
+            );
 
             DoProcessMessages;
             tmrMessagesTimer(nil);

@@ -195,6 +195,19 @@ procedure xeFinalizeSavedModuleRenameFlow(
   const aBackupModule: TxeBackupModuleFunc;
   const aProgress: TxeProgressProc
 );
+procedure xeFinalizeSavedModuleRenameFlowIfSaved(
+  const aSavedThisOne: Boolean;
+  var aFilesToRename: TStringList;
+  const aFromTempName, aToFinalName, aDataPath: string;
+  var aNeedsRename: Boolean;
+  const aTryDirectRename: Boolean;
+  const aDeleteInsteadOfBackup: Boolean;
+  const aSilent: Boolean;
+  var aAnyErrors, aBackupWarningGiven: Boolean;
+  const aRenameModule: TxeRenameModuleFunc;
+  const aBackupModule: TxeBackupModuleFunc;
+  const aProgress: TxeProgressProc
+);
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -870,6 +883,40 @@ begin
     aBackupWarningGiven,
     aSilent,
     aDataPath,
+    aBackupModule,
+    aProgress
+  );
+end;
+
+procedure xeFinalizeSavedModuleRenameFlowIfSaved(
+  const aSavedThisOne: Boolean;
+  var aFilesToRename: TStringList;
+  const aFromTempName, aToFinalName, aDataPath: string;
+  var aNeedsRename: Boolean;
+  const aTryDirectRename: Boolean;
+  const aDeleteInsteadOfBackup: Boolean;
+  const aSilent: Boolean;
+  var aAnyErrors, aBackupWarningGiven: Boolean;
+  const aRenameModule: TxeRenameModuleFunc;
+  const aBackupModule: TxeBackupModuleFunc;
+  const aProgress: TxeProgressProc
+);
+begin
+  if not aSavedThisOne then
+    Exit;
+
+  xeFinalizeSavedModuleRenameFlow(
+    aFilesToRename,
+    aFromTempName,
+    aToFinalName,
+    aDataPath,
+    aNeedsRename,
+    aTryDirectRename,
+    aDeleteInsteadOfBackup,
+    aSilent,
+    aAnyErrors,
+    aBackupWarningGiven,
+    aRenameModule,
     aBackupModule,
     aProgress
   );
