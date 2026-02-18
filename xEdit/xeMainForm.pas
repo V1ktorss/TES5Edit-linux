@@ -16022,13 +16022,15 @@ begin
             end;
 
             if SavedThisOne then begin
-              if NeedsRename and TryDirectRename then try
-                if not DoRenameModule(s, u, True) then begin
-                  AnyErrors := True;
-                  wbProgress('Direct save failed. Will queue save for renaming on shutdown.');
-                end else
-                  NeedsRename := False;
-              except end;
+              xeHandleDirectRenameAttempt(
+                TryDirectRename,
+                NeedsRename,
+                s,
+                u,
+                @DoRenameModule,
+                AnyErrors,
+                @wbProgress
+              );
 
               if NeedsRename then begin
                 // s - rename from, relative to DataPath

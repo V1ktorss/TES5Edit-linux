@@ -120,6 +120,14 @@ procedure xeProcessQueuedRenamesAfterDirectSave(
   const aBackupModule: TxeBackupModuleFunc;
   const aProgress: TxeProgressProc
 );
+procedure xeHandleDirectRenameAttempt(
+  const aTryDirectRename: Boolean;
+  var aNeedsRename: Boolean;
+  const aFromTempName, aToFinalName: string;
+  const aRenameModule: TxeRenameModuleFunc;
+  var aAnyErrors: Boolean;
+  const aProgress: TxeProgressProc
+);
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -556,6 +564,32 @@ begin
       if Assigned(aBackupModule) then
         aBackupModule(lSourceName, aSilent);
     end;
+  end;
+end;
+
+procedure xeHandleDirectRenameAttempt(
+  const aTryDirectRename: Boolean;
+  var aNeedsRename: Boolean;
+  const aFromTempName, aToFinalName: string;
+  const aRenameModule: TxeRenameModuleFunc;
+  var aAnyErrors: Boolean;
+  const aProgress: TxeProgressProc
+);
+begin
+  if not (aNeedsRename and aTryDirectRename) then
+    Exit;
+  if not Assigned(aRenameModule) then
+    Exit;
+
+  try
+    if not aRenameModule(aFromTempName, aToFinalName, True) then begin
+      aAnyErrors := True;
+      if Assigned(aProgress) then
+        aProgress('Direct save failed. Will queue save for renaming on shutdown.');
+    end else
+      aNeedsRename := False;
+  except
+    // Keep prior behavior: ignore exception and keep queued-rename path.
   end;
 end;
 
