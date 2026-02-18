@@ -65,6 +65,11 @@ function xeBuildSaveUnhandledExceptionMessage(
 ): string;
 function xeBuildSaveFailureSummaryMessage(const aElapsed: TDateTime): string;
 function xeBuildSaveSuccessSummaryMessage(const aElapsed: TDateTime): string;
+function xeResolveSaveResult(
+  const aElapsed: TDateTime;
+  const aAnyErrors, aSavedAny: Boolean;
+  out aFailureMessage, aSuccessMessage: string
+): TwbSaveResult;
 function xeBuildTempSaveSuffix(const aNow: TDateTime): string;
 function xeTryEnsureParentDirectoryForFile(const aFullPath: string; out aErrorText: string): Boolean;
 procedure xeBuildSaveTargetFileName(
@@ -375,6 +380,26 @@ end;
 function xeBuildSaveSuccessSummaryMessage(const aElapsed: TDateTime): string;
 begin
   Result := '[' + wbFormatElapsedTime(aElapsed) + '] Done saving.';
+end;
+
+function xeResolveSaveResult(
+  const aElapsed: TDateTime;
+  const aAnyErrors, aSavedAny: Boolean;
+  out aFailureMessage, aSuccessMessage: string
+): TwbSaveResult;
+begin
+  aFailureMessage := '';
+  aSuccessMessage := '';
+  Result := srNothingToDo;
+
+  if aAnyErrors then
+    aFailureMessage := xeBuildSaveFailureSummaryMessage(aElapsed);
+  if aSavedAny then begin
+    aSuccessMessage := xeBuildSaveSuccessSummaryMessage(aElapsed);
+    Result := srAllDone;
+  end;
+  if aAnyErrors then
+    Result := srError;
 end;
 
 function xeBuildTempSaveSuffix(const aNow: TDateTime): string;

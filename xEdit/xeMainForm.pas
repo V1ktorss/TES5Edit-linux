@@ -15858,6 +15858,8 @@ var
   FoundSomething              : Boolean;
   CRC                         : TwbCRC32;
   BackupWarningGiven          : Boolean;
+  SaveFailureMessage          : string;
+  SaveSuccessMessage          : string;
 
 const
   ResetModifiedFromBool : array[Boolean] of TwbResetModified =
@@ -16038,14 +16040,13 @@ begin
       end;
     end;
 
-    if AnyErrors then
-      AddMessage(xeBuildSaveFailureSummaryMessage(Now - wbStartTime));
-    if SavedAny then begin
-      AddMessage(xeBuildSaveSuccessSummaryMessage(Now - wbStartTime));
-      Result := srAllDone;
-    end;
-    if AnyErrors then
-      Exit(srError);
+    Result := xeResolveSaveResult(Now - wbStartTime, AnyErrors, SavedAny, SaveFailureMessage, SaveSuccessMessage);
+    if SaveFailureMessage <> '' then
+      AddMessage(SaveFailureMessage);
+    if SaveSuccessMessage <> '' then
+      AddMessage(SaveSuccessMessage);
+    if Result = srError then
+      Exit;
   finally
     Free;
     InvalidateElementsTreeView(NoNodes);
