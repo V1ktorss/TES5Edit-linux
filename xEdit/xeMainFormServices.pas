@@ -19,13 +19,16 @@ uses
   IOUtils,
   IniFiles,
   wbStreams,
-  wbInterface;
+  wbInterface,
+  wbHelpers;
 
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
 function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
 function xeTryReadGameLinkSelection(const aFileName: string; out aSelectedRefID, aSelectedBaseID: TwbFormID): Boolean;
+function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
+function xeParseNexusVersionFromHtml(const aHtml: string): TwbVersion;
 
 implementation
 
@@ -152,6 +155,59 @@ begin
   finally
     lStream.Free;
   end;
+end;
+
+function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
+var
+  J: TJsonBaseObject;
+  A: TJsonArray;
+  i: Integer;
+  s: string;
+  v: TwbVersion;
+begin
+  Result := '';
+  J := TJsonBaseObject.ParseUtf8(aJsonUtf8);
+  try
+    if J is TJsonArray then begin
+      A := J as TJsonArray;
+      for i := 0 to Pred(A.Count) do begin
+        s := A.O[i].S['tag_name'];
+        if s.StartsWith('xedit-') then begin
+          v := Copy(s, Succ(Length('xedit-')), High(Integer));
+          if v > Result then
+            Result := v;
+        end;
+      end;
+    end;
+  finally
+    J.Free;
+  end;
+end;
+
+function xeParseNexusVersionFromHtml(const aHtml: string): TwbVersion;
+var
+  i: Integer;
+  lHtml: string;
+const
+  csCheckFor = 'property="twitter:label1" content="version"';
+  csExtractAfter = 'property="twitter:data1" content="';
+begin
+  Result := '';
+  lHtml := aHtml.ToLowerInvariant;
+  if not lHtml.Contains(csCheckFor) then
+    Exit;
+
+  i := Pos(csExtractAfter, lHtml);
+  if i <= 0 then
+    Exit;
+
+  Delete(lHtml, 1, i + Pred(Length(csExtractAfter)));
+  i := Pos('"', lHtml);
+  if i <= 0 then
+    Exit;
+
+  Delete(lHtml, i, High(Integer));
+  Result := lHtml;
 end;
 
 end.

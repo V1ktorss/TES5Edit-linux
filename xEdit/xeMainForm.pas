@@ -22136,34 +22136,15 @@ end;
 
 procedure TwbCheckGitHubReleaseThread.Execute;
 var
-  J: TJsonBaseObject;
-  A: TJsonArray;
-  i: Integer;
-  s: string;
-
-  v, vmax: TwbVersion;
+  vmax: TwbVersion;
 begin
   vmax := '';
   try
-    J := TJsonBaseObject.ParseUtf8(GetUrlContent('https://api.github.com/repos/TES5Edit/TES5Edit/releases'));
-    try
-      if J is TJsonArray then begin
-        A := J as TJsonArray;
-        for i := 0 to Pred(A.Count) do try
-          s := A.O[i].S['tag_name'];
-          if s.StartsWith('xedit-') then try
-            v := Copy(s, Succ(Length('xedit-')), High(Integer));
-            if v > vmax then
-              vmax := v;
-          except
-          end;
-        except
-        end;
-      end;
-    finally
-      J.Free;
-    end;
-  except end;
+    vmax := xeParseLatestXEditVersionFromGitHubJson(
+      GetUrlContent('https://api.github.com/repos/TES5Edit/TES5Edit/releases')
+    );
+  except
+  end;
   Synchronize(procedure begin
     if Assigned(frmMain) then begin
       frmMain.GitHubVersion := vmax;
@@ -22176,12 +22157,8 @@ end;
 
 procedure TwbCheckNexusModsReleaseThread.Execute;
 var
-  i: Integer;
   s: string;
   vmax: TwbVersion;
-const
-  csCheckFor = 'property="twitter:label1" content="version"';
-  csExtractAfter = 'property="twitter:data1" content="';
 begin
   if wbNexusModsUrl = '' then
     Exit;
@@ -22189,19 +22166,9 @@ begin
   vmax := '';
   try
     s := GetUrlContent(wbNexusModsUrl);
-    s := s.ToLowerInvariant;
-    if s.Contains(csCheckFor) then begin
-      i := Pos(csExtractAfter, s);
-      if i > 0 then begin
-        Delete(s, 1, i + Pred(Length(csExtractAfter)));
-        i := Pos('"', s);
-        if i > 0 then begin
-          Delete(s, i, High(Integer));
-          vmax := s;
-        end;
-      end;
-    end;
-  except end;
+    vmax := xeParseNexusVersionFromHtml(s);
+  except
+  end;
   Synchronize(procedure begin
     if Assigned(frmMain) then begin
       frmMain.NexusModsVersion := vmax;
