@@ -21887,31 +21887,19 @@ begin
 end;
 
 procedure TPluggyLinkThread.Execute;
-const
-  cRefCsv = 'Pluggy' + wbAppName + 'ViewWorld.csv';
-  cInventoryCsv = 'Pluggy' + wbAppName + 'ViewInventory.csv';
-  cSpellsCsv = 'Pluggy' + wbAppName + 'ViewSpells.csv';
 var
   LastStamp: Int64;
   CurrentStamp: Int64;
 begin
   plFolder := wbMyGamesTheGamePath + 'Pluggy' + PathDelim + 'User Files' + PathDelim;
   frmMain.PostAddMessage('[PluggyLink] Starting for: ' + plFolder);
-  LastStamp := xeGetNewestFileWriteStampUtc([
-    plFolder + cRefCsv,
-    plFolder + cInventoryCsv,
-    plFolder + cSpellsCsv
-  ]);
+  LastStamp := xeGetPluggyWatchStamp(plFolder, wbAppName);
   if LastStamp >= 0 then
     ChangeDetected;
   try
     repeat
       wbSleepMs(1000);
-      CurrentStamp := xeGetNewestFileWriteStampUtc([
-        plFolder + cRefCsv,
-        plFolder + cInventoryCsv,
-        plFolder + cSpellsCsv
-      ]);
+      CurrentStamp := xeGetPluggyWatchStamp(plFolder, wbAppName);
       if (CurrentStamp >= 0) and (CurrentStamp <> LastStamp) then begin
         LastStamp := CurrentStamp;
         ChangeDetected;

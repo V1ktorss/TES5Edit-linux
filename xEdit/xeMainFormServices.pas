@@ -25,6 +25,7 @@ uses
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
 function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
+function xeGetPluggyWatchStamp(const aFolder, aAppName: string): Int64;
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
 function xeTryReadGameLinkSelection(const aFileName: string; out aSelectedRefID, aSelectedBaseID: TwbFormID): Boolean;
 function xeTryReadPluggySelection(const aFolder, aAppName: string;
@@ -70,6 +71,15 @@ begin
     if lStamp > Result then
       Result := lStamp;
   end;
+end;
+
+function xeGetPluggyWatchStamp(const aFolder, aAppName: string): Int64;
+begin
+  Result := xeGetNewestFileWriteStampUtc([
+    aFolder + 'Pluggy' + aAppName + 'ViewWorld.csv',
+    aFolder + 'Pluggy' + aAppName + 'ViewInventory.csv',
+    aFolder + 'Pluggy' + aAppName + 'ViewSpells.csv'
+  ]);
 end;
 
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
