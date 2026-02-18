@@ -15969,6 +15969,8 @@ begin
 
               CRC := _File.CRC32;
               try
+                if not xeTryEnsureParentDirectoryForFile(wbDataPath + s, t) then
+                  raise Exception.Create(t);
                 PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Saving: ' + s);
                 SavedThisOne := xeTryWriteModuleToTempFile(
                   _File,
