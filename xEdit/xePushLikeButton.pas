@@ -13,7 +13,6 @@ unit xePushLikeButton;
 interface
 
 uses
-  Messages,
   Classes,
   SysUtils,
   Graphics,
@@ -27,6 +26,7 @@ const
   XE_BS_CHECKBOX = $00000002;
   XE_CS_HREDRAW  = $0002;
   XE_CS_VREDRAW  = $0001;
+  XE_BM_SETCHECK = $00F1;
 
 type
   TButton = class(StdCtrls.TButton)
@@ -35,11 +35,11 @@ type
     FPushLike: Boolean;
     procedure SetPushLike(Value: Boolean);
     procedure Toggle;
-    procedure CNCommand(var Message: TWMCommand); message CN_COMMAND;
 
     class constructor Create;
     class destructor Destroy;
   protected
+    procedure Click; override;
     procedure SetButtonStyle(ADefault: Boolean); override;
     procedure CreateParams(var Params: TCreateParams); override;
     procedure CreateWnd; override;
@@ -83,7 +83,7 @@ procedure TButton.CreateWnd;
 begin
   inherited CreateWnd;
   if FPushLike then
-    Perform(BM_SETCHECK, Integer(FChecked), 0);
+    Perform(XE_BM_SETCHECK, Integer(FChecked), 0);
 end;
 
 class destructor TButton.Destroy;
@@ -91,12 +91,11 @@ begin
   TCustomStyleEngine.UnRegisterStyleHook(TButton, TPushLikeButtonStyleHook);
 end;
 
-procedure TButton.CNCommand(var Message: TWMCommand);
+procedure TButton.Click;
 begin
-  if FPushLike and (Message.NotifyCode = BN_CLICKED) then
-    Toggle
-  else
-    inherited;
+  if FPushLike then
+    Toggle;
+  inherited Click;
 end;
 
 procedure TButton.Toggle;
@@ -117,8 +116,7 @@ begin
     if FPushLike then
     begin
       if HandleAllocated then
-        Perform(BM_SETCHECK, Integer(Checked), 0);
-      if not ClicksDisabled then Click;
+        Perform(XE_BM_SETCHECK, Integer(Checked), 0);
     end;
   end;
 end;

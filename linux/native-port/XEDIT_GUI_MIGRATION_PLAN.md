@@ -9,7 +9,7 @@ Source of truth: `linux/native-port/reports/xedit-gui-surface.txt`
 - DFM form files: `21`
 - `TForm` descendants: `20`
 - GUI units with VCL/gui imports: `23`
-- GUI units with direct WinAPI imports: `4`
+- GUI units with direct WinAPI imports: `2`
 - Highest-coupled GUI unit: `xEdit/xeMainForm.pas`
 
 ## Phase 1: Stabilize GUI Surface Metrics
@@ -30,14 +30,17 @@ Done:
 
 ## Phase 2: Reduce WinAPI Ties in GUI Units
 
-Goal: reduce the `4` remaining GUI units that import `Messages` directly.
+Goal: reduce the `2` remaining GUI units that import `Messages` directly.
 
 Targets:
 
-1. `xEdit/xePushLikeButton.pas`
-2. `xEdit/xeRichEditForm.pas`
-3. `xEdit/xeScriptForm.pas`
-4. `xEdit/xeMainForm.pas`
+1. `xEdit/xeScriptForm.pas`
+2. `xEdit/xeMainForm.pas`
+
+Completed:
+
+- `xEdit/xeRichEditForm.pas` (`Messages` removed; local `WM_KEYDOWN` constant)
+- `xEdit/xePushLikeButton.pas` (`Messages` removed; click/toggle path decoupled from `CN_COMMAND`)
 
 Strategy:
 
