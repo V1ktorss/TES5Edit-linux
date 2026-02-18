@@ -15977,7 +15977,7 @@ begin
                 if not SavedThisOne then
                   raise Exception.Create(t);
 
-                if xeTryDiscardUnchangedTempSave(
+                if xeFinalizeModuleTempSaveOutcome(
                   wbDataPath,
                   s,
                   CRC,
@@ -15985,12 +15985,10 @@ begin
                   NeedsRename,
                   TryDirectRename,
                   SavedThisOne,
+                  SavedAny,
                   DiscardInfo
                 ) then
                   PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + DiscardInfo);
-
-                if SavedThisOne then
-                  SavedAny := True;
               except
                 on E: Exception do begin
                   xeMarkSaveWriteFailure(wbDataPath, s, AnyErrors, NeedsRename, SavedThisOne);

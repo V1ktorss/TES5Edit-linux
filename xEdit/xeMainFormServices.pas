@@ -80,6 +80,12 @@ function xeTryDiscardUnchangedTempSave(
   var aNeedsRename, aTryDirectRename, aSavedThisOne: Boolean;
   out aInfoText: string
 ): Boolean;
+function xeFinalizeModuleTempSaveOutcome(
+  const aDataPath, aTempName: string;
+  const aOriginalCRC, aCurrentCRC: TwbCRC32;
+  var aNeedsRename, aTryDirectRename, aSavedThisOne, aSavedAny: Boolean;
+  out aDiscardInfo: string
+): Boolean;
 procedure xeMarkDirectRenameCapability(
   const aIsMemoryMapped: Boolean;
   var aTryDirectRename: Boolean
@@ -391,6 +397,27 @@ begin
   aTryDirectRename := False;
   aSavedThisOne := False;
   aInfoText := 'File has not changed, removing: ' + aTempName;
+end;
+
+function xeFinalizeModuleTempSaveOutcome(
+  const aDataPath, aTempName: string;
+  const aOriginalCRC, aCurrentCRC: TwbCRC32;
+  var aNeedsRename, aTryDirectRename, aSavedThisOne, aSavedAny: Boolean;
+  out aDiscardInfo: string
+): Boolean;
+begin
+  Result := xeTryDiscardUnchangedTempSave(
+    aDataPath,
+    aTempName,
+    aOriginalCRC,
+    aCurrentCRC,
+    aNeedsRename,
+    aTryDirectRename,
+    aSavedThisOne,
+    aDiscardInfo
+  );
+  if aSavedThisOne then
+    aSavedAny := True;
 end;
 
 procedure xeMarkDirectRenameCapability(
