@@ -15843,7 +15843,6 @@ end;
 function TfrmMain.SaveChanged(aSilent: Boolean = False; aShowMessageIfNothing: Boolean = False): TwbSaveResult;
 var
   i, j                        : Integer;
-  FileStream                  : TBufferedFileStream;
   FileType                    : array of Byte;
   _File                       : IwbFile;
   _LFile                      : TwbLocalizationFile;
@@ -15984,16 +15983,17 @@ begin
               xeBuildSaveTargetFileName(wbDataPath, u, t, s, NeedsRename);
 
               CRC := _File.CRC32;
-              FileStream := TBufferedFileStream.Create(wbDataPath + s, fmCreate, 1024 * 1024);
               try
-                try
-                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Saving: ' + s);
-                  _File.WriteToStream(FileStream, ResetModifiedFromBool[wbResetModifiedOnSave]);
-                  SavedThisOne := True;
-                  xeMarkDirectRenameCapability(fsMemoryMapped in _File.FileStates, TryDirectRename);
-                finally
-                  FileStream.Free;
-                end;
+                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Saving: ' + s);
+                SavedThisOne := xeTryWriteModuleToTempFile(
+                  _File,
+                  wbDataPath + s,
+                  ResetModifiedFromBool[wbResetModifiedOnSave],
+                  TryDirectRename,
+                  t
+                );
+                if not SavedThisOne then
+                  raise Exception.Create(t);
 
                 if xeTryDiscardUnchangedTempSave(
                   wbDataPath,

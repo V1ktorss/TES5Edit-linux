@@ -71,6 +71,13 @@ procedure xeMarkDirectRenameCapability(
   const aIsMemoryMapped: Boolean;
   var aTryDirectRename: Boolean
 );
+function xeTryWriteModuleToTempFile(
+  const aFile: IwbFile;
+  const aFullPath: string;
+  const aResetModified: TwbResetModified;
+  out aCanTryDirectRename: Boolean;
+  out aErrorText: string
+): Boolean;
 procedure xeMarkTempSaveWriteFailure(
   const aDataPath, aTempName: string;
   var aAnyErrors, aNeedsRename: Boolean
@@ -330,6 +337,32 @@ procedure xeMarkDirectRenameCapability(
 begin
   if not aIsMemoryMapped then
     aTryDirectRename := True;
+end;
+
+function xeTryWriteModuleToTempFile(
+  const aFile: IwbFile;
+  const aFullPath: string;
+  const aResetModified: TwbResetModified;
+  out aCanTryDirectRename: Boolean;
+  out aErrorText: string
+): Boolean;
+var
+  lFileStream: TBufferedFileStream;
+begin
+  aCanTryDirectRename := False;
+  aErrorText := '';
+  Result := False;
+
+  lFileStream := TBufferedFileStream.Create(aFullPath, fmCreate, 1024 * 1024);
+  try
+    aFile.WriteToStream(lFileStream, aResetModified);
+    xeMarkDirectRenameCapability(fsMemoryMapped in aFile.FileStates, aCanTryDirectRename);
+    Result := True;
+  except
+    on E: Exception do
+      aErrorText := E.Message;
+  end;
+  lFileStream.Free;
 end;
 
 procedure xeMarkTempSaveWriteFailure(
