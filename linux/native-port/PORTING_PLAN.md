@@ -371,6 +371,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved background-thread finalization branching (`finished` vs. force-terminate handle callback) into service helper (`xeFinalizeBackgroundThread`) and slimmed `FormClose`
   - moved soft thread-termination request (`Terminate` call) into service helper (`xeRequestThreadTerminate`) and reused it in `FormClose` for link-thread shutdown
   - unified close-time thread shutdown decisions in service helper (`xeHandleThreadShutdown`) and replaced per-thread helper calls in `FormClose` with one policy-driven path
+  - moved watch-thread stop condition (`Terminated or wbForceTerminate`) into service helper (`xeShouldStopWatchLoop`) and reused it in Pluggy/GameLink watch threads
   - moved loader-shutdown wait loop (`process messages` + `sleep/poll`) into service helper (`xeWaitUntil`) and reused it in `FormClose`
   - moved force thread-termination call path from `xeMainForm` to `wbPlatform` (`wbForceTerminateThread`) and simplified `xeFinalizeBackgroundThread` to platform-wrapper usage only
   - moved loader-shutdown wait decision/flagging (`LoaderStarted`/`LoaderDone` + `wbForceTerminate`) into service helper (`xeShouldWaitForLoaderShutdown`)

@@ -72,6 +72,7 @@ function xePrepareLoaderShutdownWait(
   out aCaptionText: string;
   out aPollIntervalMs: Cardinal
 ): Boolean;
+function xeShouldStopWatchLoop(const aTerminated: Boolean): Boolean;
 procedure xeWaitUntil(
   const aIsDone: TxeStopPredicate;
   const aPumpMessages: TxeNoArgProc;
@@ -470,6 +471,11 @@ begin
   aCaptionText := 'Waiting for Background Loader to terminate...';
   aPollIntervalMs := 100;
   Result := xeShouldWaitForLoaderShutdown(aLoaderStarted, aLoaderDone, aForceTerminate);
+end;
+
+function xeShouldStopWatchLoop(const aTerminated: Boolean): Boolean;
+begin
+  Result := aTerminated or wbForceTerminate;
 end;
 
 procedure xeWaitUntil(

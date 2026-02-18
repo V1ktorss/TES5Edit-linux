@@ -21750,7 +21750,7 @@ end;
 
 function TPluggyLinkThread.ShouldStopWatchLoop: Boolean;
 begin
-  Result := Terminated or wbForceTerminate;
+  Result := xeShouldStopWatchLoop(Terminated);
 end;
 
 procedure TPluggyLinkThread.HandleWatchStampChange(Sender: TObject);
@@ -21903,7 +21903,7 @@ end;
 
 function TGameLinkThread.ShouldStopWatchLoop: Boolean;
 begin
-  Result := Terminated or wbForceTerminate;
+  Result := xeShouldStopWatchLoop(Terminated);
 end;
 
 procedure TGameLinkThread.HandleWatchStampChange(Sender: TObject);
