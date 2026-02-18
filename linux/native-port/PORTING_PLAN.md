@@ -77,7 +77,7 @@ This document tracks what is already done for the native Linux path and what com
 - Implemented xEdit GUI surface audit script/report:
   - `linux/native-port/audit-xedit-gui-surface.sh`
   - `linux/native-port/reports/xedit-gui-surface.txt`
-  - current baseline: 21 `*.dfm` form files, 20 `TForm` descendants, 23 GUI units with VCL/gui imports, 2 GUI units with direct WinAPI imports (`Messages`)
+  - current baseline: 21 `*.dfm` form files, 20 `TForm` descendants, 23 GUI units with VCL/gui imports, 1 GUI unit with direct WinAPI import (`Messages`)
 - Added GUI migration execution plan: `linux/native-port/XEDIT_GUI_MIGRATION_PLAN.md`
 - Started `xeInit` decoupling:
   - moved known-folder and registry-read access behind `wbPlatform` helpers
@@ -276,7 +276,8 @@ This document tracks what is already done for the native Linux path and what com
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`
-  - GUI WinAPI import count lowered from 4 to 2.
+  - removed `Messages` from `xEdit/xeScriptForm.pas` by replacing message-handler path with `DoMouseWheel` override + local `WM_CHAR`
+  - GUI WinAPI import count lowered from 4 to 1.
 - Extended xEdit Winapi guard with direct-call regression checks (`GetKeyState`, `CreateProcess`, `ShellExecute`, `MessageBox`, `SendMessage`, `PostMessage`, `Windows.AlphaBlend`, `Windows.LockWindowUpdate`) while allowlisting platform-layer implementations in `Core/wbPlatform.pas`
 - Tightened xEdit Winapi guard import allowlist to `Core/wbPlatform.pas` and `Core/MSHeap.pas` only
 - Added Core Winapi-import regression guard: `linux/native-port/check-core-winapi-imports.sh` (wired via `RUN_CORE_WINAPI_GUARD=1` in `run-all-checks.sh`, allowlisted only for `Core/wbPlatform.pas` and `Core/MSHeap.pas`)

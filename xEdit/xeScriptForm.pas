@@ -13,7 +13,7 @@ unit xeScriptForm;
 interface
 
 uses
-  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, IOUtils, StrUtils, ComCtrls, System.UITypes,
   SynEdit, SynMemo, SynEditKeyCmds, xeMainForm, SynHighlighterPas;
 
@@ -21,6 +21,7 @@ const
   sNewScript = '<new script>';
   sNewScriptName = '_newscript_';
   sScriptExt = '.pas';
+  xeWmChar = $0102;
 
 type
   TComboBox = class(StdCtrls.TComboBox)
@@ -28,7 +29,7 @@ type
     FOnBeforeWheel: TNotifyEvent;
     FOnAfterWheel: TNotifyEvent;
   protected
-    procedure WMMouseWheel(var Message: TWMMouseWheel); message WM_MOUSEWHEEL;
+    function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
 
     property OnBeforeWheel: TNotifyEvent read FOnBeforeWheel write FOnBeforeWheel;
     property OnAfterWheel: TNotifyEvent read FOnAfterWheel write FOnAfterWheel;
@@ -329,8 +330,8 @@ begin
           Editor.SelText := Indent(Editor.SelText, '  ')
       else
       begin
-        Editor.Perform(WM_CHAR, Ord(' '), 0);
-        Editor.Perform(WM_CHAR, Ord(' '), 0);
+        Editor.Perform(xeWmChar, Ord(' '), 0);
+        Editor.Perform(xeWmChar, Ord(' '), 0);
       end;
     end;
   end;
@@ -476,11 +477,12 @@ end;
 
 { TComboBox }
 
-procedure TComboBox.WMMouseWheel(var Message: TWMMouseWheel);
+function TComboBox.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
+  MousePos: TPoint): Boolean;
 begin
   if Assigned(FOnBeforeWheel) then
     FOnBeforeWheel(Self);
-  inherited;
+  Result := inherited DoMouseWheel(Shift, WheelDelta, MousePos);
   if Assigned(FOnAfterWheel) then
     FOnAfterWheel(Self);
 end;
