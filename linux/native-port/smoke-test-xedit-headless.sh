@@ -120,6 +120,12 @@ if [[ "${ENV_OVERRIDE_TEST}" == "1" ]]; then
     exit 1
   fi
 
+  if rg -q "Can't determine (GameMode|ToolMode)" "${log_file}"; then
+    echo "[xedit-smoke] FAILED: mode resolution failed (env override)"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
   echo "[xedit-smoke] Env override case exit code: ${exit_code}"
   echo "[xedit-smoke] Log: ${log_file}"
 fi
@@ -150,6 +156,12 @@ if [[ "${CLI_OVERRIDE_TEST}" == "1" ]]; then
 
   if [[ "${exit_code}" -ne 0 ]]; then
     echo "[xedit-smoke] FAILED: CLI override case exit code ${exit_code}"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if rg -q "Can't determine (GameMode|ToolMode)" "${log_file}"; then
+    echo "[xedit-smoke] FAILED: mode resolution failed (CLI override)"
     echo "[xedit-smoke] Log: ${log_file}"
     exit 1
   fi
