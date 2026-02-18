@@ -15488,11 +15488,14 @@ end;
 
 procedure TfrmMain.PostPluggyChange(aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID);
 begin
-  PluggyFormID := aFormID;
-  PluggyBaseFormID := aBaseFormID;
-  PluggyInventoryFormID := aInventoryFormID;
-  PluggyEnchantmentFormID := aEnchantmentFormID;
-  PluggySpellFormID := aSpellFormID;
+  xeAssignPluggySelection(
+    xeBuildPluggySelection(aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID),
+    PluggyFormID,
+    PluggyBaseFormID,
+    PluggyInventoryFormID,
+    PluggyEnchantmentFormID,
+    PluggySpellFormID
+  );
   Self.PostMessage(xeWmUserPluggyChange, 0, 0);
 end;
 
