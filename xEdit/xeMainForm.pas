@@ -6280,6 +6280,11 @@ var
     TerminateThread(aThreadHandle, 0);
   end;
 
+  function IsLoaderDone: Boolean;
+  begin
+    Result := wbLoaderDone;
+  end;
+
 begin
   Action := caFree;
   if LoaderStarted and not wbLoaderDone then begin
@@ -6287,10 +6292,7 @@ begin
     Caption := 'Waiting for Background Loader to terminate...';
     pnlClient.Enabled := False;
     try
-      while not wbLoaderDone do begin
-        DoProcessMessages;
-        Sleep(100);
-      end;
+      xeWaitUntil(IsLoaderDone, DoProcessMessages, 100);
     finally
       pnlClient.Enabled := True;
       UpdatePnlCancelVisible;
