@@ -21885,9 +21885,9 @@ begin
 
   if (FormID <> plLastFormID) or
      (BaseFormID <> plLastBaseFormID) or
-     (InventoryFormID <> plLastBaseFormID) or
-     (EnchantmentFormID <> plLastBaseFormID) or
-     (SpellFormID <> plLastBaseFormID) then begin
+     (InventoryFormID <> plLastInventoryFormID) or
+     (EnchantmentFormID <> plLastEnchantmentFormID) or
+     (SpellFormID <> plLastSpellFormID) then begin
 
     plLastFormID := FormID;
     plLastBaseFormID := BaseFormID;
