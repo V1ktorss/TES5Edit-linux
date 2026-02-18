@@ -2,7 +2,7 @@
 
 ## Summary
 - Handler declarations using message WM_*: 0
-- TMessage parameter usages: 17
+- TMessage parameter usages: 5
 - WM_* references (raw): 0
 
 ## Handler Declarations
@@ -10,22 +10,10 @@
 
 ## TMessage Usages
 923:    procedure WndProc(var Message: TMessage); override;
-925:    procedure WMUser(var Message: TMessage); message xeWmUserAddMessage;
-926:    procedure WMUser1(var Message: TMessage); message xeWmUserAddFile;
-927:    procedure WMUserLoaderDone(var Message: TMessage); message xeWmUserLoaderDone;
-928:    procedure WMUser3(var Message: TMessage); message xeWmUserResetActiveTree;
-929:    procedure WMUser4(var Message: TMessage); message xeWmUserPluggyChange;
-930:    procedure WMUser5(var Message: TMessage); message xeWmUserSelectMainRecord;
-20757:procedure TfrmMain.WMUser(var Message: TMessage);
-20775:procedure TfrmMain.WMUser1(var Message: TMessage);
-20780:procedure TfrmMain.WMUserLoaderDone(var Message: TMessage);
-21086:procedure TfrmMain.WMUser3(var Message: TMessage);
-21095:procedure TfrmMain.WMUser4(var Message: TMessage);
-21100:procedure TfrmMain.WMUser5(var Message: TMessage);
 21231:procedure TfrmMain.WndProc(var Message: TMessage);
-22052:  TMainWndProc = procedure(var Message: TMessage) of object;
-22056:  Trampoline_TWinControl_MainWndProc : procedure(Self: TWinControlProtectedHacker; var Message: TMessage);
-22058:procedure Detour_TWinControl_MainWndProc(Self: TWinControlProtectedHacker; var Message: TMessage);
+22078:  TMainWndProc = procedure(var Message: TMessage) of object;
+22082:  Trampoline_TWinControl_MainWndProc : procedure(Self: TWinControlProtectedHacker; var Message: TMessage);
+22084:procedure Detour_TWinControl_MainWndProc(Self: TWinControlProtectedHacker; var Message: TMessage);
 
 ## WM_* References
 

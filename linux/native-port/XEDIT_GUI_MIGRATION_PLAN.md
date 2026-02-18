@@ -37,7 +37,7 @@ Targets:
 1. `xEdit/xeMainForm.pas`
   - current message surface baseline:
     - 0 `message WM_*` bindings (rewired to app constants)
-    - 17 `TMessage` usages
+    - 5 `TMessage` usages
     - 0 raw `WM_*` references
 
 Completed:

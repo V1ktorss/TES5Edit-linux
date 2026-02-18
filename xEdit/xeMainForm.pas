@@ -922,12 +922,12 @@ type
     function FindColors(const s: string; out aColors: TArray<TColor>): Boolean;
     procedure WndProc(var Message: TMessage); override;
   private
-    procedure WMUser(var Message: TMessage); message xeWmUserAddMessage;
-    procedure WMUser1(var Message: TMessage); message xeWmUserAddFile;
-    procedure WMUserLoaderDone(var Message: TMessage); message xeWmUserLoaderDone;
-    procedure WMUser3(var Message: TMessage); message xeWmUserResetActiveTree;
-    procedure WMUser4(var Message: TMessage); message xeWmUserPluggyChange;
-    procedure WMUser5(var Message: TMessage); message xeWmUserSelectMainRecord;
+    procedure HandleUserAddMessage(aPayload: NativeUInt);
+    procedure HandleUserAddFile(aFilePtr: NativeUInt);
+    procedure HandleUserLoaderDone(aStartTimePtr: NativeUInt; aLoadOrder: NativeInt);
+    procedure HandleUserResetActiveTree;
+    procedure HandleUserPluggyChange;
+    procedure HandleUserSelectMainRecord;
     procedure UpdateTreeLineColor;
   public
     Files: TwbFiles;
@@ -20754,13 +20754,13 @@ begin
   end;
 end;
 
-procedure TfrmMain.WMUser(var Message: TMessage);
+procedure TfrmMain.HandleUserAddMessage(aPayload: NativeUInt);
 var
   t : string;
   Strs: TStringDynArray;
   s: string;
 begin
-  Pointer(t) := Pointer(Message.WParam);
+  Pointer(t) := Pointer(aPayload);
   if not Assigned(NewMessages) then
     NewMessages := TStringList.Create;
 
@@ -20772,12 +20772,12 @@ begin
     NewMessages.Add(s);
 end;
 
-procedure TfrmMain.WMUser1(var Message: TMessage);
+procedure TfrmMain.HandleUserAddFile(aFilePtr: NativeUInt);
 begin
-  AddFile(IwbFile(Pointer(Message.WParam)));
+  AddFile(IwbFile(Pointer(aFilePtr)));
 end;
 
-procedure TfrmMain.WMUserLoaderDone(var Message: TMessage);
+procedure TfrmMain.HandleUserLoaderDone(aStartTimePtr: NativeUInt; aLoadOrder: NativeInt);
 
   procedure SetupTreeView(aTreeView: TVirtualEditTree);
   var
@@ -20805,8 +20805,8 @@ var
 begin
   try
     wbLoaderDone := True;
-    wbStartTime := PDateTime(Message.WParam)^;
-    LoadOrder := Message.LParam;
+    wbStartTime := PDateTime(aStartTimePtr)^;
+    LoadOrder := aLoadOrder;
     if LoadOrder < 0 then begin
       Inc(wbShowStartTime);
       try
@@ -21083,7 +21083,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.WMUser3(var Message: TMessage);
+procedure TfrmMain.HandleUserResetActiveTree;
 begin
   if tmrPendingSetActive.Enabled then
     tmrPendingSetActiveTimer(tmrPendingSetActive)
@@ -21092,12 +21092,12 @@ begin
       ResetActiveTree;
 end;
 
-procedure TfrmMain.WMUser4(var Message: TMessage);
+procedure TfrmMain.HandleUserPluggyChange;
 begin
   UpdateActiveFromPluggyLink;
 end;
 
-procedure TfrmMain.WMUser5(var Message: TMessage);
+procedure TfrmMain.HandleUserSelectMainRecord;
 begin
   if DelayedExpandView then begin
     DelayedExpandView := False;
@@ -21232,15 +21232,41 @@ procedure TfrmMain.WndProc(var Message: TMessage);
 var
   StyleName: string;
 begin
-  if Message.Msg = CM_CUSTOMSTYLECHANGED then begin
-    wbDarkMode := wbIsDarkMode;
-    StyleName := TStyleManager.ActiveStyle.Name;
-    if Assigned(Settings) then
-      if Settings.ReadString('UI', 'Theme', '') <> StyleName then begin
-        Settings.WriteString('UI', 'Theme', StyleName);
-        Settings.UpdateFile;
-      end;
-    UpdateTreeLineColor;
+  case Message.Msg of
+    xeWmUserAddMessage: begin
+      HandleUserAddMessage(Message.WParam);
+      Exit;
+    end;
+    xeWmUserAddFile: begin
+      HandleUserAddFile(Message.WParam);
+      Exit;
+    end;
+    xeWmUserLoaderDone: begin
+      HandleUserLoaderDone(Message.WParam, Message.LParam);
+      Exit;
+    end;
+    xeWmUserResetActiveTree: begin
+      HandleUserResetActiveTree;
+      Exit;
+    end;
+    xeWmUserPluggyChange: begin
+      HandleUserPluggyChange;
+      Exit;
+    end;
+    xeWmUserSelectMainRecord: begin
+      HandleUserSelectMainRecord;
+      Exit;
+    end;
+    CM_CUSTOMSTYLECHANGED: begin
+      wbDarkMode := wbIsDarkMode;
+      StyleName := TStyleManager.ActiveStyle.Name;
+      if Assigned(Settings) then
+        if Settings.ReadString('UI', 'Theme', '') <> StyleName then begin
+          Settings.WriteString('UI', 'Theme', StyleName);
+          Settings.UpdateFile;
+        end;
+      UpdateTreeLineColor;
+    end;
   end;
   inherited;
 end;
