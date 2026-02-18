@@ -421,6 +421,16 @@ function xeBuildUnsavedHintText(
   const aMaxSaveListCount: Integer;
   out aFoundExpired: Boolean
 ): string;
+procedure xeConsumeUserActivityTick(
+  var aUserWasActive: Boolean;
+  const aScriptRunning: Boolean;
+  var aTotalUsageTime: TDateTime;
+  const aSettings: TMemIniFile
+);
+function xeCanRunUnsavedHintTick(
+  const aLoaderDone, aFormEnabled, aClientEnabled, aEditAllowed, aShowUnsavedHint: Boolean;
+  const aIsAutoToolMode, aLeftMouseDown, aHasVstView, aHasVstNav, aVstViewEditing, aHintActive, aHasMainMenuButton: Boolean
+): Boolean;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -2227,6 +2237,46 @@ begin
   finally
     lList.Free;
   end;
+end;
+
+procedure xeConsumeUserActivityTick(
+  var aUserWasActive: Boolean;
+  const aScriptRunning: Boolean;
+  var aTotalUsageTime: TDateTime;
+  const aSettings: TMemIniFile
+);
+begin
+  if not aUserWasActive then
+    Exit;
+
+  if not aScriptRunning then
+    aUserWasActive := False;
+
+  aTotalUsageTime := aTotalUsageTime + 1 / 24 / 60 / 2;
+  if Assigned(aSettings) then begin
+    aSettings.WriteFloat('Usage', 'TotalTime', aTotalUsageTime);
+    aSettings.UpdateFile;
+  end;
+end;
+
+function xeCanRunUnsavedHintTick(
+  const aLoaderDone, aFormEnabled, aClientEnabled, aEditAllowed, aShowUnsavedHint: Boolean;
+  const aIsAutoToolMode, aLeftMouseDown, aHasVstView, aHasVstNav, aVstViewEditing, aHintActive, aHasMainMenuButton: Boolean
+): Boolean;
+begin
+  Result :=
+    aLoaderDone and
+    aFormEnabled and
+    aClientEnabled and
+    aEditAllowed and
+    (not aIsAutoToolMode) and
+    aShowUnsavedHint and
+    (not aLeftMouseDown) and
+    aHasVstView and
+    aHasVstNav and
+    (not aVstViewEditing) and
+    (not aHintActive) and
+    aHasMainMenuButton;
 end;
 
 function xeGetStaleRefCacheFiles(

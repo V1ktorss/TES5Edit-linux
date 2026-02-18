@@ -17293,61 +17293,22 @@ var
   UnsavedHintText             : string;
   FoundExpired                : Boolean;
 begin
-  if not wbLoaderDone then
-    Exit;
+  xeConsumeUserActivityTick(UserWasActive, ScriptRunning, TotalUsageTime, Settings);
 
-  if UserWasActive then begin
-    if not ScriptRunning then //count running script as user activity
-      UserWasActive := False;
-    TotalUsageTime := TotalUsageTime + 1 / 24 / 60 / 2;
-    Settings.WriteFloat('Usage', 'TotalTime', TotalUsageTime);
-    Settings.UpdateFile;
-    {
-    if (RateNoticeGiven < 2) and (TotalUsageTime > 1 / 8) then begin
-      RateNoticeGiven := 2;
-      Settings.WriteInteger('Usage', 'RateNoticeGiven', RateNoticeGiven);
-      Settings.UpdateFile;
-      ShowMessage('You''ve been actively using this program for a while now.'#13#13 +
-        'If you should find this program useful I would greatly appreciate it if you ' +
-        'would go to the download page at '+SiteName[wbGameMode]+' Nexus and give it an endorsement.'#13#13 +
-        'If you have already endorsed this program I would like to thank you for your support and '+
-        'if you have any suggestions how to improve this program please don''t hesitate to let me know about '+
-        'them via the release topic on the Bethesda Game Studios Forums.');
-    end;
-    }
-  end;
-
-  if not Enabled then
-    Exit;
-
-  if not pnlClient.Enabled then
-    Exit;
-
-  if not wbEditAllowed then
-    Exit;
-
-  if wbToolMode in wbAutoModes then
-    Exit;
-
-  if not ShowUnsavedHint then
-    Exit;
-
-  // skip if Left mouse button is pressed, could be indication of active drag&drop or other action in progress
-  if wbIsVirtualKeyPressed(VK_LBUTTON) then
-    Exit;
-
-  if not Assigned(vstView) then
-    Exit;
-  if not Assigned(vstNav) then
-    Exit;
-
-  if vstView.IsEditing then
-    Exit;
-
-  if jbhSave.Active then
-    Exit;
-
-  if not Assigned(bnMainMenu) then
+  if not xeCanRunUnsavedHintTick(
+    wbLoaderDone,
+    Enabled,
+    pnlClient.Enabled,
+    wbEditAllowed,
+    ShowUnsavedHint,
+    wbToolMode in wbAutoModes,
+    wbIsVirtualKeyPressed(VK_LBUTTON),
+    Assigned(vstView),
+    Assigned(vstNav),
+    Assigned(vstView) and vstView.IsEditing,
+    jbhSave.Active,
+    Assigned(bnMainMenu)
+  ) then
     Exit;
 
   UnsavedHintText := xeBuildUnsavedHintText(Files, Now, SaveInterval, MaxSaveListCount, FoundExpired);
