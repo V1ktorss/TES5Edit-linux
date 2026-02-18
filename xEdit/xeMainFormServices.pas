@@ -39,6 +39,8 @@ type
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
 function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
+function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
+function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkWatchStamp(const aFolder: string): Int64;
 function xeGetPluggyWatchStamp(const aFolder, aAppName: string): Int64;
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
@@ -99,6 +101,16 @@ begin
     if lStamp > Result then
       Result := lStamp;
   end;
+end;
+
+function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
+begin
+  Result := aMyGamesTheGamePath + 'Pluggy' + PathDelim + 'User Files' + PathDelim;
+end;
+
+function xeGetGameLinkFolder(const aDataPath: string): string;
+begin
+  Result := aDataPath + 'xEdit' + PathDelim;
 end;
 
 function xeGetGameLinkWatchStamp(const aFolder: string): Int64;

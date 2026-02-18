@@ -21890,7 +21890,7 @@ var
   LastStamp: Int64;
   CurrentStamp: Int64;
 begin
-  plFolder := wbMyGamesTheGamePath + 'Pluggy' + PathDelim + 'User Files' + PathDelim;
+  plFolder := xeGetPluggyUserFilesFolder(wbMyGamesTheGamePath);
   frmMain.PostAddMessage('[PluggyLink] Starting for: ' + plFolder);
   LastStamp := xeGetPluggyWatchStamp(plFolder, wbAppName);
   if LastStamp >= 0 then
@@ -22046,7 +22046,7 @@ var
   LastStamp: Int64;
   CurrentStamp: Int64;
 begin
-  glFolder := wbDataPath + 'xEdit' + PathDelim;
+  glFolder := xeGetGameLinkFolder(wbDataPath);
   frmMain.PostAddMessage('[GameLink] Starting for: ' + glFolder);
   LastStamp := xeGetGameLinkWatchStamp(glFolder);
   if LastStamp >= 0 then
