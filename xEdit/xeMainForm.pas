@@ -1515,46 +1515,30 @@ end;
 
 function DoRenameModule(const aFrom, aTo: string; aSilent: Boolean): Boolean;
 var
-  lFrom       : string;
-  lTo         : string;
-  lActionText : string;
-  lHasAction  : Boolean;
-  lHasWarning : Boolean;
-  lErrorText  : string;
-  lWarningText: string;
-  s           : string;
-  OldDateTime : TDateTime;
+  lActionText      : string;
+  lPreWarningText  : string;
+  lRenameActionText: string;
+  lPostWarningText : string;
+  lErrorText       : string;
 begin
   Result := False;
 
   if wbDontSave then
     Exit;
 
-  if not xeTryPrepareSourceFileForRename(
+  if not xeTryRunModuleRenameFlow(
     wbDataPath,
     aFrom,
-    wbBackupPath,
-    not xeDontBackup,
-    wbBackupPath,
-    lFrom,
-    s
-  ) then begin
-    wbProgress(s);
-    if not aSilent then
-      MessageDlg(s, mtError, [mbOK], 0);
-    Exit;
-  end;
-
-  // create backup file
-  lTo := wbDataPath + aTo;
-  if not xeTryHandleExistingRenameTarget(
-    lTo,
     aTo,
     wbBackupPath,
+    not xeDontBackup,
     xeDontBackup,
-    OldDateTime,
+    wbGameMode in wbOrderFromPluginsTxt,
+    wbBackupPath,
     lActionText,
-    s,
+    lPreWarningText,
+    lRenameActionText,
+    lPostWarningText,
     lErrorText
   ) then begin
     wbProgress(lErrorText);
@@ -1562,28 +1546,20 @@ begin
       MessageDlg(lErrorText, mtError, [mbOK], 0);
     Exit;
   end;
-  xeCollectRenamePreparationMessages(lActionText, s, lHasAction, lHasWarning);
-  if lHasAction then
+
+  if lActionText <> '' then
     wbProgress(lActionText);
-  if lHasWarning then begin
-    wbProgress(s);
+  if lPreWarningText <> '' then begin
+    wbProgress(lPreWarningText);
     if not aSilent then
-      MessageDlg(s, mtError, [mbOK], 0);
+      MessageDlg(lPreWarningText, mtError, [mbOK], 0);
   end;
 
-  // rename temp save file to original
-  wbProgress(xeBuildRenameActionMessage(lFrom, lTo));
-  if not xeTryFinalizeModuleRename(lFrom, lTo, OldDateTime, wbGameMode in wbOrderFromPluginsTxt, s, lWarningText) then begin
-    wbProgress(s);
+  wbProgress(lRenameActionText);
+  if lPostWarningText <> '' then begin
+    wbProgress(lPostWarningText);
     if not aSilent then
-      MessageDlg(s, mtError, [mbOK], 0);
-    Exit;
-  end;
-
-  if lWarningText <> '' then begin
-    wbProgress(lWarningText);
-    if not aSilent then
-      MessageDlg(lWarningText, mtError, [mbOK], 0);
+      MessageDlg(lPostWarningText, mtError, [mbOK], 0);
   end;
 
   Result := True;

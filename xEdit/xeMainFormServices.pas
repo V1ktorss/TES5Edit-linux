@@ -226,6 +226,11 @@ function xeTryFinalizeModuleRename(
   const aSkipRestoreForPluginsTxtOrder: Boolean;
   out aErrorText, aWarningText: string
 ): Boolean;
+function xeTryRunModuleRenameFlow(
+  const aDataPath, aFromName, aToName, aBackupPath: string;
+  const aUseBackup, aDeleteInsteadOfBackup, aSkipRestoreForPluginsTxtOrder: Boolean;
+  out aResolvedBackupPath, aActionText, aPreWarningText, aRenameActionText, aPostWarningText, aErrorText: string
+): Boolean;
 procedure xeQueueModuleRename(var aFilesToRename: TStringList; const aTargetName, aSourceName: string);
 function xeRenameSavedModules(const aFilesToRename: TStrings; const aRenameModule: TxeRenameModuleFunc): Boolean;
 function xePopQueuedRenamesForTarget(aFilesToRename: TStrings; const aTargetName: string): TStringDynArray;
@@ -1092,6 +1097,57 @@ begin
     aOldDateTime,
     aSkipRestoreForPluginsTxtOrder,
     aWarningText
+  );
+end;
+
+function xeTryRunModuleRenameFlow(
+  const aDataPath, aFromName, aToName, aBackupPath: string;
+  const aUseBackup, aDeleteInsteadOfBackup, aSkipRestoreForPluginsTxtOrder: Boolean;
+  out aResolvedBackupPath, aActionText, aPreWarningText, aRenameActionText, aPostWarningText, aErrorText: string
+): Boolean;
+var
+  lFromFile: string;
+  lToFile: string;
+  lOldDateTime: TDateTime;
+begin
+  aActionText := '';
+  aPreWarningText := '';
+  aRenameActionText := '';
+  aPostWarningText := '';
+  aErrorText := '';
+
+  if not xeTryPrepareSourceFileForRename(
+    aDataPath,
+    aFromName,
+    aBackupPath,
+    aUseBackup,
+    aResolvedBackupPath,
+    lFromFile,
+    aErrorText
+  ) then
+    Exit(False);
+
+  lToFile := aDataPath + aToName;
+  if not xeTryHandleExistingRenameTarget(
+    lToFile,
+    aToName,
+    aResolvedBackupPath,
+    aDeleteInsteadOfBackup,
+    lOldDateTime,
+    aActionText,
+    aPreWarningText,
+    aErrorText
+  ) then
+    Exit(False);
+
+  aRenameActionText := xeBuildRenameActionMessage(lFromFile, lToFile);
+  Result := xeTryFinalizeModuleRename(
+    lFromFile,
+    lToFile,
+    lOldDateTime,
+    aSkipRestoreForPluginsTxtOrder,
+    aErrorText,
+    aPostWarningText
   );
 end;
 

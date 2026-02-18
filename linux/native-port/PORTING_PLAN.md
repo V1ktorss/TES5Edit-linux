@@ -361,6 +361,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved shutdown-rename preparation guards (`DontSave`, queued-files check, backup-path resolution, action text) into service helper (`xeTryPrepareShutdownRename`)
   - moved shutdown-rename outcome policy (`AnyError` -> dialog text + optional log-save trigger) into service helper (`xeBuildRenameBatchOutcome`)
   - moved shutdown queued-rename execution + outcome resolution into service helper (`xeRunShutdownRenameBatch`) to further slim `DoRename`
+  - moved full per-file rename execution path (`prepare source`, `existing target handling`, `rename action text`, `final rename`) into service helper (`xeTryRunModuleRenameFlow`) and reduced `DoRenameModule` to UI/progress handling
   - moved backup-module temp-save plan generation (`target backup path` + progress action text) into service helper (`xeBuildBackupModuleTempSavePlan`)
   - moved full non-UI backup-module flow (`source prepare`, `backup plan`, `rename execution`) into service helper (`xeTryRunBackupModuleFlow`)
 - Reduced GUI WinAPI import sites:
