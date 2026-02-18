@@ -1542,7 +1542,7 @@ begin
 
   // create backup file
   lTo := wbDataPath + aTo;
-  if not xeBuildExistingRenameTargetPlan(
+  xeBuildExistingRenameTargetPlan(
     lTo,
     aTo,
     wbBackupPath,
@@ -1552,8 +1552,7 @@ begin
     lBackup,
     lActionText,
     s
-  ) then
-    Exit;
+  );
 
   if s <> '' then begin
     wbProgress(s);

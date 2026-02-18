@@ -69,13 +69,13 @@ function xeTryBackupSourceFile(
   const aSourceFile, aSourceName, aBackupPath: string;
   out aBackupFile, aErrorText: string
 ): Boolean;
-function xeBuildExistingRenameTargetPlan(
+procedure xeBuildExistingRenameTargetPlan(
   const aTargetFile, aTargetName, aBackupPath: string;
   const aDeleteInsteadOfBackup: Boolean;
   out aHasExistingTarget: Boolean;
   out aOldDateTime: TDateTime;
   out aBackupFile, aActionText, aWarningText: string
-): Boolean;
+);
 function xeTryFinalizeModuleRename(
   const aFromFile, aToFile: string;
   const aOldDateTime: TDateTime;
@@ -312,20 +312,19 @@ begin
   Result := xeTryRenameFile(aSourceFile, aBackupFile, aErrorText);
 end;
 
-function xeBuildExistingRenameTargetPlan(
+procedure xeBuildExistingRenameTargetPlan(
   const aTargetFile, aTargetName, aBackupPath: string;
   const aDeleteInsteadOfBackup: Boolean;
   out aHasExistingTarget: Boolean;
   out aOldDateTime: TDateTime;
   out aBackupFile, aActionText, aWarningText: string
-): Boolean;
+);
 begin
   aHasExistingTarget := FileExists(aTargetFile);
   aOldDateTime := 0;
   aBackupFile := '';
   aActionText := '';
   aWarningText := '';
-  Result := True;
   if not aHasExistingTarget then
     Exit;
 
