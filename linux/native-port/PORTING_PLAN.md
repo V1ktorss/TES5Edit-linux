@@ -314,6 +314,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved GameLink filename assembly into service helper (`xeGetGameLinkFilePath`)
   - moved ref-cache stale-file discovery and deletion logic into services (`xeGetStaleRefCacheFiles`, `xeDeleteFilesBestEffort`) while keeping confirmation UI in `TfrmMain`
   - moved backup target name collision handling into service helper (`xeFindAvailablePath`) and reused it across module rename/backup save paths
+  - moved backup-path initialization/fallback logic into service helper (`xeEnsureBackupPath`) and reused it across rename/backup/shutdown rename flows
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`

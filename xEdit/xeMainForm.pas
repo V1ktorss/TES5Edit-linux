@@ -1526,9 +1526,7 @@ begin
   if wbDontSave then
     Exit;
 
-  if not xeDontBackup and not DirectoryExists(wbBackupPath) then
-    if not ForceDirectories(wbBackupPath) then
-      wbBackupPath := wbDataPath;
+  wbBackupPath := xeEnsureBackupPath(wbBackupPath, wbDataPath, not xeDontBackup);
 
   lFrom := wbDataPath + aFrom;
   if not FileExists(lFrom) then begin
@@ -1600,7 +1598,7 @@ begin
   Result := True;
 end;
 
-function DoBackupModule(const aFrom, aOriginal: string; aSilent: Boolean): Boolean;
+function DoBackupModule(const aFrom: string; aSilent: Boolean): Boolean;
 var
   lFrom       : string;
   lBackup     : string;
@@ -1611,9 +1609,7 @@ begin
   Assert(not wbDontSave);
   Assert(not xeDontBackup);
 
-  if not xeDontBackup and not DirectoryExists(wbBackupPath) then
-    if not ForceDirectories(wbBackupPath) then
-      wbBackupPath := wbDataPath;
+  wbBackupPath := xeEnsureBackupPath(wbBackupPath, wbDataPath, not xeDontBackup);
 
   lFrom := wbDataPath + aFrom;
   if not FileExists(lFrom) then begin
@@ -1672,9 +1668,7 @@ begin
   if not Assigned(FilesToRename) then
     Exit;
 
-  if not xeDontBackup and not DirectoryExists(wbBackupPath) then
-    if not ForceDirectories(wbBackupPath) then
-      wbBackupPath := wbDataPath;
+  wbBackupPath := xeEnsureBackupPath(wbBackupPath, wbDataPath, not xeDontBackup);
 
   wbCurrentAction := 'Renaming previously saved files';
   wbProgress(wbCurrentAction);
@@ -16077,7 +16071,7 @@ begin
                         DeleteFile(wbDataPath + s);
                       end else begin
                         wbProgress('Backing up previously queued save "' + wbDataPath + s + '" as a direct save to "' + wbDataPath + u + '" has succeeded.');
-                        DoBackupModule(s, u, aSilent);
+                        DoBackupModule(s, aSilent);
                       end;
                       FilesToRename.Delete(j);
                     end;
