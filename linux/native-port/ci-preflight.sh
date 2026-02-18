@@ -10,6 +10,7 @@ chmod +x linux/native-port/stress-large-bsarch.sh
 chmod +x linux/native-port/xedit-readiness-audit.sh
 chmod +x linux/native-port/check-xedit-readiness.sh
 chmod +x linux/native-port/audit-xedit-gui-surface.sh
+chmod +x linux/native-port/check-xedit-gui-surface-budget.sh
 chmod +x linux/native-port/smoke-test-xedit-headless.sh
 chmod +x linux/native-port/build-xdump.sh
 chmod +x linux/native-port/smoke-test-xdump-headless.sh
