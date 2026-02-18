@@ -1999,7 +1999,10 @@ begin
     except
       on e: Exception do begin
         ExitCode := 1;
-        ReportProgress('Unexpected Error: <'+e.ClassName+': '+e.Message+'>');
+        ReportProgress(
+          'Unexpected Error: <' + e.ClassName + ': ' + e.Message + '> @ ' +
+          Format('%p', [ExceptAddr])
+        );
         Halt(1);
       end;
     end;
