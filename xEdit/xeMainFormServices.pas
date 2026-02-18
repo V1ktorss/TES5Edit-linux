@@ -49,6 +49,11 @@ procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: 
 function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
 function xeEnsureBackupPath(const aBackupPath, aDataPath: string; const aUseBackup: Boolean): string;
+function xeTryPrepareSourceFileForRename(
+  const aDataPath, aSourceName, aBackupPath: string;
+  const aUseBackup: Boolean;
+  out aResolvedBackupPath, aSourceFile, aErrorText: string
+): Boolean;
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
 function xeBuildModuleBackupPath(const aBackupPath, aTargetFileName: string; const aNow: TDateTime): string;
 function xeBuildTempSaveBackupPath(const aBackupPath, aFromFileName: string): string;
@@ -208,6 +213,17 @@ begin
     Exit;
   if not DirectoryExists(Result) and not ForceDirectories(Result) then
     Result := aDataPath;
+end;
+
+function xeTryPrepareSourceFileForRename(
+  const aDataPath, aSourceName, aBackupPath: string;
+  const aUseBackup: Boolean;
+  out aResolvedBackupPath, aSourceFile, aErrorText: string
+): Boolean;
+begin
+  aResolvedBackupPath := xeEnsureBackupPath(aBackupPath, aDataPath, aUseBackup);
+  aSourceFile := aDataPath + aSourceName;
+  Result := xeTryValidateSourceFileForRename(aSourceFile, aErrorText);
 end;
 
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;

@@ -1530,10 +1530,15 @@ begin
   if wbDontSave then
     Exit;
 
-  wbBackupPath := xeEnsureBackupPath(wbBackupPath, wbDataPath, not xeDontBackup);
-
-  lFrom := wbDataPath + aFrom;
-  if not xeTryValidateSourceFileForRename(lFrom, s) then begin
+  if not xeTryPrepareSourceFileForRename(
+    wbDataPath,
+    aFrom,
+    wbBackupPath,
+    not xeDontBackup,
+    wbBackupPath,
+    lFrom,
+    s
+  ) then begin
     wbProgress(s);
     if not aSilent then
       MessageDlg(s, mtError, [mbOK], 0);
@@ -1599,10 +1604,15 @@ begin
   Assert(not wbDontSave);
   Assert(not xeDontBackup);
 
-  wbBackupPath := xeEnsureBackupPath(wbBackupPath, wbDataPath, not xeDontBackup);
-
-  lFrom := wbDataPath + aFrom;
-  if not xeTryValidateSourceFileForRename(lFrom, s) then begin
+  if not xeTryPrepareSourceFileForRename(
+    wbDataPath,
+    aFrom,
+    wbBackupPath,
+    not xeDontBackup,
+    wbBackupPath,
+    lFrom,
+    s
+  ) then begin
     wbProgress(s);
     if not aSilent then
       MessageDlg(s, mtError, [mbOK], 0);
