@@ -21,6 +21,7 @@ uses
   wbLocalization,
   wbStreams,
   wbInterface,
+  wbPlatform,
   wbHelpers;
 
 type
@@ -29,7 +30,6 @@ type
   TxeProgressProc = procedure(const aText: string);
   TxeWatchStampReader = function: Int64 of object;
   TxeWatchStopPredicate = function: Boolean of object;
-  TxeForceTerminateThreadProc = procedure(const aThreadHandle: NativeUInt);
   TxeStopPredicate = function: Boolean;
   TxeNoArgProc = procedure;
 
@@ -53,7 +53,7 @@ function xeBuildGameLinkSelection(const aRefID, aBaseID: TwbFormID): TxeGameLink
 
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
 function xeRequestThreadTerminate(const aThread: TThread): Boolean;
-function xeFinalizeBackgroundThread(const aThread: TThread; const aForceTerminate: TxeForceTerminateThreadProc): Boolean;
+function xeFinalizeBackgroundThread(const aThread: TThread): Boolean;
 procedure xeWaitUntil(
   const aIsDone: TxeStopPredicate;
   const aPumpMessages: TxeNoArgProc;
@@ -403,7 +403,7 @@ begin
     aThread.Terminate;
 end;
 
-function xeFinalizeBackgroundThread(const aThread: TThread; const aForceTerminate: TxeForceTerminateThreadProc): Boolean;
+function xeFinalizeBackgroundThread(const aThread: TThread): Boolean;
 begin
   Result := False;
   if not Assigned(aThread) then
@@ -414,8 +414,7 @@ begin
     Exit;
   end;
 
-  if Assigned(aForceTerminate) then
-    aForceTerminate(aThread.Handle);
+  wbForceTerminateThread(aThread.Handle);
 end;
 
 procedure xeWaitUntil(

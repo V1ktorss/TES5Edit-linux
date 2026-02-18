@@ -6275,11 +6275,6 @@ var
   lNavPanelWidth: Integer;
   lNavColumnWidths: array of Integer;
 
-  procedure ForceTerminateThreadByHandle(const aThreadHandle: NativeUInt);
-  begin
-    TerminateThread(aThreadHandle, 0);
-  end;
-
   function IsLoaderDone: Boolean;
   begin
     Result := wbLoaderDone;
@@ -6302,9 +6297,9 @@ begin
   if xeRequestThreadTerminate(PluggyLinkThread) then
     FreeAndNil(PluggyLinkThread);
 
-  if xeFinalizeBackgroundThread(CheckGitHubReleaseThread, ForceTerminateThreadByHandle) then
+  if xeFinalizeBackgroundThread(CheckGitHubReleaseThread) then
     FreeAndNil(CheckGitHubReleaseThread);
-  if xeFinalizeBackgroundThread(CheckNexusModsReleaseThread, ForceTerminateThreadByHandle) then
+  if xeFinalizeBackgroundThread(CheckNexusModsReleaseThread) then
     FreeAndNil(CheckNexusModsReleaseThread);
 
   if SaveChanged >= srAbort then begin

@@ -76,6 +76,7 @@ function wbCreateProcessWait(
 function wbGetVirtualKeyState(const aVirtualKey: Integer): SmallInt;
 function wbIsVirtualKeyPressed(const aVirtualKey: Integer): Boolean;
 procedure wbSleepMs(const aMilliseconds: Cardinal);
+procedure wbForceTerminateThread(const aThreadHandle: THandle);
 function wbGetSteamInstallFolder: string;
 function wbIsAssociatedWithExtension(const aExt, aExecPath: string): Boolean;
 function wbAssociateWithExtension(const aExt, aName, aDescr, aExecPath: string): Boolean;
@@ -319,6 +320,16 @@ end;
 procedure wbSleepMs(const aMilliseconds: Cardinal);
 begin
   Sleep(aMilliseconds);
+end;
+
+procedure wbForceTerminateThread(const aThreadHandle: THandle);
+begin
+  {$IFDEF MSWINDOWS}
+  if aThreadHandle <> 0 then
+    TerminateThread(aThreadHandle, 0);
+  Exit;
+  {$ENDIF}
+  wbIgnoreUnused(@aThreadHandle);
 end;
 
 function wbNormalizePath(const aPath: string): string;

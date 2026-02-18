@@ -371,6 +371,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved background-thread finalization branching (`finished` vs. force-terminate handle callback) into service helper (`xeFinalizeBackgroundThread`) and slimmed `FormClose`
   - moved soft thread-termination request (`Terminate` call) into service helper (`xeRequestThreadTerminate`) and reused it in `FormClose` for link-thread shutdown
   - moved loader-shutdown wait loop (`process messages` + `sleep/poll`) into service helper (`xeWaitUntil`) and reused it in `FormClose`
+  - moved force thread-termination call path from `xeMainForm` to `wbPlatform` (`wbForceTerminateThread`) and simplified `xeFinalizeBackgroundThread` to platform-wrapper usage only
   - moved backup-module temp-save plan generation (`target backup path` + progress action text) into service helper (`xeBuildBackupModuleTempSavePlan`)
   - moved full non-UI backup-module flow (`source prepare`, `backup plan`, `rename execution`) into service helper (`xeTryRunBackupModuleFlow`)
 - Reduced GUI WinAPI import sites:
