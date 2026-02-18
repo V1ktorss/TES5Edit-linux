@@ -75,6 +75,12 @@ function xeResolveSaveResult(
   out aFailureMessage, aSuccessMessage: string
 ): TwbSaveResult;
 function xeBuildRenameFailuresDialogMessage(const aDataPath: string): string;
+function xeBuildRenameBatchOutcome(
+  const aAnyError, aSaveProgress, aHasMainForm: Boolean;
+  const aDataPath: string;
+  out aDialogMessage: string;
+  out aShouldSaveLogs: Boolean
+): Boolean;
 function xeTryPrepareShutdownRename(
   const aDontSave: Boolean;
   const aFilesToRename: TStrings;
@@ -432,6 +438,23 @@ begin
   Result :=
     'One or more errors occured during renaming of saved modules.' + #13#13 +
     'Please check the files in your data path: ' + aDataPath;
+end;
+
+function xeBuildRenameBatchOutcome(
+  const aAnyError, aSaveProgress, aHasMainForm: Boolean;
+  const aDataPath: string;
+  out aDialogMessage: string;
+  out aShouldSaveLogs: Boolean
+): Boolean;
+begin
+  aDialogMessage := '';
+  aShouldSaveLogs := False;
+  Result := aAnyError;
+  if not Result then
+    Exit;
+
+  aDialogMessage := xeBuildRenameFailuresDialogMessage(aDataPath);
+  aShouldSaveLogs := aSaveProgress and aHasMainForm;
 end;
 
 function xeTryPrepareShutdownRename(

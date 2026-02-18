@@ -1638,6 +1638,8 @@ procedure DoRename;
 var
   AnyError : Boolean;
   RenameAction: string;
+  RenameDialogMessage: string;
+  ShouldSaveLogs: Boolean;
 begin
   wbForceTerminate := False;
   _wbProgressCallback := SaveProgress;
@@ -1668,14 +1670,21 @@ begin
   _SaveProgress := False;
   AnyError := xeRenameSavedModules(FilesToRename, DoRenameModule);
 
-  if AnyError then begin
+  if xeBuildRenameBatchOutcome(
+    AnyError,
+    _SaveProgress,
+    Assigned(frmMain),
+    wbDataPath,
+    RenameDialogMessage,
+    ShouldSaveLogs
+  ) then begin
     MessageDlg(
-      xeBuildRenameFailuresDialogMessage(wbDataPath),
+      RenameDialogMessage,
       mtError,
       [mbOK],
       0
     );
-    if _SaveProgress and Assigned(frmMain) then
+    if ShouldSaveLogs then
       frmMain.SaveLogs(False);
   end;
 
