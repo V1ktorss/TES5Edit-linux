@@ -21856,64 +21856,30 @@ end;
 
 procedure TPluggyLinkThread.ChangeDetected;
 var
-  s                                                : string;
+  lFields                                          : TStringList;
   FormID, BaseFormID, InventoryFormID, EnchantmentFormID, SpellFormID : TwbFormID;
+const
+  cRefCsv = 'Pluggy' + wbAppName + 'ViewWorld.csv';
+  cInventoryCsv = 'Pluggy' + wbAppName + 'ViewInventory.csv';
+  cSpellsCsv = 'Pluggy' + wbAppName + 'ViewSpells.csv';
 begin
-  with TBufferedFileStream.Create(plFolder + 'Pluggy'+wbAppName+'ViewWorld.csv', fmOpenRead or fmShareDenyNone) do try
-    Position := Size - 2024;
-    SetLength(s, 64 * 1024);
-    SetLength(s, Read(s[1], 64 * 1024));
-  finally
-    Free;
-  end;
-  with TStringList.Create do try
-    Text := s;
-    if Count < 2 then
+  lFields := TStringList.Create;
+  try
+    if not xeTryReadLastCsvFields(plFolder + cRefCsv, 2, lFields) then
       Exit;
-    CommaText := Strings[Pred(Count)];
-    if Count < 2 then
+    FormID := TwbFormID.FromStr(lFields[0]);
+    BaseFormID := TwbFormID.FromStr(lFields[1]);
+
+    if not xeTryReadLastCsvFields(plFolder + cInventoryCsv, 2, lFields) then
       Exit;
-    FormID := TwbFormID.FromStr(Strings[0]);
-    BaseFormID := TwbFormID.FromStr(Strings[1]);
-  finally
-    Free;
-  end;
-  with TBufferedFileStream.Create(plFolder + 'Pluggy'+wbAppName+'ViewInventory.csv', fmOpenRead or fmShareDenyNone) do try
-    Position := Size - 2024;
-    SetLength(s, 64 * 1024);
-    SetLength(s, Read(s[1], 64 * 1024));
-  finally
-    Free;
-  end;
-  with TStringList.Create do try
-    Text := s;
-    if Count < 2 then
+    InventoryFormID := TwbFormID.FromStr(lFields[0]);
+    EnchantmentFormID := TwbFormID.FromStr(lFields[1]);
+
+    if not xeTryReadLastCsvFields(plFolder + cSpellsCsv, 1, lFields) then
       Exit;
-    CommaText := Strings[Pred(Count)];
-    if Count < 2 then
-      Exit;
-    InventoryFormID := TwbFormID.FromStr(Strings[0]);
-    EnchantmentFormID := TwbFormID.FromStr(Strings[1]);
+    SpellFormID := TwbFormID.FromStr(lFields[0]);
   finally
-    Free;
-  end;
-  with TBufferedFileStream.Create(plFolder + 'Pluggy'+wbAppName+'ViewSpells.csv', fmOpenRead or fmShareDenyNone) do try
-    Position := Size - 2024;
-    SetLength(s, 64 * 1024);
-    SetLength(s, Read(s[1], 64 * 1024));
-  finally
-    Free;
-  end;
-  with TStringList.Create do try
-    Text := s;
-    if Count < 2 then
-      Exit;
-    CommaText := Strings[Pred(Count)];
-    if Count < 1 then
-      Exit;
-    SpellFormID := TwbFormID.FromStr(Strings[0]);
-  finally
-    Free;
+    lFields.Free;
   end;
 
 
@@ -21934,45 +21900,31 @@ begin
 end;
 
 procedure TPluggyLinkThread.Execute;
-  function GetPluggyStamp: Int64;
-  const
-    cPluggyFiles: array[0..2] of string = (
-      'Pluggy' + wbAppName + 'ViewRef.csv',
-      'Pluggy' + wbAppName + 'ViewInventory.csv',
-      'Pluggy' + wbAppName + 'ViewSpells.csv'
-    );
-  var
-    i: Integer;
-    lFile: string;
-    lTime: TDateTime;
-    lStamp: TTimeStamp;
-    lTicks: Int64;
-  begin
-    Result := -1;
-    for i := Low(cPluggyFiles) to High(cPluggyFiles) do begin
-      lFile := plFolder + cPluggyFiles[i];
-      if not FileExists(lFile) then
-        Continue;
-      lTime := TFile.GetLastWriteTimeUtc(lFile);
-      lStamp := DateTimeToTimeStamp(lTime);
-      lTicks := Int64(lStamp.Date) * 86400000 + lStamp.Time;
-      if lTicks > Result then
-        Result := lTicks;
-    end;
-  end;
+const
+  cRefCsv = 'Pluggy' + wbAppName + 'ViewWorld.csv';
+  cInventoryCsv = 'Pluggy' + wbAppName + 'ViewInventory.csv';
+  cSpellsCsv = 'Pluggy' + wbAppName + 'ViewSpells.csv';
 var
   LastStamp: Int64;
   CurrentStamp: Int64;
 begin
   plFolder := wbMyGamesTheGamePath + 'Pluggy' + PathDelim + 'User Files' + PathDelim;
   frmMain.PostAddMessage('[PluggyLink] Starting for: ' + plFolder);
-  LastStamp := GetPluggyStamp;
+  LastStamp := xeGetNewestFileWriteStampUtc([
+    plFolder + cRefCsv,
+    plFolder + cInventoryCsv,
+    plFolder + cSpellsCsv
+  ]);
   if LastStamp >= 0 then
     ChangeDetected;
   try
     repeat
       wbSleepMs(1000);
-      CurrentStamp := GetPluggyStamp;
+      CurrentStamp := xeGetNewestFileWriteStampUtc([
+        plFolder + cRefCsv,
+        plFolder + cInventoryCsv,
+        plFolder + cSpellsCsv
+      ]);
       if (CurrentStamp >= 0) and (CurrentStamp <> LastStamp) then begin
         LastStamp := CurrentStamp;
         ChangeDetected;
