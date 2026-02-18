@@ -1122,6 +1122,7 @@ var
   SourceName      : string;
   ForcedToolMode  : string;
   ForcedGameMode  : string;
+  DebugInit       : Boolean;
 
   function HasCmdSwitch(const aName: string): Boolean;
   var
@@ -1152,6 +1153,12 @@ var
       end;
     end;
   end;
+
+  procedure DebugLog(const aMsg: string);
+  begin
+    if DebugInit then
+      WriteLn(ErrOutput, '[xdump-init] ', aMsg);
+  end;
 begin
   {$IFDEF FPC}
   DefaultFormatSettings.DecimalSeparator := '.';
@@ -1169,10 +1176,13 @@ begin
   wbSimpleRecords := False;
   wbHideUnused := False;
   StartTime := Now;
+  DebugInit := SameText(Trim(GetEnvironmentVariable('XDUMP_DEBUG_INIT')), '1')
+    or SameText(Trim(GetEnvironmentVariable('XDUMP_DEBUG_INIT')), 'true');
 
   try
     try
       t := LowerCase(ExtractFileName(ParamStr(0)));
+      DebugLog('startup');
 
       if HasCmdSwitch('?') or HasCmdSwitch('h') or HasCmdSwitch('help') then begin
         WriteLn(ErrOutput, 'xDump (headless)');
@@ -1210,6 +1220,7 @@ begin
         end;
       if not Found then
         wbToolSource := tsPlugins;
+      DebugLog('tool source selected');
 
       Found := False;
       for tm := Low(TwbToolMode) to High(TwbToolMode) do begin
@@ -1248,6 +1259,7 @@ begin
           Exit;
         end;
       end;
+      DebugLog('tool mode selected');
 
       Found := False;
       for gm := Low(TwbGameMode) to High(TwbGameMode) do begin
@@ -1286,6 +1298,7 @@ begin
           Exit;
         end;
       end;
+      DebugLog('game mode selected');
 
       wbToolName := GetEnumName(TypeInfo(TwbToolMode), Ord(wbToolMode) );
       Delete(wbToolName, 1 ,2);
@@ -1293,6 +1306,7 @@ begin
       Delete(wbSourceName, 1 ,2);
       wbAppName := GetEnumName(TypeInfo(TwbGameMode), Ord(wbGameMode) );
       Delete(wbAppName, 1 ,2);
+      DebugLog('names assigned');
 
       wbLoadBSAs := FindCmdLineSwitch('bsa') or FindCmdLineSwitch('allbsa');
       tss := [tsPlugins, tsSaves];
@@ -1304,7 +1318,9 @@ begin
       wbLanguage := 'English';
 
       wbGameExeName := '';
-      case wbGameMode of
+      DebugLog('enter game definition case');
+      try
+        case wbGameMode of
         gmFNV: begin
           wbGameName := 'FalloutNV';
           case wbToolSource of
@@ -1421,7 +1437,20 @@ begin
       else
         WriteLn(ErrOutput, 'Application name must contain FNV, FO3, FO4, FO4VR, FO76, SSE, TES4, TES5 or TES5VR to select game.');
         Exit;
+        end;
+      except
+        on E: Exception do
+          raise Exception.CreateFmt(
+            'Definition initialization failed (%s/%s): %s @ %s',
+            [
+              GetEnumName(TypeInfo(TwbGameMode), Ord(wbGameMode)),
+              GetEnumName(TypeInfo(TwbToolSource), Ord(wbToolSource)),
+              E.Message,
+              Format('%p', [ExceptAddr])
+            ]
+          );
       end;
+      DebugLog('game definition case done');
 
       if wbGameName2 = '' then
         wbGameName2 := wbGameName;
@@ -1444,11 +1473,14 @@ begin
         WriteLn(ErrOutput, 'Application '+wbGameName+' does not currently support ToolSource: '+wbSourceName);
         Exit;
       end;
+      DebugLog('mode/source validation done');
 
       if wbGameMode in [gmFO4, gmFO4vr, gmFO76, gmSF1] then
         wbArchiveExtension := '.ba2';
 
+      DebugLog('before DoInitPath');
       DoInitPath;
+      DebugLog('after DoInitPath');
       if (wbToolMode in [tmDump]) and (wbDataPath = '') then // Dump can be run in any directory configuration
         wbDataPath := CheckParamPath;
 
