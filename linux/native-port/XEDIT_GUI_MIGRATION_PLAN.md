@@ -37,7 +37,7 @@ Targets:
 1. `xEdit/xeMainForm.pas`
   - current message surface baseline:
     - 0 `message WM_*` bindings (rewired to app constants)
-    - 5 `TMessage` usages
+    - 3 `TMessage` usages
     - 0 raw `WM_*` references
   - budget guard:
     - `linux/native-port/check-xemainform-message-surface-budget.sh`

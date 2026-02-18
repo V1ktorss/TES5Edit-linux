@@ -22075,13 +22075,14 @@ end;
 
 type
   TWinControlProtectedHacker = class(TWinControl);
-  TMainWndProc = procedure(var Message: TMessage) of object;
+  TxeMainFormMessage = TMessage;
+  TMainWndProc = procedure(var Message: TxeMainFormMessage) of object;
 
 var
   CodePointer_TWinControl_MainWndProc : TMainWndProc;
-  Trampoline_TWinControl_MainWndProc : procedure(Self: TWinControlProtectedHacker; var Message: TMessage);
+  Trampoline_TWinControl_MainWndProc : procedure(Self: TWinControlProtectedHacker; var Message: TxeMainFormMessage);
 
-procedure Detour_TWinControl_MainWndProc(Self: TWinControlProtectedHacker; var Message: TMessage);
+procedure Detour_TWinControl_MainWndProc(Self: TWinControlProtectedHacker; var Message: TxeMainFormMessage);
 begin
   case Message.Msg of
     xeWmPaint: begin

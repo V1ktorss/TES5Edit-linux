@@ -81,7 +81,7 @@ This document tracks what is already done for the native Linux path and what com
 - Implemented `xeMainForm` message-surface audit script/report:
   - `linux/native-port/audit-xemainform-message-surface.sh`
   - `linux/native-port/reports/xemainform-message-surface.txt`
-  - current baseline: 0 `message WM_*` bindings, 5 `TMessage` usages, 0 raw `WM_*` references
+  - current baseline: 0 `message WM_*` bindings, 3 `TMessage` usages, 0 raw `WM_*` references
 - Added `xeMainForm` message-surface budget guard:
   - `linux/native-port/check-xemainform-message-surface-budget.sh` (wired via `RUN_XEMAINFORM_MESSAGE_BUDGET_GUARD=1` in `run-all-checks.sh`)
   - baseline `linux/native-port/baselines/xemainform-message-surface-budget.env` (fails on regressions in handler-bindings / `TMessage` usage / raw `WM_*` refs)
@@ -286,6 +286,7 @@ This document tracks what is already done for the native Linux path and what com
 - Added `xeMainForm` message-surface audit lane: `linux/native-port/audit-xemainform-message-surface.sh` (wired via `RUN_XEMAINFORM_MESSAGE_AUDIT=1` in `run-all-checks.sh`)
 - Replaced direct `WM_USER`/`WM_PAINT` usage in `xeMainForm` with local app constants (`xeWmUser*`, `xeWmPaint`) to decouple message IDs from WinAPI names while keeping behavior unchanged.
 - Replaced `xeMainForm` custom `message`-bound handlers with explicit `WndProc` dispatch helpers, reducing `TMessage` usages from 17 to 5.
+- Reduced `xeMainForm` message-surface further by introducing a local message type alias for detour signatures, reducing `TMessage` usages from 5 to 3.
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`

@@ -2,7 +2,7 @@
 
 ## Summary
 - Handler declarations using message WM_*: 0
-- TMessage parameter usages: 5
+- TMessage parameter usages: 3
 - WM_* references (raw): 0
 
 ## Handler Declarations
@@ -11,9 +11,7 @@
 ## TMessage Usages
 923:    procedure WndProc(var Message: TMessage); override;
 21231:procedure TfrmMain.WndProc(var Message: TMessage);
-22078:  TMainWndProc = procedure(var Message: TMessage) of object;
-22082:  Trampoline_TWinControl_MainWndProc : procedure(Self: TWinControlProtectedHacker; var Message: TMessage);
-22084:procedure Detour_TWinControl_MainWndProc(Self: TWinControlProtectedHacker; var Message: TMessage);
+22078:  TxeMainFormMessage = TMessage;
 
 ## WM_* References
 
