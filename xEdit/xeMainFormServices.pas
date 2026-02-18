@@ -431,6 +431,10 @@ function xeCanRunUnsavedHintTick(
   const aLoaderDone, aFormEnabled, aClientEnabled, aEditAllowed, aShowUnsavedHint: Boolean;
   const aIsAutoToolMode, aLeftMouseDown, aHasVstView, aHasVstNav, aVstViewEditing, aHintActive, aHasMainMenuButton: Boolean
 ): Boolean;
+function xeComputeSaveInterval(
+  const aFiles: TwbFiles;
+  const aNow, aDefaultInterval: TDateTime
+): TDateTime;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -2277,6 +2281,26 @@ begin
     (not aVstViewEditing) and
     (not aHintActive) and
     aHasMainMenuButton;
+end;
+
+function xeComputeSaveInterval(
+  const aFiles: TwbFiles;
+  const aNow, aDefaultInterval: TDateTime
+): TDateTime;
+var
+  lMinUnsavedSince: TDateTime;
+  i: Integer;
+begin
+  lMinUnsavedSince := MaxDouble;
+  for i := Low(aFiles) to High(aFiles) do
+    if esUnsaved in aFiles[i].ElementStates then
+      if aFiles[i].UnsavedSince < lMinUnsavedSince then
+        lMinUnsavedSince := aFiles[i].UnsavedSince;
+
+  if lMinUnsavedSince < aNow then
+    Result := (aNow - lMinUnsavedSince) + aDefaultInterval
+  else
+    Result := aDefaultInterval;
 end;
 
 function xeGetStaleRefCacheFiles(

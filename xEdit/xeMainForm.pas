@@ -16410,21 +16410,8 @@ begin
 end;
 
 procedure TfrmMain.SetSaveInterval;
-var
-  MinUnsavedSince : TDateTime;
-  j               : Integer;
 begin
-  MinUnsavedSince := MaxDouble;
-
-  for j := Low(Files) to High(Files) do
-    if esUnsaved in Files[j].ElementStates then
-      if Files[j].UnsavedSince < MinUnsavedSince then
-        MinUnsavedSince := Files[j].UnsavedSince;
-
-  if MinUnsavedSince < Now then
-    SaveInterval := (Now - MinUnsavedSince) + DefaultInterval
-  else
-    SaveInterval := DefaultInterval;
+  SaveInterval := xeComputeSaveInterval(Files, Now, DefaultInterval);
 end;
 
 function TfrmMain.GetViewNodePositionLabel(aNode: PVirtualNode = nil): string;
