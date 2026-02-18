@@ -1615,43 +1615,45 @@ var
 begin
   _wbProgressCallback := SaveProgress;
   xeBeginShutdownRename(StartAction);
-  if Assigned(frmMain) then
-    frmMain.mmoMessages.Clear;
-  wbProgress(StartAction);
+  try
+    if Assigned(frmMain) then
+      frmMain.mmoMessages.Clear;
+    wbProgress(StartAction);
 
-  if not xeTryPrepareShutdownRenameFlow(
-    wbDontSave,
-    FilesToRename,
-    wbDataPath,
-    wbBackupPath,
-    not xeDontBackup,
-    RenameAction
-  ) then
-    Exit;
+    if not xeTryPrepareShutdownRenameFlow(
+      wbDontSave,
+      FilesToRename,
+      wbDataPath,
+      wbBackupPath,
+      not xeDontBackup,
+      RenameAction
+    ) then
+      Exit;
 
-  wbProgress(wbCurrentAction);
+    wbProgress(wbCurrentAction);
 
-  _SaveProgress := False;
-  if xeRunShutdownRenameBatch(
-    FilesToRename,
-    DoRenameModule,
-    _SaveProgress,
-    Assigned(frmMain),
-    wbDataPath,
-    RenameDialogMessage,
-    ShouldSaveLogs
-  ) then begin
-    MessageDlg(
+    _SaveProgress := False;
+    if xeRunShutdownRenameBatch(
+      FilesToRename,
+      DoRenameModule,
+      _SaveProgress,
+      Assigned(frmMain),
+      wbDataPath,
       RenameDialogMessage,
-      mtError,
-      [mbOK],
-      0
-    );
-    if ShouldSaveLogs then
-      frmMain.SaveLogs(False);
+      ShouldSaveLogs
+    ) then begin
+      MessageDlg(
+        RenameDialogMessage,
+        mtError,
+        [mbOK],
+        0
+      );
+      if ShouldSaveLogs then
+        frmMain.SaveLogs(False);
+    end;
+  finally
+    xeEndShutdownRename;
   end;
-
-  wbCurrentAction := '';
 end;
 
 procedure TfrmMain.acBackExecute(Sender: TObject);
