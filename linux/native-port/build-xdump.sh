@@ -43,6 +43,7 @@ FPC_FLAGS=(
   -O2
   -g
   -vewnhi
+  -dXEDIT_HEADLESS
   "-FE${OUT_DIR}"
 )
 

@@ -183,11 +183,12 @@ This document tracks what is already done for the native Linux path and what com
 - added optional headless smoke script `linux/native-port/smoke-test-xedit-headless.sh` and wired CI to run it when `linux/bin/xedit-core` is available
 - smoke script now supports multi-case runs (`XEDIT_HEADLESS_CASES`, default `-h|-dummy`) and treats non-zero exit codes as failures
 - added `linux/native-port/ci-preflight.sh` as shared CI entry point to run all native-port checks with consistent permissions and strict-style gating
-- started xDump CLI decoupling:
+  - started xDump CLI decoupling:
   - guarded Windows-only imports and PE flags behind `MSWINDOWS`
   - routed registry lookup through `wbTryReadRegistryString` (Windows only)
   - normalized data path suffix to `Data` + `PathDelim` for cross-platform paths
   - added Linux build helper: `linux/native-port/build-xdump.sh`
+  - xDump Linux build now also compiles with `-dXEDIT_HEADLESS`, aligning definition/init behavior with the stabilized headless runtime path used by xEdit
   - made LZ4 Pascal units tolerate non-Windows builds (CPU defines + non-Windows uses)
   - made `xDump.dpr` FPC-friendly in key startup paths (removed inline-var usage, removed `ToLowerInvariant`/`Contains` dependence, guarded debug-only `DebugHook` usage)
   - made Linux resource inclusion optional for xDump (`{$R *.res}` guarded to Windows)
