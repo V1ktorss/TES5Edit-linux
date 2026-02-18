@@ -21856,28 +21856,19 @@ end;
 
 procedure TPluggyLinkThread.ChangeDetected;
 var
-  LastSelection: TxePluggySelection;
   CurrentSelection: TxePluggySelection;
 begin
   if not xeTryReadPluggySelection(plFolder, wbAppName, CurrentSelection) then
     Exit;
 
-  LastSelection.FormID := plLastFormID;
-  LastSelection.BaseFormID := plLastBaseFormID;
-  LastSelection.InventoryFormID := plLastInventoryFormID;
-  LastSelection.EnchantmentFormID := plLastEnchantmentFormID;
-  LastSelection.SpellFormID := plLastSpellFormID;
-
-  if xeHasPluggySelectionChanged(LastSelection, CurrentSelection) then begin
-    xeAssignPluggySelection(
-      CurrentSelection,
-      plLastFormID,
-      plLastBaseFormID,
-      plLastInventoryFormID,
-      plLastEnchantmentFormID,
-      plLastSpellFormID
-    );
-
+  if xeApplyPluggySelectionIfChanged(
+    plLastFormID,
+    plLastBaseFormID,
+    plLastInventoryFormID,
+    plLastEnchantmentFormID,
+    plLastSpellFormID,
+    CurrentSelection
+  ) then begin
     frmMain.PostPluggyChange(
       CurrentSelection.FormID,
       CurrentSelection.BaseFormID,
@@ -22027,19 +22018,13 @@ procedure TGameLinkThread.ChangeDetected;
 const
   cGameLinkFile = 'xEditLink.ini';
 var
-  LastSelection: TxeGameLinkSelection;
   CurrentSelection: TxeGameLinkSelection;
 begin
   if not xeTryReadGameLinkSelection(glFolder + cGameLinkFile, CurrentSelection) then
     Exit;
 
-  if not CurrentSelection.RefID.IsNull then begin
-    LastSelection.RefID := glLastFormID;
-    LastSelection.BaseID := glLastBaseFormID;
-    if xeHasGameLinkSelectionChanged(LastSelection, CurrentSelection) then begin
-      xeAssignGameLinkSelection(CurrentSelection, glLastFormID, glLastBaseFormID);
-      frmMain.PostPluggyChange(CurrentSelection.RefID, CurrentSelection.BaseID, TwbFormID.Null, TwbFormID.Null, TwbFormID.Null);
-    end;
+  if xeApplyGameLinkSelectionIfChanged(glLastFormID, glLastBaseFormID, CurrentSelection) then begin
+    frmMain.PostPluggyChange(CurrentSelection.RefID, CurrentSelection.BaseID, TwbFormID.Null, TwbFormID.Null, TwbFormID.Null);
   end;
 end;
 

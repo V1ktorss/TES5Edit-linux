@@ -56,11 +56,16 @@ function xeHasPluggySelectionChanged(
 function xeHasPluggySelectionChanged(const aLast, aCurrent: TxePluggySelection): Boolean;
 procedure xeAssignPluggySelection(const aSelection: TxePluggySelection;
   var aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID);
+function xeApplyPluggySelectionIfChanged(
+  var aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID;
+  const aSelection: TxePluggySelection
+): Boolean;
 function xeHasGameLinkSelectionChanged(
   const aLastRefID, aLastBaseID, aRefID, aBaseID: TwbFormID
 ): Boolean;
 function xeHasGameLinkSelectionChanged(const aLast, aCurrent: TxeGameLinkSelection): Boolean;
 procedure xeAssignGameLinkSelection(const aSelection: TxeGameLinkSelection; var aRefID, aBaseID: TwbFormID);
+function xeApplyGameLinkSelectionIfChanged(var aRefID, aBaseID: TwbFormID; const aSelection: TxeGameLinkSelection): Boolean;
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
 function xeParseNexusVersionFromHtml(const aHtml: string): TwbVersion;
 function xeTryGetLatestXEditVersionFromGitHub(out aVersion: TwbVersion): Boolean;
@@ -314,6 +319,28 @@ begin
   aSpellFormID := aSelection.SpellFormID;
 end;
 
+function xeApplyPluggySelectionIfChanged(
+  var aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID;
+  const aSelection: TxePluggySelection
+): Boolean;
+begin
+  Result := xeHasPluggySelectionChanged(
+    aFormID,
+    aBaseFormID,
+    aInventoryFormID,
+    aEnchantmentFormID,
+    aSpellFormID,
+    aSelection.FormID,
+    aSelection.BaseFormID,
+    aSelection.InventoryFormID,
+    aSelection.EnchantmentFormID,
+    aSelection.SpellFormID
+  );
+  if not Result then
+    Exit;
+  xeAssignPluggySelection(aSelection, aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID);
+end;
+
 function xeHasGameLinkSelectionChanged(
   const aLastRefID, aLastBaseID, aRefID, aBaseID: TwbFormID
 ): Boolean;
@@ -330,6 +357,17 @@ procedure xeAssignGameLinkSelection(const aSelection: TxeGameLinkSelection; var 
 begin
   aRefID := aSelection.RefID;
   aBaseID := aSelection.BaseID;
+end;
+
+function xeApplyGameLinkSelectionIfChanged(var aRefID, aBaseID: TwbFormID; const aSelection: TxeGameLinkSelection): Boolean;
+begin
+  if aSelection.RefID.IsNull then
+    Exit(False);
+
+  Result := xeHasGameLinkSelectionChanged(aRefID, aBaseID, aSelection.RefID, aSelection.BaseID);
+  if not Result then
+    Exit;
+  xeAssignGameLinkSelection(aSelection, aRefID, aBaseID);
 end;
 
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
