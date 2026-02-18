@@ -294,6 +294,7 @@ This document tracks what is already done for the native Linux path and what com
 - started `xeMainForm` service extraction for non-visual workflows:
   - added `xEdit/xeMainFormServices.pas` with `xePersistThemeSetting` and routed custom-style persistence through it
   - moved GameLink file-stamp lookup from `TGameLinkThread.Execute` into `xeMainFormServices.xeGetFileWriteStampUtc`
+  - moved GameLink ini parsing from `TGameLinkThread.ChangeDetected` into `xeMainFormServices.xeTryReadGameLinkSelection`
   - moved Pluggy CSV-tail parsing and newest-file-stamp lookup from `TPluggyLinkThread` into `xeMainFormServices` (`xeTryReadLastCsvFields`, `xeGetNewestFileWriteStampUtc`)
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)

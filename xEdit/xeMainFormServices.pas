@@ -18,12 +18,14 @@ uses
   SysUtils,
   IOUtils,
   IniFiles,
-  wbStreams;
+  wbStreams,
+  wbInterface;
 
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
 function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
+function xeTryReadGameLinkSelection(const aFileName: string; out aSelectedRefID, aSelectedBaseID: TwbFormID): Boolean;
 
 implementation
 
@@ -116,6 +118,40 @@ begin
   end;
 
   Result := True;
+end;
+
+function xeTryReadGameLinkSelection(const aFileName: string; out aSelectedRefID, aSelectedBaseID: TwbFormID): Boolean;
+var
+  lStream: TBufferedFileStream;
+  lStrings: TStringList;
+begin
+  Result := False;
+  aSelectedRefID := TwbFormID.Null;
+  aSelectedBaseID := TwbFormID.Null;
+
+  if not FileExists(aFileName) then
+    Exit;
+
+  lStream := TBufferedFileStream.Create(aFileName, fmOpenRead or fmShareDenyNone);
+  try
+    lStrings := TStringList.Create;
+    try
+      lStrings.LoadFromStream(lStream);
+      with TMemIniFile.Create('') do
+      try
+        SetStrings(lStrings);
+        aSelectedRefID := TwbFormID.FromStrDef(ReadString('Console', 'selectedRefID', '00000000'));
+        aSelectedBaseID := TwbFormID.FromStrDef(ReadString('Console', 'selectedBaseID', '00000000'));
+        Result := True;
+      finally
+        Free;
+      end;
+    finally
+      lStrings.Free;
+    end;
+  finally
+    lStream.Free;
+  end;
 end;
 
 end.

@@ -22047,31 +22047,14 @@ end;
 { TGameLinkThread }
 
 procedure TGameLinkThread.ChangeDetected;
+const
+  cGameLinkFile = 'xEditLink.ini';
 var
-  Stream : TBufferedFileStream;
-  sl     : TStringList;
-
   SelectedRefID: TwbFormID;
   SelectedBaseID: TwbFormID;
 begin
-  Stream := TBufferedFileStream.Create(glFolder + 'xEditLink.ini', fmOpenRead or fmShareDenyNone);
-  try
-    sl := TStringList.Create;
-    try
-      sl.LoadFromStream(Stream);
-      with TMemIniFile.Create('') do try
-        SetStrings(sl);
-        SelectedRefID := TwbFormID.FromStrDef(ReadString('Console', 'selectedRefID', '00000000'));
-        SelectedBaseID := TwbFormID.FromStrDef(ReadString('Console', 'selectedBaseID', '00000000'));
-      finally
-        Free;
-      end;
-    finally
-      sl.Free;
-    end;
-  finally
-    Stream.Free;
-  end;
+  if not xeTryReadGameLinkSelection(glFolder + cGameLinkFile, SelectedRefID, SelectedBaseID) then
+    Exit;
 
   if not SelectedRefID.IsNull then
     if (SelectedRefID <> glLastFormID) or
