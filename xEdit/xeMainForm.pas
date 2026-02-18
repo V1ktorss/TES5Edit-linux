@@ -21856,27 +21856,27 @@ end;
 
 procedure TPluggyLinkThread.ChangeDetected;
 var
-  CurrentSelection: TxePluggySelection;
+  Selection: TxePluggySelection;
 begin
-  if not xeTryReadPluggySelection(plFolder, wbAppName, CurrentSelection) then
-    Exit;
-
-  if xeApplyPluggySelectionIfChanged(
+  if not xeTryUpdatePluggySelection(
+    plFolder,
+    wbAppName,
     plLastFormID,
     plLastBaseFormID,
     plLastInventoryFormID,
     plLastEnchantmentFormID,
     plLastSpellFormID,
-    CurrentSelection
-  ) then begin
-    frmMain.PostPluggyChange(
-      CurrentSelection.FormID,
-      CurrentSelection.BaseFormID,
-      CurrentSelection.InventoryFormID,
-      CurrentSelection.EnchantmentFormID,
-      CurrentSelection.SpellFormID
-    );
-  end;
+    Selection
+  ) then
+    Exit;
+
+  frmMain.PostPluggyChange(
+    Selection.FormID,
+    Selection.BaseFormID,
+    Selection.InventoryFormID,
+    Selection.EnchantmentFormID,
+    Selection.SpellFormID
+  );
 end;
 
 procedure TPluggyLinkThread.Execute;
@@ -22018,14 +22018,12 @@ procedure TGameLinkThread.ChangeDetected;
 const
   cGameLinkFile = 'xEditLink.ini';
 var
-  CurrentSelection: TxeGameLinkSelection;
+  Selection: TxeGameLinkSelection;
 begin
-  if not xeTryReadGameLinkSelection(glFolder + cGameLinkFile, CurrentSelection) then
+  if not xeTryUpdateGameLinkSelection(glFolder + cGameLinkFile, glLastFormID, glLastBaseFormID, Selection) then
     Exit;
 
-  if xeApplyGameLinkSelectionIfChanged(glLastFormID, glLastBaseFormID, CurrentSelection) then begin
-    frmMain.PostPluggyChange(CurrentSelection.RefID, CurrentSelection.BaseID, TwbFormID.Null, TwbFormID.Null, TwbFormID.Null);
-  end;
+  frmMain.PostPluggyChange(Selection.RefID, Selection.BaseID, TwbFormID.Null, TwbFormID.Null, TwbFormID.Null);
 end;
 
 procedure TGameLinkThread.Execute;
