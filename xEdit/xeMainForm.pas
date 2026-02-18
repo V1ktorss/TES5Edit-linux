@@ -16019,35 +16019,22 @@ begin
 
             end;
 
-            if SavedThisOne then begin
-              xeHandleDirectRenameAttempt(
-                TryDirectRename,
-                NeedsRename,
+            if SavedThisOne then
+              xeFinalizeSavedModuleRenameFlow(
+                FilesToRename,
                 s,
                 u,
-                @DoRenameModule,
+                wbDataPath,
+                NeedsRename,
+                TryDirectRename,
+                xeDontBackup,
+                aSilent,
                 AnyErrors,
+                BackupWarningGiven,
+                @DoRenameModule,
+                @DoBackupModule,
                 @wbProgress
               );
-
-              if NeedsRename then begin
-                // s - rename from, relative to DataPath
-                // u - rename to, relative to DataPath
-                xeQueueModuleRename(FilesToRename, u, s);
-                wbProgress('Queued renaming of save "' + wbDataPath + s + '" to "' + wbDataPath + u + '" on shutdown.');
-              end else begin
-                xeProcessQueuedRenamesAfterDirectSave(
-                  FilesToRename,
-                  u,
-                  xeDontBackup,
-                  BackupWarningGiven,
-                  aSilent,
-                  wbDataPath,
-                  @DoBackupModule,
-                  @wbProgress
-                );
-              end;
-            end;
 
             DoProcessMessages;
             tmrMessagesTimer(nil);

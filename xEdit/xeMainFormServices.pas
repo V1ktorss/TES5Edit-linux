@@ -132,6 +132,18 @@ procedure xeHandleDirectRenameAttempt(
   var aAnyErrors: Boolean;
   const aProgress: TxeProgressProc
 );
+procedure xeFinalizeSavedModuleRenameFlow(
+  var aFilesToRename: TStringList;
+  const aFromTempName, aToFinalName, aDataPath: string;
+  var aNeedsRename: Boolean;
+  const aTryDirectRename: Boolean;
+  const aDeleteInsteadOfBackup: Boolean;
+  const aSilent: Boolean;
+  var aAnyErrors, aBackupWarningGiven: Boolean;
+  const aRenameModule: TxeRenameModuleFunc;
+  const aBackupModule: TxeBackupModuleFunc;
+  const aProgress: TxeProgressProc
+);
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -605,6 +617,48 @@ begin
   except
     // Keep prior behavior: ignore exception and keep queued-rename path.
   end;
+end;
+
+procedure xeFinalizeSavedModuleRenameFlow(
+  var aFilesToRename: TStringList;
+  const aFromTempName, aToFinalName, aDataPath: string;
+  var aNeedsRename: Boolean;
+  const aTryDirectRename: Boolean;
+  const aDeleteInsteadOfBackup: Boolean;
+  const aSilent: Boolean;
+  var aAnyErrors, aBackupWarningGiven: Boolean;
+  const aRenameModule: TxeRenameModuleFunc;
+  const aBackupModule: TxeBackupModuleFunc;
+  const aProgress: TxeProgressProc
+);
+begin
+  xeHandleDirectRenameAttempt(
+    aTryDirectRename,
+    aNeedsRename,
+    aFromTempName,
+    aToFinalName,
+    aRenameModule,
+    aAnyErrors,
+    aProgress
+  );
+
+  if aNeedsRename then begin
+    xeQueueModuleRename(aFilesToRename, aToFinalName, aFromTempName);
+    if Assigned(aProgress) then
+      aProgress('Queued renaming of save "' + aDataPath + aFromTempName + '" to "' + aDataPath + aToFinalName + '" on shutdown.');
+    Exit;
+  end;
+
+  xeProcessQueuedRenamesAfterDirectSave(
+    aFilesToRename,
+    aToFinalName,
+    aDeleteInsteadOfBackup,
+    aBackupWarningGiven,
+    aSilent,
+    aDataPath,
+    aBackupModule,
+    aProgress
+  );
 end;
 
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
