@@ -144,6 +144,19 @@ function xeTrySaveLocalizationToTemp(
   var aSavedAny, aSavedThisOne, aTryDirectRename: Boolean;
   out aErrorText: string
 ): Boolean;
+function xeTrySaveLocalizationEntry(
+  const aFile: TwbLocalizationFile;
+  const aDataPath, aLocalizationFileName, aSuffix: string;
+  var aSavedAny, aSavedThisOne, aTryDirectRename, aNeedsRename, aAnyErrors: Boolean;
+  out aOriginalName, aTempName, aStartMessage, aResultMessage: string
+): Boolean;
+function xeTrySaveModuleEntry(
+  const aFile: IwbFile;
+  const aDataPath, aModuleFileNameOnDisk, aSuffix: string;
+  const aResetModified: TwbResetModified;
+  var aSavedAny, aSavedThisOne, aTryDirectRename, aNeedsRename, aAnyErrors: Boolean;
+  out aOriginalName, aTempName, aStartMessage, aResultMessage: string
+): Boolean;
 procedure xeMarkTempSaveWriteFailure(
   const aDataPath, aTempName: string;
   var aAnyErrors, aNeedsRename: Boolean
@@ -679,6 +692,130 @@ begin
     Exit;
   aSavedAny := True;
   xeMarkDirectRenameCapability(False, aTryDirectRename);
+end;
+
+function xeTrySaveLocalizationEntry(
+  const aFile: TwbLocalizationFile;
+  const aDataPath, aLocalizationFileName, aSuffix: string;
+  var aSavedAny, aSavedThisOne, aTryDirectRename, aNeedsRename, aAnyErrors: Boolean;
+  out aOriginalName, aTempName, aStartMessage, aResultMessage: string
+): Boolean;
+var
+  lErrorText: string;
+begin
+  aStartMessage := '';
+  aResultMessage := '';
+
+  xePrepareLocalizationSaveNames(
+    aDataPath,
+    aLocalizationFileName,
+    aSuffix,
+    aOriginalName,
+    aTempName,
+    aNeedsRename
+  );
+
+  if not xeTryPrepareSaveWriteTarget(aDataPath + aTempName, aTempName, aStartMessage, lErrorText) then begin
+    aResultMessage := xeHandleSaveWriteException(
+      aDataPath,
+      aTempName,
+      lErrorText,
+      aAnyErrors,
+      aNeedsRename,
+      aSavedThisOne
+    );
+    Exit(False);
+  end;
+
+  Result := xeTrySaveLocalizationToTemp(
+    aFile,
+    aDataPath + aTempName,
+    aSavedAny,
+    aSavedThisOne,
+    aTryDirectRename,
+    lErrorText
+  );
+  if Result then
+    Exit;
+
+  aResultMessage := xeHandleSaveWriteException(
+    aDataPath,
+    aTempName,
+    lErrorText,
+    aAnyErrors,
+    aNeedsRename,
+    aSavedThisOne
+  );
+end;
+
+function xeTrySaveModuleEntry(
+  const aFile: IwbFile;
+  const aDataPath, aModuleFileNameOnDisk, aSuffix: string;
+  const aResetModified: TwbResetModified;
+  var aSavedAny, aSavedThisOne, aTryDirectRename, aNeedsRename, aAnyErrors: Boolean;
+  out aOriginalName, aTempName, aStartMessage, aResultMessage: string
+): Boolean;
+var
+  lErrorText: string;
+  lOriginalCRC: TwbCRC32;
+begin
+  aStartMessage := '';
+  aResultMessage := '';
+
+  xePrepareModuleSaveNames(
+    aDataPath,
+    aModuleFileNameOnDisk,
+    aSuffix,
+    aOriginalName,
+    aTempName,
+    aNeedsRename
+  );
+
+  lOriginalCRC := aFile.CRC32;
+
+  if not xeTryPrepareSaveWriteTarget(aDataPath + aTempName, aTempName, aStartMessage, lErrorText) then begin
+    aResultMessage := xeHandleSaveWriteException(
+      aDataPath,
+      aTempName,
+      lErrorText,
+      aAnyErrors,
+      aNeedsRename,
+      aSavedThisOne
+    );
+    Exit(False);
+  end;
+
+  if not xeTryWriteModuleToTempFile(
+    aFile,
+    aDataPath + aTempName,
+    aResetModified,
+    aTryDirectRename,
+    lErrorText
+  ) then begin
+    aResultMessage := xeHandleSaveWriteException(
+      aDataPath,
+      aTempName,
+      lErrorText,
+      aAnyErrors,
+      aNeedsRename,
+      aSavedThisOne
+    );
+    Exit(False);
+  end;
+
+  aSavedThisOne := True;
+  xeFinalizeModuleTempSaveOutcome(
+    aDataPath,
+    aTempName,
+    lOriginalCRC,
+    aFile.CRC32,
+    aNeedsRename,
+    aTryDirectRename,
+    aSavedThisOne,
+    aSavedAny,
+    aResultMessage
+  );
+  Result := True;
 end;
 
 procedure xeMarkTempSaveWriteFailure(

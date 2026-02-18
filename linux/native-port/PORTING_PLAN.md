@@ -350,6 +350,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved localization temp-save success-state updates (`SavedAny`, `SavedThisOne`, direct-rename capability) into service helper (`xeTrySaveLocalizationToTemp`)
   - moved save-status message formatting (`Saving: ...`, `Error saving ...`) into service helpers (`xeBuildSaveStartMessage`, `xeBuildSaveErrorMessage`)
   - moved save-write exception reconciliation (`failure flags + formatted error text`) into service helper (`xeHandleSaveWriteException`)
+  - moved per-entry save execution for localization/plugin files (name prep, write-target prep, write call, and failure reconciliation) into service helpers (`xeTrySaveLocalizationEntry`, `xeTrySaveModuleEntry`) and simplified branching in `SaveChanged`
   - moved `SavedThisOne` guard + rename-flow dispatch into service helper (`xeFinalizeSavedModuleRenameFlowIfSaved`)
   - moved save-tail summary/exception message formatting into service helpers (`xeBuildSaveUnhandledExceptionMessage`, `xeBuildSaveFailureSummaryMessage`, `xeBuildSaveSuccessSummaryMessage`)
   - moved save-result resolution (`AnyErrors`/`SavedAny` -> `TwbSaveResult` + summary messages) into service helper (`xeResolveSaveResult`)

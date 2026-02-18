@@ -15850,7 +15850,7 @@ end;
 
 function TfrmMain.SaveChanged(aSilent: Boolean = False; aShowMessageIfNothing: Boolean = False): TwbSaveResult;
 var
-  i, j                        : Integer;
+  i                           : Integer;
   FileType                    : array of Byte;
   _File                       : IwbFile;
   _LFile                      : TwbLocalizationFile;
@@ -15865,7 +15865,6 @@ var
   AnyErrors                   : Boolean;
   TryDirectRename             : Boolean;
   FoundSomething              : Boolean;
-  CRC                         : TwbCRC32;
   BackupWarningGiven          : Boolean;
   SaveFailureMessage          : string;
   SaveSuccessMessage          : string;
@@ -15932,9 +15931,9 @@ begin
 
       Inc(wbShowStartTime);
       try
-        SavedAny := False;
-        AnyErrors := False;
-        t := xeBuildTempSaveSuffix(Now);
+      SavedAny := False;
+      AnyErrors := False;
+      t := xeBuildTempSaveSuffix(Now);
 
         for i := 0 to Pred(CheckListBox1.Items.Count) do
           if CheckListBox1.Checked[i] then begin
@@ -15945,29 +15944,24 @@ begin
             // localization file
             if FileType[i] = 1 then begin
               _LFile := TwbLocalizationFile(CheckListBox1.Items.Objects[i]);
-              xePrepareLocalizationSaveNames(wbDataPath, _LFile.FileName, t, u, s, NeedsRename);
-
-              try
-                if not xeTryPrepareSaveWriteTarget(wbDataPath + s, s, SaveStartMessage, t) then
-                  raise Exception.Create(t);
-                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + SaveStartMessage);
-                if not xeTrySaveLocalizationToTemp(
-                  _LFile,
-                  wbDataPath + s,
-                  SavedAny,
-                  SavedThisOne,
-                  TryDirectRename,
-                  t
-                ) then
-                  raise Exception.Create(t);
-
-              except
-                on E: Exception do begin
-                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' +
-                    xeHandleSaveWriteException(wbDataPath, s, E.Message, AnyErrors, NeedsRename, SavedThisOne)
-                  );
-                end;
-              end;
+              if xeTrySaveLocalizationEntry(
+                _LFile,
+                wbDataPath,
+                _LFile.FileName,
+                t,
+                SavedAny,
+                SavedThisOne,
+                TryDirectRename,
+                NeedsRename,
+                AnyErrors,
+                u,
+                s,
+                SaveStartMessage,
+                DiscardInfo
+              ) then
+                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + SaveStartMessage)
+              else
+                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + DiscardInfo);
 
             end else
 
@@ -15975,43 +15969,27 @@ begin
             begin
 
               _File := IwbFile(Pointer(CheckListBox1.Items.Objects[i]));
-
-              xePrepareModuleSaveNames(wbDataPath, CheckListBox1.Items[i], t, u, s, NeedsRename);
-
-              CRC := _File.CRC32;
-              try
-                if not xeTryPrepareSaveWriteTarget(wbDataPath + s, s, SaveStartMessage, t) then
-                  raise Exception.Create(t);
+              if xeTrySaveModuleEntry(
+                _File,
+                wbDataPath,
+                CheckListBox1.Items[i],
+                t,
+                ResetModifiedFromBool[wbResetModifiedOnSave],
+                SavedAny,
+                SavedThisOne,
+                TryDirectRename,
+                NeedsRename,
+                AnyErrors,
+                u,
+                s,
+                SaveStartMessage,
+                DiscardInfo
+              ) then begin
                 PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + SaveStartMessage);
-                SavedThisOne := xeTryWriteModuleToTempFile(
-                  _File,
-                  wbDataPath + s,
-                  ResetModifiedFromBool[wbResetModifiedOnSave],
-                  TryDirectRename,
-                  t
-                );
-                if not SavedThisOne then
-                  raise Exception.Create(t);
-
-                if xeFinalizeModuleTempSaveOutcome(
-                  wbDataPath,
-                  s,
-                  CRC,
-                  _File.CRC32,
-                  NeedsRename,
-                  TryDirectRename,
-                  SavedThisOne,
-                  SavedAny,
-                  DiscardInfo
-                ) then
+                if DiscardInfo <> '' then
                   PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + DiscardInfo);
-              except
-                on E: Exception do begin
-                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' +
-                    xeHandleSaveWriteException(wbDataPath, s, E.Message, AnyErrors, NeedsRename, SavedThisOne)
-                  );
-                end;
-              end;
+              end else
+                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + DiscardInfo);
 
             end;
 
