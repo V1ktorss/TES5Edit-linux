@@ -201,6 +201,12 @@ if [[ "${MODE_SANITY_TEST}" == "1" ]]; then
     exit 1
   fi
 
+  if rg -q "Can't determine (GameMode|ToolMode)" "${log_file}"; then
+    echo "[xdump-smoke] FAILED: mode sanity case could not resolve mode switches"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
   echo "[xdump-smoke] Mode sanity case exit code: ${exit_code}"
   echo "[xdump-smoke] Log: ${log_file}"
 fi
@@ -225,6 +231,12 @@ if [[ "${INVALID_D_TEST}" == "1" ]]; then
 
   if [[ "${exit_code}" -eq 0 ]]; then
     echo "[xdump-smoke] FAILED: invalid -D case unexpectedly exited 0"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if ! rg -q "Data path does not exist" "${log_file}"; then
+    echo "[xdump-smoke] FAILED: invalid -D case did not report missing data path"
     echo "[xdump-smoke] Log: ${log_file}"
     exit 1
   fi
