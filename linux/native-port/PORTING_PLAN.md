@@ -240,6 +240,7 @@ This document tracks what is already done for the native Linux path and what com
 - Script host and plugin assumptions may still include Windows-only behavior.
 - FPC/Linux still relies on reduced/simplified definition handling in multiple sections (byte-array fallbacks, reduced structures); full `DefineCommon` parity is not complete yet.
 - GUI usability parity with original BSArchPro still needs incremental tuning.
+- xDump mode-initialized headless startup currently shows an `EAccessViolation` path; current smoke lane is launch-sanity oriented until mode-init crash is debugged.
 
 ## Immediate Action List
 
