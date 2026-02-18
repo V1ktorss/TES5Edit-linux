@@ -21719,21 +21719,17 @@ begin
 end;
 
 procedure TPluggyLinkThread.Execute;
-var
-  LastStamp: Int64;
 begin
   plFolder := xeGetPluggyUserFilesFolder(wbMyGamesTheGamePath);
-  frmMain.PostAddMessage('[PluggyLink] Starting for: ' + plFolder);
-  LastStamp := ReadWatchStamp;
-  if LastStamp >= 0 then
-    ChangeDetected;
-  try
-    xeRunWatchStampLoop(LastStamp, 1000, ReadWatchStamp, ShouldStopWatchLoop, HandleWatchStampChange, Self);
-  except
-    on E: Exception do
-      frmMain.PostAddMessage('[PluggyLink] Error: ' + E.Message);
-  end;
-  frmMain.PostAddMessage('[PluggyLink] terminated');
+  xeRunWatchStampLoopWithMessages(
+    'PluggyLink',
+    plFolder,
+    ReadWatchStamp,
+    ShouldStopWatchLoop,
+    HandleWatchStampChange,
+    Self,
+    frmMain.PostAddMessage
+  );
 end;
 
 function TPluggyLinkThread.ReadWatchStamp: Int64;
@@ -21871,22 +21867,17 @@ begin
 end;
 
 procedure TGameLinkThread.Execute;
-var
-  LastStamp: Int64;
 begin
   glFolder := xeGetGameLinkFolder(wbDataPath);
-  frmMain.PostAddMessage('[GameLink] Starting for: ' + glFolder);
-  LastStamp := ReadWatchStamp;
-  if LastStamp >= 0 then
-    ChangeDetected;
-  try
-    xeRunWatchStampLoop(LastStamp, 1000, ReadWatchStamp, ShouldStopWatchLoop, HandleWatchStampChange, Self);
-  except
-    on E: Exception do
-      frmMain.PostAddMessage('[GameLink] Error: ' + E.Message);
-  end;
-  frmMain.PostAddMessage('[GameLink] terminated');
-
+  xeRunWatchStampLoopWithMessages(
+    'GameLink',
+    glFolder,
+    ReadWatchStamp,
+    ShouldStopWatchLoop,
+    HandleWatchStampChange,
+    Self,
+    frmMain.PostAddMessage
+  );
 end;
 
 function TGameLinkThread.ReadWatchStamp: Int64;

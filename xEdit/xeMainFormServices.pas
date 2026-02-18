@@ -28,6 +28,7 @@ type
   TxeRenameModuleFunc = function(const aFrom, aTo: string; aSilent: Boolean): Boolean;
   TxeBackupModuleFunc = function(const aFrom: string; aSilent: Boolean): Boolean;
   TxeProgressProc = procedure(const aText: string);
+  TxeProgressMethod = procedure(const aText: string) of object;
   TxeWatchStampReader = function: Int64 of object;
   TxeWatchStopPredicate = function: Boolean of object;
   TxeStopPredicate = function: Boolean;
@@ -343,6 +344,14 @@ procedure xeRunWatchStampLoop(
   const aShouldStop: TxeWatchStopPredicate;
   const aOnChange: TNotifyEvent;
   const aSender: TObject
+);
+procedure xeRunWatchStampLoopWithMessages(
+  const aName, aFolder: string;
+  const aReadStamp: TxeWatchStampReader;
+  const aShouldStop: TxeWatchStopPredicate;
+  const aOnChange: TNotifyEvent;
+  const aSender: TObject;
+  const aPostMessage: TxeProgressMethod
 );
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
 function xeTryReadGameLinkSelection(const aFileName: string; out aSelection: TxeGameLinkSelection): Boolean;
@@ -1646,6 +1655,33 @@ begin
     if xeConsumeWatchStampChange(aLastStamp, lCurrentStamp) and Assigned(aOnChange) then
       aOnChange(aSender);
   until aShouldStop;
+end;
+
+procedure xeRunWatchStampLoopWithMessages(
+  const aName, aFolder: string;
+  const aReadStamp: TxeWatchStampReader;
+  const aShouldStop: TxeWatchStopPredicate;
+  const aOnChange: TNotifyEvent;
+  const aSender: TObject;
+  const aPostMessage: TxeProgressMethod
+);
+var
+  lLastStamp: Int64;
+begin
+  if not Assigned(aPostMessage) or not Assigned(aReadStamp) or not Assigned(aShouldStop) then
+    Exit;
+
+  aPostMessage('[' + aName + '] Starting for: ' + aFolder);
+  lLastStamp := aReadStamp;
+  if (lLastStamp >= 0) and Assigned(aOnChange) then
+    aOnChange(aSender);
+  try
+    xeRunWatchStampLoop(lLastStamp, 1000, aReadStamp, aShouldStop, aOnChange, aSender);
+  except
+    on E: Exception do
+      aPostMessage('[' + aName + '] Error: ' + E.Message);
+  end;
+  aPostMessage('[' + aName + '] terminated');
 end;
 
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
