@@ -421,6 +421,17 @@ function xeBuildUnsavedHintText(
   const aMaxSaveListCount: Integer;
   out aFoundExpired: Boolean
 ): string;
+function xeSetAllToMaster(
+  const aFiles: TwbFiles;
+  const aElapsedStart: TDateTime;
+  const aMasterUpdateFilterONAM: Boolean;
+  const aAddMessage: TxeProgressProc
+): Boolean;
+function xeUpdateAllOnam(
+  const aFiles: TwbFiles;
+  const aElapsedStart: TDateTime;
+  const aAddMessage: TxeProgressProc
+): Boolean;
 procedure xeConsumeUserActivityTick(
   var aUserWasActive: Boolean;
   const aScriptRunning: Boolean;
@@ -2240,6 +2251,50 @@ begin
     Result := lList.Text;
   finally
     lList.Free;
+  end;
+end;
+
+function xeSetAllToMaster(
+  const aFiles: TwbFiles;
+  const aElapsedStart: TDateTime;
+  const aMasterUpdateFilterONAM: Boolean;
+  const aAddMessage: TxeProgressProc
+): Boolean;
+var
+  i: Integer;
+  lFile: IwbFile;
+begin
+  Result := False;
+  for i := Low(aFiles) to High(aFiles) do begin
+    lFile := aFiles[i];
+    if (not lFile.IsESM) and (not (fsIsHardcoded in lFile.FileStates)) then begin
+      if Assigned(aAddMessage) then
+        aAddMessage('[' + wbFormatElapsedTime(Now - aElapsedStart) + '] Setting ESM Flag: ' + lFile.FileName);
+      lFile.IsESM := True;
+      Result := True;
+    end else if aMasterUpdateFilterONAM and (lFile.MasterCount[True] > 0) then
+      lFile.Elements[0].MarkModifiedRecursive(AllElementTypes);
+  end;
+end;
+
+function xeUpdateAllOnam(
+  const aFiles: TwbFiles;
+  const aElapsedStart: TDateTime;
+  const aAddMessage: TxeProgressProc
+): Boolean;
+var
+  i: Integer;
+  lFile: IwbFile;
+begin
+  Result := False;
+  for i := Low(aFiles) to High(aFiles) do begin
+    lFile := aFiles[i];
+    if lFile.IsEditable and (lFile.FileStates * [fsIsGameMaster, fsIsHardcoded, fsIsOfficial] = []) and (lFile.MasterCount[True] > 0) then begin
+      lFile.Elements[0].MarkModifiedRecursive(AllElementTypes);
+      if Assigned(aAddMessage) then
+        aAddMessage('[' + wbFormatElapsedTime(Now - aElapsedStart) + '] Updating ONAM in: ' + lFile.FileName);
+      Result := True;
+    end;
   end;
 end;
 

@@ -16365,34 +16365,13 @@ begin
 end;
 
 function TfrmMain.SetAllToMaster: Boolean;
-var
-  i: Integer;
 begin
-  Result := False;
-  for i := Low(Files) to High(Files) do with Files[i] do
-    if (not IsESM) and (not (fsIsHardcoded in FileStates)) then begin
-      AddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Setting ESM Flag: ' + FileName);
-      IsESM := True;
-      Result := True;
-    end else begin
-      if wbMasterUpdateFilterONAM and (MasterCount[True] > 0) then
-        Elements[0].MarkModifiedRecursive(AllElementTypes);
-    end;
+  Result := xeSetAllToMaster(Files, wbStartTime, wbMasterUpdateFilterONAM, AddMessage);
 end;
 
 function TfrmMain.UpdateAllOnam: Boolean;
-var
-  i: Integer;
 begin
-  Result := False;
-  for i := Low(Files) to High(Files) do with Files[i] do
-    if IsEditable and (FileStates * [fsIsGameMaster, fsIsHardcoded, fsIsOfficial] = []) then begin
-      if MasterCount[True] > 0 then begin
-        Elements[0].MarkModifiedRecursive(AllElementTypes);
-        AddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Updating ONAM in: ' + FileName);
-        Result := True;
-      end;
-    end;
+  Result := xeUpdateAllOnam(Files, wbStartTime, AddMessage);
 end;
 
 procedure TfrmMain.SetDoubleBuffered(aWinControl: TWinControl);

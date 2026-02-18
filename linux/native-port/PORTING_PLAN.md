@@ -109,6 +109,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved `tmrCheckUnsavedTimer` gating/user-activity bookkeeping into `xeMainFormServices` (`xeCanRunUnsavedHintTick`, `xeConsumeUserActivityTick`)
   - moved save-interval calculation from `xeMainForm.SetSaveInterval` into `xeMainFormServices` (`xeComputeSaveInterval`)
   - aligned `xeMainForm.AddMessage` line splitting with service helper (`xeSplitPostedMessageLines`) to avoid duplicate split logic
+  - moved `xeMainForm` master/ONAM batch file loops into `xeMainFormServices` (`xeSetAllToMaster`, `xeUpdateAllOnam`)
 - Extended `wbPlatform` helpers:
   - added `wbShowWindowNoActivate` wrapper for non-activating tip-form display
 - Started `xejviScriptAdapterMisc` decoupling:
