@@ -357,6 +357,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved shared pre-write target preparation (parent directory + start message) into service helper (`xeTryPrepareSaveWriteTarget`) and reused it across localization/plugin save paths
   - moved shutdown-rename preparation guards (`DontSave`, queued-files check, backup-path resolution, action text) into service helper (`xeTryPrepareShutdownRename`)
   - moved shutdown-rename outcome policy (`AnyError` -> dialog text + optional log-save trigger) into service helper (`xeBuildRenameBatchOutcome`)
+  - moved backup-module temp-save plan generation (`target backup path` + progress action text) into service helper (`xeBuildBackupModuleTempSavePlan`)
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`

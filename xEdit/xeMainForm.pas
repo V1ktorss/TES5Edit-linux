@@ -1590,6 +1590,7 @@ function DoBackupModule(const aFrom: string; aSilent: Boolean): Boolean;
 var
   lFrom       : string;
   lBackup     : string;
+  lActionText : string;
   s           : string;
 begin
   Result := False;
@@ -1612,8 +1613,8 @@ begin
     Exit;
   end;
 
-  lBackup := xeBuildTempSaveBackupPath(wbBackupPath, aFrom);
-  wbProgress('Renaming "' + lFrom + '" to "' + lBackup + '".');
+  xeBuildBackupModuleTempSavePlan(lFrom, aFrom, wbBackupPath, lBackup, lActionText);
+  wbProgress(lActionText);
   if not xeTryBackupSourceFile(lFrom, aFrom, wbBackupPath, lBackup, s) then begin
     wbProgress(s);
     if not aSilent then

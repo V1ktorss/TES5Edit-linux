@@ -172,6 +172,10 @@ function xeTryBackupSourceFile(
   const aSourceFile, aSourceName, aBackupPath: string;
   out aBackupFile, aErrorText: string
 ): Boolean;
+procedure xeBuildBackupModuleTempSavePlan(
+  const aSourceFile, aSourceName, aBackupPath: string;
+  out aBackupFile, aActionText: string
+);
 procedure xeBuildExistingRenameTargetPlan(
   const aTargetFile, aTargetName, aBackupPath: string;
   const aDeleteInsteadOfBackup: Boolean;
@@ -784,6 +788,15 @@ function xeTryBackupSourceFile(
 begin
   aBackupFile := xeBuildTempSaveBackupPath(aBackupPath, aSourceName);
   Result := xeTryRenameFile(aSourceFile, aBackupFile, aErrorText);
+end;
+
+procedure xeBuildBackupModuleTempSavePlan(
+  const aSourceFile, aSourceName, aBackupPath: string;
+  out aBackupFile, aActionText: string
+);
+begin
+  aBackupFile := xeBuildTempSaveBackupPath(aBackupPath, aSourceName);
+  aActionText := 'Renaming "' + aSourceFile + '" to "' + aBackupFile + '".';
 end;
 
 procedure xeBuildExistingRenameTargetPlan(
