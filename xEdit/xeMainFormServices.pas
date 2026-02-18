@@ -48,6 +48,7 @@ function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkWatchStamp(const aFolder: string): Int64;
 function xeGetPluggyWatchStamp(const aFolder, aAppName: string): Int64;
+function xeConsumeWatchStampChange(var aLastStamp: Int64; const aCurrentStamp: Int64): Boolean;
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
 function xeTryReadGameLinkSelection(const aFileName: string; out aSelectedRefID, aSelectedBaseID: TwbFormID): Boolean;
 function xeTryReadGameLinkSelection(const aFileName: string; out aSelection: TxeGameLinkSelection): Boolean;
@@ -165,6 +166,13 @@ begin
     aFolder + 'Pluggy' + aAppName + 'ViewInventory.csv',
     aFolder + 'Pluggy' + aAppName + 'ViewSpells.csv'
   ]);
+end;
+
+function xeConsumeWatchStampChange(var aLastStamp: Int64; const aCurrentStamp: Int64): Boolean;
+begin
+  Result := (aCurrentStamp >= 0) and (aCurrentStamp <> aLastStamp);
+  if Result then
+    aLastStamp := aCurrentStamp;
 end;
 
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;

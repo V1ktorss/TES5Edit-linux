@@ -21887,8 +21887,7 @@ begin
     repeat
       wbSleepMs(1000);
       CurrentStamp := xeGetPluggyWatchStamp(plFolder, wbAppName);
-      if (CurrentStamp >= 0) and (CurrentStamp <> LastStamp) then begin
-        LastStamp := CurrentStamp;
+      if xeConsumeWatchStampChange(LastStamp, CurrentStamp) then begin
         ChangeDetected;
       end;
     until Terminated or wbForceTerminate;
@@ -22034,8 +22033,7 @@ begin
     repeat
       wbSleepMs(1000);
       CurrentStamp := xeGetGameLinkWatchStamp(glFolder);
-      if (CurrentStamp >= 0) and (CurrentStamp <> LastStamp) then begin
-        LastStamp := CurrentStamp;
+      if xeConsumeWatchStampChange(LastStamp, CurrentStamp) then begin
         ChangeDetected;
       end;
     until Terminated or wbForceTerminate;
