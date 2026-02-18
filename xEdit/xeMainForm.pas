@@ -21870,11 +21870,18 @@ begin
     Exit;
 
 
-  if (FormID <> plLastFormID) or
-     (BaseFormID <> plLastBaseFormID) or
-     (InventoryFormID <> plLastInventoryFormID) or
-     (EnchantmentFormID <> plLastEnchantmentFormID) or
-     (SpellFormID <> plLastSpellFormID) then begin
+  if xeHasPluggySelectionChanged(
+    plLastFormID,
+    plLastBaseFormID,
+    plLastInventoryFormID,
+    plLastEnchantmentFormID,
+    plLastSpellFormID,
+    FormID,
+    BaseFormID,
+    InventoryFormID,
+    EnchantmentFormID,
+    SpellFormID
+  ) then begin
 
     plLastFormID := FormID;
     plLastBaseFormID := BaseFormID;
@@ -22032,8 +22039,7 @@ begin
     Exit;
 
   if not SelectedRefID.IsNull then
-    if (SelectedRefID <> glLastFormID) or
-       (SelectedBaseID <> glLastBaseFormID) then begin
+    if xeHasGameLinkSelectionChanged(glLastFormID, glLastBaseFormID, SelectedRefID, SelectedBaseID) then begin
 
       glLastFormID := SelectedRefID;
       glLastBaseFormID := SelectedBaseID;

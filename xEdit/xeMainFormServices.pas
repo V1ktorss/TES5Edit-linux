@@ -30,6 +30,13 @@ function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: I
 function xeTryReadGameLinkSelection(const aFileName: string; out aSelectedRefID, aSelectedBaseID: TwbFormID): Boolean;
 function xeTryReadPluggySelection(const aFolder, aAppName: string;
   out aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID): Boolean;
+function xeHasPluggySelectionChanged(
+  const aLastFormID, aLastBaseFormID, aLastInventoryFormID, aLastEnchantmentFormID, aLastSpellFormID: TwbFormID;
+  const aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID
+): Boolean;
+function xeHasGameLinkSelectionChanged(
+  const aLastRefID, aLastBaseID, aRefID, aBaseID: TwbFormID
+): Boolean;
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
 function xeParseNexusVersionFromHtml(const aHtml: string): TwbVersion;
 
@@ -207,6 +214,26 @@ begin
   end;
 
   Result := True;
+end;
+
+function xeHasPluggySelectionChanged(
+  const aLastFormID, aLastBaseFormID, aLastInventoryFormID, aLastEnchantmentFormID, aLastSpellFormID: TwbFormID;
+  const aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID
+): Boolean;
+begin
+  Result :=
+    (aFormID <> aLastFormID) or
+    (aBaseFormID <> aLastBaseFormID) or
+    (aInventoryFormID <> aLastInventoryFormID) or
+    (aEnchantmentFormID <> aLastEnchantmentFormID) or
+    (aSpellFormID <> aLastSpellFormID);
+end;
+
+function xeHasGameLinkSelectionChanged(
+  const aLastRefID, aLastBaseID, aRefID, aBaseID: TwbFormID
+): Boolean;
+begin
+  Result := (aRefID <> aLastRefID) or (aBaseID <> aLastBaseID);
 end;
 
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
