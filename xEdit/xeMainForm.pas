@@ -5691,11 +5691,9 @@ procedure TfrmMain.edFormIDSearchKeyDown(Sender: TObject; var Key: Word; Shift: 
 var
   s                           : string;
   FormID                      : TwbFormID;
-  FileID                      : TwbFileID;
-  _File                       : IwbFile;
   MainRecord                  : IwbMainRecord;
   Node                        : PVirtualNode;
-  i, j, tmp                   : Integer;
+  i, tmp                      : Integer;
 
 begin
   if (Key = VK_RETURN) and (Shift = []) then begin
@@ -5716,53 +5714,29 @@ begin
       s := ReplaceText(s, '0x', '');
 
     FormID := TwbFormID.FromStrDef(s, 0);
-    FileID := FormID.FileID;
-    if not FormID.IsNull then begin
-      _File := nil;
-      j := Low(Files);
-      while (j <= High(Files)) and not Assigned(_File) do begin
-        if Files[j].LoadOrderFileID = FileID then
-          _File := Files[j];
-        Inc(j);
-      end;
-      while Assigned(_File) do begin
-        FormID.FileID := TwbFileID.CreateFull(_File.MasterCount[True]);
-        MainRecord := _File.RecordByFormID[FormID, True, True];
-        if Assigned(MainRecord) then begin
-          Node := FindNodeForElement(MainRecord);
-          if not Assigned(Node) then
-            for i := 0 to Pred(MainRecord.OverrideCount) do begin
-              // don't search in hidden elements
-              if MainRecord.Overrides[i].IsHidden then
-                Continue;
-              Node := FindNodeForElement(MainRecord.Overrides[i]);
-              if Assigned(Node) then
-                Break;
-            end;
-          if Assigned(Node) then begin
-            edFormIDSearch.Color := wbLighter(clLime, 0.85);
-            JumpTo(MainRecord, False);
-  //          vstNav.ClearSelection;
-  //          vstNav.FocusedNode := FindNodeForElement(MainRecord);
-  //          vstNav.Selected[vstNav.FocusedNode] := True;
-  //          SetActiveRecord(MainRecord);
-          end
-          else begin
-            edFormIDSearch.Color := wbLighter(clYellow, 0.85);
-            JumpTo(MainRecord, False);
-  //          SetActiveRecord(MainRecord);
-          end;
-          edFormIDSearch.SelectAll;
-          Exit;
+    if xeTryResolveSearchMainRecordFromFormID(Files, FormID, MainRecord) then begin
+      Node := FindNodeForElement(MainRecord);
+      if not Assigned(Node) then
+        for i := 0 to Pred(MainRecord.OverrideCount) do begin
+          // don't search in hidden elements
+          if MainRecord.Overrides[i].IsHidden then
+            Continue;
+          Node := FindNodeForElement(MainRecord.Overrides[i]);
+          if Assigned(Node) then
+            Break;
         end;
-        _File := nil;
-        while (j <= High(Files)) and not Assigned(_File) do begin
-          if Files[j].LoadOrderFileID = FileID then
-            _File := Files[j];
-          Inc(j);
-        end;
+      if Assigned(Node) then begin
+        edFormIDSearch.Color := wbLighter(clLime, 0.85);
+        JumpTo(MainRecord, False);
+      end
+      else begin
+        edFormIDSearch.Color := wbLighter(clYellow, 0.85);
+        JumpTo(MainRecord, False);
       end;
+      edFormIDSearch.SelectAll;
+      Exit;
     end;
+
     edFormIDSearch.Color := wbLighter(clRed, 0.85);
     edFormIDSearch.SelectAll;
   end;

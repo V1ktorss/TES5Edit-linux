@@ -386,6 +386,11 @@ function xeTryResolveMainRecordFromFormID(
   const aInputFormID: TwbFormID;
   out aMainRecord: IwbMainRecord
 ): Boolean;
+function xeTryResolveSearchMainRecordFromFormID(
+  const aFiles: TwbFiles;
+  const aInputFormID: TwbFormID;
+  out aMainRecord: IwbMainRecord
+): Boolean;
 function xeCanCreateNewModuleFile(const aDataPath, aFileName: string): Boolean;
 function xeNextLoadOrderFromTail(const aFiles: TwbFiles): Integer;
 function xeNextLoadOrderFromMax(const aFiles: TwbFiles): Integer;
@@ -1993,6 +1998,47 @@ begin
     aMainRecord := aMainRecord.WinningOverride;
 
   Result := Assigned(aMainRecord);
+end;
+
+function xeTryResolveSearchMainRecordFromFormID(
+  const aFiles: TwbFiles;
+  const aInputFormID: TwbFormID;
+  out aMainRecord: IwbMainRecord
+): Boolean;
+var
+  lFileID: TwbFileID;
+  lFile: IwbFile;
+  lFormID: TwbFormID;
+  i: Integer;
+begin
+  Result := False;
+  aMainRecord := nil;
+  if aInputFormID.IsNull then
+    Exit;
+
+  lFileID := aInputFormID.FileID;
+  lFile := nil;
+  i := Low(aFiles);
+  while (i <= High(aFiles)) and not Assigned(lFile) do begin
+    if aFiles[i].LoadOrderFileID = lFileID then
+      lFile := aFiles[i];
+    Inc(i);
+  end;
+
+  while Assigned(lFile) do begin
+    lFormID := aInputFormID;
+    lFormID.FileID := TwbFileID.CreateFull(lFile.MasterCount[True]);
+    aMainRecord := lFile.RecordByFormID[lFormID, True, True];
+    if Assigned(aMainRecord) then
+      Exit(True);
+
+    lFile := nil;
+    while (i <= High(aFiles)) and not Assigned(lFile) do begin
+      if aFiles[i].LoadOrderFileID = lFileID then
+        lFile := aFiles[i];
+      Inc(i);
+    end;
+  end;
 end;
 
 function xeCanCreateNewModuleFile(const aDataPath, aFileName: string): Boolean;
