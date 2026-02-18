@@ -22133,32 +22133,19 @@ begin
 end;
 
 procedure TGameLinkThread.Execute;
-  function GetGameLinkStamp: Int64;
-  var
-    lFile: string;
-    lTime: TDateTime;
-    lStamp: TTimeStamp;
-  begin
-    lFile := glFolder + 'xEditLink.ini';
-    if not FileExists(lFile) then
-      Exit(-1);
-    lTime := TFile.GetLastWriteTimeUtc(lFile);
-    lStamp := DateTimeToTimeStamp(lTime);
-    Result := Int64(lStamp.Date) * 86400000 + lStamp.Time;
-  end;
 var
   LastStamp: Int64;
   CurrentStamp: Int64;
 begin
   glFolder := wbDataPath + 'xEdit' + PathDelim;
   frmMain.PostAddMessage('[GameLink] Starting for: ' + glFolder);
-  LastStamp := GetGameLinkStamp;
+  LastStamp := xeGetFileWriteStampUtc(glFolder + 'xEditLink.ini');
   if LastStamp >= 0 then
     ChangeDetected;
   try
     repeat
       wbSleepMs(1000);
-      CurrentStamp := GetGameLinkStamp;
+      CurrentStamp := xeGetFileWriteStampUtc(glFolder + 'xEditLink.ini');
       if (CurrentStamp >= 0) and (CurrentStamp <> LastStamp) then begin
         LastStamp := CurrentStamp;
         ChangeDetected;

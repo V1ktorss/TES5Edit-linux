@@ -14,9 +14,12 @@ unit xeMainFormServices;
 interface
 
 uses
+  SysUtils,
+  IOUtils,
   IniFiles;
 
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
+function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 
 implementation
 
@@ -30,6 +33,19 @@ begin
 
   aSettings.WriteString('UI', 'Theme', aStyleName);
   aSettings.UpdateFile;
+end;
+
+function xeGetFileWriteStampUtc(const aFileName: string): Int64;
+var
+  lTime: TDateTime;
+  lStamp: TTimeStamp;
+begin
+  if not FileExists(aFileName) then
+    Exit(-1);
+
+  lTime := TFile.GetLastWriteTimeUtc(aFileName);
+  lStamp := DateTimeToTimeStamp(lTime);
+  Result := Int64(lStamp.Date) * 86400000 + lStamp.Time;
 end;
 
 end.
