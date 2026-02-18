@@ -193,8 +193,12 @@ This document tracks what is already done for the native Linux path and what com
   - gated `Core/MSHeap.pas` Windows heap override behind `MSWINDOWS` so non-Windows builds keep default memory manager without WinAPI imports
   - updated readiness audit to split core blockers (WinAPI/Registry/Shell) from style-only namespace usage for clearer Linux-port tracking
   - replaced remaining `Vcl.Styles.*` namespace usages with `Styles.*` equivalents across key forms; readiness audit now reports zero core blockers and zero style-namespace matches
-  - added readiness gate script `linux/native-port/check-xedit-readiness.sh` and CI workflow `.github/workflows/xedit-readiness-ci.yml` to enforce zero core blockers on push/PR
-  - extended readiness gate with strict mode (`ENFORCE_STYLE=1`) and enabled it in CI to keep style namespace usage at zero as well
+- added readiness gate script `linux/native-port/check-xedit-readiness.sh` and CI workflow `.github/workflows/xedit-readiness-ci.yml` to enforce zero core blockers on push/PR
+- extended readiness gate with strict mode (`ENFORCE_STYLE=1`) and enabled it in CI to keep style namespace usage at zero as well
+- added FPC fallback surface audit for parity tracking:
+  - `linux/native-port/audit-fpc-fallback-surface.sh`
+  - `linux/native-port/reports/fpc-fallback-surface.txt`
+  - wired via `RUN_FPC_FALLBACK_AUDIT=1` in `linux/native-port/run-all-checks.sh`
 - configured xEdit readiness CI to run with `RUN_BSARCH=0` so the lane stays focused on xEdit/readiness checks
 - CI readiness lane now explicitly sets `XEDIT_INVALID_D_TEST=1`, `XDUMP_MODE_SANITY_TEST=1`, and `XDUMP_INVALID_D_TEST=1` for deterministic negative/decoupling coverage
 - added optional headless smoke script `linux/native-port/smoke-test-xedit-headless.sh` and wired CI to run it when `linux/bin/xedit-core` is available

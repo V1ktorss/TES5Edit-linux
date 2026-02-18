@@ -1,0 +1,47 @@
+# FPC Fallback Surface Audit
+
+Generated: 2026-02-18T23:05:53Z
+
+## Totals
+- Total `{$IFDEF FPC}` markers (Core+xEdit+xDump): 280
+- Total `{$IFDEF FPC}` markers (Core/wbDefinitions*.pas): 53
+
+## Top Files (Core+xEdit+xDump)
+- Core/wbInterface.pas: 118
+- Core/wbImplementation.pas: 47
+- Core/wbDefinitionsCommon.pas: 25
+- Core/wbHelpers.pas: 24
+- Core/wbPlatform.pas: 12
+- Core/wbBSA.pas: 7
+- Core/wbLoadOrder.pas: 5
+- Core/wbDefinitionsFO4.pas: 4
+- Core/wbDefinitionsFO76.pas: 4
+- Core/wbSort.pas: 4
+- Core/wbBSArchive.pas: 3
+- Core/wbDefinitionsFNV.pas: 3
+- Core/wbDefinitionsFO3.pas: 3
+- Core/wbLocalization.pas: 3
+- Core/wbDefinitionsFNVSaves.pas: 2
+- Core/wbDefinitionsFO3Saves.pas: 2
+- Core/wbDefinitionsFO4Saves.pas: 2
+- Core/wbDefinitionsSF1.pas: 2
+- Core/wbDefinitionsTES3.pas: 2
+- Core/wbDefinitionsTES4.pas: 2
+- Core/wbDefinitionsTES4Saves.pas: 2
+- xEdit/xeInit.pas: 2
+- Core/wbDefines.inc: 1
+- Core/wbStreams.pas: 1
+
+## Definition Files (Core/wbDefinitions*.pas)
+- Core/wbDefinitionsCommon.pas: 25
+- Core/wbDefinitionsFO4.pas: 4
+- Core/wbDefinitionsFO76.pas: 4
+- Core/wbDefinitionsFNV.pas: 3
+- Core/wbDefinitionsFO3.pas: 3
+- Core/wbDefinitionsFNVSaves.pas: 2
+- Core/wbDefinitionsFO3Saves.pas: 2
+- Core/wbDefinitionsFO4Saves.pas: 2
+- Core/wbDefinitionsSF1.pas: 2
+- Core/wbDefinitionsTES3.pas: 2
+- Core/wbDefinitionsTES4.pas: 2
+- Core/wbDefinitionsTES4Saves.pas: 2
