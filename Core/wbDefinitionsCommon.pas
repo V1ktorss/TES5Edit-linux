@@ -6408,10 +6408,6 @@ var
 begin
   wbIdxAddonNode := wbNamedIndex('AddonNode', True);
   wbIdxCollisionLayer := wbNamedIndex('CollisionLayer', True);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbActorImpactMaterialEnum :=
     wbEnum([
@@ -6428,10 +6424,6 @@ begin
       {10} 'Organic Bug',
       {11} 'Organic Glow'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbAggressionEnum :=
     wbEnum([
@@ -6440,10 +6432,6 @@ begin
       {2} 'Very Aggressive',
       {3} 'Frenzied'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbAlignmentEnum :=
     wbEnum([
@@ -6453,10 +6441,6 @@ begin
       {3} 'Very Good',
       {4} 'Very Evil'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbArchtypeEnum :=
     wbEnum([
@@ -6481,10 +6465,6 @@ begin
       35, IsFNV('Limb Condition', ''),
       36, IsFNV('Turbo', '')
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbAssistanceEnum :=
     wbEnum([
@@ -6492,10 +6472,6 @@ begin
       {1} 'Helps Allies',
       {2} 'Helps Friends and Allies'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbAttackAnimationEnum :=
     wbEnum([],[
@@ -6616,10 +6592,6 @@ begin
       178, 'PipBoyChild',
       255, 'Any'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbAxisEnum :=
     wbEnum([], [
@@ -6627,10 +6599,6 @@ begin
       89, 'Y',
       90, 'Z'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbBlendModeEnum :=
     wbEnum([], [
@@ -6646,10 +6614,6 @@ begin
       10, 'Dest Inverse Color',
       11, 'Source Alpha SAT'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbBlendOpEnum :=
     wbEnum([], [
@@ -6659,10 +6623,6 @@ begin
       4, 'Minimum',
       5, 'Maximum'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbBodyLocationEnum :=
     wbEnum([
@@ -6684,10 +6644,6 @@ begin
     ], [
      -1, 'None'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbBodyPartIndexEnum :=
     wbEnum([
@@ -6700,20 +6656,12 @@ begin
                  'Upper Body Texture'),
       {4} IsTES4('Tail', '')
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbBoolEnum :=
     wbEnum([
       {0} 'False',
       {1} 'True'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbConfidenceEnum :=
     wbEnum([
@@ -6723,10 +6671,6 @@ begin
       {3} 'Brave',
       {4} 'Foolhardy'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbCRCValuesEnum :=
     wbEnum([
@@ -7370,10 +7314,6 @@ begin
       IwbValueDef(wbInteger('Number of Records', itU32)),
       IwbValueDef(wbInteger('Next Object ID', itU32, wbNextObjectIDToString, wbNextObjectIDToInt))
     ]).SetRequired;
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbKWDAs :=
     wbArrayS(KWDA, 'Keywords',
@@ -7388,10 +7328,6 @@ begin
        .SetRequired)
     ]).SetSummaryKey([1])
       .IncludeFlag(dfCollapsed, wbCollapseKeywords));
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbRagdoll :=
     wbRStruct('Ragdoll Data', [
@@ -7407,10 +7343,6 @@ begin
         nil,
         wbVec3(XRGB, 'Biped Rotation'))
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
 
   wbColorInterpolator :=
     wbStructSK([0], 'Data', [

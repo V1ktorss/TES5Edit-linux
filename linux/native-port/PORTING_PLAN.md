@@ -266,6 +266,7 @@ This document tracks what is already done for the native Linux path and what com
   - restored additional full enum mappings in `Core/wbDefinitionsCommon.pas` for FPC parity (`wbCRCValuesEnum`, `wbMenuModeEnum`)
   - restored structured weather definitions in `Core/wbDefinitionsCommon.pas` for FPC parity (`wbWeatherLightningColor`, `wbWeatherDisabledLayers`, `wbWeatherSounds`)
   - removed no-op `{$IFDEF FPC}{$IFDEF XEDIT_HEADLESS}...{$ENDIF}{$ENDIF}` guard stubs around common enum definitions to keep parity path explicit and reduce conditional noise
+  - removed remaining no-op FPC+headless guard stubs in `Core/wbDefinitionsCommon.pas` (17 empty conditional blocks) after parity-path cleanup
 
 ## Risks
 
