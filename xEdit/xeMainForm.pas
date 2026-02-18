@@ -21869,11 +21869,14 @@ begin
   LastSelection.SpellFormID := plLastSpellFormID;
 
   if xeHasPluggySelectionChanged(LastSelection, CurrentSelection) then begin
-    plLastFormID := CurrentSelection.FormID;
-    plLastBaseFormID := CurrentSelection.BaseFormID;
-    plLastInventoryFormID := CurrentSelection.InventoryFormID;
-    plLastEnchantmentFormID := CurrentSelection.EnchantmentFormID;
-    plLastSpellFormID := CurrentSelection.SpellFormID;
+    xeAssignPluggySelection(
+      CurrentSelection,
+      plLastFormID,
+      plLastBaseFormID,
+      plLastInventoryFormID,
+      plLastEnchantmentFormID,
+      plLastSpellFormID
+    );
 
     frmMain.PostPluggyChange(
       CurrentSelection.FormID,
@@ -22034,8 +22037,7 @@ begin
     LastSelection.RefID := glLastFormID;
     LastSelection.BaseID := glLastBaseFormID;
     if xeHasGameLinkSelectionChanged(LastSelection, CurrentSelection) then begin
-      glLastFormID := CurrentSelection.RefID;
-      glLastBaseFormID := CurrentSelection.BaseID;
+      xeAssignGameLinkSelection(CurrentSelection, glLastFormID, glLastBaseFormID);
       frmMain.PostPluggyChange(CurrentSelection.RefID, CurrentSelection.BaseID, TwbFormID.Null, TwbFormID.Null, TwbFormID.Null);
     end;
   end;

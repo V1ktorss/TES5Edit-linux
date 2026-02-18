@@ -304,6 +304,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved Pluggy/GameLink folder path assembly into service helpers (`xeGetPluggyUserFilesFolder`, `xeGetGameLinkFolder`)
   - moved GameLink/Pluggy selection-change comparisons into `xeMainFormServices` (`xeHasGameLinkSelectionChanged`, `xeHasPluggySelectionChanged`)
   - introduced service-level selection records (`TxePluggySelection`, `TxeGameLinkSelection`) and switched thread change-detection paths to record-based helpers
+  - moved selection-to-state assignment into `xeMainFormServices` (`xeAssignPluggySelection`, `xeAssignGameLinkSelection`)
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`

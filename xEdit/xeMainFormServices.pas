@@ -54,10 +54,13 @@ function xeHasPluggySelectionChanged(
   const aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID
 ): Boolean;
 function xeHasPluggySelectionChanged(const aLast, aCurrent: TxePluggySelection): Boolean;
+procedure xeAssignPluggySelection(const aSelection: TxePluggySelection;
+  var aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID);
 function xeHasGameLinkSelectionChanged(
   const aLastRefID, aLastBaseID, aRefID, aBaseID: TwbFormID
 ): Boolean;
 function xeHasGameLinkSelectionChanged(const aLast, aCurrent: TxeGameLinkSelection): Boolean;
+procedure xeAssignGameLinkSelection(const aSelection: TxeGameLinkSelection; var aRefID, aBaseID: TwbFormID);
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
 function xeParseNexusVersionFromHtml(const aHtml: string): TwbVersion;
 function xeTryGetLatestXEditVersionFromGitHub(out aVersion: TwbVersion): Boolean;
@@ -301,6 +304,16 @@ begin
   );
 end;
 
+procedure xeAssignPluggySelection(const aSelection: TxePluggySelection;
+  var aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID);
+begin
+  aFormID := aSelection.FormID;
+  aBaseFormID := aSelection.BaseFormID;
+  aInventoryFormID := aSelection.InventoryFormID;
+  aEnchantmentFormID := aSelection.EnchantmentFormID;
+  aSpellFormID := aSelection.SpellFormID;
+end;
+
 function xeHasGameLinkSelectionChanged(
   const aLastRefID, aLastBaseID, aRefID, aBaseID: TwbFormID
 ): Boolean;
@@ -311,6 +324,12 @@ end;
 function xeHasGameLinkSelectionChanged(const aLast, aCurrent: TxeGameLinkSelection): Boolean;
 begin
   Result := xeHasGameLinkSelectionChanged(aLast.RefID, aLast.BaseID, aCurrent.RefID, aCurrent.BaseID);
+end;
+
+procedure xeAssignGameLinkSelection(const aSelection: TxeGameLinkSelection; var aRefID, aBaseID: TwbFormID);
+begin
+  aRefID := aSelection.RefID;
+  aBaseID := aSelection.BaseID;
 end;
 
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
