@@ -1520,6 +1520,7 @@ var
   lBackup     : string;
   lActionText : string;
   lErrorText  : string;
+  lWarningText: string;
   s           : string;
   OldDateTime : TDateTime;
   lHasExistingTarget: Boolean;
@@ -1572,17 +1573,17 @@ begin
 
   // rename temp save file to original
   wbProgress('Renaming "' + lFrom + '" to "' + lTo + '".');
-  if not xeTryRenameFile(lFrom, lTo, s) then begin
+  if not xeTryFinalizeModuleRename(lFrom, lTo, OldDateTime, wbGameMode in wbOrderFromPluginsTxt, s, lWarningText) then begin
     wbProgress(s);
     if not aSilent then
       MessageDlg(s, mtError, [mbOK], 0);
     Exit;
   end;
 
-  if not xeTryRestoreModuleWriteTime(lTo, OldDateTime, wbGameMode in wbOrderFromPluginsTxt, s) then begin
-    wbProgress(s);
+  if lWarningText <> '' then begin
+    wbProgress(lWarningText);
     if not aSilent then
-      MessageDlg(s, mtError, [mbOK], 0);
+      MessageDlg(lWarningText, mtError, [mbOK], 0);
   end;
 
   Result := True;

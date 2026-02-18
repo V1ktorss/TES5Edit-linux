@@ -76,6 +76,12 @@ function xeBuildExistingRenameTargetPlan(
   out aOldDateTime: TDateTime;
   out aBackupFile, aActionText, aWarningText: string
 ): Boolean;
+function xeTryFinalizeModuleRename(
+  const aFromFile, aToFile: string;
+  const aOldDateTime: TDateTime;
+  const aSkipRestoreForPluginsTxtOrder: Boolean;
+  out aErrorText, aWarningText: string
+): Boolean;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -331,6 +337,26 @@ begin
     aActionText := 'Deleting "' + aTargetFile + '".'
   else
     aActionText := 'Renaming "' + aTargetFile + '" to "' + aBackupFile + '".';
+end;
+
+function xeTryFinalizeModuleRename(
+  const aFromFile, aToFile: string;
+  const aOldDateTime: TDateTime;
+  const aSkipRestoreForPluginsTxtOrder: Boolean;
+  out aErrorText, aWarningText: string
+): Boolean;
+begin
+  aWarningText := '';
+  Result := xeTryRenameFile(aFromFile, aToFile, aErrorText);
+  if not Result then
+    Exit;
+
+  xeTryRestoreModuleWriteTime(
+    aToFile,
+    aOldDateTime,
+    aSkipRestoreForPluginsTxtOrder,
+    aWarningText
+  );
 end;
 
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;

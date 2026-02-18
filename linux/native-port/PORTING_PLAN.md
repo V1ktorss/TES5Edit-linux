@@ -323,6 +323,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved file-rename execution/error text into service helper (`xeTryRenameFile`) and reused it across module rename + backup flows
   - moved backup rename execution into service helper (`xeTryBackupSourceFile`) so `DoBackupModule` mostly orchestrates progress/UI
   - moved existing-target rename planning (`has-existing`, backup filename policy, action text, timestamp warning) into service helper (`xeBuildExistingRenameTargetPlan`)
+  - moved final module rename + optional timestamp restore into service helper (`xeTryFinalizeModuleRename`) while preserving UI-side warning/error display
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`
