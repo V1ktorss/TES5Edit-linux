@@ -2059,8 +2059,10 @@ begin
 end;
 
 procedure TfrmMain.ApplicationMessage(var Msg: TMsg; var Handled: Boolean);
+const
+  xeWmXButtonUp = 524;
 begin
-  if Msg.message = 524 {WM_XBUTTONUP} then
+  if Msg.message = xeWmXButtonUp then
     {$IFDEF WIN32}
     case LongRec(Msg.wParam).Hi of
     {$ENDIF WIN32}
