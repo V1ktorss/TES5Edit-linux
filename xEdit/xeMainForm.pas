@@ -15942,9 +15942,9 @@ begin
                 SaveStartMessage,
                 DiscardInfo
               ) then
-                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + SaveStartMessage)
+                PostAddMessage(xeBuildElapsedLogLine(wbStartTime, SaveStartMessage))
               else
-                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + DiscardInfo);
+                PostAddMessage(xeBuildElapsedLogLine(wbStartTime, DiscardInfo));
 
             end else
 
@@ -15968,11 +15968,11 @@ begin
                 SaveStartMessage,
                 DiscardInfo
               ) then begin
-                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + SaveStartMessage);
+                PostAddMessage(xeBuildElapsedLogLine(wbStartTime, SaveStartMessage));
                 if DiscardInfo <> '' then
-                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + DiscardInfo);
+                  PostAddMessage(xeBuildElapsedLogLine(wbStartTime, DiscardInfo));
               end else
-                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + DiscardInfo);
+                PostAddMessage(xeBuildElapsedLogLine(wbStartTime, DiscardInfo));
 
             end;
 

@@ -68,6 +68,7 @@ function xeTryPrepareSourceFileForRename(
 ): Boolean;
 function xeBuildSaveStartMessage(const aRelativeName: string): string;
 function xeBuildSaveErrorMessage(const aRelativeName, aErrorText: string): string;
+function xeBuildElapsedLogLine(const aStartTime: TDateTime; const aMessage: string): string;
 function xeBuildRenameActionMessage(const aFromFile, aToFile: string): string;
 function xeTryPrepareSaveWriteTarget(
   const aFullPath, aRelativeName: string;
@@ -473,6 +474,11 @@ end;
 function xeBuildSaveErrorMessage(const aRelativeName, aErrorText: string): string;
 begin
   Result := 'Error saving ' + aRelativeName + ': ' + aErrorText;
+end;
+
+function xeBuildElapsedLogLine(const aStartTime: TDateTime; const aMessage: string): string;
+begin
+  Result := '[' + wbFormatElapsedTime(Now - aStartTime) + '] ' + aMessage;
 end;
 
 function xeBuildRenameActionMessage(const aFromFile, aToFile: string): string;
