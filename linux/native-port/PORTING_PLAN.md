@@ -264,6 +264,7 @@ This document tracks what is already done for the native Linux path and what com
   - restored additional full enum mappings in `Core/wbDefinitionsCommon.pas` for FPC parity (`wbAttackAnimationEnum`, `wbBodyLocationEnum`)
   - restored additional full enum mappings in `Core/wbDefinitionsCommon.pas` for FPC parity (`wbCrimeTypeEnum`, `wbEquipTypeEnum`)
   - restored additional full enum mappings in `Core/wbDefinitionsCommon.pas` for FPC parity (`wbCRCValuesEnum`, `wbMenuModeEnum`)
+  - restored structured weather definitions in `Core/wbDefinitionsCommon.pas` for FPC parity (`wbWeatherLightningColor`, `wbWeatherDisabledLayers`, `wbWeatherSounds`)
 
 ## Risks
 

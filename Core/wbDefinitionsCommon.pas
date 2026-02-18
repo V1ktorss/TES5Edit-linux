@@ -8193,46 +8193,29 @@ Can't properly represent that with current record definition methods.
 {$ENDIF}
 
   //TES4,FO3,FNV,TES5,FO4,FO76,SF1
-{$IFDEF FPC}
-  wbWeatherLightningColor := IwbValueDef(wbStruct('Lightning Color', [
-    wbInteger('Red', itU8),
-    wbInteger('Green', itU8),
-    wbInteger('Blue', itU8)
-  ]));
-{$ELSE}
   wbWeatherLightningColor :=
-    wbStruct('Lightning Color', [
+    IwbValueDef(wbStruct('Lightning Color', [
       wbInteger('Red', itU8),
       wbInteger('Green', itU8),
       wbInteger('Blue', itU8)
     ]).SetToStr(wbRGBAToStr)
-      .IncludeFlag(dfCollapsed, wbCollapseRGBA);
-{$ENDIF}
+      .IncludeFlag(dfCollapsed, wbCollapseRGBA));
 
   //TES5,FO4,FO76,SF1
-{$IFDEF FPC}
-  wbWeatherDisabledLayers := wbInteger(NAM1, 'Disabled Cloud Layers', itU32);
-{$ELSE}
   wbWeatherDisabledLayers :=
-    wbInteger(NAM1, 'Disabled Cloud Layers', itU32,
+    IwbRecordMemberDef(wbInteger(NAM1, 'Disabled Cloud Layers', itU32,
       wbFlags([
         '0','1','2','3','4','5','6','7','8','9','10','11',
-	        '12','13','14','15','16','17','18','19','20','21',
-	        '22','23','24','25','26','27','28','29','30','31'
+		        '12','13','14','15','16','17','18','19','20','21',
+		        '22','23','24','25','26','27','28','29','30','31'
 	      ])).SetDefaultNativeValue(IsTES5(0, 4294967295))
-	         .IncludeFlag(dfCollapsed, wbCollapseFlags)
-	         .SetRequired;
-{$ENDIF}
+		         .IncludeFlag(dfCollapsed, wbCollapseFlags))
+      .SetRequired;
 
   //TES4,FO3,FNV,TES5,FO4,FO76,SF1
-{$IFDEF FPC}
   wbWeatherSounds :=
-    wbRArray('Sounds',
-      wbByteArray(SNAM, 'Sound'));
-{$ELSE}
-  wbWeatherSounds :=
-    wbRArray('Sounds',
-      wbStruct(SNAM, 'Sound', [
+    IwbRecordMemberDef(wbRArray('Sounds',
+      IwbRecordMemberDef(wbStruct(SNAM, 'Sound', [
         wbFormIDCK('Sound', [SNDR, SOUN, NULL]),
         wbInteger('Type', itU32,
           wbEnum([
@@ -8242,11 +8225,10 @@ Can't properly represent that with current record definition methods.
             {3} 'Thunder'
           ]))
 	      ]).SetSummaryKeyOnValue([1, 0])
-	        .SetSummaryPrefixSuffixOnValue(1, '[', ']')
-	        .SetSummaryDelimiterOnValue(' ')
-	        .IncludeFlagOnValue(dfSummaryMembersNoName)
-	        .IncludeFlag(dfCollapsed, wbCollapseSounds));
-{$ENDIF}
+		        .SetSummaryPrefixSuffixOnValue(1, '[', ']')
+		        .SetSummaryDelimiterOnValue(' ')
+		        .IncludeFlagOnValue(dfSummaryMembersNoName)
+		        .IncludeFlag(dfCollapsed, wbCollapseSounds))));
 
   //TES5,FO4,FO76,SF1
 {$IFDEF FPC}
