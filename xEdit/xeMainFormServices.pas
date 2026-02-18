@@ -69,6 +69,11 @@ procedure xePrepareLocalizationSaveNames(
   out aOriginalRelativeName, aTargetRelativeName: string;
   out aNeedsRename: Boolean
 );
+procedure xePrepareModuleSaveNames(
+  const aDataPath, aModuleFileNameOnDisk, aSuffix: string;
+  out aOriginalRelativeName, aTargetRelativeName: string;
+  out aNeedsRename: Boolean
+);
 function xeTryDiscardUnchangedTempSave(
   const aDataPath, aTempName: string;
   const aOriginalCRC, aCurrentCRC: TwbCRC32;
@@ -354,6 +359,17 @@ procedure xePrepareLocalizationSaveNames(
 );
 begin
   aOriginalRelativeName := Copy(aLocalizationFileName, Length(aDataPath) + 1, Length(aLocalizationFileName));
+  aTargetRelativeName := aOriginalRelativeName;
+  xeBuildSaveTargetFileName(aDataPath, aOriginalRelativeName, aSuffix, aTargetRelativeName, aNeedsRename);
+end;
+
+procedure xePrepareModuleSaveNames(
+  const aDataPath, aModuleFileNameOnDisk, aSuffix: string;
+  out aOriginalRelativeName, aTargetRelativeName: string;
+  out aNeedsRename: Boolean
+);
+begin
+  aOriginalRelativeName := aModuleFileNameOnDisk;
   aTargetRelativeName := aOriginalRelativeName;
   xeBuildSaveTargetFileName(aDataPath, aOriginalRelativeName, aSuffix, aTargetRelativeName, aNeedsRename);
 end;

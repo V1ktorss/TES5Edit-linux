@@ -15960,9 +15960,7 @@ begin
 
               _File := IwbFile(Pointer(CheckListBox1.Items.Objects[i]));
 
-              s := CheckListBox1.Items[i];
-              u := s;
-              xeBuildSaveTargetFileName(wbDataPath, u, t, s, NeedsRename);
+              xePrepareModuleSaveNames(wbDataPath, CheckListBox1.Items[i], t, u, s, NeedsRename);
 
               CRC := _File.CRC32;
               try

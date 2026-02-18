@@ -345,6 +345,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved temp-save suffix generation policy into service helper (`xeBuildTempSaveSuffix`) used by `SaveChanged`
   - unified localization direct-rename capability flagging via existing service helper (`xeMarkDirectRenameCapability`)
   - moved localization save-name preparation (absolute-to-data-relative + collision-aware temp target naming) into service helper (`xePrepareLocalizationSaveNames`)
+  - moved module save-name preparation into service helper (`xePrepareModuleSaveNames`) to mirror localization path structure in `SaveChanged`
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`
