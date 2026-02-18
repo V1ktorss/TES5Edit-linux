@@ -6940,11 +6940,6 @@ begin
       Int64($6AF11190), 'QuestPathingRequest',
       Int64($FCD0CCC3), 'Water'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
-
   wbCriticalStageEnum :=
     wbEnum([
       {0}           'None',
@@ -6955,11 +6950,6 @@ begin
       {5} IsFO4Plus('Freeze Start', ''),
       {6} IsFO4Plus('Freeze End', '')
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
-
   wbCrimeTypeEnum :=
     wbEnum([
       {0} 'Steal',
@@ -6975,11 +6965,6 @@ begin
     ], [
       -1, 'None'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
-
   wbCreatureTypeEnum :=
     wbEnum([
       {0} 'Animal',
@@ -6991,22 +6976,12 @@ begin
       {6} 'Robot',
       {7} 'Giant'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
-
   wbEffectTypeEnum :=
     wbEnum([
       {0} 'Self',
       {1} 'Touch',
       {2} 'Target'
     ]);
-{$IFDEF FPC}
-{$IFDEF XEDIT_HEADLESS}
-{$ENDIF}
-{$ENDIF}
-
   wbEquipTypeEnum :=
     wbEnum([
       {0}  'Big Guns',
