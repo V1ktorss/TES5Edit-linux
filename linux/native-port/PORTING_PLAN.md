@@ -434,6 +434,16 @@ This document tracks what is already done for the native Linux path and what com
     - `MAX_ACTIONABLE_WARNING_LINES=0`
     - `MAX_UNIQUE_WARNING_LINES=52`
     - `MAX_UNIQUE_ACTIONABLE_WARNING_LINES=0`
+- Added FPC fallback surface tracking for native-parity work:
+  - `linux/native-port/audit-fpc-fallback-surface.sh`
+  - `linux/native-port/check-fpc-fallback-budget.sh`
+  - `linux/native-port/baselines/fpc-fallback-budget.env`
+  - integrated into `run-all-checks.sh` via `RUN_FPC_FALLBACK_AUDIT=1` and `RUN_FPC_FALLBACK_BUDGET_GUARD=1`
+- Reduced redundant `xeMainForm` Pluggy message churn:
+  - `PostPluggyChange` now routes through `xeApplyPluggySelectionIfChanged` and skips no-op posts
+- Continued `xeMainForm` service extraction:
+  - moved duplicated Pluggy/GameLink watch-loop message/orchestration into `xeMainFormServices.xeRunWatchStampLoopWithMessages`
+  - `TPluggyLinkThread.Execute` and `TGameLinkThread.Execute` now use the shared service helper
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`
