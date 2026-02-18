@@ -51,24 +51,14 @@ function xeGetGameLinkWatchStamp(const aFolder: string): Int64;
 function xeGetPluggyWatchStamp(const aFolder, aAppName: string): Int64;
 function xeConsumeWatchStampChange(var aLastStamp: Int64; const aCurrentStamp: Int64): Boolean;
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
-function xeTryReadGameLinkSelection(const aFileName: string; out aSelectedRefID, aSelectedBaseID: TwbFormID): Boolean;
 function xeTryReadGameLinkSelection(const aFileName: string; out aSelection: TxeGameLinkSelection): Boolean;
-function xeTryReadPluggySelection(const aFolder, aAppName: string;
-  out aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID): Boolean;
 function xeTryReadPluggySelection(const aFolder, aAppName: string; out aSelection: TxePluggySelection): Boolean;
-function xeHasPluggySelectionChanged(
-  const aLastFormID, aLastBaseFormID, aLastInventoryFormID, aLastEnchantmentFormID, aLastSpellFormID: TwbFormID;
-  const aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID
-): Boolean;
 function xeHasPluggySelectionChanged(const aLast, aCurrent: TxePluggySelection): Boolean;
 procedure xeAssignPluggySelection(const aSelection: TxePluggySelection;
   var aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID);
 function xeApplyPluggySelectionIfChanged(
   var aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID;
   const aSelection: TxePluggySelection
-): Boolean;
-function xeHasGameLinkSelectionChanged(
-  const aLastRefID, aLastBaseID, aRefID, aBaseID: TwbFormID
 ): Boolean;
 function xeHasGameLinkSelectionChanged(const aLast, aCurrent: TxeGameLinkSelection): Boolean;
 procedure xeAssignGameLinkSelection(const aSelection: TxeGameLinkSelection; var aRefID, aBaseID: TwbFormID);
@@ -89,6 +79,18 @@ function xeTryGetLatestXEditVersionFromGitHub(out aVersion: TwbVersion): Boolean
 function xeTryGetLatestNexusVersion(const aUrl: string; out aVersion: TwbVersion): Boolean;
 
 implementation
+
+function xeTryReadGameLinkSelectionValues(
+  const aFileName: string;
+  out aSelectedRefID, aSelectedBaseID: TwbFormID
+): Boolean;
+forward;
+
+function xeTryReadPluggySelectionValues(
+  const aFolder, aAppName: string;
+  out aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID
+): Boolean;
+forward;
 
 function xeBuildPluggySelection(
   const aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID
@@ -234,7 +236,10 @@ begin
   Result := True;
 end;
 
-function xeTryReadGameLinkSelection(const aFileName: string; out aSelectedRefID, aSelectedBaseID: TwbFormID): Boolean;
+function xeTryReadGameLinkSelectionValues(
+  const aFileName: string;
+  out aSelectedRefID, aSelectedBaseID: TwbFormID
+): Boolean;
 var
   lStream: TBufferedFileStream;
   lStrings: TStringList;
@@ -273,13 +278,14 @@ var
   lRefID: TwbFormID;
   lBaseID: TwbFormID;
 begin
-  Result := xeTryReadGameLinkSelection(aFileName, lRefID, lBaseID);
+  Result := xeTryReadGameLinkSelectionValues(aFileName, lRefID, lBaseID);
   if not Result then
     Exit;
   aSelection := xeBuildGameLinkSelection(lRefID, lBaseID);
 end;
 
-function xeTryReadPluggySelection(const aFolder, aAppName: string;
+function xeTryReadPluggySelectionValues(
+  const aFolder, aAppName: string;
   out aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID): Boolean;
 const
   cViewWorldSuffix = 'ViewWorld.csv';
@@ -327,7 +333,7 @@ var
   lEnchantmentFormID: TwbFormID;
   lSpellFormID: TwbFormID;
 begin
-  Result := xeTryReadPluggySelection(
+  Result := xeTryReadPluggySelectionValues(
     aFolder,
     aAppName,
     lFormID,
@@ -341,33 +347,14 @@ begin
   aSelection := xeBuildPluggySelection(lFormID, lBaseFormID, lInventoryFormID, lEnchantmentFormID, lSpellFormID);
 end;
 
-function xeHasPluggySelectionChanged(
-  const aLastFormID, aLastBaseFormID, aLastInventoryFormID, aLastEnchantmentFormID, aLastSpellFormID: TwbFormID;
-  const aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID
-): Boolean;
-begin
-  Result :=
-    (aFormID <> aLastFormID) or
-    (aBaseFormID <> aLastBaseFormID) or
-    (aInventoryFormID <> aLastInventoryFormID) or
-    (aEnchantmentFormID <> aLastEnchantmentFormID) or
-    (aSpellFormID <> aLastSpellFormID);
-end;
-
 function xeHasPluggySelectionChanged(const aLast, aCurrent: TxePluggySelection): Boolean;
 begin
-  Result := xeHasPluggySelectionChanged(
-    aLast.FormID,
-    aLast.BaseFormID,
-    aLast.InventoryFormID,
-    aLast.EnchantmentFormID,
-    aLast.SpellFormID,
-    aCurrent.FormID,
-    aCurrent.BaseFormID,
-    aCurrent.InventoryFormID,
-    aCurrent.EnchantmentFormID,
-    aCurrent.SpellFormID
-  );
+  Result :=
+    (aCurrent.FormID <> aLast.FormID) or
+    (aCurrent.BaseFormID <> aLast.BaseFormID) or
+    (aCurrent.InventoryFormID <> aLast.InventoryFormID) or
+    (aCurrent.EnchantmentFormID <> aLast.EnchantmentFormID) or
+    (aCurrent.SpellFormID <> aLast.SpellFormID);
 end;
 
 procedure xeAssignPluggySelection(const aSelection: TxePluggySelection;
@@ -386,32 +373,17 @@ function xeApplyPluggySelectionIfChanged(
 ): Boolean;
 begin
   Result := xeHasPluggySelectionChanged(
-    aFormID,
-    aBaseFormID,
-    aInventoryFormID,
-    aEnchantmentFormID,
-    aSpellFormID,
-    aSelection.FormID,
-    aSelection.BaseFormID,
-    aSelection.InventoryFormID,
-    aSelection.EnchantmentFormID,
-    aSelection.SpellFormID
+    xeBuildPluggySelection(aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID),
+    aSelection
   );
   if not Result then
     Exit;
   xeAssignPluggySelection(aSelection, aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID);
 end;
 
-function xeHasGameLinkSelectionChanged(
-  const aLastRefID, aLastBaseID, aRefID, aBaseID: TwbFormID
-): Boolean;
-begin
-  Result := (aRefID <> aLastRefID) or (aBaseID <> aLastBaseID);
-end;
-
 function xeHasGameLinkSelectionChanged(const aLast, aCurrent: TxeGameLinkSelection): Boolean;
 begin
-  Result := xeHasGameLinkSelectionChanged(aLast.RefID, aLast.BaseID, aCurrent.RefID, aCurrent.BaseID);
+  Result := (aCurrent.RefID <> aLast.RefID) or (aCurrent.BaseID <> aLast.BaseID);
 end;
 
 procedure xeAssignGameLinkSelection(const aSelection: TxeGameLinkSelection; var aRefID, aBaseID: TwbFormID);
@@ -425,7 +397,7 @@ begin
   if aSelection.RefID.IsNull then
     Exit(False);
 
-  Result := xeHasGameLinkSelectionChanged(aRefID, aBaseID, aSelection.RefID, aSelection.BaseID);
+  Result := xeHasGameLinkSelectionChanged(xeBuildGameLinkSelection(aRefID, aBaseID), aSelection);
   if not Result then
     Exit;
   xeAssignGameLinkSelection(aSelection, aRefID, aBaseID);
