@@ -57,6 +57,7 @@ function xeTryPrepareSourceFileForRename(
   const aUseBackup: Boolean;
   out aResolvedBackupPath, aSourceFile, aErrorText: string
 ): Boolean;
+function xeBuildTempSaveSuffix(const aNow: TDateTime): string;
 function xeTryEnsureParentDirectoryForFile(const aFullPath: string; out aErrorText: string): Boolean;
 procedure xeBuildSaveTargetFileName(
   const aDataPath, aOriginalName, aSuffix: string;
@@ -299,6 +300,11 @@ begin
   aResolvedBackupPath := xeEnsureBackupPath(aBackupPath, aDataPath, aUseBackup);
   aSourceFile := aDataPath + aSourceName;
   Result := xeTryValidateSourceFileForRename(aSourceFile, aErrorText);
+end;
+
+function xeBuildTempSaveSuffix(const aNow: TDateTime): string;
+begin
+  Result := '.save.' + FormatDateTime('yyyy_mm_dd_hh_nn_ss', aNow);
 end;
 
 function xeTryEnsureParentDirectoryForFile(const aFullPath: string; out aErrorText: string): Boolean;

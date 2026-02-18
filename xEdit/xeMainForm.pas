@@ -15923,7 +15923,7 @@ begin
       try
         SavedAny := False;
         AnyErrors := False;
-        t := '.save.' + FormatDateTime('yyyy_mm_dd_hh_nn_ss', Now);
+        t := xeBuildTempSaveSuffix(Now);
 
         for i := 0 to Pred(CheckListBox1.Items.Count) do
           if CheckListBox1.Checked[i] then begin
