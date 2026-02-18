@@ -4612,7 +4612,6 @@ procedure TfrmMain.CleanupRefCache;
 var
   Files : TStringDynArray
   ;
-  i     : Integer;
 begin
   if not wbBuildRefs then
     Exit;
@@ -4623,24 +4622,14 @@ begin
   if not (wbToolMode in [tmView, tmEdit, tmTranslate]) then
     Exit;
 
-  if not TDirectory.Exists(wbCachePath) then
+  Files := xeGetStaleRefCacheFiles(wbCachePath, IntToHex64(wbCRC32App, 8), wbRefCacheExt);
+  if Length(Files) < 1 then
     Exit;
 
-  if Length(TDirectory.GetFiles(wbCachePath, IntToHex64(wbCRC32App, 8) + '_*' + wbRefCacheExt)) > 0 then
-    Exit;
-
-  Files := TDirectory.GetFiles(wbCachePath, '*' + wbRefCacheExt);
-
-  i := Length(Files);
-  if i < 1 then
-    Exit;
-
-  if MessageDlg('The Reference Cache contains ' + i.ToString +
+  if MessageDlg('The Reference Cache contains ' + Length(Files).ToString +
     ' files from a different version of ' + wbAppName + wbToolName +
     '. Do you want to remove them?', mtConfirmation, mbYesNo, 0) = mrYes then
-    for i := Low(Files) to High(Files) do try
-      TFile.Delete(Files[i]);
-    except end;
+    xeDeleteFilesBestEffort(Files);
 end;
 
 procedure TfrmMain.ClearActiveContainer;

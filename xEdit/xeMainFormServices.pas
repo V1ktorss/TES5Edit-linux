@@ -84,6 +84,10 @@ function xeTryUpdateGameLinkSelection(
   var aRefID, aBaseID: TwbFormID;
   out aSelection: TxeGameLinkSelection
 ): Boolean;
+function xeGetStaleRefCacheFiles(
+  const aCachePath, aAppCrcHex, aRefCacheExt: string
+): TStringDynArray;
+procedure xeDeleteFilesBestEffort(const aFiles: TStringDynArray);
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
 function xeParseNexusVersionFromHtml(const aHtml: string): TwbVersion;
 function xeTryGetLatestXEditVersionFromGitHub(out aVersion: TwbVersion): Boolean;
@@ -465,6 +469,33 @@ begin
   if not xeTryReadGameLinkSelection(aFileName, aSelection) then
     Exit;
   Result := xeApplyGameLinkSelectionIfChanged(aRefID, aBaseID, aSelection);
+end;
+
+function xeGetStaleRefCacheFiles(
+  const aCachePath, aAppCrcHex, aRefCacheExt: string
+): TStringDynArray;
+begin
+  SetLength(Result, 0);
+
+  if not TDirectory.Exists(aCachePath) then
+    Exit;
+
+  if Length(TDirectory.GetFiles(aCachePath, aAppCrcHex + '_*' + aRefCacheExt)) > 0 then
+    Exit;
+
+  Result := TDirectory.GetFiles(aCachePath, '*' + aRefCacheExt);
+end;
+
+procedure xeDeleteFilesBestEffort(const aFiles: TStringDynArray);
+var
+  i: Integer;
+begin
+  for i := Low(aFiles) to High(aFiles) do
+    try
+      TFile.Delete(aFiles[i]);
+    except
+      // Keep best-effort semantics for cache cleanup.
+    end;
 end;
 
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
