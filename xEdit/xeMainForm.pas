@@ -6345,8 +6345,7 @@ begin
 
   SaveLogs(True);
 
-  if DirectoryExists(wbTempPath) and xeRemoveTempPath then
-    DeleteDirectory(wbTempPath); // remove temp folder unless it existed
+  xeTryCleanupTempPath(wbTempPath, xeRemoveTempPath); // remove temp folder unless it existed
 
   tmrCheckUnsaved.Enabled := False;
 

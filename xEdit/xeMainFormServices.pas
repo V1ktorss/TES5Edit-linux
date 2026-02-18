@@ -59,6 +59,7 @@ procedure xePersistMainFormLayout(
 );
 function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
+function xeTryCleanupTempPath(const aTempPath: string; const aRemoveTempPath: Boolean): Boolean;
 function xeEnsureBackupPath(const aBackupPath, aDataPath: string; const aUseBackup: Boolean): string;
 function xeTryPrepareSourceFileForRename(
   const aDataPath, aSourceName, aBackupPath: string;
@@ -425,6 +426,22 @@ begin
     lStamp := xeGetFileWriteStampUtc(aFileNames[i]);
     if lStamp > Result then
       Result := lStamp;
+  end;
+end;
+
+function xeTryCleanupTempPath(const aTempPath: string; const aRemoveTempPath: Boolean): Boolean;
+begin
+  Result := False;
+  if not aRemoveTempPath then
+    Exit;
+  if not DirectoryExists(aTempPath) then
+    Exit;
+
+  try
+    DeleteDirectory(aTempPath);
+    Result := True;
+  except
+    Result := False;
   end;
 end;
 
