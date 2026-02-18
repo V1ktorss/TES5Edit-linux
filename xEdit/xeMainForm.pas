@@ -6332,9 +6332,7 @@ begin
     wbLockWindowUpdate(0);
   end;
 
-  Files := nil;
-  _wbProgressCallback := nil;
-  ExitCode := CheckResult;
+  xeFinalizeMainFormCloseState(Files, _wbProgressCallback, CheckResult, ExitCode);
 end;
 
 procedure xeApplyFontAndScale(aForm: TForm);

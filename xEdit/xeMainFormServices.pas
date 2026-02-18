@@ -58,6 +58,12 @@ function xeShouldWaitForLoaderShutdown(
   const aLoaderStarted, aLoaderDone: Boolean;
   var aForceTerminate: Boolean
 ): Boolean;
+procedure xeFinalizeMainFormCloseState(
+  var aFiles: TwbFiles;
+  var aProgressCallback: TwbProgressCallback;
+  const aCheckResult: Integer;
+  out aExitCode: Integer
+);
 function xePrepareLoaderShutdownWait(
   const aLoaderStarted, aLoaderDone: Boolean;
   var aForceTerminate: Boolean;
@@ -438,6 +444,18 @@ begin
   Result := aLoaderStarted and (not aLoaderDone);
   if Result then
     aForceTerminate := True;
+end;
+
+procedure xeFinalizeMainFormCloseState(
+  var aFiles: TwbFiles;
+  var aProgressCallback: TwbProgressCallback;
+  const aCheckResult: Integer;
+  out aExitCode: Integer
+);
+begin
+  aFiles := nil;
+  aProgressCallback := nil;
+  aExitCode := aCheckResult;
 end;
 
 function xePrepareLoaderShutdownWait(
