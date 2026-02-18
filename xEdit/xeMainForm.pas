@@ -16034,11 +16034,9 @@ begin
               except end;
 
               if NeedsRename then begin
-                if not Assigned(FilesToRename) then
-                  FilesToRename := TStringList.Create;
                 // s - rename from, relative to DataPath
                 // u - rename to, relative to DataPath
-                FilesToRename.AddPair(u, s);
+                xeQueueModuleRename(FilesToRename, u, s);
                 wbProgress('Queued renaming of save "' + wbDataPath + s + '" to "' + wbDataPath + u + '" on shutdown.');
               end else begin
                 QueuedRenames := xePopQueuedRenamesForTarget(FilesToRename, u);

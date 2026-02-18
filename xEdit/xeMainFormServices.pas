@@ -83,6 +83,7 @@ function xeTryFinalizeModuleRename(
   const aSkipRestoreForPluginsTxtOrder: Boolean;
   out aErrorText, aWarningText: string
 ): Boolean;
+procedure xeQueueModuleRename(var aFilesToRename: TStringList; const aTargetName, aSourceName: string);
 function xeRenameSavedModules(const aFilesToRename: TStrings; const aRenameModule: TxeRenameModuleFunc): Boolean;
 function xePopQueuedRenamesForTarget(aFilesToRename: TStrings; const aTargetName: string): TStringDynArray;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
@@ -359,6 +360,13 @@ begin
     aSkipRestoreForPluginsTxtOrder,
     aWarningText
   );
+end;
+
+procedure xeQueueModuleRename(var aFilesToRename: TStringList; const aTargetName, aSourceName: string);
+begin
+  if not Assigned(aFilesToRename) then
+    aFilesToRename := TStringList.Create;
+  aFilesToRename.AddPair(aTargetName, aSourceName);
 end;
 
 function xeRenameSavedModules(const aFilesToRename: TStrings; const aRenameModule: TxeRenameModuleFunc): Boolean;
