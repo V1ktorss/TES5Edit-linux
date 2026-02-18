@@ -12,6 +12,9 @@ ENV_OVERRIDE_ARGS="${XEDIT_ENV_OVERRIDE_ARGS:--dummy}"
 CLI_OVERRIDE_TEST="${XEDIT_CLI_OVERRIDE_TEST:-0}"
 CLI_OVERRIDE_PATH="${XEDIT_CLI_OVERRIDE_PATH:-}"
 CLI_OVERRIDE_ARGS="${XEDIT_CLI_OVERRIDE_ARGS:--dummy}"
+INVALID_D_TEST="${XEDIT_INVALID_D_TEST:-0}"
+INVALID_D_PATH="${XEDIT_INVALID_D_PATH:-/definitely/not/here}"
+INVALID_D_ARGS="${XEDIT_INVALID_D_ARGS:--dummy}"
 
 find_xedit_bin() {
   if [[ -n "${XEDIT_BIN:-}" && -x "${XEDIT_BIN}" ]]; then
@@ -146,6 +149,35 @@ if [[ "${CLI_OVERRIDE_TEST}" == "1" ]]; then
   fi
 
   echo "[xedit-smoke] CLI override case exit code: ${exit_code}"
+  echo "[xedit-smoke] Log: ${log_file}"
+fi
+
+if [[ "${INVALID_D_TEST}" == "1" ]]; then
+  safe_name="$(echo "invalid_d_${INVALID_D_ARGS}" | tr -cs '[:alnum:]' '_' | sed 's/^_//; s/_$//')"
+  [[ -z "${safe_name}" ]] && safe_name="invalid_d"
+  log_file="${LOG_DIR}/xedit-headless-smoke-${safe_name}.log"
+
+  echo "[xedit-smoke] Running invalid -D case (expect failure): ${XEDIT_BIN_PATH} -D:${INVALID_D_PATH} ${INVALID_D_ARGS}"
+  set +e
+  # shellcheck disable=SC2206
+  invalid_args=( ${INVALID_D_ARGS} )
+  timeout "${TIMEOUT_SECONDS}"s "${XEDIT_BIN_PATH}" "-D:${INVALID_D_PATH}" "${invalid_args[@]}" >"${log_file}" 2>&1
+  exit_code=$?
+  set -e
+
+  if [[ "${exit_code}" -eq 124 ]]; then
+    echo "[xedit-smoke] FAILED: invalid -D case timed out after ${TIMEOUT_SECONDS}s"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if [[ "${exit_code}" -eq 0 ]]; then
+    echo "[xedit-smoke] FAILED: invalid -D case unexpectedly succeeded"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  echo "[xedit-smoke] Invalid -D case exit code (expected non-zero): ${exit_code}"
   echo "[xedit-smoke] Log: ${log_file}"
 fi
 

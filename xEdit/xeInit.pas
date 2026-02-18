@@ -1186,6 +1186,16 @@ begin
     wbDontCache := True;
 
   DoInitPath(xeParamIndex);
+  if wbDataPath = '' then begin
+    if not wbDontSave then
+      xeShowMessage('Fatal: Could not determine a valid data path.');
+    Exit(False);
+  end;
+  if not DirectoryExists(wbDataPath) then begin
+    if not wbDontSave then
+      xeShowMessage(Format('Fatal: Data path does not exist: %s', [wbDataPath]));
+    Exit(False);
+  end;
 
   // specific Game settings
   case wbGameMode of
