@@ -221,7 +221,7 @@ This document tracks what is already done for the native Linux path and what com
     - `ZlibEx`: added `ZDecompressStream`
   - updated xDump smoke/build scripts:
     - `smoke-test-xdump-headless.sh` now detects `linux/bin/xDump` fallback
-    - `smoke-test-xdump-headless.sh` now supports multi-case runs (`XDUMP_HEADLESS_CASES`, default `-dummy`) and fails on non-zero exit codes (`-h` remains opt-in for debugging)
+    - `smoke-test-xdump-headless.sh` now supports multi-case runs (`XDUMP_HEADLESS_CASES`, default `-h|-dummy`) and fails on non-zero exit codes
     - `smoke-test-xdump-headless.sh` now supports optional env-override smoke lane (`XDUMP_ENV_OVERRIDE_TEST=1`, `XDUMP_ENV_OVERRIDE_PATH=...`, `XDUMP_ENV_OVERRIDE_ARGS=...`) to validate `XDUMP_DATA_PATH`
     - `smoke-test-xdump-headless.sh` now supports optional CLI-override smoke lane (`XDUMP_CLI_OVERRIDE_TEST=1`, `XDUMP_CLI_OVERRIDE_PATH=...`, `XDUMP_CLI_OVERRIDE_ARGS=...`) to validate `-D` path behavior
     - xDump smoke now supports optional base mode args (`XDUMP_BASE_MODE_ARGS`) so override lanes can opt into explicit mode switches when needed
