@@ -33,6 +33,11 @@ type
   TxeWatchStopPredicate = function: Boolean of object;
   TxeStopPredicate = function: Boolean;
   TxeNoArgProc = procedure;
+  TxeXButtonAction = (
+    xbaNone,
+    xbaBack,
+    xbaForward
+  );
 
   TxePluggySelection = record
     FormID: TwbFormID;
@@ -381,6 +386,11 @@ function xeTryResolveMainRecordFromFormID(
   const aInputFormID: TwbFormID;
   out aMainRecord: IwbMainRecord
 ): Boolean;
+function xeResolveXButtonAction(
+  const aMessage: Cardinal;
+  const aWParam: NativeUInt;
+  const aXButtonUpMessage: Cardinal
+): TxeXButtonAction;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -1980,6 +1990,27 @@ begin
     aMainRecord := aMainRecord.WinningOverride;
 
   Result := Assigned(aMainRecord);
+end;
+
+function xeResolveXButtonAction(
+  const aMessage: Cardinal;
+  const aWParam: NativeUInt;
+  const aXButtonUpMessage: Cardinal
+): TxeXButtonAction;
+var
+  lXButton: NativeUInt;
+begin
+  Result := xbaNone;
+  if aMessage <> aXButtonUpMessage then
+    Exit;
+
+  lXButton := (aWParam shr 16) and $FFFF;
+  case lXButton of
+    1:
+      Result := xbaBack;
+    2:
+      Result := xbaForward;
+  end;
 end;
 
 function xeGetStaleRefCacheFiles(

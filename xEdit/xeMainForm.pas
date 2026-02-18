@@ -1989,16 +1989,12 @@ end;
 
 procedure TfrmMain.ApplicationMessage(var Msg: TMsg; var Handled: Boolean);
 begin
-  if Msg.message = xeWmXButtonUp then
-    {$IFDEF WIN32}
-    case LongRec(Msg.wParam).Hi of
-    {$ENDIF WIN32}
-    {$IFDEF WIN64}
-    case LongRec(Int64Rec(Msg.wParam).Lo).Hi of
-    {$ENDIF WIN64}
-      1: Handled := acBack.Execute;
-      2: Handled := acForward.Execute;
-    end;
+  case xeResolveXButtonAction(Msg.message, Msg.wParam, xeWmXButtonUp) of
+    xbaBack:
+      Handled := acBack.Execute;
+    xbaForward:
+      Handled := acForward.Execute;
+  end;
 end;
 
 procedure TfrmMain.mniMainPluggyLinkClick(Sender: TObject);
