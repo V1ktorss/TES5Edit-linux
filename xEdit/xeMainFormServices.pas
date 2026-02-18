@@ -69,6 +69,13 @@ function xeTryBackupSourceFile(
   const aSourceFile, aSourceName, aBackupPath: string;
   out aBackupFile, aErrorText: string
 ): Boolean;
+function xeBuildExistingRenameTargetPlan(
+  const aTargetFile, aTargetName, aBackupPath: string;
+  const aDeleteInsteadOfBackup: Boolean;
+  out aHasExistingTarget: Boolean;
+  out aOldDateTime: TDateTime;
+  out aBackupFile, aActionText, aWarningText: string
+): Boolean;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -297,6 +304,33 @@ function xeTryBackupSourceFile(
 begin
   aBackupFile := xeBuildTempSaveBackupPath(aBackupPath, aSourceName);
   Result := xeTryRenameFile(aSourceFile, aBackupFile, aErrorText);
+end;
+
+function xeBuildExistingRenameTargetPlan(
+  const aTargetFile, aTargetName, aBackupPath: string;
+  const aDeleteInsteadOfBackup: Boolean;
+  out aHasExistingTarget: Boolean;
+  out aOldDateTime: TDateTime;
+  out aBackupFile, aActionText, aWarningText: string
+): Boolean;
+begin
+  aHasExistingTarget := FileExists(aTargetFile);
+  aOldDateTime := 0;
+  aBackupFile := '';
+  aActionText := '';
+  aWarningText := '';
+  Result := True;
+  if not aHasExistingTarget then
+    Exit;
+
+  if not xeTryGetModuleWriteTime(aTargetFile, aOldDateTime, aWarningText) then
+    aOldDateTime := 0;
+
+  aBackupFile := xeBuildModuleBackupPath(aBackupPath, aTargetName, Now);
+  if aDeleteInsteadOfBackup then
+    aActionText := 'Deleting "' + aTargetFile + '".'
+  else
+    aActionText := 'Renaming "' + aTargetFile + '" to "' + aBackupFile + '".';
 end;
 
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;

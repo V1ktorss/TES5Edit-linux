@@ -1522,6 +1522,7 @@ var
   lErrorText  : string;
   s           : string;
   OldDateTime : TDateTime;
+  lHasExistingTarget: Boolean;
 begin
   Result := False;
 
@@ -1540,18 +1541,26 @@ begin
 
   // create backup file
   lTo := wbDataPath + aTo;
-  OldDateTime := 0;
-  if FileExists(lTo) then begin
-    if not xeTryGetModuleWriteTime(lTo, OldDateTime, s) then begin
-      wbProgress(s);
-      if not aSilent then
-        MessageDlg(s, mtError, [mbOK], 0);
-    end;
-    lBackup := xeBuildModuleBackupPath(wbBackupPath, aTo, Now);
-    if xeDontBackup then
-      lActionText := 'Deleting "' + lTo + '".'
-    else
-      lActionText := 'Renaming "' + lTo + '" to "' + lBackup + '".';
+  if not xeBuildExistingRenameTargetPlan(
+    lTo,
+    aTo,
+    wbBackupPath,
+    xeDontBackup,
+    lHasExistingTarget,
+    OldDateTime,
+    lBackup,
+    lActionText,
+    s
+  ) then
+    Exit;
+
+  if s <> '' then begin
+    wbProgress(s);
+    if not aSilent then
+      MessageDlg(s, mtError, [mbOK], 0);
+  end;
+
+  if lHasExistingTarget then begin
     wbProgress(lActionText);
     if not xePrepareExistingTargetForRename(lTo, lBackup, xeDontBackup, lErrorText) then begin
       wbProgress(lErrorText);
