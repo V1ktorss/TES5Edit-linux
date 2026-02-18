@@ -80,6 +80,12 @@ for case_args in "${cases[@]}"; do
     exit 1
   fi
 
+  if rg -q "Can't determine (GameMode|ToolMode)" "${log_file}"; then
+    echo "[xedit-smoke] FAILED: mode resolution failed (${case_args})"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
   echo "[xedit-smoke] Exit code: ${exit_code}"
   echo "[xedit-smoke] Log: ${log_file}"
 done

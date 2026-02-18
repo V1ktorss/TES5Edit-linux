@@ -184,6 +184,7 @@ This document tracks what is already done for the native Linux path and what com
 - CI readiness lane now explicitly sets `XEDIT_INVALID_D_TEST=1`, `XDUMP_MODE_SANITY_TEST=1`, and `XDUMP_INVALID_D_TEST=1` for deterministic negative/decoupling coverage
 - added optional headless smoke script `linux/native-port/smoke-test-xedit-headless.sh` and wired CI to run it when `linux/bin/xedit-core` is available
 - smoke script now supports multi-case runs (`XEDIT_HEADLESS_CASES`, default `-h|-dummy`) and treats non-zero exit codes as failures
+- xEdit smoke normal cases now also fail on unresolved mode markers (`Can't determine GameMode/ToolMode`) for earlier startup-regression detection
 - xDump smoke script now supports an optional mode-init sanity lane (`XDUMP_MODE_SANITY_TEST=1`) to exercise `-TES5 -Dump ...` without requiring real assets and fail on AV/segfault patterns
 - xDump smoke script now supports an optional negative explicit-path lane (`XDUMP_INVALID_D_TEST=1`) to assert invalid explicit `-D` paths fail with non-zero exit code
 - xDump mode/invalid-path lanes now also assert expected log semantics (mode switches resolve in mode lane; invalid `-D` emits missing data-path error)
