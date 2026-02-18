@@ -67,6 +67,10 @@ function xeTryDiscardUnchangedTempSave(
   var aNeedsRename, aTryDirectRename, aSavedThisOne: Boolean;
   out aInfoText: string
 ): Boolean;
+procedure xeMarkDirectRenameCapability(
+  const aIsMemoryMapped: Boolean;
+  var aTryDirectRename: Boolean
+);
 procedure xeMarkTempSaveWriteFailure(
   const aDataPath, aTempName: string;
   var aAnyErrors, aNeedsRename: Boolean
@@ -317,6 +321,15 @@ begin
   aTryDirectRename := False;
   aSavedThisOne := False;
   aInfoText := 'File has not changed, removing: ' + aTempName;
+end;
+
+procedure xeMarkDirectRenameCapability(
+  const aIsMemoryMapped: Boolean;
+  var aTryDirectRename: Boolean
+);
+begin
+  if not aIsMemoryMapped then
+    aTryDirectRename := True;
 end;
 
 procedure xeMarkTempSaveWriteFailure(

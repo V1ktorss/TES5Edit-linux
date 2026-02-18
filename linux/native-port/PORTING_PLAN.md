@@ -335,6 +335,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved direct-rename attempt branch after save into service helper (`xeHandleDirectRenameAttempt`) while preserving queue-on-failure behavior
   - moved temp-save write-failure cleanup (`delete temp file + error/rename flags`) into service helper (`xeMarkTempSaveWriteFailure`) used by `SaveChanged`
   - consolidated post-save rename decision flow (`direct-rename attempt`, queueing, and queued-rename post-processing) into service helper (`xeFinalizeSavedModuleRenameFlow`)
+  - moved direct-rename capability decision (`memory-mapped` gate) into service helper (`xeMarkDirectRenameCapability`) used by `SaveChanged`
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`

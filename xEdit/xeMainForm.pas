@@ -15990,8 +15990,7 @@ begin
                   PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Saving: ' + s);
                   _File.WriteToStream(FileStream, ResetModifiedFromBool[wbResetModifiedOnSave]);
                   SavedThisOne := True;
-                  if not (fsMemoryMapped in _File.FileStates) then
-                    TryDirectRename := True;
+                  xeMarkDirectRenameCapability(fsMemoryMapped in _File.FileStates, TryDirectRename);
                 finally
                   FileStream.Free;
                 end;
