@@ -399,6 +399,12 @@ function xeResolveXButtonAction(
   const aWParam: NativeUInt;
   const aXButtonUpMessage: Cardinal
 ): TxeXButtonAction;
+function xeValidateFileCRC(
+  const aDataPath, aFileName: string;
+  const aValidCRCs: TDynCardinalArray;
+  var aFileCRCs: TwbFastStringListIC;
+  out aFileCRC: Cardinal
+): Boolean;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -2087,6 +2093,38 @@ begin
     2:
       Result := xbaForward;
   end;
+end;
+
+function xeValidateFileCRC(
+  const aDataPath, aFileName: string;
+  const aValidCRCs: TDynCardinalArray;
+  var aFileCRCs: TwbFastStringListIC;
+  out aFileCRC: Cardinal
+): Boolean;
+var
+  i: Integer;
+begin
+  aFileCRC := 0;
+  Result := Length(aValidCRCs) < 1;
+  if Result then
+    Exit;
+
+  if Assigned(aFileCRCs) and aFileCRCs.Find(aFileName, i) then
+    aFileCRC := Cardinal(aFileCRCs.Objects[i])
+  else begin
+    try
+      aFileCRC := wbCRC32File(aDataPath + aFileName);
+    except
+      aFileCRC := 0;
+    end;
+    if not Assigned(aFileCRCs) then
+      aFileCRCs := TwbFastStringListIC.CreateSorted;
+    aFileCRCs.AddObject(aFileName, TObject(aFileCRC));
+  end;
+
+  for i := Low(aValidCRCs) to High(aValidCRCs) do
+    if aValidCRCs[i] = aFileCRC then
+      Exit(True);
 end;
 
 function xeGetStaleRefCacheFiles(

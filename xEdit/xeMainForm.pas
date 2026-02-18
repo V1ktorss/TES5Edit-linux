@@ -17302,28 +17302,8 @@ function TfrmMain.ValidateCRC(const aFileName  : string;
                               const aValidCRCs : TDynCardinalArray;
                                 out aFileCRC   : Cardinal)
                                                : Boolean;
-var
-  i: Integer;
 begin
-  aFileCRC := 0;
-  Result := Length(aValidCRCs) < 1;
-  if not Result then begin
-    if Assigned(FileCRCs) and FileCRCs.Find(aFileName, i) then
-      aFileCRC := Cardinal(FileCRCs.Objects[i])
-    else begin
-      try
-        aFileCRC := wbCRC32File(wbDataPath + aFileName);
-      except
-        aFileCRC := 0;
-      end;
-      if not Assigned(FileCRCs) then
-        FileCRCs := TwbFastStringListIC.CreateSorted;
-      FileCRCs.AddObject(aFileName, TObject(aFileCRC));
-    end;
-    for i := Low(aValidCRCs) to High(aValidCRCs) do
-      if aValidCRCs[i] = aFileCRC then
-        Exit(True);
-  end;
+  Result := xeValidateFileCRC(wbDataPath, aFileName, aValidCRCs, FileCRCs, aFileCRC);
 end;
 
 procedure TfrmMain.tmrCheckUnsavedTimer(Sender: TObject);
