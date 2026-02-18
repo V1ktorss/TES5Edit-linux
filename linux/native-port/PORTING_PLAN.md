@@ -355,6 +355,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved save-result resolution (`AnyErrors`/`SavedAny` -> `TwbSaveResult` + summary messages) into service helper (`xeResolveSaveResult`)
   - moved rename-failure dialog message formatting into service helper (`xeBuildRenameFailuresDialogMessage`)
   - moved rename action message formatting into service helper (`xeBuildRenameActionMessage`) and reused it in rename/backup flows
+  - moved rename-preparation message presence checks into service helper (`xeCollectRenamePreparationMessages`) and simplified `DoRenameModule` branching
   - moved shared pre-write target preparation (parent directory + start message) into service helper (`xeTryPrepareSaveWriteTarget`) and reused it across localization/plugin save paths
   - moved shutdown-rename preparation guards (`DontSave`, queued-files check, backup-path resolution, action text) into service helper (`xeTryPrepareShutdownRename`)
   - moved shutdown-rename outcome policy (`AnyError` -> dialog text + optional log-save trigger) into service helper (`xeBuildRenameBatchOutcome`)

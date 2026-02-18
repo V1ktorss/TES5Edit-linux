@@ -1518,6 +1518,8 @@ var
   lFrom       : string;
   lTo         : string;
   lActionText : string;
+  lHasAction  : Boolean;
+  lHasWarning : Boolean;
   lErrorText  : string;
   lWarningText: string;
   s           : string;
@@ -1560,9 +1562,10 @@ begin
       MessageDlg(lErrorText, mtError, [mbOK], 0);
     Exit;
   end;
-  if lActionText <> '' then
+  xeCollectRenamePreparationMessages(lActionText, s, lHasAction, lHasWarning);
+  if lHasAction then
     wbProgress(lActionText);
-  if s <> '' then begin
+  if lHasWarning then begin
     wbProgress(s);
     if not aSilent then
       MessageDlg(s, mtError, [mbOK], 0);
