@@ -291,6 +291,9 @@ This document tracks what is already done for the native Linux path and what com
 - Replaced `xeMainForm` custom `message`-bound handlers with explicit `WndProc` dispatch helpers, reducing `TMessage` usages from 17 to 5.
 - Reduced `xeMainForm` message-surface further by introducing a local message type alias for detour signatures, reducing `TMessage` usages from 5 to 3.
 - Reduced `xeMainForm` message-surface further by centralizing message typing through a single unit-level alias, reducing `TMessage` usages from 3 to 1.
+- started `xeMainForm` service extraction for non-visual workflows:
+  - added `xEdit/xeMainFormServices.pas` with `xePersistThemeSetting` and routed custom-style persistence through it
+  - moved GameLink file-stamp lookup from `TGameLinkThread.Execute` into `xeMainFormServices.xeGetFileWriteStampUtc`
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`
