@@ -415,6 +415,12 @@ function xeRestorePluginsFromMaster(
   const aElapsedStart: TDateTime;
   const aAddMessage: TxeProgressProc
 ): Boolean;
+function xeBuildUnsavedHintText(
+  const aFiles: TwbFiles;
+  const aNow, aSaveInterval: TDateTime;
+  const aMaxSaveListCount: Integer;
+  out aFoundExpired: Boolean
+): string;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -2182,6 +2188,44 @@ begin
       lFile.IsESM := False;
       Result := True;
     end;
+  end;
+end;
+
+function xeBuildUnsavedHintText(
+  const aFiles: TwbFiles;
+  const aNow, aSaveInterval: TDateTime;
+  const aMaxSaveListCount: Integer;
+  out aFoundExpired: Boolean
+): string;
+var
+  i: Integer;
+  lOverflowCount: Integer;
+  lList: TStringList;
+begin
+  aFoundExpired := False;
+  lOverflowCount := 0;
+  lList := TStringList.Create;
+  try
+    lList.TrailingLineBreak := False;
+    for i := Low(aFiles) to High(aFiles) do
+      if esUnsaved in aFiles[i].ElementStates then begin
+        if aFiles[i].UnsavedSince < aNow - aSaveInterval then
+          aFoundExpired := True;
+
+        if aFiles[i].UnsavedSince < aNow then begin
+          if lList.Count >= aMaxSaveListCount then
+            Inc(lOverflowCount)
+          else
+            lList.Add(aFiles[i].Name + ' (' + FormatDateTime('hh:nn', aNow - aFiles[i].UnsavedSince) + ')');
+        end;
+      end;
+
+    if lOverflowCount > 0 then
+      lList.Add('(+' + lOverflowCount.ToString + ' more)');
+
+    Result := lList.Text;
+  finally
+    lList.Free;
   end;
 end;
 

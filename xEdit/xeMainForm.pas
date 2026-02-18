@@ -17290,8 +17290,7 @@ end;
 
 procedure TfrmMain.tmrCheckUnsavedTimer(Sender: TObject);
 var
-  i, j                        : Integer;
-  sl                          : TStringList;
+  UnsavedHintText             : string;
   FoundExpired                : Boolean;
 begin
   if not wbLoaderDone then
@@ -17351,32 +17350,10 @@ begin
   if not Assigned(bnMainMenu) then
     Exit;
 
-  FoundExpired := False;
-  sl := TStringList.Create;
-  try
-    sl.TrailingLineBreak := False;
-    j := 0;
-    for i := Low(Files) to High(Files) do
-      if esUnsaved in Files[i].ElementStates then begin
-        if Files[i].UnsavedSince < Now - SaveInterval then
-          FoundExpired := True;
-
-        if Files[i].UnsavedSince < Now then begin
-          if sl.Count >= MaxSaveListCount then
-            Inc(j)
-          else
-            sl.Add(Files[i].Name + ' ('+FormatDateTime('hh:nn', Now - Files[i].UnsavedSince)+')');
-        end;
-      end;
-    if j > 0 then
-      sl.Add('(+'+j.ToString+' more)');
-
-    if FoundExpired then begin
-      jbhSave.ActivateHint(bnMainMenu, sl.Text, 'You have unsaved changes. Do you want to save now?', 30000);
-      SetSaveInterval;
-    end;
-  finally
-    sl.Free;
+  UnsavedHintText := xeBuildUnsavedHintText(Files, Now, SaveInterval, MaxSaveListCount, FoundExpired);
+  if FoundExpired then begin
+    jbhSave.ActivateHint(bnMainMenu, UnsavedHintText, 'You have unsaved changes. Do you want to save now?', 30000);
+    SetSaveInterval;
   end;
 end;
 

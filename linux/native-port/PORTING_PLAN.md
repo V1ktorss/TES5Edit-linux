@@ -105,6 +105,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved CRC validation/cache reuse logic from `xeMainForm.ValidateCRC` into `xeMainFormServices` (`xeValidateFileCRC`)
   - moved FormID search-input normalization from `xeMainForm` into `xeMainFormServices` (`xeNormalizeFormIDSearchInput`)
   - moved plugin ESM-flag restore loop from `xeMainForm.RestorePluginsFromMaster` into `xeMainFormServices` (`xeRestorePluginsFromMaster`)
+  - moved unsaved-hint list/expiry computation from `xeMainForm.tmrCheckUnsavedTimer` into `xeMainFormServices` (`xeBuildUnsavedHintText`)
 - Extended `wbPlatform` helpers:
   - added `wbShowWindowNoActivate` wrapper for non-activating tip-form display
 - Started `xejviScriptAdapterMisc` decoupling:
