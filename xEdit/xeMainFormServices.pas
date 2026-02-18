@@ -52,6 +52,7 @@ function xeBuildPluggySelection(
 function xeBuildGameLinkSelection(const aRefID, aBaseID: TwbFormID): TxeGameLinkSelection;
 
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
+function xeTryEnsureSettingsLoaded(var aSettings: TMemIniFile; const aSettingsFileName: string): Boolean;
 function xeHandleThreadShutdown(
   const aThread: TThread;
   const aRequestTerminate, aAllowForceTerminate: Boolean
@@ -416,6 +417,23 @@ begin
 
   aSettings.WriteString('UI', 'Theme', aStyleName);
   aSettings.UpdateFile;
+end;
+
+function xeTryEnsureSettingsLoaded(var aSettings: TMemIniFile; const aSettingsFileName: string): Boolean;
+begin
+  if Assigned(aSettings) then begin
+    Result := True;
+    Exit;
+  end;
+
+  Result := False;
+  if aSettingsFileName = '' then
+    Exit;
+
+  if ForceDirectories(ExtractFilePath(aSettingsFileName)) then begin
+    aSettings := TMemIniFile.Create(aSettingsFileName);
+    Result := Assigned(aSettings);
+  end;
 end;
 
 function xeHandleThreadShutdown(

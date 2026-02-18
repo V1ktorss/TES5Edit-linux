@@ -373,6 +373,7 @@ This document tracks what is already done for the native Linux path and what com
   - unified close-time thread shutdown decisions in service helper (`xeHandleThreadShutdown`) and replaced per-thread helper calls in `FormClose` with one policy-driven path
   - moved watch-thread stop condition (`Terminated or wbForceTerminate`) into service helper (`xeShouldStopWatchLoop`) and reused it in Pluggy/GameLink watch threads
   - consolidated `xeWmUserSelectMainRecord` posting behind `TfrmMain.PostSelectMainRecord` to remove direct message dispatch duplication in expand/collapse flows
+  - moved settings file initialization/create path (`ForceDirectories` + `TMemIniFile.Create`) into service helper (`xeTryEnsureSettingsLoaded`) and reused it across startup/theme/load phases
   - moved loader-shutdown wait loop (`process messages` + `sleep/poll`) into service helper (`xeWaitUntil`) and reused it in `FormClose`
   - moved force thread-termination call path from `xeMainForm` to `wbPlatform` (`wbForceTerminateThread`) and simplified `xeFinalizeBackgroundThread` to platform-wrapper usage only
   - moved loader-shutdown wait decision/flagging (`LoaderStarted`/`LoaderDone` + `wbForceTerminate`) into service helper (`xeShouldWaitForLoaderShutdown`)

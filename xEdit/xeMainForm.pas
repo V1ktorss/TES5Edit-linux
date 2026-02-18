@@ -5046,9 +5046,7 @@ begin
 
   AddMessage('Using settings file: ' + xeSettingsFileName);
 
-  if not Assigned(Settings) and (xeSettingsFileName <> '') then
-    if ForceDirectories(ExtractFilePath(xeSettingsFileName)) then
-      Settings := TMemIniFile.Create(xeSettingsFileName);
+  xeTryEnsureSettingsLoaded(Settings, xeSettingsFileName);
 
   if not Assigned(Settings) then begin
     ShowMessage('Could not open or create the settings file.');
@@ -6413,9 +6411,7 @@ begin
   FocusedColumnOverride := -1;
 
   if wbThemesSupported then try
-    if not Assigned(Settings) and (xeSettingsFileName <> '')  then
-      if ForceDirectories(ExtractFilePath(xeSettingsFileName)) then
-        Settings := TMemIniFile.Create(xeSettingsFileName);
+    xeTryEnsureSettingsLoaded(Settings, xeSettingsFileName);
     if Assigned(Settings) then begin
       TStyleManager.TrySetStyle(Settings.ReadString('UI', 'Theme', TStyleManager.ActiveStyle.Name), False);
       Graphics.PaletteChanged;
@@ -6449,9 +6445,7 @@ begin
 
   //try to set the style and window position as early as possible to reduce flicker
   try
-    if not Assigned(Settings) and (xeSettingsFileName <> '')  then
-      if ForceDirectories(ExtractFilePath(xeSettingsFileName)) then
-        Settings := TMemIniFile.Create(xeSettingsFileName);
+    xeTryEnsureSettingsLoaded(Settings, xeSettingsFileName);
     if Assigned(Settings) then begin
       xeLoadAndApplyFontAndScale(Settings, 'UI', 'FontRecords', vstNav);
       xeLoadAndApplyFontAndScale(Settings, 'UI', 'FontRecords', vstView);
@@ -6517,9 +6511,7 @@ begin
   Memo1.WordWrap := True;
 
   try
-    if not Assigned(Settings) and (xeSettingsFileName <> '')  then
-      if ForceDirectories(ExtractFilePath(xeSettingsFileName)) then
-        Settings := TMemIniFile.Create(xeSettingsFileName);
+    xeTryEnsureSettingsLoaded(Settings, xeSettingsFileName);
     if Assigned(Settings) then begin
       ColumnWidth := Settings.ReadInteger('Options', 'ColumnWidth', ColumnWidth);
       RowHeight := Settings.ReadInteger('Options', 'RowHeight', RowHeight);
