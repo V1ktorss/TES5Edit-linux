@@ -13,7 +13,6 @@ unit xeMainForm;
 interface
 
 uses
-  Messages,
   SysUtils,
   Variants,
   Classes,
@@ -920,7 +919,7 @@ type
     procedure SaveModGroupsSelection(const aModGroups: TwbModGroupPtrs);
 
     function FindColors(const s: string; out aColors: TArray<TColor>): Boolean;
-    procedure WndProc(var Message: TMessage); override;
+    procedure WndProc(var Message: Controls.TMessage); override;
   private
     procedure HandleUserAddMessage(aPayload: NativeUInt);
     procedure HandleUserAddFile(aFilePtr: NativeUInt);
@@ -21228,7 +21227,7 @@ begin
   Accept := False;
 end;
 
-procedure TfrmMain.WndProc(var Message: TMessage);
+procedure TfrmMain.WndProc(var Message: Controls.TMessage);
 var
   StyleName: string;
 begin
@@ -22075,7 +22074,7 @@ end;
 
 type
   TWinControlProtectedHacker = class(TWinControl);
-  TxeMainFormMessage = TMessage;
+  TxeMainFormMessage = Controls.TMessage;
   TMainWndProc = procedure(var Message: TxeMainFormMessage) of object;
 
 var

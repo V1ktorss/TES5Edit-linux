@@ -77,7 +77,7 @@ This document tracks what is already done for the native Linux path and what com
 - Implemented xEdit GUI surface audit script/report:
   - `linux/native-port/audit-xedit-gui-surface.sh`
   - `linux/native-port/reports/xedit-gui-surface.txt`
-  - current baseline: 21 `*.dfm` form files, 20 `TForm` descendants, 23 GUI units with VCL/gui imports, 1 GUI unit with direct WinAPI import (`Messages`)
+  - current baseline: 21 `*.dfm` form files, 20 `TForm` descendants, 23 GUI units with VCL/gui imports, 0 GUI units with direct WinAPI imports
 - Implemented `xeMainForm` message-surface audit script/report:
   - `linux/native-port/audit-xemainform-message-surface.sh`
   - `linux/native-port/reports/xemainform-message-surface.txt`
@@ -162,7 +162,10 @@ This document tracks what is already done for the native Linux path and what com
   - added optional xEdit headless smoke env-override lane (`XEDIT_ENV_OVERRIDE_TEST=1`, `XEDIT_ENV_OVERRIDE_PATH=...`, `XEDIT_ENV_OVERRIDE_ARGS=...`) to validate `XEDIT_DATA_PATH` behavior on demand
   - added optional xEdit headless smoke CLI-override lane (`XEDIT_CLI_OVERRIDE_TEST=1`, `XEDIT_CLI_OVERRIDE_PATH=...`, `XEDIT_CLI_OVERRIDE_ARGS=...`) to validate `-D` path behavior
   - added optional xEdit headless negative lane (`XEDIT_INVALID_D_TEST=1`) to assert that invalid explicit `-D` paths fail with non-zero exit and report missing data path
+  - added optional xEdit headless mode-sanity lane (`XEDIT_MODE_SANITY_TEST=1`, default args `-TES5 -dummy`) to validate mode selection without full GUI init
+  - `xedit-core` dummy fast-path now skips early exit when explicit `-D` is present, so invalid explicit data-path checks remain enforced
   - `run-all-checks.sh` now enables `XEDIT_INVALID_D_TEST=1` by default for continuous explicit-path regression coverage
+  - `run-all-checks.sh` now enables `XEDIT_MODE_SANITY_TEST=1` by default for continuous mode-init regression coverage
   - wired `run-all-checks.sh` to forward xEdit env-override smoke knobs (`XEDIT_ENV_OVERRIDE_TEST`, `XEDIT_ENV_OVERRIDE_PATH`, `XEDIT_ENV_OVERRIDE_ARGS`) and print them in run config
   - wired `run-all-checks.sh` to forward xEdit CLI-override smoke knobs (`XEDIT_CLI_OVERRIDE_TEST`, `XEDIT_CLI_OVERRIDE_PATH`, `XEDIT_CLI_OVERRIDE_ARGS`) and print them in run config
   - converted additional Delphi inline-variable usages in xEdit/Core hot paths (`xeInitStyles`, `xeScriptForm` indent/dedent, `xeRichEditForm` TOC build, `wbTaskProgressExecute`, `xejviScriptHost` namespace rewrite/error reporting + selected-files branch, `xejviScriptAdapterMisc` math/string-set helpers, `xejviScriptAdapter` template/master helpers, `xeMainForm` message/master/template menu + focused-element/copy helpers + nav popup/formid/header-remove/WMUser + source-drag/apply-script + main-record-compare/nav-add/view-link paths, `xeModuleSelectForm` simulate-load path) to classic declarations for better FPC compatibility
@@ -282,7 +285,7 @@ This document tracks what is already done for the native Linux path and what com
   - baseline `linux/native-port/baselines/xedit-gui-surface-budget.env` (fails on regressions in DFM/TForm/VCL-import/WinAPI-import counts)
 - Added xEdit GUI last-mile WinAPI guard:
   - `linux/native-port/check-xedit-gui-lastmile-winapi.sh` (wired via `RUN_XEDIT_GUI_LASTMILE_GUARD=1` in `run-all-checks.sh`)
-  - enforces that remaining GUI WinAPI import surface is confined to `xEdit/xeMainForm.pas`
+  - enforces that GUI WinAPI import surface remains at zero (or fails on unexpected reintroduction)
 - Added `xeMainForm` message-surface audit lane: `linux/native-port/audit-xemainform-message-surface.sh` (wired via `RUN_XEMAINFORM_MESSAGE_AUDIT=1` in `run-all-checks.sh`)
 - Replaced direct `WM_USER`/`WM_PAINT` usage in `xeMainForm` with local app constants (`xeWmUser*`, `xeWmPaint`) to decouple message IDs from WinAPI names while keeping behavior unchanged.
 - Replaced `xeMainForm` custom `message`-bound handlers with explicit `WndProc` dispatch helpers, reducing `TMessage` usages from 17 to 5.
@@ -291,7 +294,8 @@ This document tracks what is already done for the native Linux path and what com
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`
   - removed `Messages` from `xEdit/xeScriptForm.pas` by replacing message-handler path with `DoMouseWheel` override + local `WM_CHAR`
-  - GUI WinAPI import count lowered from 4 to 1.
+  - removed `Messages` from `xEdit/xeMainForm.pas` by switching `WndProc`/detour signatures to `Controls.TMessage`
+  - GUI WinAPI import count lowered from 4 to 0.
 - Extended xEdit Winapi guard with direct-call regression checks (`GetKeyState`, `CreateProcess`, `ShellExecute`, `MessageBox`, `SendMessage`, `PostMessage`, `Windows.AlphaBlend`, `Windows.LockWindowUpdate`) while allowlisting platform-layer implementations in `Core/wbPlatform.pas`
 - Tightened xEdit Winapi guard import allowlist to `Core/wbPlatform.pas` and `Core/MSHeap.pas` only
 - Added Core Winapi-import regression guard: `linux/native-port/check-core-winapi-imports.sh` (wired via `RUN_CORE_WINAPI_GUARD=1` in `run-all-checks.sh`, allowlisted only for `Core/wbPlatform.pas` and `Core/MSHeap.pas`)

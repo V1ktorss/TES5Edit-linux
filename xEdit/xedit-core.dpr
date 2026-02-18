@@ -34,6 +34,32 @@ begin
   end;
 end;
 
+function HasDummySwitch: Boolean;
+var
+  i: Integer;
+  s: string;
+begin
+  Result := False;
+  for i := 1 to ParamCount do begin
+    s := LowerCase(ParamStr(i));
+    if (s = '-dummy') or (s = '--dummy') or (s = '/dummy') then
+      Exit(True);
+  end;
+end;
+
+function HasExplicitDataPathArg: Boolean;
+var
+  i: Integer;
+  s: string;
+begin
+  Result := False;
+  for i := 1 to ParamCount do begin
+    s := LowerCase(ParamStr(i));
+    if (Copy(s, 1, 3) = '-d:') or (Copy(s, 1, 3) = '/d:') then
+      Exit(True);
+  end;
+end;
+
 begin
   SysUtils.FormatSettings.DecimalSeparator := '.';
 
@@ -41,6 +67,11 @@ begin
     WriteLn('xedit-core (headless)');
     WriteLn('Usage: xedit-core [options]');
     WriteLn('  -h, --help   Show this help');
+    Halt(0);
+  end;
+
+  if HasDummySwitch and not HasExplicitDataPathArg then begin
+    WriteLn('xEdit dummy init ok');
     Halt(0);
   end;
 

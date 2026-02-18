@@ -9,9 +9,9 @@
 
 
 ## TMessage Usages
-923:    procedure WndProc(var Message: TMessage); override;
-21231:procedure TfrmMain.WndProc(var Message: TMessage);
-22078:  TxeMainFormMessage = TMessage;
+922:    procedure WndProc(var Message: Controls.TMessage); override;
+21230:procedure TfrmMain.WndProc(var Message: Controls.TMessage);
+22077:  TxeMainFormMessage = Controls.TMessage;
 
 ## WM_* References
 

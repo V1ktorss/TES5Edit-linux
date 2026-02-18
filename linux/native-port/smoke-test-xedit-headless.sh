@@ -15,6 +15,8 @@ CLI_OVERRIDE_ARGS="${XEDIT_CLI_OVERRIDE_ARGS:--dummy}"
 INVALID_D_TEST="${XEDIT_INVALID_D_TEST:-0}"
 INVALID_D_PATH="${XEDIT_INVALID_D_PATH:-/definitely/not/here}"
 INVALID_D_ARGS="${XEDIT_INVALID_D_ARGS:--dummy}"
+MODE_SANITY_TEST="${XEDIT_MODE_SANITY_TEST:-0}"
+MODE_SANITY_ARGS="${XEDIT_MODE_SANITY_ARGS:--TES5 -dummy}"
 
 find_xedit_bin() {
   if [[ -n "${XEDIT_BIN:-}" && -x "${XEDIT_BIN}" ]]; then
@@ -202,6 +204,46 @@ if [[ "${INVALID_D_TEST}" == "1" ]]; then
   fi
 
   echo "[xedit-smoke] Invalid -D case exit code (expected non-zero): ${exit_code}"
+  echo "[xedit-smoke] Log: ${log_file}"
+fi
+
+if [[ "${MODE_SANITY_TEST}" == "1" ]]; then
+  safe_name="mode_sanity"
+  log_file="${LOG_DIR}/xedit-headless-smoke-${safe_name}.log"
+
+  echo "[xedit-smoke] Running mode sanity case: ${XEDIT_BIN_PATH} ${MODE_SANITY_ARGS}"
+  set +e
+  # shellcheck disable=SC2206
+  mode_args=( ${MODE_SANITY_ARGS} )
+  timeout "${TIMEOUT_SECONDS}"s "${XEDIT_BIN_PATH}" "${mode_args[@]}" >"${log_file}" 2>&1
+  exit_code=$?
+  set -e
+
+  if [[ "${exit_code}" -eq 124 ]]; then
+    echo "[xedit-smoke] FAILED: mode sanity case timed out after ${TIMEOUT_SECONDS}s"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if [[ "${exit_code}" -ne 0 ]]; then
+    echo "[xedit-smoke] FAILED: mode sanity case exit code ${exit_code}"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if rg -q "Can't determine (GameMode|ToolMode)|Unexpected Error:" "${log_file}"; then
+    echo "[xedit-smoke] FAILED: mode sanity case reported mode/exception markers"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if ! rg -q "xEdit dummy init ok" "${log_file}"; then
+    echo "[xedit-smoke] FAILED: mode sanity case missing dummy-ok marker"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  echo "[xedit-smoke] Mode sanity case exit code: ${exit_code}"
   echo "[xedit-smoke] Log: ${log_file}"
 fi
 
