@@ -199,6 +199,10 @@ This document tracks what is already done for the native Linux path and what com
   - `linux/native-port/audit-fpc-fallback-surface.sh`
   - `linux/native-port/reports/fpc-fallback-surface.txt`
   - wired via `RUN_FPC_FALLBACK_AUDIT=1` in `linux/native-port/run-all-checks.sh`
+- added FPC fallback budget guard to block regressions:
+  - `linux/native-port/check-fpc-fallback-budget.sh`
+  - `linux/native-port/baselines/fpc-fallback-budget.env`
+  - wired via `RUN_FPC_FALLBACK_BUDGET_GUARD=1` in `linux/native-port/run-all-checks.sh`
 - configured xEdit readiness CI to run with `RUN_BSARCH=0` so the lane stays focused on xEdit/readiness checks
 - CI readiness lane now explicitly sets `XEDIT_INVALID_D_TEST=1`, `XDUMP_MODE_SANITY_TEST=1`, and `XDUMP_INVALID_D_TEST=1` for deterministic negative/decoupling coverage
 - added optional headless smoke script `linux/native-port/smoke-test-xedit-headless.sh` and wired CI to run it when `linux/bin/xedit-core` is available
