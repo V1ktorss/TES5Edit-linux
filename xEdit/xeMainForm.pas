@@ -1601,9 +1601,8 @@ begin
   end;
 
   lBackup := xeBuildTempSaveBackupPath(wbBackupPath, aFrom);
-
   wbProgress('Renaming "' + lFrom + '" to "' + lBackup + '".');
-  if not xeTryRenameFile(lFrom, lBackup, s) then begin
+  if not xeTryBackupSourceFile(lFrom, aFrom, wbBackupPath, lBackup, s) then begin
     wbProgress(s);
     if not aSilent then
       MessageDlg(s, mtError, [mbOK], 0);

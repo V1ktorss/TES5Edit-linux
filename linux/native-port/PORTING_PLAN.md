@@ -321,6 +321,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved source-file existence validation into service helper (`xeTryValidateSourceFileForRename`) and reused it across rename/backup flows
   - moved target-file write-time capture into service helper (`xeTryGetModuleWriteTime`) so `DoRenameModule` keeps UI/error presentation while service owns filesystem timestamp read logic
   - moved file-rename execution/error text into service helper (`xeTryRenameFile`) and reused it across module rename + backup flows
+  - moved backup rename execution into service helper (`xeTryBackupSourceFile`) so `DoBackupModule` mostly orchestrates progress/UI
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`

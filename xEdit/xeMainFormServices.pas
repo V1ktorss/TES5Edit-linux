@@ -65,6 +65,10 @@ function xeTryRestoreModuleWriteTime(
 function xeTryValidateSourceFileForRename(const aSourceFile: string; out aErrorText: string): Boolean;
 function xeTryGetModuleWriteTime(const aFileName: string; out aDateTime: TDateTime; out aErrorText: string): Boolean;
 function xeTryRenameFile(const aFromFile, aToFile: string; out aErrorText: string): Boolean;
+function xeTryBackupSourceFile(
+  const aSourceFile, aSourceName, aBackupPath: string;
+  out aBackupFile, aErrorText: string
+): Boolean;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -284,6 +288,15 @@ begin
     Exit;
   end;
   aErrorText := 'Could not rename "' + aFromFile + '" to "' + aToFile + '".';
+end;
+
+function xeTryBackupSourceFile(
+  const aSourceFile, aSourceName, aBackupPath: string;
+  out aBackupFile, aErrorText: string
+): Boolean;
+begin
+  aBackupFile := xeBuildTempSaveBackupPath(aBackupPath, aSourceName);
+  Result := xeTryRenameFile(aSourceFile, aBackupFile, aErrorText);
 end;
 
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
