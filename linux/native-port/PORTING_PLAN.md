@@ -234,6 +234,7 @@ This document tracks what is already done for the native Linux path and what com
   - normalized `XDUMP_DATA_PATH` handling to accept both game-root paths and direct data-folder paths
   - unified xDump override normalization so both `-D` and `XDUMP_DATA_PATH` accept game-root or direct data-folder paths
   - added consolidated headless loop runner: `linux/native-port/headless-build-smoke.sh` (`RUN_XEDIT`/`RUN_XDUMP`/`BUILD_ONLY` toggles) for faster xEdit/xDump decoupling verification
+  - `headless-build-smoke.sh` now enables explicit invalid-path checks by default for both tool lanes (`XEDIT_INVALID_D_TEST=1`, `XDUMP_INVALID_D_TEST=1`)
   - `headless-build-smoke.sh` now writes a deterministic current transcript (`/tmp/xedit-headless-current.log`) and syncs the legacy path (`/tmp/xedit-headless.log`) for stable follow-up parsing
   - `headless-build-smoke.sh` now enforces a strict hint gate by default (`FAIL_ON_HINTS=1`) and fails on non-allowlisted `Hint:` lines (gate can be disabled with `FAIL_ON_HINTS=0`, allowlist tuned via `HINT_ALLOWLIST_REGEX`)
   - verified:

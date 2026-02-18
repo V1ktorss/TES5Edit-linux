@@ -6,6 +6,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 RUN_XEDIT="${RUN_XEDIT:-1}"
 RUN_XDUMP="${RUN_XDUMP:-1}"
 BUILD_ONLY="${BUILD_ONLY:-0}"
+XEDIT_INVALID_D_TEST="${XEDIT_INVALID_D_TEST:-1}"
 XDUMP_MODE_SANITY_TEST="${XDUMP_MODE_SANITY_TEST:-1}"
 XDUMP_INVALID_D_TEST="${XDUMP_INVALID_D_TEST:-1}"
 HEADLESS_LOG="${HEADLESS_LOG:-/tmp/xedit-headless-current.log}"
@@ -197,7 +198,7 @@ log "Config: RUN_XEDIT=${RUN_XEDIT} RUN_XDUMP=${RUN_XDUMP} BUILD_ONLY=${BUILD_ON
 if [[ "${RUN_XEDIT}" == "1" ]]; then
   run_step "Building xEdit headless" "${ROOT_DIR}/linux/native-port/build-xedit-headless.sh"
   if [[ "${BUILD_ONLY}" != "1" ]]; then
-    run_step "xEdit headless smoke" "${ROOT_DIR}/linux/native-port/smoke-test-xedit-headless.sh"
+    run_step "xEdit headless smoke" env XEDIT_INVALID_D_TEST="${XEDIT_INVALID_D_TEST}" "${ROOT_DIR}/linux/native-port/smoke-test-xedit-headless.sh"
   fi
   check_hints
 fi
