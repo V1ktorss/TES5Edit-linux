@@ -15934,10 +15934,7 @@ begin
             // localization file
             if FileType[i] = 1 then begin
               _LFile := TwbLocalizationFile(CheckListBox1.Items.Objects[i]);
-              s := _LFile.FileName;
-              s := Copy(s, length(wbDataPath) + 1, length(s)); // relative path to string file from Data folder
-              u := s;
-              xeBuildSaveTargetFileName(wbDataPath, u, t, s, NeedsRename);
+              xePrepareLocalizationSaveNames(wbDataPath, _LFile.FileName, t, u, s, NeedsRename);
 
               try
                 if not xeTryEnsureParentDirectoryForFile(wbDataPath + s, t) then

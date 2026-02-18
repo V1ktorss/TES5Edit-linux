@@ -64,6 +64,11 @@ procedure xeBuildSaveTargetFileName(
   out aTargetName: string;
   out aNeedsRename: Boolean
 );
+procedure xePrepareLocalizationSaveNames(
+  const aDataPath, aLocalizationFileName, aSuffix: string;
+  out aOriginalRelativeName, aTargetRelativeName: string;
+  out aNeedsRename: Boolean
+);
 function xeTryDiscardUnchangedTempSave(
   const aDataPath, aTempName: string;
   const aOriginalCRC, aCurrentCRC: TwbCRC32;
@@ -340,6 +345,17 @@ begin
     Inc(j);
     aTargetName := aOriginalName + aSuffix + '_' + j.ToString;
   end;
+end;
+
+procedure xePrepareLocalizationSaveNames(
+  const aDataPath, aLocalizationFileName, aSuffix: string;
+  out aOriginalRelativeName, aTargetRelativeName: string;
+  out aNeedsRename: Boolean
+);
+begin
+  aOriginalRelativeName := Copy(aLocalizationFileName, Length(aDataPath) + 1, Length(aLocalizationFileName));
+  aTargetRelativeName := aOriginalRelativeName;
+  xeBuildSaveTargetFileName(aDataPath, aOriginalRelativeName, aSuffix, aTargetRelativeName, aNeedsRename);
 end;
 
 function xeTryDiscardUnchangedTempSave(
