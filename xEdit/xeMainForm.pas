@@ -1569,7 +1569,7 @@ begin
   end;
 
   // rename temp save file to original
-  wbProgress('Renaming "' + lFrom + '" to "' + lTo + '".');
+  wbProgress(xeBuildRenameActionMessage(lFrom, lTo));
   if not xeTryFinalizeModuleRename(lFrom, lTo, OldDateTime, wbGameMode in wbOrderFromPluginsTxt, s, lWarningText) then begin
     wbProgress(s);
     if not aSilent then

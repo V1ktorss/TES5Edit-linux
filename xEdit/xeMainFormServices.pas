@@ -59,6 +59,7 @@ function xeTryPrepareSourceFileForRename(
 ): Boolean;
 function xeBuildSaveStartMessage(const aRelativeName: string): string;
 function xeBuildSaveErrorMessage(const aRelativeName, aErrorText: string): string;
+function xeBuildRenameActionMessage(const aFromFile, aToFile: string): string;
 function xeTryPrepareSaveWriteTarget(
   const aFullPath, aRelativeName: string;
   out aStartMessage, aErrorText: string
@@ -389,6 +390,11 @@ end;
 function xeBuildSaveErrorMessage(const aRelativeName, aErrorText: string): string;
 begin
   Result := 'Error saving ' + aRelativeName + ': ' + aErrorText;
+end;
+
+function xeBuildRenameActionMessage(const aFromFile, aToFile: string): string;
+begin
+  Result := 'Renaming "' + aFromFile + '" to "' + aToFile + '".';
 end;
 
 function xeTryPrepareSaveWriteTarget(
@@ -801,7 +807,7 @@ procedure xeBuildBackupModuleTempSavePlan(
 );
 begin
   aBackupFile := xeBuildTempSaveBackupPath(aBackupPath, aSourceName);
-  aActionText := 'Renaming "' + aSourceFile + '" to "' + aBackupFile + '".';
+  aActionText := xeBuildRenameActionMessage(aSourceFile, aBackupFile);
 end;
 
 function xeTryRunBackupModuleFlow(
