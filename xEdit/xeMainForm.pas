@@ -1666,8 +1666,7 @@ begin
 
   if AnyError then begin
     MessageDlg(
-      'One or more errors occured during renaming of saved modules.' + #13#13 +
-      'Please check the files in your data path: ' + wbDataPath,
+      xeBuildRenameFailuresDialogMessage(wbDataPath),
       mtError,
       [mbOK],
       0

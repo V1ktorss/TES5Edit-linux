@@ -70,6 +70,7 @@ function xeResolveSaveResult(
   const aAnyErrors, aSavedAny: Boolean;
   out aFailureMessage, aSuccessMessage: string
 ): TwbSaveResult;
+function xeBuildRenameFailuresDialogMessage(const aDataPath: string): string;
 function xeBuildTempSaveSuffix(const aNow: TDateTime): string;
 function xeTryEnsureParentDirectoryForFile(const aFullPath: string; out aErrorText: string): Boolean;
 procedure xeBuildSaveTargetFileName(
@@ -400,6 +401,13 @@ begin
   end;
   if aAnyErrors then
     Result := srError;
+end;
+
+function xeBuildRenameFailuresDialogMessage(const aDataPath: string): string;
+begin
+  Result :=
+    'One or more errors occured during renaming of saved modules.' + #13#13 +
+    'Please check the files in your data path: ' + aDataPath;
 end;
 
 function xeBuildTempSaveSuffix(const aNow: TDateTime): string;
