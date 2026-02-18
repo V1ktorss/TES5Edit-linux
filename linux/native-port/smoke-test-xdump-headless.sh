@@ -88,7 +88,9 @@ for case_args in "${cases[@]}"; do
   fi
 
   if rg -q "Can't determine (GameMode|ToolMode)|Unexpected Error:" "${log_file}"; then
-    echo "[xdump-smoke] NOTE: log contains mode-detection or exception markers (${case_args})"
+    echo "[xdump-smoke] FAILED: mode-detection or exception markers found (${case_args})"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
   fi
 
   echo "[xdump-smoke] Exit code: ${exit_code}"
@@ -126,7 +128,9 @@ if [[ "${ENV_OVERRIDE_TEST}" == "1" ]]; then
   fi
 
   if rg -q "Can't determine (GameMode|ToolMode)|Unexpected Error:" "${log_file}"; then
-    echo "[xdump-smoke] NOTE: log contains mode-detection or exception markers (env override)"
+    echo "[xdump-smoke] FAILED: mode-detection or exception markers found (env override)"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
   fi
 
   echo "[xdump-smoke] Env override case exit code: ${exit_code}"
@@ -164,7 +168,9 @@ if [[ "${CLI_OVERRIDE_TEST}" == "1" ]]; then
   fi
 
   if rg -q "Can't determine (GameMode|ToolMode)|Unexpected Error:" "${log_file}"; then
-    echo "[xdump-smoke] NOTE: log contains mode-detection or exception markers (CLI override)"
+    echo "[xdump-smoke] FAILED: mode-detection or exception markers found (CLI override)"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
   fi
 
   echo "[xdump-smoke] CLI override case exit code: ${exit_code}"
