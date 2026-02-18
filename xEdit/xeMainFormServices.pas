@@ -24,6 +24,8 @@ uses
 
 type
   TxeRenameModuleFunc = function(const aFrom, aTo: string; aSilent: Boolean): Boolean;
+  TxeBackupModuleFunc = function(const aFrom: string; aSilent: Boolean): Boolean;
+  TxeProgressProc = procedure(const aText: string);
   TxeWatchStampReader = function: Int64 of object;
   TxeWatchStopPredicate = function: Boolean of object;
 
@@ -97,6 +99,16 @@ function xeTryFinalizeModuleRename(
 procedure xeQueueModuleRename(var aFilesToRename: TStringList; const aTargetName, aSourceName: string);
 function xeRenameSavedModules(const aFilesToRename: TStrings; const aRenameModule: TxeRenameModuleFunc): Boolean;
 function xePopQueuedRenamesForTarget(aFilesToRename: TStrings; const aTargetName: string): TStringDynArray;
+procedure xeProcessQueuedRenamesAfterDirectSave(
+  aFilesToRename: TStrings;
+  const aTargetName: string;
+  const aDeleteInsteadOfBackup: Boolean;
+  var aBackupWarningGiven: Boolean;
+  const aSilent: Boolean;
+  const aDataPath: string;
+  const aBackupModule: TxeBackupModuleFunc;
+  const aProgress: TxeProgressProc
+);
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -451,6 +463,49 @@ begin
       Result[High(Result)] := aFilesToRename.ValueFromIndex[i];
       aFilesToRename.Delete(i);
     end;
+end;
+
+procedure xeProcessQueuedRenamesAfterDirectSave(
+  aFilesToRename: TStrings;
+  const aTargetName: string;
+  const aDeleteInsteadOfBackup: Boolean;
+  var aBackupWarningGiven: Boolean;
+  const aSilent: Boolean;
+  const aDataPath: string;
+  const aBackupModule: TxeBackupModuleFunc;
+  const aProgress: TxeProgressProc
+);
+var
+  i: Integer;
+  lSourceName: string;
+  lQueuedRenames: TStringDynArray;
+begin
+  lQueuedRenames := xePopQueuedRenamesForTarget(aFilesToRename, aTargetName);
+  if Length(lQueuedRenames) = 0 then
+    Exit;
+
+  if aDeleteInsteadOfBackup and (not aBackupWarningGiven) then begin
+    if Assigned(aProgress) then begin
+      aProgress('******** WARNING ********');
+      aProgress('* Backups are disabled! *');
+      aProgress('******** WARNING ********');
+    end;
+    aBackupWarningGiven := True;
+  end;
+
+  for i := Low(lQueuedRenames) to High(lQueuedRenames) do begin
+    lSourceName := lQueuedRenames[i];
+    if aDeleteInsteadOfBackup then begin
+      if Assigned(aProgress) then
+        aProgress('Removing previously queued save "' + aDataPath + lSourceName + '" as a direct save to "' + aDataPath + aTargetName + '" has succeeded.');
+      DeleteFile(aDataPath + lSourceName);
+    end else begin
+      if Assigned(aProgress) then
+        aProgress('Backing up previously queued save "' + aDataPath + lSourceName + '" as a direct save to "' + aDataPath + aTargetName + '" has succeeded.');
+      if Assigned(aBackupModule) then
+        aBackupModule(lSourceName, aSilent);
+    end;
+  end;
 end;
 
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;

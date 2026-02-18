@@ -15843,7 +15843,6 @@ end;
 function TfrmMain.SaveChanged(aSilent: Boolean = False; aShowMessageIfNothing: Boolean = False): TwbSaveResult;
 var
   i, j                        : Integer;
-  k                           : Integer;
   FileStream                  : TBufferedFileStream;
   FileType                    : array of Byte;
   _File                       : IwbFile;
@@ -15859,7 +15858,6 @@ var
   FoundSomething              : Boolean;
   CRC                         : TwbCRC32;
   BackupWarningGiven          : Boolean;
-  QueuedRenames               : TStringDynArray;
 
 const
   ResetModifiedFromBool : array[Boolean] of TwbResetModified =
@@ -16042,23 +16040,16 @@ begin
                 xeQueueModuleRename(FilesToRename, u, s);
                 wbProgress('Queued renaming of save "' + wbDataPath + s + '" to "' + wbDataPath + u + '" on shutdown.');
               end else begin
-                QueuedRenames := xePopQueuedRenamesForTarget(FilesToRename, u);
-                for k := Low(QueuedRenames) to High(QueuedRenames) do begin
-                  s := QueuedRenames[k];
-                  if xeDontBackup then begin
-                    if not BackupWarningGiven then begin
-                      wbProgress('******** WARNING ********');
-                      wbProgress('* Backups are disabled! *');
-                      wbProgress('******** WARNING ********');
-                      BackupWarningGiven := True;
-                    end;
-                    wbProgress('Removing previously queued save "' + wbDataPath + s + '" as a direct save to "' + wbDataPath + u + '" has succeeded.');
-                    DeleteFile(wbDataPath + s);
-                  end else begin
-                    wbProgress('Backing up previously queued save "' + wbDataPath + s + '" as a direct save to "' + wbDataPath + u + '" has succeeded.');
-                    DoBackupModule(s, aSilent);
-                  end;
-                end;
+                xeProcessQueuedRenamesAfterDirectSave(
+                  FilesToRename,
+                  u,
+                  xeDontBackup,
+                  BackupWarningGiven,
+                  aSilent,
+                  wbDataPath,
+                  @DoBackupModule,
+                  @wbProgress
+                );
               end;
             end;
 
