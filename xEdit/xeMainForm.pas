@@ -6242,6 +6242,8 @@ procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 
 var
   i: Integer;
+  lLoaderShutdownCaption: string;
+  lLoaderShutdownPollMs: Cardinal;
   lNavPanelWidth: Integer;
   lNavColumnWidths: array of Integer;
 
@@ -6252,11 +6254,17 @@ var
 
 begin
   Action := caFree;
-  if xeShouldWaitForLoaderShutdown(LoaderStarted, wbLoaderDone, wbForceTerminate) then begin
-    Caption := 'Waiting for Background Loader to terminate...';
+  if xePrepareLoaderShutdownWait(
+    LoaderStarted,
+    wbLoaderDone,
+    wbForceTerminate,
+    lLoaderShutdownCaption,
+    lLoaderShutdownPollMs
+  ) then begin
+    Caption := lLoaderShutdownCaption;
     pnlClient.Enabled := False;
     try
-      xeWaitUntil(IsLoaderDone, DoProcessMessages, 100);
+      xeWaitUntil(IsLoaderDone, DoProcessMessages, lLoaderShutdownPollMs);
     finally
       pnlClient.Enabled := True;
       UpdatePnlCancelVisible;
