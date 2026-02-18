@@ -84,6 +84,7 @@ function xeTryFinalizeModuleRename(
   out aErrorText, aWarningText: string
 ): Boolean;
 function xeRenameSavedModules(const aFilesToRename: TStrings; const aRenameModule: TxeRenameModuleFunc): Boolean;
+function xePopQueuedRenamesForTarget(aFilesToRename: TStrings; const aTargetName: string): TStringDynArray;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -371,6 +372,22 @@ begin
   for i := 0 to Pred(aFilesToRename.Count) do
     if not aRenameModule(aFilesToRename.ValueFromIndex[i], aFilesToRename.Names[i], False) then
       Result := True;
+end;
+
+function xePopQueuedRenamesForTarget(aFilesToRename: TStrings; const aTargetName: string): TStringDynArray;
+var
+  i: Integer;
+begin
+  SetLength(Result, 0);
+  if not Assigned(aFilesToRename) then
+    Exit;
+
+  for i := Pred(aFilesToRename.Count) downto 0 do
+    if SameText(aTargetName, aFilesToRename.Names[i]) then begin
+      SetLength(Result, Length(Result) + 1);
+      Result[High(Result)] := aFilesToRename.ValueFromIndex[i];
+      aFilesToRename.Delete(i);
+    end;
 end;
 
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
