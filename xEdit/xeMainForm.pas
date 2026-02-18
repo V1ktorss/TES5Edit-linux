@@ -15941,17 +15941,12 @@ begin
 
               try
                 ForceDirectories(ExtractFilePath(wbDataPath + s));
-                FileStream := TBufferedFileStream.Create(wbDataPath + s, fmCreate, 1024*1024);
-                try
-                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Saving: ' + s);
-                  _LFile.WriteToStream(FileStream);
-                  SavedAny := True;
-                  SavedThisOne := True;
-                  TryDirectRename := True; //TODO: make sure this is ok?
-                  _LFile.Modified := False;
-                finally
-                  FileStream.Free;
-                end;
+                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Saving: ' + s);
+                SavedThisOne := xeTryWriteLocalizationToTempFile(_LFile, wbDataPath + s, t);
+                if not SavedThisOne then
+                  raise Exception.Create(t);
+                SavedAny := True;
+                TryDirectRename := True; //TODO: make sure this is ok?
 
               except
                 on E: Exception do begin

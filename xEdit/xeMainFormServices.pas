@@ -18,6 +18,7 @@ uses
   SysUtils,
   IOUtils,
   IniFiles,
+  wbLocalization,
   wbStreams,
   wbInterface,
   wbHelpers;
@@ -76,6 +77,11 @@ function xeTryWriteModuleToTempFile(
   const aFullPath: string;
   const aResetModified: TwbResetModified;
   out aCanTryDirectRename: Boolean;
+  out aErrorText: string
+): Boolean;
+function xeTryWriteLocalizationToTempFile(
+  const aFile: TwbLocalizationFile;
+  const aFullPath: string;
   out aErrorText: string
 ): Boolean;
 procedure xeMarkTempSaveWriteFailure(
@@ -357,6 +363,29 @@ begin
   try
     aFile.WriteToStream(lFileStream, aResetModified);
     xeMarkDirectRenameCapability(fsMemoryMapped in aFile.FileStates, aCanTryDirectRename);
+    Result := True;
+  except
+    on E: Exception do
+      aErrorText := E.Message;
+  end;
+  lFileStream.Free;
+end;
+
+function xeTryWriteLocalizationToTempFile(
+  const aFile: TwbLocalizationFile;
+  const aFullPath: string;
+  out aErrorText: string
+): Boolean;
+var
+  lFileStream: TBufferedFileStream;
+begin
+  aErrorText := '';
+  Result := False;
+
+  lFileStream := TBufferedFileStream.Create(aFullPath, fmCreate, 1024 * 1024);
+  try
+    aFile.WriteToStream(lFileStream);
+    aFile.Modified := False;
     Result := True;
   except
     on E: Exception do
