@@ -78,6 +78,7 @@ This document tracks what is already done for the native Linux path and what com
   - `linux/native-port/audit-xedit-gui-surface.sh`
   - `linux/native-port/reports/xedit-gui-surface.txt`
   - current baseline: 21 `*.dfm` form files, 20 `TForm` descendants, 23 GUI units with VCL/gui imports, 4 GUI units with direct WinAPI imports (`Messages`)
+- Added GUI migration execution plan: `linux/native-port/XEDIT_GUI_MIGRATION_PLAN.md`
 - Started `xeInit` decoupling:
   - moved known-folder and registry-read access behind `wbPlatform` helpers
   - reduced direct platform-coupled calls in `xEdit/xeInit.pas`
