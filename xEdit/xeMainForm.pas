@@ -15947,7 +15947,7 @@ begin
                 if not SavedThisOne then
                   raise Exception.Create(t);
                 SavedAny := True;
-                TryDirectRename := True; //TODO: make sure this is ok?
+                xeMarkDirectRenameCapability(False, TryDirectRename);
 
               except
                 on E: Exception do begin
