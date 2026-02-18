@@ -75,6 +75,13 @@ function xeResolveSaveResult(
   out aFailureMessage, aSuccessMessage: string
 ): TwbSaveResult;
 function xeBuildRenameFailuresDialogMessage(const aDataPath: string): string;
+function xeTryPrepareShutdownRename(
+  const aDontSave: Boolean;
+  const aFilesToRename: TStrings;
+  const aDataPath, aBackupPath: string;
+  const aUseBackup: Boolean;
+  out aResolvedBackupPath, aActionText: string
+): Boolean;
 function xeBuildTempSaveSuffix(const aNow: TDateTime): string;
 function xeTryEnsureParentDirectoryForFile(const aFullPath: string; out aErrorText: string): Boolean;
 procedure xeBuildSaveTargetFileName(
@@ -425,6 +432,26 @@ begin
   Result :=
     'One or more errors occured during renaming of saved modules.' + #13#13 +
     'Please check the files in your data path: ' + aDataPath;
+end;
+
+function xeTryPrepareShutdownRename(
+  const aDontSave: Boolean;
+  const aFilesToRename: TStrings;
+  const aDataPath, aBackupPath: string;
+  const aUseBackup: Boolean;
+  out aResolvedBackupPath, aActionText: string
+): Boolean;
+begin
+  aResolvedBackupPath := aBackupPath;
+  aActionText := '';
+  if aDontSave then
+    Exit(False);
+  if not Assigned(aFilesToRename) then
+    Exit(False);
+
+  aResolvedBackupPath := xeEnsureBackupPath(aBackupPath, aDataPath, aUseBackup);
+  aActionText := 'Renaming previously saved files';
+  Result := True;
 end;
 
 function xeBuildTempSaveSuffix(const aNow: TDateTime): string;

@@ -1637,6 +1637,7 @@ end;
 procedure DoRename;
 var
   AnyError : Boolean;
+  RenameAction: string;
 begin
   wbForceTerminate := False;
   _wbProgressCallback := SaveProgress;
@@ -1650,15 +1651,18 @@ begin
 
   wbFileForceClosed;
 
-  if wbDontSave then
+  if not xeTryPrepareShutdownRename(
+    wbDontSave,
+    FilesToRename,
+    wbDataPath,
+    wbBackupPath,
+    not xeDontBackup,
+    wbBackupPath,
+    RenameAction
+  ) then
     Exit;
 
-  if not Assigned(FilesToRename) then
-    Exit;
-
-  wbBackupPath := xeEnsureBackupPath(wbBackupPath, wbDataPath, not xeDontBackup);
-
-  wbCurrentAction := 'Renaming previously saved files';
+  wbCurrentAction := RenameAction;
   wbProgress(wbCurrentAction);
 
   _SaveProgress := False;

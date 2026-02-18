@@ -355,6 +355,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved save-result resolution (`AnyErrors`/`SavedAny` -> `TwbSaveResult` + summary messages) into service helper (`xeResolveSaveResult`)
   - moved rename-failure dialog message formatting into service helper (`xeBuildRenameFailuresDialogMessage`)
   - moved shared pre-write target preparation (parent directory + start message) into service helper (`xeTryPrepareSaveWriteTarget`) and reused it across localization/plugin save paths
+  - moved shutdown-rename preparation guards (`DontSave`, queued-files check, backup-path resolution, action text) into service helper (`xeTryPrepareShutdownRename`)
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`
