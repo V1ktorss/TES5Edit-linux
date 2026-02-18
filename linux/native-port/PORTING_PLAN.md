@@ -337,6 +337,7 @@ This document tracks what is already done for the native Linux path and what com
   - consolidated post-save rename decision flow (`direct-rename attempt`, queueing, and queued-rename post-processing) into service helper (`xeFinalizeSavedModuleRenameFlow`)
   - moved direct-rename capability decision (`memory-mapped` gate) into service helper (`xeMarkDirectRenameCapability`) used by `SaveChanged`
   - moved plugin temp-save write operation into service helper (`xeTryWriteModuleToTempFile`) including direct-rename capability decision and error-text propagation
+  - unified localization save-target collision handling with plugin path by reusing `xeBuildSaveTargetFileName` in `SaveChanged`
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`

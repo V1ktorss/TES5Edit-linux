@@ -15935,21 +15935,12 @@ begin
             if FileType[i] = 1 then begin
               _LFile := TwbLocalizationFile(CheckListBox1.Items.Objects[i]);
               s := _LFile.FileName;
-              NeedsRename := FileExists(s);
               s := Copy(s, length(wbDataPath) + 1, length(s)); // relative path to string file from Data folder
               u := s;
-              if NeedsRename then
-                s := s + t;
+              xeBuildSaveTargetFileName(wbDataPath, u, t, s, NeedsRename);
 
               try
                 ForceDirectories(ExtractFilePath(wbDataPath + s));
-                if NeedsRename then begin
-                  j := 0;
-                  while FileExists(wbDataPath + s) do begin
-                    Inc(j);
-                    s := u + t + '_' + j.ToString;
-                  end;
-                end;
                 FileStream := TBufferedFileStream.Create(wbDataPath + s, fmCreate, 1024*1024);
                 try
                   PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Saving: ' + s);
