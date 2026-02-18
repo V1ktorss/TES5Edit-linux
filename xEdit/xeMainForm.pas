@@ -15940,7 +15940,8 @@ begin
               xeBuildSaveTargetFileName(wbDataPath, u, t, s, NeedsRename);
 
               try
-                ForceDirectories(ExtractFilePath(wbDataPath + s));
+                if not xeTryEnsureParentDirectoryForFile(wbDataPath + s, t) then
+                  raise Exception.Create(t);
                 PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Saving: ' + s);
                 SavedThisOne := xeTryWriteLocalizationToTempFile(_LFile, wbDataPath + s, t);
                 if not SavedThisOne then

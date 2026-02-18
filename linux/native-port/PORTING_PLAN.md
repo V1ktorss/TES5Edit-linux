@@ -340,6 +340,7 @@ This document tracks what is already done for the native Linux path and what com
   - unified localization save-target collision handling with plugin path by reusing `xeBuildSaveTargetFileName` in `SaveChanged`
   - moved localization temp-save write operation into service helper (`xeTryWriteLocalizationToTempFile`) including modified-flag reset and error-text propagation
   - unified save-write exception cleanup across localization/plugin paths via service helper (`xeMarkSaveWriteFailure`)
+  - moved parent-directory creation before temp-save writes into service helper (`xeTryEnsureParentDirectoryForFile`) and reused it in `SaveChanged`
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`

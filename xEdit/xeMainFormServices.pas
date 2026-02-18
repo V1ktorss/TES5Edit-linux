@@ -57,6 +57,7 @@ function xeTryPrepareSourceFileForRename(
   const aUseBackup: Boolean;
   out aResolvedBackupPath, aSourceFile, aErrorText: string
 ): Boolean;
+function xeTryEnsureParentDirectoryForFile(const aFullPath: string; out aErrorText: string): Boolean;
 procedure xeBuildSaveTargetFileName(
   const aDataPath, aOriginalName, aSuffix: string;
   out aTargetName: string;
@@ -298,6 +299,20 @@ begin
   aResolvedBackupPath := xeEnsureBackupPath(aBackupPath, aDataPath, aUseBackup);
   aSourceFile := aDataPath + aSourceName;
   Result := xeTryValidateSourceFileForRename(aSourceFile, aErrorText);
+end;
+
+function xeTryEnsureParentDirectoryForFile(const aFullPath: string; out aErrorText: string): Boolean;
+begin
+  aErrorText := '';
+  try
+    ForceDirectories(ExtractFilePath(aFullPath));
+    Result := True;
+  except
+    on E: Exception do begin
+      aErrorText := E.Message;
+      Result := False;
+    end;
+  end;
 end;
 
 procedure xeBuildSaveTargetFileName(
