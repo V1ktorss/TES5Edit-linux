@@ -177,6 +177,12 @@ if [[ "${INVALID_D_TEST}" == "1" ]]; then
     exit 1
   fi
 
+  if ! rg -q "Data path does not exist" "${log_file}"; then
+    echo "[xedit-smoke] FAILED: invalid -D case did not report missing data path"
+    echo "[xedit-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
   echo "[xedit-smoke] Invalid -D case exit code (expected non-zero): ${exit_code}"
   echo "[xedit-smoke] Log: ${log_file}"
 fi
