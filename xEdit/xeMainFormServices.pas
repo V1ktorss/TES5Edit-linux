@@ -102,6 +102,12 @@ function xeTryWriteLocalizationToTempFile(
   const aFullPath: string;
   out aErrorText: string
 ): Boolean;
+function xeTrySaveLocalizationToTemp(
+  const aFile: TwbLocalizationFile;
+  const aFullPath: string;
+  var aSavedAny, aSavedThisOne, aTryDirectRename: Boolean;
+  out aErrorText: string
+): Boolean;
 procedure xeMarkTempSaveWriteFailure(
   const aDataPath, aTempName: string;
   var aAnyErrors, aNeedsRename: Boolean
@@ -476,6 +482,21 @@ begin
       aErrorText := E.Message;
   end;
   lFileStream.Free;
+end;
+
+function xeTrySaveLocalizationToTemp(
+  const aFile: TwbLocalizationFile;
+  const aFullPath: string;
+  var aSavedAny, aSavedThisOne, aTryDirectRename: Boolean;
+  out aErrorText: string
+): Boolean;
+begin
+  aSavedThisOne := xeTryWriteLocalizationToTempFile(aFile, aFullPath, aErrorText);
+  Result := aSavedThisOne;
+  if not Result then
+    Exit;
+  aSavedAny := True;
+  xeMarkDirectRenameCapability(False, aTryDirectRename);
 end;
 
 procedure xeMarkTempSaveWriteFailure(

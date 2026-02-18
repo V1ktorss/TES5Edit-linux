@@ -15940,11 +15940,15 @@ begin
                 if not xeTryEnsureParentDirectoryForFile(wbDataPath + s, t) then
                   raise Exception.Create(t);
                 PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Saving: ' + s);
-                SavedThisOne := xeTryWriteLocalizationToTempFile(_LFile, wbDataPath + s, t);
-                if not SavedThisOne then
+                if not xeTrySaveLocalizationToTemp(
+                  _LFile,
+                  wbDataPath + s,
+                  SavedAny,
+                  SavedThisOne,
+                  TryDirectRename,
+                  t
+                ) then
                   raise Exception.Create(t);
-                SavedAny := True;
-                xeMarkDirectRenameCapability(False, TryDirectRename);
 
               except
                 on E: Exception do begin
