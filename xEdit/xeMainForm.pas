@@ -15705,16 +15705,8 @@ begin
 end;
 
 function TfrmMain.RestorePluginsFromMaster: Boolean;
-var
-  i: Integer;
 begin
-  Result := False;
-  for i := Low(Files) to High(Files) do with Files[i] do
-    if IsESM and (not (fsIsHardcoded in FileStates)) and SameText(ExtractFileExt(FileName), '.esp') then begin
-      AddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Removing ESM Flag: ' + FileName);
-      IsESM := False;
-      Result := True;
-    end;
+  Result := xeRestorePluginsFromMaster(Files, wbStartTime, AddMessage);
 end;
 
 procedure TfrmMain.mniMainSaveClick(Sender: TObject);

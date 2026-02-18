@@ -410,6 +410,11 @@ function xeValidateFileCRC(
   var aFileCRCs: TwbFastStringListIC;
   out aFileCRC: Cardinal
 ): Boolean;
+function xeRestorePluginsFromMaster(
+  const aFiles: TwbFiles;
+  const aElapsedStart: TDateTime;
+  const aAddMessage: TxeProgressProc
+): Boolean;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -2157,6 +2162,27 @@ begin
   for i := Low(aValidCRCs) to High(aValidCRCs) do
     if aValidCRCs[i] = aFileCRC then
       Exit(True);
+end;
+
+function xeRestorePluginsFromMaster(
+  const aFiles: TwbFiles;
+  const aElapsedStart: TDateTime;
+  const aAddMessage: TxeProgressProc
+): Boolean;
+var
+  i: Integer;
+  lFile: IwbFile;
+begin
+  Result := False;
+  for i := Low(aFiles) to High(aFiles) do begin
+    lFile := aFiles[i];
+    if lFile.IsESM and (not (fsIsHardcoded in lFile.FileStates)) and SameText(ExtractFileExt(lFile.FileName), '.esp') then begin
+      if Assigned(aAddMessage) then
+        aAddMessage('[' + wbFormatElapsedTime(Now - aElapsedStart) + '] Removing ESM Flag: ' + lFile.FileName);
+      lFile.IsESM := False;
+      Result := True;
+    end;
+  end;
 end;
 
 function xeGetStaleRefCacheFiles(
