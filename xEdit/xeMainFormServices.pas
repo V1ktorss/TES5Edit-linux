@@ -446,6 +446,9 @@ function xeComputeSaveInterval(
   const aFiles: TwbFiles;
   const aNow, aDefaultInterval: TDateTime
 ): TDateTime;
+function xeResolveFocusedColumn(
+  const aFocusedColumnOverride, aTreeFocusedColumn, aActiveRecordCount: Integer
+): Integer;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -2356,6 +2359,17 @@ begin
     Result := (aNow - lMinUnsavedSince) + aDefaultInterval
   else
     Result := aDefaultInterval;
+end;
+
+function xeResolveFocusedColumn(
+  const aFocusedColumnOverride, aTreeFocusedColumn, aActiveRecordCount: Integer
+): Integer;
+begin
+  Result := aFocusedColumnOverride;
+  if Result < 0 then
+    Result := aTreeFocusedColumn;
+  if aActiveRecordCount = 1 then
+    Result := 1;
 end;
 
 function xeGetStaleRefCacheFiles(

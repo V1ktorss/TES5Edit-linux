@@ -12117,11 +12117,11 @@ begin
   if not Assigned(NodeDatas) then
     Exit;
 
-  FocusedColumn := FocusedColumnOverride;
-  if FocusedColumn < 0 then
-    FocusedColumn := vstView.FocusedColumn;
-  if Length(ActiveRecords) = 1 then
-    FocusedColumn := 1;
+  FocusedColumn := xeResolveFocusedColumn(
+    FocusedColumnOverride,
+    vstView.FocusedColumn,
+    Length(ActiveRecords)
+  );
 
   Result := nil;
   if (FocusedColumn > 0) and (Pred(FocusedColumn) <= High(ActiveRecords)) then
@@ -18329,11 +18329,11 @@ begin
 
   if Column < 1 then begin
 
-    FocusedColumn := FocusedColumnOverride;
-    if FocusedColumn < 0 then
-      FocusedColumn := vstView.FocusedColumn;
-    if Length(ActiveRecords) = 1 then
-      FocusedColumn := 1;
+    FocusedColumn := xeResolveFocusedColumn(
+      FocusedColumnOverride,
+      vstView.FocusedColumn,
+      Length(ActiveRecords)
+    );
 
     if (FocusedColumn > 0) and (Pred(FocusedColumn) <= High(ActiveRecords)) then
       Element := NodeDatas[Pred(FocusedColumn)].Element;
