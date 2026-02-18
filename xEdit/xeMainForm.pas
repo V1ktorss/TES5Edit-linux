@@ -1733,9 +1733,7 @@ var
   Strs: TStringDynArray;
   t: string;
 begin
-  Strs := s.Split(CRLF);
-  if Length(Strs) < 1 then
-    SetLength(Strs, 1);
+  Strs := xeSplitPostedMessageLines(s);
   for t in Strs do begin
     mmoMessages.Lines.Add(t);
     stbMain.Panels[0].Text := t;
