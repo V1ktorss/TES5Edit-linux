@@ -61,6 +61,12 @@ procedure xeBuildSaveTargetFileName(
   out aTargetName: string;
   out aNeedsRename: Boolean
 );
+function xeTryDiscardUnchangedTempSave(
+  const aDataPath, aTempName: string;
+  const aOriginalCRC, aCurrentCRC: TwbCRC32;
+  var aNeedsRename, aTryDirectRename, aSavedThisOne: Boolean;
+  out aInfoText: string
+): Boolean;
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
 function xeBuildModuleBackupPath(const aBackupPath, aTargetFileName: string; const aNow: TDateTime): string;
 function xeBuildTempSaveBackupPath(const aBackupPath, aFromFileName: string): string;
@@ -268,6 +274,25 @@ begin
     Inc(j);
     aTargetName := aOriginalName + aSuffix + '_' + j.ToString;
   end;
+end;
+
+function xeTryDiscardUnchangedTempSave(
+  const aDataPath, aTempName: string;
+  const aOriginalCRC, aCurrentCRC: TwbCRC32;
+  var aNeedsRename, aTryDirectRename, aSavedThisOne: Boolean;
+  out aInfoText: string
+): Boolean;
+begin
+  aInfoText := '';
+  Result := aNeedsRename and (aOriginalCRC = aCurrentCRC);
+  if not Result then
+    Exit;
+
+  DeleteFile(aDataPath + aTempName);
+  aNeedsRename := False;
+  aTryDirectRename := False;
+  aSavedThisOne := False;
+  aInfoText := 'File has not changed, removing: ' + aTempName;
 end;
 
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;

@@ -331,6 +331,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved existing-target handling (`plan + optional backup/delete execution`) into service helper (`xeTryHandleExistingRenameTarget`) and kept progress/error presentation in `DoRenameModule`
   - moved direct-save queued-rename follow-up flow into service helper (`xeProcessQueuedRenamesAfterDirectSave`) with callbacks for progress and backup execution
   - moved save-target filename selection (rename-need detection + collision-safe suffixing) into service helper (`xeBuildSaveTargetFileName`) used by `SaveChanged`
+  - moved unchanged-temp-save discard policy (CRC compare + delete + state reset) into service helper (`xeTryDiscardUnchangedTempSave`) used by `SaveChanged`
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`

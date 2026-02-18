@@ -15851,6 +15851,7 @@ var
   u                           : string;
   s                           : string;
   t                           : string;
+  DiscardInfo                 : string;
   SavedAny                    : Boolean;
   SavedThisOne                : Boolean;
   AnyErrors                   : Boolean;
@@ -15995,14 +15996,17 @@ begin
                   FileStream.Free;
                 end;
 
-                if NeedsRename then
-                  if CRC = _File.CRC32 then begin
-                    DeleteFile(wbDataPath + s);
-                    NeedsRename := False;
-                    TryDirectRename := False;
-                    SavedThisOne := False;
-                    PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] File has not changed, removing: ' + s);
-                  end;
+                if xeTryDiscardUnchangedTempSave(
+                  wbDataPath,
+                  s,
+                  CRC,
+                  _File.CRC32,
+                  NeedsRename,
+                  TryDirectRename,
+                  SavedThisOne,
+                  DiscardInfo
+                ) then
+                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + DiscardInfo);
 
                 if SavedThisOne then
                   SavedAny := True;
