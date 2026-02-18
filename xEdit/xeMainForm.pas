@@ -15952,8 +15952,9 @@ begin
 
               except
                 on E: Exception do begin
-                  xeMarkSaveWriteFailure(wbDataPath, s, AnyErrors, NeedsRename, SavedThisOne);
-                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + xeBuildSaveErrorMessage(s, E.Message));
+                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' +
+                    xeHandleSaveWriteException(wbDataPath, s, E.Message, AnyErrors, NeedsRename, SavedThisOne)
+                  );
                 end;
               end;
 
@@ -15995,8 +15996,9 @@ begin
                   PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + DiscardInfo);
               except
                 on E: Exception do begin
-                  xeMarkSaveWriteFailure(wbDataPath, s, AnyErrors, NeedsRename, SavedThisOne);
-                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + xeBuildSaveErrorMessage(s, E.Message));
+                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' +
+                    xeHandleSaveWriteException(wbDataPath, s, E.Message, AnyErrors, NeedsRename, SavedThisOne)
+                  );
                 end;
               end;
 

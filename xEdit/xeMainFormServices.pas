@@ -118,6 +118,10 @@ procedure xeMarkSaveWriteFailure(
   const aDataPath, aTempName: string;
   var aAnyErrors, aNeedsRename, aSavedThisOne: Boolean
 );
+function xeHandleSaveWriteException(
+  const aDataPath, aTempName, aErrorText: string;
+  var aAnyErrors, aNeedsRename, aSavedThisOne: Boolean
+): string;
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
 function xeBuildModuleBackupPath(const aBackupPath, aTargetFileName: string; const aNow: TDateTime): string;
 function xeBuildTempSaveBackupPath(const aBackupPath, aFromFileName: string): string;
@@ -528,6 +532,15 @@ procedure xeMarkSaveWriteFailure(
 begin
   xeMarkTempSaveWriteFailure(aDataPath, aTempName, aAnyErrors, aNeedsRename);
   aSavedThisOne := False;
+end;
+
+function xeHandleSaveWriteException(
+  const aDataPath, aTempName, aErrorText: string;
+  var aAnyErrors, aNeedsRename, aSavedThisOne: Boolean
+): string;
+begin
+  xeMarkSaveWriteFailure(aDataPath, aTempName, aAnyErrors, aNeedsRename, aSavedThisOne);
+  Result := xeBuildSaveErrorMessage(aTempName, aErrorText);
 end;
 
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
