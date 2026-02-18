@@ -1632,7 +1632,6 @@ end;
 
 procedure DoRename;
 var
-  AnyError : Boolean;
   RenameAction: string;
   RenameDialogMessage: string;
   ShouldSaveLogs: Boolean;
@@ -1664,10 +1663,9 @@ begin
   wbProgress(wbCurrentAction);
 
   _SaveProgress := False;
-  AnyError := xeRenameSavedModules(FilesToRename, DoRenameModule);
-
-  if xeBuildRenameBatchOutcome(
-    AnyError,
+  if xeRunShutdownRenameBatch(
+    FilesToRename,
+    DoRenameModule,
     _SaveProgress,
     Assigned(frmMain),
     wbDataPath,

@@ -82,6 +82,14 @@ function xeBuildRenameBatchOutcome(
   out aDialogMessage: string;
   out aShouldSaveLogs: Boolean
 ): Boolean;
+function xeRunShutdownRenameBatch(
+  const aFilesToRename: TStrings;
+  const aRenameModule: TxeRenameModuleFunc;
+  const aSaveProgress, aHasMainForm: Boolean;
+  const aDataPath: string;
+  out aDialogMessage: string;
+  out aShouldSaveLogs: Boolean
+): Boolean;
 function xeCollectRenamePreparationMessages(
   const aActionText, aWarningText: string;
   out aHasAction, aHasWarning: Boolean
@@ -487,6 +495,28 @@ begin
 
   aDialogMessage := xeBuildRenameFailuresDialogMessage(aDataPath);
   aShouldSaveLogs := aSaveProgress and aHasMainForm;
+end;
+
+function xeRunShutdownRenameBatch(
+  const aFilesToRename: TStrings;
+  const aRenameModule: TxeRenameModuleFunc;
+  const aSaveProgress, aHasMainForm: Boolean;
+  const aDataPath: string;
+  out aDialogMessage: string;
+  out aShouldSaveLogs: Boolean
+): Boolean;
+var
+  lAnyError: Boolean;
+begin
+  lAnyError := xeRenameSavedModules(aFilesToRename, aRenameModule);
+  Result := xeBuildRenameBatchOutcome(
+    lAnyError,
+    aSaveProgress,
+    aHasMainForm,
+    aDataPath,
+    aDialogMessage,
+    aShouldSaveLogs
+  );
 end;
 
 function xeCollectRenamePreparationMessages(
