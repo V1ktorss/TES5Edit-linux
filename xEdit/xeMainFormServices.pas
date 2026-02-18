@@ -386,6 +386,9 @@ function xeTryResolveMainRecordFromFormID(
   const aInputFormID: TwbFormID;
   out aMainRecord: IwbMainRecord
 ): Boolean;
+function xeCanCreateNewModuleFile(const aDataPath, aFileName: string): Boolean;
+function xeNextLoadOrderFromTail(const aFiles: TwbFiles): Integer;
+function xeNextLoadOrderFromMax(const aFiles: TwbFiles): Integer;
 function xeResolveXButtonAction(
   const aMessage: Cardinal;
   const aWParam: NativeUInt;
@@ -1990,6 +1993,33 @@ begin
     aMainRecord := aMainRecord.WinningOverride;
 
   Result := Assigned(aMainRecord);
+end;
+
+function xeCanCreateNewModuleFile(const aDataPath, aFileName: string): Boolean;
+begin
+  Result := not FileExists(aDataPath + aFileName);
+end;
+
+function xeNextLoadOrderFromTail(const aFiles: TwbFiles): Integer;
+begin
+  Result := 0;
+  if Length(aFiles) > 0 then
+    Result := Succ(aFiles[High(aFiles)].LoadOrder);
+end;
+
+function xeNextLoadOrderFromMax(const aFiles: TwbFiles): Integer;
+var
+  i: Integer;
+  lLoadOrder: Integer;
+begin
+  lLoadOrder := 0;
+  if Length(aFiles) > 0 then begin
+    for i := Low(aFiles) to High(aFiles) do
+      if aFiles[i].LoadOrder > lLoadOrder then
+        lLoadOrder := aFiles[i].LoadOrder;
+    lLoadOrder := Succ(lLoadOrder);
+  end;
+  Result := lLoadOrder;
 end;
 
 function xeResolveXButtonAction(

@@ -1753,14 +1753,12 @@ var
 begin
   Result := nil;
 
-  if FileExists(wbDataPath + aFileName) then begin
+  if not xeCanCreateNewModuleFile(wbDataPath, aFileName) then begin
     ShowMessage('A file of that name exists already.');
     Exit;
   end;
 
-  LoadOrder := 0;
-  if Length(Files) > 0 then
-    LoadOrder := Succ(Files[High(Files)].LoadOrder);
+  LoadOrder := xeNextLoadOrderFromTail(Files);
 {
   if LoadOrder > 254 then begin
     ShowMessage('Maximum plugins count already reached. Adding 1 more would exceed the maximum index of 254');
@@ -1777,22 +1775,15 @@ end;
 function TfrmMain.AddNewFileName(aFileName: string; aTemplate: PwbModuleInfo): IwbFile;
 var
   LoadOrder : Integer;
-  i: Integer;
 begin
   Result := nil;
 
-  if FileExists(wbDataPath + aFileName) then begin
+  if not xeCanCreateNewModuleFile(wbDataPath, aFileName) then begin
     ShowMessage('A file of that name exists already.');
     Exit;
   end;
 
-  LoadOrder := 0;
-  if Length(Files) > 0 then begin
-    for i := Low(Files) to High(Files) do
-      if Files[i].LoadOrder > LoadOrder then
-        LoadOrder := Files[i].LoadOrder;
-    LoadOrder := Succ(LoadOrder);
-  end;
+  LoadOrder := xeNextLoadOrderFromMax(Files);
 
   Result := wbNewFile(wbDataPath + aFileName, LoadOrder, aTemplate);
   SetLength(Files, Succ(Length(Files)));

@@ -100,6 +100,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved direct clipboard read/write usage to `wbGetClipboardText`/`wbSetClipboardText`
   - moved FormID-to-main-record resolution from `xeMainForm` into `xeMainFormServices` (`xeTryResolveMainRecordFromFormID`) to further isolate non-visual logic
   - moved XButton (`WM_XBUTTONUP`) action decoding from `xeMainForm` into `xeMainFormServices` (`xeResolveXButtonAction`) using platform-neutral `wParam` bit extraction
+  - moved new-module existence/load-order helper logic (`xeCanCreateNewModuleFile`, `xeNextLoadOrderFromTail`, `xeNextLoadOrderFromMax`) into `xeMainFormServices`
 - Extended `wbPlatform` helpers:
   - added `wbShowWindowNoActivate` wrapper for non-activating tip-form display
 - Started `xejviScriptAdapterMisc` decoupling:
