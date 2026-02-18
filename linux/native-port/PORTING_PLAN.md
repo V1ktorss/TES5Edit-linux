@@ -297,6 +297,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved GameLink ini parsing from `TGameLinkThread.ChangeDetected` into `xeMainFormServices.xeTryReadGameLinkSelection`
   - moved Pluggy CSV-tail parsing and newest-file-stamp lookup from `TPluggyLinkThread` into `xeMainFormServices` (`xeTryReadLastCsvFields`, `xeGetNewestFileWriteStampUtc`)
   - moved release-page parsing from `TwbCheckGitHubReleaseThread`/`TwbCheckNexusModsReleaseThread` into `xeMainFormServices` (`xeParseLatestXEditVersionFromGitHubJson`, `xeParseNexusVersionFromHtml`)
+  - moved release fetch+parse orchestration into service-level `Try*` helpers (`xeTryGetLatestXEditVersionFromGitHub`, `xeTryGetLatestNexusVersion`)
   - moved full Pluggy selection parse (`FormID/Base/Inventory/Enchantment/Spell`) into `xeMainFormServices.xeTryReadPluggySelection`
   - moved Pluggy watch-file timestamp aggregation into `xeMainFormServices.xeGetPluggyWatchStamp`
   - moved GameLink watch-file timestamp lookup into `xeMainFormServices.xeGetGameLinkWatchStamp`

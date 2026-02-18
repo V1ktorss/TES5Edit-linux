@@ -58,6 +58,8 @@ function xeHasGameLinkSelectionChanged(
 function xeHasGameLinkSelectionChanged(const aLast, aCurrent: TxeGameLinkSelection): Boolean;
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
 function xeParseNexusVersionFromHtml(const aHtml: string): TwbVersion;
+function xeTryGetLatestXEditVersionFromGitHub(out aVersion: TwbVersion): Boolean;
+function xeTryGetLatestNexusVersion(const aUrl: string; out aVersion: TwbVersion): Boolean;
 
 implementation
 
@@ -350,6 +352,36 @@ begin
 
   Delete(lHtml, i, High(Integer));
   Result := lHtml;
+end;
+
+function xeTryGetLatestXEditVersionFromGitHub(out aVersion: TwbVersion): Boolean;
+begin
+  Result := False;
+  aVersion := '';
+  try
+    aVersion := xeParseLatestXEditVersionFromGitHubJson(
+      GetUrlContent('https://api.github.com/repos/TES5Edit/TES5Edit/releases')
+    );
+    Result := True;
+  except
+  end;
+end;
+
+function xeTryGetLatestNexusVersion(const aUrl: string; out aVersion: TwbVersion): Boolean;
+var
+  lHtml: string;
+begin
+  Result := False;
+  aVersion := '';
+  if aUrl = '' then
+    Exit;
+
+  try
+    lHtml := GetUrlContent(aUrl);
+    aVersion := xeParseNexusVersionFromHtml(lHtml);
+    Result := True;
+  except
+  end;
 end;
 
 end.

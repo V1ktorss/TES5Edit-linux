@@ -22112,13 +22112,7 @@ procedure TwbCheckGitHubReleaseThread.Execute;
 var
   vmax: TwbVersion;
 begin
-  vmax := '';
-  try
-    vmax := xeParseLatestXEditVersionFromGitHubJson(
-      GetUrlContent('https://api.github.com/repos/TES5Edit/TES5Edit/releases')
-    );
-  except
-  end;
+  xeTryGetLatestXEditVersionFromGitHub(vmax);
   Synchronize(procedure begin
     if Assigned(frmMain) then begin
       frmMain.GitHubVersion := vmax;
@@ -22131,18 +22125,9 @@ end;
 
 procedure TwbCheckNexusModsReleaseThread.Execute;
 var
-  s: string;
   vmax: TwbVersion;
 begin
-  if wbNexusModsUrl = '' then
-    Exit;
-
-  vmax := '';
-  try
-    s := GetUrlContent(wbNexusModsUrl);
-    vmax := xeParseNexusVersionFromHtml(s);
-  except
-  end;
+  xeTryGetLatestNexusVersion(wbNexusModsUrl, vmax);
   Synchronize(procedure begin
     if Assigned(frmMain) then begin
       frmMain.NexusModsVersion := vmax;
