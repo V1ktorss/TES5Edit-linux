@@ -975,13 +975,16 @@ var
   DataPathEnv: string;
   DataPathEnvName: string;
   DataPathFromEnv: Boolean;
+  DataPathFromCmd: Boolean;
   DataDirName: string;
   DataPathCandidate: string;
 begin
   DataPathFromEnv := False;
+  DataPathFromCmd := False;
   DataDirName := DataName[wbGameMode = gmTES3];
 
-  if not wbFindCmdLineParam('D', DataPath) then begin
+  DataPathFromCmd := wbFindCmdLineParam('D', DataPath);
+  if not DataPathFromCmd then begin
     DataPathEnvName := '';
     DataPathEnv := Trim(GetEnvironmentVariable('XDUMP_DATA_PATH'));
     if DataPathEnv <> '' then
@@ -1064,6 +1067,9 @@ begin
     else
       DataPath := DataPathCandidate;
   end;
+
+  if DataPathFromCmd and not DirectoryExists(DataPath) then
+    raise Exception.CreateFmt('Fatal: Data path does not exist: %s', [DataPath]);
 
   wbDataPath := DataPath;
 end;
@@ -1933,8 +1939,11 @@ begin
 
       ReportProgress('All Done.');
     except
-      on e: Exception do
+      on e: Exception do begin
+        ExitCode := 1;
         ReportProgress('Unexpected Error: <'+e.ClassName+': '+e.Message+'>');
+        Halt(1);
+      end;
     end;
   finally
     FreeProfileStates;

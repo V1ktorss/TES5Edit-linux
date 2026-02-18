@@ -125,11 +125,11 @@ if [[ "${CLI_OVERRIDE_TEST}" == "1" ]]; then
   [[ -z "${safe_name}" ]] && safe_name="cli_override"
   log_file="${LOG_DIR}/xedit-headless-smoke-${safe_name}.log"
 
-  echo "[xedit-smoke] Running CLI override case: ${XEDIT_BIN_PATH} -D ${CLI_OVERRIDE_PATH} ${CLI_OVERRIDE_ARGS}"
+  echo "[xedit-smoke] Running CLI override case: ${XEDIT_BIN_PATH} -D:${CLI_OVERRIDE_PATH} ${CLI_OVERRIDE_ARGS}"
   set +e
   # shellcheck disable=SC2206
   cli_args=( ${CLI_OVERRIDE_ARGS} )
-  timeout "${TIMEOUT_SECONDS}"s "${XEDIT_BIN_PATH}" -D "${CLI_OVERRIDE_PATH}" "${cli_args[@]}" >"${log_file}" 2>&1
+  timeout "${TIMEOUT_SECONDS}"s "${XEDIT_BIN_PATH}" "-D:${CLI_OVERRIDE_PATH}" "${cli_args[@]}" >"${log_file}" 2>&1
   exit_code=$?
   set -e
 

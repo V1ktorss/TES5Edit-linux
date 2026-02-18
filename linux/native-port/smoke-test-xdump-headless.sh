@@ -6,6 +6,7 @@ LOG_DIR="/tmp"
 TIMEOUT_SECONDS="${XDUMP_HEADLESS_TIMEOUT:-20}"
 HEADLESS_ARGS="${XDUMP_HEADLESS_ARGS:-}"
 HEADLESS_CASES="${XDUMP_HEADLESS_CASES:--h|-dummy}"
+BASE_MODE_ARGS="${XDUMP_BASE_MODE_ARGS:--tes5 -dump}"
 ENV_OVERRIDE_TEST="${XDUMP_ENV_OVERRIDE_TEST:-0}"
 ENV_OVERRIDE_PATH="${XDUMP_ENV_OVERRIDE_PATH:-}"
 ENV_OVERRIDE_ARGS="${XDUMP_ENV_OVERRIDE_ARGS:--dummy}"
@@ -53,16 +54,19 @@ else
   IFS='|' read -r -a cases <<< "${HEADLESS_CASES}"
 fi
 
+# shellcheck disable=SC2206
+mode_args=( ${BASE_MODE_ARGS} )
+
 for case_args in "${cases[@]}"; do
   safe_name="$(echo "${case_args}" | tr -cs '[:alnum:]' '_' | sed 's/^_//; s/_$//')"
   [[ -z "${safe_name}" ]] && safe_name="default"
   log_file="${LOG_DIR}/xdump-headless-smoke-${safe_name}.log"
 
-  echo "[xdump-smoke] Running: ${XDUMP_BIN_PATH} ${case_args}"
+  echo "[xdump-smoke] Running: ${XDUMP_BIN_PATH} ${BASE_MODE_ARGS} ${case_args}"
   set +e
   # shellcheck disable=SC2206
   cmd_args=( ${case_args} )
-  timeout "${TIMEOUT_SECONDS}"s "${XDUMP_BIN_PATH}" "${cmd_args[@]}" >"${log_file}" 2>&1
+  timeout "${TIMEOUT_SECONDS}"s "${XDUMP_BIN_PATH}" "${mode_args[@]}" "${cmd_args[@]}" >"${log_file}" 2>&1
   exit_code=$?
   set -e
 
@@ -92,11 +96,11 @@ if [[ "${ENV_OVERRIDE_TEST}" == "1" ]]; then
   [[ -z "${safe_name}" ]] && safe_name="env_override"
   log_file="${LOG_DIR}/xdump-headless-smoke-${safe_name}.log"
 
-  echo "[xdump-smoke] Running env override case: XDUMP_DATA_PATH=${ENV_OVERRIDE_PATH} ${XDUMP_BIN_PATH} ${ENV_OVERRIDE_ARGS}"
+  echo "[xdump-smoke] Running env override case: XDUMP_DATA_PATH=${ENV_OVERRIDE_PATH} ${XDUMP_BIN_PATH} ${BASE_MODE_ARGS} ${ENV_OVERRIDE_ARGS}"
   set +e
   # shellcheck disable=SC2206
   env_args=( ${ENV_OVERRIDE_ARGS} )
-  XDUMP_DATA_PATH="${ENV_OVERRIDE_PATH}" timeout "${TIMEOUT_SECONDS}"s "${XDUMP_BIN_PATH}" "${env_args[@]}" >"${log_file}" 2>&1
+  XDUMP_DATA_PATH="${ENV_OVERRIDE_PATH}" timeout "${TIMEOUT_SECONDS}"s "${XDUMP_BIN_PATH}" "${mode_args[@]}" "${env_args[@]}" >"${log_file}" 2>&1
   exit_code=$?
   set -e
 
@@ -126,11 +130,11 @@ if [[ "${CLI_OVERRIDE_TEST}" == "1" ]]; then
   [[ -z "${safe_name}" ]] && safe_name="cli_override"
   log_file="${LOG_DIR}/xdump-headless-smoke-${safe_name}.log"
 
-  echo "[xdump-smoke] Running CLI override case: ${XDUMP_BIN_PATH} -D ${CLI_OVERRIDE_PATH} ${CLI_OVERRIDE_ARGS}"
+  echo "[xdump-smoke] Running CLI override case: ${XDUMP_BIN_PATH} ${BASE_MODE_ARGS} -D:${CLI_OVERRIDE_PATH} ${CLI_OVERRIDE_ARGS}"
   set +e
   # shellcheck disable=SC2206
   cli_args=( ${CLI_OVERRIDE_ARGS} )
-  timeout "${TIMEOUT_SECONDS}"s "${XDUMP_BIN_PATH}" -D "${CLI_OVERRIDE_PATH}" "${cli_args[@]}" >"${log_file}" 2>&1
+  timeout "${TIMEOUT_SECONDS}"s "${XDUMP_BIN_PATH}" "${mode_args[@]}" "-D:${CLI_OVERRIDE_PATH}" "${cli_args[@]}" >"${log_file}" 2>&1
   exit_code=$?
   set -e
 
