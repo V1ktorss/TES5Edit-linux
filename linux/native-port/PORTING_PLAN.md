@@ -236,7 +236,7 @@ This document tracks what is already done for the native Linux path and what com
   - `headless-build-smoke.sh` now enforces a strict hint gate by default (`FAIL_ON_HINTS=1`) and fails on non-allowlisted `Hint:` lines (gate can be disabled with `FAIL_ON_HINTS=0`, allowlist tuned via `HINT_ALLOWLIST_REGEX`)
   - verified:
     - `linux/native-port/build-xdump.sh` succeeds and produces `linux/bin/xdump-core`
-    - `linux/native-port/smoke-test-xdump-headless.sh` passes (`-h`)
+    - `linux/native-port/smoke-test-xdump-headless.sh` passes (`-h`, `-dummy`, mode-sanity, invalid-`-D` lane)
 
 ## Risks
 
