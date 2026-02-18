@@ -9,7 +9,7 @@ Source of truth: `linux/native-port/reports/xedit-gui-surface.txt`
 - DFM form files: `21`
 - `TForm` descendants: `20`
 - GUI units with VCL/gui imports: `23`
-- GUI units with direct WinAPI imports: `1`
+- GUI units with direct WinAPI imports: `0`
 - Highest-coupled GUI unit: `xEdit/xeMainForm.pas`
 
 ## Phase 1: Stabilize GUI Surface Metrics
@@ -30,27 +30,28 @@ Done:
 
 ## Phase 2: Reduce WinAPI Ties in GUI Units
 
-Goal: reduce the final `1` GUI unit that imports `Messages` directly.
+Goal: remove direct GUI WinAPI imports while preserving behavior.
 
 Targets:
 
 1. `xEdit/xeMainForm.pas`
   - current message surface baseline:
     - 0 `message WM_*` bindings (rewired to app constants)
-    - 3 `TMessage` usages
+    - 1 `TMessage` usage
     - 0 raw `WM_*` references
   - budget guard:
     - `linux/native-port/check-xemainform-message-surface-budget.sh`
     - `linux/native-port/baselines/xemainform-message-surface-budget.env`
   - last-mile guard:
     - `linux/native-port/check-xedit-gui-lastmile-winapi.sh`
-    - enforces that this is the only remaining GUI WinAPI import unit
+    - enforces zero GUI WinAPI import matches
 
 Completed:
 
 - `xEdit/xeRichEditForm.pas` (`Messages` removed; local `WM_KEYDOWN` constant)
 - `xEdit/xePushLikeButton.pas` (`Messages` removed; click/toggle path decoupled from `CN_COMMAND`)
 - `xEdit/xeScriptForm.pas` (`Messages` removed; `WMMouseWheel` replaced by `DoMouseWheel` override, local `WM_CHAR` constant)
+- `xEdit/xeMainForm.pas` (`Messages` removed; message typing consolidated via `Controls.TMessage` alias)
 
 Strategy:
 
@@ -65,6 +66,7 @@ Goal: isolate form orchestration from editing logic to prepare toolkit-agnostic 
 Work packages:
 
 1. Move window-state and command routing helpers out of `xeMainForm`.
+  - started: extracted theme settings persistence into `xEdit/xeMainFormServices.pas` (`xePersistThemeSetting`).
 2. Extract non-visual workflows from form event handlers into service units.
 3. Keep current VCL GUI as compatibility shell while services become UI-agnostic.
 
