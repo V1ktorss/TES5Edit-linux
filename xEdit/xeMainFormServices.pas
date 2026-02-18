@@ -56,6 +56,12 @@ function xePrepareExistingTargetForRename(
   const aDeleteInsteadOfBackup: Boolean;
   out aErrorText: string
 ): Boolean;
+function xeTryRestoreModuleWriteTime(
+  const aFileName: string;
+  const aOldDateTime: TDateTime;
+  const aSkipForPluginsTxtOrder: Boolean;
+  out aErrorText: string
+): Boolean;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -218,6 +224,30 @@ begin
 
   aErrorText := 'Could not rename "' + aTargetFile + '" to "' + aBackupFile + '".';
   Result := RenameFile(aTargetFile, aBackupFile);
+end;
+
+function xeTryRestoreModuleWriteTime(
+  const aFileName: string;
+  const aOldDateTime: TDateTime;
+  const aSkipForPluginsTxtOrder: Boolean;
+  out aErrorText: string
+): Boolean;
+begin
+  aErrorText := '';
+  if aSkipForPluginsTxtOrder then
+    Exit(True);
+  if aOldDateTime = 0 then
+    Exit(True);
+  if not wbIsModule(aFileName) then
+    Exit(True);
+
+  try
+    TFile.SetLastWriteTime(aFileName, aOldDateTime);
+    Result := True;
+  except
+    aErrorText := 'Could not set last modified time of "' + aFileName + '".';
+    Result := False;
+  end;
 end;
 
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;

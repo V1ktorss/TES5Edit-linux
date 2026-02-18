@@ -1575,16 +1575,11 @@ begin
     Exit;
   end;
 
-  if not (wbGameMode in wbOrderFromPluginsTxt) then
-    if OldDateTime <> 0 then
-      if wbIsModule(lTo) then try
-      TFile.SetLastWriteTime(lTo, OldDateTime);
-    except
-      s := 'Could not set last modified time of "' + lTo + '".';
-      wbProgress(s);
-      if not aSilent then
-        MessageDlg(s, mtError, [mbOK], 0);
-    end;
+  if not xeTryRestoreModuleWriteTime(lTo, OldDateTime, wbGameMode in wbOrderFromPluginsTxt, s) then begin
+    wbProgress(s);
+    if not aSilent then
+      MessageDlg(s, mtError, [mbOK], 0);
+  end;
 
   Result := True;
 end;
