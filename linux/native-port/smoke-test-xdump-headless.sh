@@ -13,6 +13,8 @@ ENV_OVERRIDE_ARGS="${XDUMP_ENV_OVERRIDE_ARGS:--dummy}"
 CLI_OVERRIDE_TEST="${XDUMP_CLI_OVERRIDE_TEST:-0}"
 CLI_OVERRIDE_PATH="${XDUMP_CLI_OVERRIDE_PATH:-}"
 CLI_OVERRIDE_ARGS="${XDUMP_CLI_OVERRIDE_ARGS:--dummy}"
+MODE_SANITY_TEST="${XDUMP_MODE_SANITY_TEST:-0}"
+MODE_SANITY_ARGS="${XDUMP_MODE_SANITY_ARGS:--TES5 -Dump Missing.esm}"
 
 find_xdump_bin() {
   if [[ -n "${XDUMP_BIN:-}" && -x "${XDUMP_BIN}" ]]; then
@@ -166,6 +168,40 @@ if [[ "${CLI_OVERRIDE_TEST}" == "1" ]]; then
   fi
 
   echo "[xdump-smoke] CLI override case exit code: ${exit_code}"
+  echo "[xdump-smoke] Log: ${log_file}"
+fi
+
+if [[ "${MODE_SANITY_TEST}" == "1" ]]; then
+  safe_name="mode_sanity"
+  log_file="${LOG_DIR}/xdump-headless-smoke-${safe_name}.log"
+
+  echo "[xdump-smoke] Running mode sanity case: ${XDUMP_BIN_PATH} ${MODE_SANITY_ARGS}"
+  set +e
+  # shellcheck disable=SC2206
+  mode_sanity_args=( ${MODE_SANITY_ARGS} )
+  timeout "${TIMEOUT_SECONDS}"s "${XDUMP_BIN_PATH}" "${mode_sanity_args[@]}" >"${log_file}" 2>&1
+  exit_code=$?
+  set -e
+
+  if [[ "${exit_code}" -eq 124 ]]; then
+    echo "[xdump-smoke] FAILED: mode sanity case timed out after ${TIMEOUT_SECONDS}s"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if [[ "${exit_code}" -eq 139 ]]; then
+    echo "[xdump-smoke] FAILED: mode sanity case crashed (segfault)"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if rg -q "EAccessViolation|Unexpected Error:|Access violation" "${log_file}"; then
+    echo "[xdump-smoke] FAILED: mode sanity case reported access violation/error"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  echo "[xdump-smoke] Mode sanity case exit code: ${exit_code}"
   echo "[xdump-smoke] Log: ${log_file}"
 fi
 

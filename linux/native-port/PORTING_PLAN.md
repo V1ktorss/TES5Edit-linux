@@ -182,6 +182,7 @@ This document tracks what is already done for the native Linux path and what com
 - configured xEdit readiness CI to run with `RUN_BSARCH=0` so the lane stays focused on xEdit/readiness checks
 - added optional headless smoke script `linux/native-port/smoke-test-xedit-headless.sh` and wired CI to run it when `linux/bin/xedit-core` is available
 - smoke script now supports multi-case runs (`XEDIT_HEADLESS_CASES`, default `-h|-dummy`) and treats non-zero exit codes as failures
+- xDump smoke script now supports an optional mode-init sanity lane (`XDUMP_MODE_SANITY_TEST=1`) to exercise `-TES5 -Dump ...` without requiring real assets and fail on AV/segfault patterns
 - added `linux/native-port/ci-preflight.sh` as shared CI entry point to run all native-port checks with consistent permissions and strict-style gating
   - started xDump CLI decoupling:
   - guarded Windows-only imports and PE flags behind `MSWINDOWS`
