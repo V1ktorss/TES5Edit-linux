@@ -36,6 +36,11 @@ type
     BaseID: TwbFormID;
   end;
 
+function xeBuildPluggySelection(
+  const aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID
+): TxePluggySelection;
+function xeBuildGameLinkSelection(const aRefID, aBaseID: TwbFormID): TxeGameLinkSelection;
+
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
 function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
@@ -82,6 +87,23 @@ function xeTryGetLatestXEditVersionFromGitHub(out aVersion: TwbVersion): Boolean
 function xeTryGetLatestNexusVersion(const aUrl: string; out aVersion: TwbVersion): Boolean;
 
 implementation
+
+function xeBuildPluggySelection(
+  const aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID
+): TxePluggySelection;
+begin
+  Result.FormID := aFormID;
+  Result.BaseFormID := aBaseFormID;
+  Result.InventoryFormID := aInventoryFormID;
+  Result.EnchantmentFormID := aEnchantmentFormID;
+  Result.SpellFormID := aSpellFormID;
+end;
+
+function xeBuildGameLinkSelection(const aRefID, aBaseID: TwbFormID): TxeGameLinkSelection;
+begin
+  Result.RefID := aRefID;
+  Result.BaseID := aBaseID;
+end;
 
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
 begin
@@ -233,8 +255,14 @@ begin
 end;
 
 function xeTryReadGameLinkSelection(const aFileName: string; out aSelection: TxeGameLinkSelection): Boolean;
+var
+  lRefID: TwbFormID;
+  lBaseID: TwbFormID;
 begin
-  Result := xeTryReadGameLinkSelection(aFileName, aSelection.RefID, aSelection.BaseID);
+  Result := xeTryReadGameLinkSelection(aFileName, lRefID, lBaseID);
+  if not Result then
+    Exit;
+  aSelection := xeBuildGameLinkSelection(lRefID, lBaseID);
 end;
 
 function xeTryReadPluggySelection(const aFolder, aAppName: string;
@@ -278,16 +306,25 @@ begin
 end;
 
 function xeTryReadPluggySelection(const aFolder, aAppName: string; out aSelection: TxePluggySelection): Boolean;
+var
+  lFormID: TwbFormID;
+  lBaseFormID: TwbFormID;
+  lInventoryFormID: TwbFormID;
+  lEnchantmentFormID: TwbFormID;
+  lSpellFormID: TwbFormID;
 begin
   Result := xeTryReadPluggySelection(
     aFolder,
     aAppName,
-    aSelection.FormID,
-    aSelection.BaseFormID,
-    aSelection.InventoryFormID,
-    aSelection.EnchantmentFormID,
-    aSelection.SpellFormID
+    lFormID,
+    lBaseFormID,
+    lInventoryFormID,
+    lEnchantmentFormID,
+    lSpellFormID
   );
+  if not Result then
+    Exit;
+  aSelection := xeBuildPluggySelection(lFormID, lBaseFormID, lInventoryFormID, lEnchantmentFormID, lSpellFormID);
 end;
 
 function xeHasPluggySelectionChanged(

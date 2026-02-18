@@ -21870,13 +21870,7 @@ begin
   ) then
     Exit;
 
-  frmMain.PostPluggyChange(
-    Selection.FormID,
-    Selection.BaseFormID,
-    Selection.InventoryFormID,
-    Selection.EnchantmentFormID,
-    Selection.SpellFormID
-  );
+  frmMain.PostPluggyChange(Selection.FormID, Selection.BaseFormID, Selection.InventoryFormID, Selection.EnchantmentFormID, Selection.SpellFormID);
 end;
 
 procedure TPluggyLinkThread.Execute;

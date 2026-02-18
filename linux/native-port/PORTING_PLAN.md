@@ -307,6 +307,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved selection-to-state assignment into `xeMainFormServices` (`xeAssignPluggySelection`, `xeAssignGameLinkSelection`)
   - consolidated change-detection + state-apply flow into service-level helpers (`xeApplyPluggySelectionIfChanged`, `xeApplyGameLinkSelectionIfChanged`)
   - moved read+apply orchestration into service-level update helpers (`xeTryUpdatePluggySelection`, `xeTryUpdateGameLinkSelection`)
+  - introduced record-constructor helpers (`xeBuildPluggySelection`, `xeBuildGameLinkSelection`) and routed record-overload readers through them for consistent selection model construction
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`
