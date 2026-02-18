@@ -369,6 +369,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved shutdown close/prep sequence (`wbFileForceClosed` + rename-preparation with backup-path resolution) into service helper (`xeTryPrepareShutdownRenameFlow`)
   - moved shutdown-rename teardown (`wbCurrentAction` reset) into service helper (`xeEndShutdownRename`) and guarded `DoRename` with `try/finally`
   - moved background-thread finalization branching (`finished` vs. force-terminate handle callback) into service helper (`xeFinalizeBackgroundThread`) and slimmed `FormClose`
+  - moved soft thread-termination request (`Terminate` call) into service helper (`xeRequestThreadTerminate`) and reused it in `FormClose` for link-thread shutdown
   - moved backup-module temp-save plan generation (`target backup path` + progress action text) into service helper (`xeBuildBackupModuleTempSavePlan`)
   - moved full non-UI backup-module flow (`source prepare`, `backup plan`, `rename execution`) into service helper (`xeTryRunBackupModuleFlow`)
 - Reduced GUI WinAPI import sites:

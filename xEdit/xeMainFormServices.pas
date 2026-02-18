@@ -50,6 +50,7 @@ function xeBuildPluggySelection(
 function xeBuildGameLinkSelection(const aRefID, aBaseID: TwbFormID): TxeGameLinkSelection;
 
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
+function xeRequestThreadTerminate(const aThread: TThread): Boolean;
 function xeFinalizeBackgroundThread(const aThread: TThread; const aForceTerminate: TxeForceTerminateThreadProc): Boolean;
 procedure xePersistMainFormLayout(
   const aSettings: TMemIniFile;
@@ -386,6 +387,13 @@ begin
 
   aSettings.WriteString('UI', 'Theme', aStyleName);
   aSettings.UpdateFile;
+end;
+
+function xeRequestThreadTerminate(const aThread: TThread): Boolean;
+begin
+  Result := Assigned(aThread);
+  if Result then
+    aThread.Terminate;
 end;
 
 function xeFinalizeBackgroundThread(const aThread: TThread; const aForceTerminate: TxeForceTerminateThreadProc): Boolean;

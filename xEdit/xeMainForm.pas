@@ -6297,9 +6297,8 @@ begin
     end;
   end;
 
-  if Assigned(PluggyLinkThread) then
-    PluggyLinkThread.Terminate;
-  FreeAndNil(PluggyLinkThread);
+  if xeRequestThreadTerminate(PluggyLinkThread) then
+    FreeAndNil(PluggyLinkThread);
 
   if xeFinalizeBackgroundThread(CheckGitHubReleaseThread, ForceTerminateThreadByHandle) then
     FreeAndNil(CheckGitHubReleaseThread);
