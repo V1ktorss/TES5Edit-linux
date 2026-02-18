@@ -15939,7 +15939,7 @@ begin
               try
                 if not xeTryEnsureParentDirectoryForFile(wbDataPath + s, t) then
                   raise Exception.Create(t);
-                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Saving: ' + s);
+                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + xeBuildSaveStartMessage(s));
                 if not xeTrySaveLocalizationToTemp(
                   _LFile,
                   wbDataPath + s,
@@ -15953,7 +15953,7 @@ begin
               except
                 on E: Exception do begin
                   xeMarkSaveWriteFailure(wbDataPath, s, AnyErrors, NeedsRename, SavedThisOne);
-                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Error saving ' + s + ': ' + E.Message);
+                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + xeBuildSaveErrorMessage(s, E.Message));
                 end;
               end;
 
@@ -15970,7 +15970,7 @@ begin
               try
                 if not xeTryEnsureParentDirectoryForFile(wbDataPath + s, t) then
                   raise Exception.Create(t);
-                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Saving: ' + s);
+                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + xeBuildSaveStartMessage(s));
                 SavedThisOne := xeTryWriteModuleToTempFile(
                   _File,
                   wbDataPath + s,
@@ -15996,7 +15996,7 @@ begin
               except
                 on E: Exception do begin
                   xeMarkSaveWriteFailure(wbDataPath, s, AnyErrors, NeedsRename, SavedThisOne);
-                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Error saving ' + s + ': ' + E.Message);
+                  PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + xeBuildSaveErrorMessage(s, E.Message));
                 end;
               end;
 

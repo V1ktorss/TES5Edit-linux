@@ -348,6 +348,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved module save-name preparation into service helper (`xePrepareModuleSaveNames`) to mirror localization path structure in `SaveChanged`
   - moved plugin temp-save outcome reconciliation (`discard unchanged` + `SavedAny` update) into service helper (`xeFinalizeModuleTempSaveOutcome`)
   - moved localization temp-save success-state updates (`SavedAny`, `SavedThisOne`, direct-rename capability) into service helper (`xeTrySaveLocalizationToTemp`)
+  - moved save-status message formatting (`Saving: ...`, `Error saving ...`) into service helpers (`xeBuildSaveStartMessage`, `xeBuildSaveErrorMessage`)
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`
