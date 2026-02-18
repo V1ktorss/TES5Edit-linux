@@ -46,6 +46,7 @@ function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
+function xeGetGameLinkFilePath(const aFolder: string): string;
 function xeGetGameLinkWatchStamp(const aFolder: string): Int64;
 function xeGetPluggyWatchStamp(const aFolder, aAppName: string): Int64;
 function xeConsumeWatchStampChange(var aLastStamp: Int64; const aCurrentStamp: Int64): Boolean;
@@ -154,9 +155,14 @@ begin
   Result := aDataPath + 'xEdit' + PathDelim;
 end;
 
+function xeGetGameLinkFilePath(const aFolder: string): string;
+begin
+  Result := aFolder + 'xEditLink.ini';
+end;
+
 function xeGetGameLinkWatchStamp(const aFolder: string): Int64;
 begin
-  Result := xeGetFileWriteStampUtc(aFolder + 'xEditLink.ini');
+  Result := xeGetFileWriteStampUtc(xeGetGameLinkFilePath(aFolder));
 end;
 
 function xeGetPluggyWatchStamp(const aFolder, aAppName: string): Int64;

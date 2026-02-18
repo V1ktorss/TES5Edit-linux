@@ -309,6 +309,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved read+apply orchestration into service-level update helpers (`xeTryUpdatePluggySelection`, `xeTryUpdateGameLinkSelection`)
   - introduced record-constructor helpers (`xeBuildPluggySelection`, `xeBuildGameLinkSelection`) and routed record-overload readers through them for consistent selection model construction
   - moved watch-stamp change consumption into shared helper (`xeConsumeWatchStampChange`) used by Pluggy/GameLink execute loops
+  - moved GameLink filename assembly into service helper (`xeGetGameLinkFilePath`)
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`

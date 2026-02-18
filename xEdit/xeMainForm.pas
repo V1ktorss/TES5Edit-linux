@@ -22008,12 +22008,10 @@ end;
 { TGameLinkThread }
 
 procedure TGameLinkThread.ChangeDetected;
-const
-  cGameLinkFile = 'xEditLink.ini';
 var
   Selection: TxeGameLinkSelection;
 begin
-  if not xeTryUpdateGameLinkSelection(glFolder + cGameLinkFile, glLastFormID, glLastBaseFormID, Selection) then
+  if not xeTryUpdateGameLinkSelection(xeGetGameLinkFilePath(glFolder), glLastFormID, glLastBaseFormID, Selection) then
     Exit;
 
   frmMain.PostPluggyChange(Selection.RefID, Selection.BaseID, TwbFormID.Null, TwbFormID.Null, TwbFormID.Null);
