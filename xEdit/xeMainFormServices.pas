@@ -62,6 +62,8 @@ function xeTryRestoreModuleWriteTime(
   const aSkipForPluginsTxtOrder: Boolean;
   out aErrorText: string
 ): Boolean;
+function xeTryValidateSourceFileForRename(const aSourceFile: string; out aErrorText: string): Boolean;
+function xeTryGetModuleWriteTime(const aFileName: string; out aDateTime: TDateTime; out aErrorText: string): Boolean;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -246,6 +248,29 @@ begin
     Result := True;
   except
     aErrorText := 'Could not set last modified time of "' + aFileName + '".';
+    Result := False;
+  end;
+end;
+
+function xeTryValidateSourceFileForRename(const aSourceFile: string; out aErrorText: string): Boolean;
+begin
+  Result := FileExists(aSourceFile);
+  if Result then begin
+    aErrorText := '';
+    Exit;
+  end;
+  aErrorText := 'Could not rename "' + aSourceFile + '". File not found.';
+end;
+
+function xeTryGetModuleWriteTime(const aFileName: string; out aDateTime: TDateTime; out aErrorText: string): Boolean;
+begin
+  aDateTime := 0;
+  aErrorText := '';
+  try
+    aDateTime := wbGetLastWriteTime(aFileName);
+    Result := True;
+  except
+    aErrorText := 'Could not get last modified time of "' + aFileName + '".';
     Result := False;
   end;
 end;

@@ -1531,8 +1531,7 @@ begin
   wbBackupPath := xeEnsureBackupPath(wbBackupPath, wbDataPath, not xeDontBackup);
 
   lFrom := wbDataPath + aFrom;
-  if not FileExists(lFrom) then begin
-    s := 'Could not rename "'+lFrom+'". File not found.';
+  if not xeTryValidateSourceFileForRename(lFrom, s) then begin
     wbProgress(s);
     if not aSilent then
       MessageDlg(s, mtError, [mbOK], 0);
@@ -1543,10 +1542,7 @@ begin
   lTo := wbDataPath + aTo;
   OldDateTime := 0;
   if FileExists(lTo) then begin
-    try
-      OldDateTime := wbGetLastWriteTime(lTo);
-    except
-      s := 'Could not get last modified time of "' + lTo + '".';
+    if not xeTryGetModuleWriteTime(lTo, OldDateTime, s) then begin
       wbProgress(s);
       if not aSilent then
         MessageDlg(s, mtError, [mbOK], 0);
@@ -1598,8 +1594,7 @@ begin
   wbBackupPath := xeEnsureBackupPath(wbBackupPath, wbDataPath, not xeDontBackup);
 
   lFrom := wbDataPath + aFrom;
-  if not FileExists(lFrom) then begin
-    s := 'Could not rename "'+lFrom+'". File not found.';
+  if not xeTryValidateSourceFileForRename(lFrom, s) then begin
     wbProgress(s);
     if not aSilent then
       MessageDlg(s, mtError, [mbOK], 0);
