@@ -1160,6 +1160,9 @@ type
   protected
     procedure Execute; override;
     procedure ChangeDetected;
+    function ReadWatchStamp: Int64;
+    function ShouldStopWatchLoop: Boolean;
+    procedure HandleWatchStampChange(Sender: TObject);
   end;
 
   TGameLinkThread = class(TwbThread)
@@ -1170,6 +1173,9 @@ type
   protected
     procedure Execute; override;
     procedure ChangeDetected;
+    function ReadWatchStamp: Int64;
+    function ShouldStopWatchLoop: Boolean;
+    procedure HandleWatchStampChange(Sender: TObject);
   end;
 
   IHistoryEntry = interface
@@ -21876,26 +21882,34 @@ end;
 procedure TPluggyLinkThread.Execute;
 var
   LastStamp: Int64;
-  CurrentStamp: Int64;
 begin
   plFolder := xeGetPluggyUserFilesFolder(wbMyGamesTheGamePath);
   frmMain.PostAddMessage('[PluggyLink] Starting for: ' + plFolder);
-  LastStamp := xeGetPluggyWatchStamp(plFolder, wbAppName);
+  LastStamp := ReadWatchStamp;
   if LastStamp >= 0 then
     ChangeDetected;
   try
-    repeat
-      wbSleepMs(1000);
-      CurrentStamp := xeGetPluggyWatchStamp(plFolder, wbAppName);
-      if xeConsumeWatchStampChange(LastStamp, CurrentStamp) then begin
-        ChangeDetected;
-      end;
-    until Terminated or wbForceTerminate;
+    xeRunWatchStampLoop(LastStamp, 1000, ReadWatchStamp, ShouldStopWatchLoop, HandleWatchStampChange, Self);
   except
     on E: Exception do
       frmMain.PostAddMessage('[PluggyLink] Error: ' + E.Message);
   end;
   frmMain.PostAddMessage('[PluggyLink] terminated');
+end;
+
+function TPluggyLinkThread.ReadWatchStamp: Int64;
+begin
+  Result := xeGetPluggyWatchStamp(plFolder, wbAppName);
+end;
+
+function TPluggyLinkThread.ShouldStopWatchLoop: Boolean;
+begin
+  Result := Terminated or wbForceTerminate;
+end;
+
+procedure TPluggyLinkThread.HandleWatchStampChange(Sender: TObject);
+begin
+  ChangeDetected;
 end;
 
 
@@ -22020,27 +22034,35 @@ end;
 procedure TGameLinkThread.Execute;
 var
   LastStamp: Int64;
-  CurrentStamp: Int64;
 begin
   glFolder := xeGetGameLinkFolder(wbDataPath);
   frmMain.PostAddMessage('[GameLink] Starting for: ' + glFolder);
-  LastStamp := xeGetGameLinkWatchStamp(glFolder);
+  LastStamp := ReadWatchStamp;
   if LastStamp >= 0 then
     ChangeDetected;
   try
-    repeat
-      wbSleepMs(1000);
-      CurrentStamp := xeGetGameLinkWatchStamp(glFolder);
-      if xeConsumeWatchStampChange(LastStamp, CurrentStamp) then begin
-        ChangeDetected;
-      end;
-    until Terminated or wbForceTerminate;
+    xeRunWatchStampLoop(LastStamp, 1000, ReadWatchStamp, ShouldStopWatchLoop, HandleWatchStampChange, Self);
   except
     on E: Exception do
       frmMain.PostAddMessage('[GameLink] Error: ' + E.Message);
   end;
   frmMain.PostAddMessage('[GameLink] terminated');
 
+end;
+
+function TGameLinkThread.ReadWatchStamp: Int64;
+begin
+  Result := xeGetGameLinkWatchStamp(glFolder);
+end;
+
+function TGameLinkThread.ShouldStopWatchLoop: Boolean;
+begin
+  Result := Terminated or wbForceTerminate;
+end;
+
+procedure TGameLinkThread.HandleWatchStampChange(Sender: TObject);
+begin
+  ChangeDetected;
 end;
 
 { TMainRecordElementHistoryEntry }

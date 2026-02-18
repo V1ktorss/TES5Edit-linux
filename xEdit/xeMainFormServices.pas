@@ -23,6 +23,9 @@ uses
   wbHelpers;
 
 type
+  TxeWatchStampReader = function: Int64 of object;
+  TxeWatchStopPredicate = function: Boolean of object;
+
   TxePluggySelection = record
     FormID: TwbFormID;
     BaseFormID: TwbFormID;
@@ -50,6 +53,14 @@ function xeGetGameLinkFilePath(const aFolder: string): string;
 function xeGetGameLinkWatchStamp(const aFolder: string): Int64;
 function xeGetPluggyWatchStamp(const aFolder, aAppName: string): Int64;
 function xeConsumeWatchStampChange(var aLastStamp: Int64; const aCurrentStamp: Int64): Boolean;
+procedure xeRunWatchStampLoop(
+  var aLastStamp: Int64;
+  const aPollIntervalMs: Cardinal;
+  const aReadStamp: TxeWatchStampReader;
+  const aShouldStop: TxeWatchStopPredicate;
+  const aOnChange: TNotifyEvent;
+  const aSender: TObject
+);
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
 function xeTryReadGameLinkSelection(const aFileName: string; out aSelection: TxeGameLinkSelection): Boolean;
 function xeTryReadPluggySelection(const aFolder, aAppName: string; out aSelection: TxePluggySelection): Boolean;
@@ -181,6 +192,28 @@ begin
   Result := (aCurrentStamp >= 0) and (aCurrentStamp <> aLastStamp);
   if Result then
     aLastStamp := aCurrentStamp;
+end;
+
+procedure xeRunWatchStampLoop(
+  var aLastStamp: Int64;
+  const aPollIntervalMs: Cardinal;
+  const aReadStamp: TxeWatchStampReader;
+  const aShouldStop: TxeWatchStopPredicate;
+  const aOnChange: TNotifyEvent;
+  const aSender: TObject
+);
+var
+  lCurrentStamp: Int64;
+begin
+  if not Assigned(aReadStamp) or not Assigned(aShouldStop) then
+    Exit;
+
+  repeat
+    wbSleepMs(aPollIntervalMs);
+    lCurrentStamp := aReadStamp;
+    if xeConsumeWatchStampChange(aLastStamp, lCurrentStamp) and Assigned(aOnChange) then
+      aOnChange(aSender);
+  until aShouldStop;
 end;
 
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
