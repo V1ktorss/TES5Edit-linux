@@ -15,6 +15,9 @@ CLI_OVERRIDE_PATH="${XDUMP_CLI_OVERRIDE_PATH:-}"
 CLI_OVERRIDE_ARGS="${XDUMP_CLI_OVERRIDE_ARGS:--dummy}"
 MODE_SANITY_TEST="${XDUMP_MODE_SANITY_TEST:-0}"
 MODE_SANITY_ARGS="${XDUMP_MODE_SANITY_ARGS:--TES5 -Dump Missing.esm}"
+INVALID_D_TEST="${XDUMP_INVALID_D_TEST:-0}"
+INVALID_D_PATH="${XDUMP_INVALID_D_PATH:-/definitely/not/here}"
+INVALID_D_ARGS="${XDUMP_INVALID_D_ARGS:--TES5 -Dump Missing.esm}"
 
 find_xdump_bin() {
   if [[ -n "${XDUMP_BIN:-}" && -x "${XDUMP_BIN}" ]]; then
@@ -202,6 +205,34 @@ if [[ "${MODE_SANITY_TEST}" == "1" ]]; then
   fi
 
   echo "[xdump-smoke] Mode sanity case exit code: ${exit_code}"
+  echo "[xdump-smoke] Log: ${log_file}"
+fi
+
+if [[ "${INVALID_D_TEST}" == "1" ]]; then
+  safe_name="invalid_d"
+  log_file="${LOG_DIR}/xdump-headless-smoke-${safe_name}.log"
+
+  echo "[xdump-smoke] Running invalid -D case: ${XDUMP_BIN_PATH} -D:${INVALID_D_PATH} ${INVALID_D_ARGS}"
+  set +e
+  # shellcheck disable=SC2206
+  invalid_d_args=( ${INVALID_D_ARGS} )
+  timeout "${TIMEOUT_SECONDS}"s "${XDUMP_BIN_PATH}" "-D:${INVALID_D_PATH}" "${invalid_d_args[@]}" >"${log_file}" 2>&1
+  exit_code=$?
+  set -e
+
+  if [[ "${exit_code}" -eq 124 ]]; then
+    echo "[xdump-smoke] FAILED: invalid -D case timed out after ${TIMEOUT_SECONDS}s"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  if [[ "${exit_code}" -eq 0 ]]; then
+    echo "[xdump-smoke] FAILED: invalid -D case unexpectedly exited 0"
+    echo "[xdump-smoke] Log: ${log_file}"
+    exit 1
+  fi
+
+  echo "[xdump-smoke] Invalid -D case exit code: ${exit_code} (expected non-zero)"
   echo "[xdump-smoke] Log: ${log_file}"
 fi
 
