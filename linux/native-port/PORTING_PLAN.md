@@ -261,6 +261,7 @@ This document tracks what is already done for the native Linux path and what com
     - `linux/native-port/smoke-test-xdump-headless.sh` passes (`-h`, `-dummy`, mode-sanity, invalid-`-D` lane)
   - removed `wbDATAPosRot` headless byte-array fallback in `Core/wbDefinitionsCommon.pas`; headless/FPC now uses `wbVec3PosRot(DATA)` like non-headless path
   - restored full enum mappings for selected previously reduced FPC branches in `Core/wbDefinitionsCommon.pas` (`wbArchtypeEnum`, `wbAxisEnum`, `wbBlendModeEnum`, `wbBlendOpEnum`)
+  - restored additional full enum mappings in `Core/wbDefinitionsCommon.pas` for FPC parity (`wbAttackAnimationEnum`, `wbBodyLocationEnum`)
 
 ## Risks
 
