@@ -9,7 +9,7 @@
 
 
 ## TMessage Usages
-77:  TxeMainFormMessage = Controls.TMessage;
+78:  TxeMainFormMessage = Controls.TMessage;
 
 ## WM_* References
 

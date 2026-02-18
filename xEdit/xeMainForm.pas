@@ -64,6 +64,7 @@ uses
   wbModGroups,
   wbHardcoded,
   xeScriptHost,
+  xeMainFormServices,
   Themes,
   Styles,
   Styles.Utils.SystemMenu,
@@ -21229,8 +21230,6 @@ begin
 end;
 
 procedure TfrmMain.WndProc(var Message: TxeMainFormMessage);
-var
-  StyleName: string;
 begin
   case Message.Msg of
     xeWmUserAddMessage: begin
@@ -21259,12 +21258,7 @@ begin
     end;
     CM_CUSTOMSTYLECHANGED: begin
       wbDarkMode := wbIsDarkMode;
-      StyleName := TStyleManager.ActiveStyle.Name;
-      if Assigned(Settings) then
-        if Settings.ReadString('UI', 'Theme', '') <> StyleName then begin
-          Settings.WriteString('UI', 'Theme', StyleName);
-          Settings.UpdateFile;
-        end;
+      xePersistThemeSetting(Settings, TStyleManager.ActiveStyle.Name);
       UpdateTreeLineColor;
     end;
   end;
