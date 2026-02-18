@@ -29,6 +29,7 @@ type
   TxeProgressProc = procedure(const aText: string);
   TxeWatchStampReader = function: Int64 of object;
   TxeWatchStopPredicate = function: Boolean of object;
+  TxeForceTerminateThreadProc = procedure(const aThreadHandle: NativeUInt);
 
   TxePluggySelection = record
     FormID: TwbFormID;
@@ -49,6 +50,7 @@ function xeBuildPluggySelection(
 function xeBuildGameLinkSelection(const aRefID, aBaseID: TwbFormID): TxeGameLinkSelection;
 
 procedure xePersistThemeSetting(const aSettings: TMemIniFile; const aStyleName: string);
+function xeFinalizeBackgroundThread(const aThread: TThread; const aForceTerminate: TxeForceTerminateThreadProc): Boolean;
 procedure xePersistMainFormLayout(
   const aSettings: TMemIniFile;
   const aFormName: string;
@@ -384,6 +386,21 @@ begin
 
   aSettings.WriteString('UI', 'Theme', aStyleName);
   aSettings.UpdateFile;
+end;
+
+function xeFinalizeBackgroundThread(const aThread: TThread; const aForceTerminate: TxeForceTerminateThreadProc): Boolean;
+begin
+  Result := False;
+  if not Assigned(aThread) then
+    Exit;
+
+  if aThread.Finished then begin
+    Result := True;
+    Exit;
+  end;
+
+  if Assigned(aForceTerminate) then
+    aForceTerminate(aThread.Handle);
 end;
 
 procedure xePersistMainFormLayout(
