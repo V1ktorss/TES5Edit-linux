@@ -1174,6 +1174,20 @@ begin
     try
       t := LowerCase(ExtractFileName(ParamStr(0)));
 
+      if HasCmdSwitch('?') or HasCmdSwitch('h') or HasCmdSwitch('help') then begin
+        WriteLn(ErrOutput, 'xDump (headless)');
+        WriteLn(ErrOutput, 'Usage: xdump-core [mode switches] [options] <input|format>');
+        WriteLn(ErrOutput, 'Examples:');
+        WriteLn(ErrOutput, '  xdump-core -TES5 -Dump Skyrim.esm');
+        WriteLn(ErrOutput, '  xdump-core -TES5 -Export RAW');
+        Exit;
+      end;
+
+      if HasCmdSwitch('dummy') then begin
+        WriteLn(ErrOutput, 'xDump dummy init ok');
+        Exit;
+      end;
+
       Found := False;
       for ts := Low(TwbToolSource) to High(TwbToolSource) do begin
         s := GetEnumName(TypeInfo(TwbToolSource), Ord(ts) );
