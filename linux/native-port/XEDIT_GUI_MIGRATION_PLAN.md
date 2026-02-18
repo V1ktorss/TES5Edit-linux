@@ -12,7 +12,7 @@ Source of truth: `linux/native-port/reports/xedit-gui-surface.txt`
 - GUI units with direct WinAPI imports: `0`
 - Highest-coupled GUI unit: `xEdit/xeMainForm.pas`
 
-## Phase 1: Stabilize GUI Surface Metrics
+## Phase 1: Stabilize GUI Surface Metrics (Completed)
 
 Goal: prevent regression while migration work continues.
 
@@ -28,9 +28,10 @@ Done:
   - `linux/native-port/run-all-checks.sh`
   - `linux/native-port/ci-preflight.sh`
 
-## Phase 2: Reduce WinAPI Ties in GUI Units
+## Phase 2: Reduce WinAPI Ties in GUI Units (Completed)
 
 Goal: remove direct GUI WinAPI imports while preserving behavior.
+Status: current GUI baseline reports `0` direct WinAPI import matches/files.
 
 Targets:
 
@@ -59,7 +60,7 @@ Strategy:
 - Keep behavior intact; no UI behavior regressions accepted.
 - Re-run GUI budget guard and smoke checks after each file change.
 
-## Phase 3: Separate GUI Application Shell from Edit Core
+## Phase 3: Separate GUI Application Shell from Edit Core (In Progress)
 
 Goal: isolate form orchestration from editing logic to prepare toolkit-agnostic UI layers.
 
@@ -70,7 +71,7 @@ Work packages:
 2. Extract non-visual workflows from form event handlers into service units.
 3. Keep current VCL GUI as compatibility shell while services become UI-agnostic.
 
-## Exit Criteria to move from Point 1 to Point 2
+## Exit Criteria to move from Point 1 to Point 2 (Reached)
 
 - GUI migration metrics are stable in CI (no regressions).
 - At least one direct GUI WinAPI import site removed or wrapped without behavior regression.
