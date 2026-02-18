@@ -27,6 +27,8 @@ function xeGetFileWriteStampUtc(const aFileName: string): Int64;
 function xeGetNewestFileWriteStampUtc(const aFileNames: array of string): Int64;
 function xeTryReadLastCsvFields(const aFileName: string; const aMinFieldCount: Integer; aOut: TStrings): Boolean;
 function xeTryReadGameLinkSelection(const aFileName: string; out aSelectedRefID, aSelectedBaseID: TwbFormID): Boolean;
+function xeTryReadPluggySelection(const aFolder, aAppName: string;
+  out aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID): Boolean;
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;
 function xeParseNexusVersionFromHtml(const aHtml: string): TwbVersion;
 
@@ -155,6 +157,46 @@ begin
   finally
     lStream.Free;
   end;
+end;
+
+function xeTryReadPluggySelection(const aFolder, aAppName: string;
+  out aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID): Boolean;
+const
+  cViewWorldSuffix = 'ViewWorld.csv';
+  cViewInventorySuffix = 'ViewInventory.csv';
+  cViewSpellsSuffix = 'ViewSpells.csv';
+var
+  lFields: TStringList;
+  lPrefix: string;
+begin
+  Result := False;
+  aFormID := TwbFormID.Null;
+  aBaseFormID := TwbFormID.Null;
+  aInventoryFormID := TwbFormID.Null;
+  aEnchantmentFormID := TwbFormID.Null;
+  aSpellFormID := TwbFormID.Null;
+
+  lPrefix := aFolder + 'Pluggy' + aAppName;
+  lFields := TStringList.Create;
+  try
+    if not xeTryReadLastCsvFields(lPrefix + cViewWorldSuffix, 2, lFields) then
+      Exit;
+    aFormID := TwbFormID.FromStr(lFields[0]);
+    aBaseFormID := TwbFormID.FromStr(lFields[1]);
+
+    if not xeTryReadLastCsvFields(lPrefix + cViewInventorySuffix, 2, lFields) then
+      Exit;
+    aInventoryFormID := TwbFormID.FromStr(lFields[0]);
+    aEnchantmentFormID := TwbFormID.FromStr(lFields[1]);
+
+    if not xeTryReadLastCsvFields(lPrefix + cViewSpellsSuffix, 1, lFields) then
+      Exit;
+    aSpellFormID := TwbFormID.FromStr(lFields[0]);
+  finally
+    lFields.Free;
+  end;
+
+  Result := True;
 end;
 
 function xeParseLatestXEditVersionFromGitHubJson(const aJsonUtf8: string): TwbVersion;

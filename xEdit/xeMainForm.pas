@@ -21856,31 +21856,18 @@ end;
 
 procedure TPluggyLinkThread.ChangeDetected;
 var
-  lFields                                          : TStringList;
   FormID, BaseFormID, InventoryFormID, EnchantmentFormID, SpellFormID : TwbFormID;
-const
-  cRefCsv = 'Pluggy' + wbAppName + 'ViewWorld.csv';
-  cInventoryCsv = 'Pluggy' + wbAppName + 'ViewInventory.csv';
-  cSpellsCsv = 'Pluggy' + wbAppName + 'ViewSpells.csv';
 begin
-  lFields := TStringList.Create;
-  try
-    if not xeTryReadLastCsvFields(plFolder + cRefCsv, 2, lFields) then
-      Exit;
-    FormID := TwbFormID.FromStr(lFields[0]);
-    BaseFormID := TwbFormID.FromStr(lFields[1]);
-
-    if not xeTryReadLastCsvFields(plFolder + cInventoryCsv, 2, lFields) then
-      Exit;
-    InventoryFormID := TwbFormID.FromStr(lFields[0]);
-    EnchantmentFormID := TwbFormID.FromStr(lFields[1]);
-
-    if not xeTryReadLastCsvFields(plFolder + cSpellsCsv, 1, lFields) then
-      Exit;
-    SpellFormID := TwbFormID.FromStr(lFields[0]);
-  finally
-    lFields.Free;
-  end;
+  if not xeTryReadPluggySelection(
+    plFolder,
+    wbAppName,
+    FormID,
+    BaseFormID,
+    InventoryFormID,
+    EnchantmentFormID,
+    SpellFormID
+  ) then
+    Exit;
 
 
   if (FormID <> plLastFormID) or

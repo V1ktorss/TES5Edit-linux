@@ -297,6 +297,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved GameLink ini parsing from `TGameLinkThread.ChangeDetected` into `xeMainFormServices.xeTryReadGameLinkSelection`
   - moved Pluggy CSV-tail parsing and newest-file-stamp lookup from `TPluggyLinkThread` into `xeMainFormServices` (`xeTryReadLastCsvFields`, `xeGetNewestFileWriteStampUtc`)
   - moved release-page parsing from `TwbCheckGitHubReleaseThread`/`TwbCheckNexusModsReleaseThread` into `xeMainFormServices` (`xeParseLatestXEditVersionFromGitHubJson`, `xeParseNexusVersionFromHtml`)
+  - moved full Pluggy selection parse (`FormID/Base/Inventory/Enchantment/Spell`) into `xeMainFormServices.xeTryReadPluggySelection`
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`
