@@ -78,6 +78,10 @@ This document tracks what is already done for the native Linux path and what com
   - `linux/native-port/audit-xedit-gui-surface.sh`
   - `linux/native-port/reports/xedit-gui-surface.txt`
   - current baseline: 21 `*.dfm` form files, 20 `TForm` descendants, 23 GUI units with VCL/gui imports, 1 GUI unit with direct WinAPI import (`Messages`)
+- Implemented `xeMainForm` message-surface audit script/report:
+  - `linux/native-port/audit-xemainform-message-surface.sh`
+  - `linux/native-port/reports/xemainform-message-surface.txt`
+  - current baseline: 6 `message WM_*` handlers, 17 `TMessage` usages, 16 raw `WM_*` references
 - Added GUI migration execution plan: `linux/native-port/XEDIT_GUI_MIGRATION_PLAN.md`
 - Started `xeInit` decoupling:
   - moved known-folder and registry-read access behind `wbPlatform` helpers
@@ -273,6 +277,7 @@ This document tracks what is already done for the native Linux path and what com
 - Added xEdit GUI surface budget guard:
   - `linux/native-port/check-xedit-gui-surface-budget.sh` (wired via `RUN_XEDIT_GUI_BUDGET_GUARD=1` in `run-all-checks.sh`)
   - baseline `linux/native-port/baselines/xedit-gui-surface-budget.env` (fails on regressions in DFM/TForm/VCL-import/WinAPI-import counts)
+- Added `xeMainForm` message-surface audit lane: `linux/native-port/audit-xemainform-message-surface.sh` (wired via `RUN_XEMAINFORM_MESSAGE_AUDIT=1` in `run-all-checks.sh`)
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`

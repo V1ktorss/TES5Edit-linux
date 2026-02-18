@@ -35,6 +35,10 @@ Goal: reduce the final `1` GUI unit that imports `Messages` directly.
 Targets:
 
 1. `xEdit/xeMainForm.pas`
+  - current message surface baseline:
+    - 6 `message WM_*` handlers
+    - 17 `TMessage` usages
+    - 16 raw `WM_*` references
 
 Completed:
 

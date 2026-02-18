@@ -1,0 +1,51 @@
+# xeMainForm Message Surface Audit
+
+## Summary
+- Handler declarations using message WM_*: 6
+- TMessage parameter usages: 17
+- WM_* references (raw): 16
+
+## Handler Declarations
+916:    procedure WMUser(var Message: TMessage); message WM_USER;
+917:    procedure WMUser1(var Message: TMessage); message WM_USER + 1;
+918:    procedure WMUserLoaderDone(var Message: TMessage); message WM_USER + 2;
+919:    procedure WMUser3(var Message: TMessage); message WM_USER + 3;
+920:    procedure WMUser4(var Message: TMessage); message WM_USER + 4;
+921:    procedure WMUser5(var Message: TMessage); message WM_USER + 5;
+
+## TMessage Usages
+914:    procedure WndProc(var Message: TMessage); override;
+916:    procedure WMUser(var Message: TMessage); message WM_USER;
+917:    procedure WMUser1(var Message: TMessage); message WM_USER + 1;
+918:    procedure WMUserLoaderDone(var Message: TMessage); message WM_USER + 2;
+919:    procedure WMUser3(var Message: TMessage); message WM_USER + 3;
+920:    procedure WMUser4(var Message: TMessage); message WM_USER + 4;
+921:    procedure WMUser5(var Message: TMessage); message WM_USER + 5;
+20748:procedure TfrmMain.WMUser(var Message: TMessage);
+20766:procedure TfrmMain.WMUser1(var Message: TMessage);
+20771:procedure TfrmMain.WMUserLoaderDone(var Message: TMessage);
+21077:procedure TfrmMain.WMUser3(var Message: TMessage);
+21086:procedure TfrmMain.WMUser4(var Message: TMessage);
+21091:procedure TfrmMain.WMUser5(var Message: TMessage);
+21222:procedure TfrmMain.WndProc(var Message: TMessage);
+22043:  TMainWndProc = procedure(var Message: TMessage) of object;
+22047:  Trampoline_TWinControl_MainWndProc : procedure(Self: TWinControlProtectedHacker; var Message: TMessage);
+22049:procedure Detour_TWinControl_MainWndProc(Self: TWinControlProtectedHacker; var Message: TMessage);
+
+## WM_* References
+916:    procedure WMUser(var Message: TMessage); message WM_USER;
+917:    procedure WMUser1(var Message: TMessage); message WM_USER + 1;
+918:    procedure WMUserLoaderDone(var Message: TMessage); message WM_USER + 2;
+919:    procedure WMUser3(var Message: TMessage); message WM_USER + 3;
+920:    procedure WMUser4(var Message: TMessage); message WM_USER + 4;
+921:    procedure WMUser5(var Message: TMessage); message WM_USER + 5;
+2063:  if Msg.message = 524 {WM_XBUTTONUP} then
+15563:  Self.PostMessage(WM_USER, UInt64(p), 0);
+15573:  Self.PostMessage(WM_USER + 4, 0, 0);
+15596:    Self.PostMessage(WM_USER + 3, 0, 0);
+16292:  Perform(WM_USER + 1, UInt64(Pointer(aFile)), 0);
+16297:  Perform(WM_USER + 2, NativeUInt(@aStartTime), aLoadOrder);
+17347:    hsAutoSizing,              // auto size chain is in progess, do not trigger again on WM_SIZE
+18052:        Self.PostMessage(WM_USER + 5, 0, 0);
+18535:        Self.PostMessage(WM_USER + 5, 0, 0);
+22052:    WM_PAINT: begin

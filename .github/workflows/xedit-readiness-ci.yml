@@ -38,6 +38,13 @@ jobs:
           path: linux/native-port/reports/xedit-gui-surface.txt
           if-no-files-found: ignore
 
+      - name: Upload xeMainForm message surface report
+        uses: actions/upload-artifact@v4
+        with:
+          name: xedit-readiness-xemainform-message-surface
+          path: linux/native-port/reports/xemainform-message-surface.txt
+          if-no-files-found: ignore
+
       - name: Upload warning summary report
         uses: actions/upload-artifact@v4
         with:
