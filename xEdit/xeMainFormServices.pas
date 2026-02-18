@@ -82,6 +82,12 @@ procedure xeBuildExistingRenameTargetPlan(
   out aOldDateTime: TDateTime;
   out aBackupFile, aActionText, aWarningText: string
 );
+function xeTryHandleExistingRenameTarget(
+  const aTargetFile, aTargetName, aBackupPath: string;
+  const aDeleteInsteadOfBackup: Boolean;
+  out aOldDateTime: TDateTime;
+  out aActionText, aWarningText, aErrorText: string
+): Boolean;
 function xeTryFinalizeModuleRename(
   const aFromFile, aToFile: string;
   const aOldDateTime: TDateTime;
@@ -356,6 +362,39 @@ begin
     aActionText := 'Deleting "' + aTargetFile + '".'
   else
     aActionText := 'Renaming "' + aTargetFile + '" to "' + aBackupFile + '".';
+end;
+
+function xeTryHandleExistingRenameTarget(
+  const aTargetFile, aTargetName, aBackupPath: string;
+  const aDeleteInsteadOfBackup: Boolean;
+  out aOldDateTime: TDateTime;
+  out aActionText, aWarningText, aErrorText: string
+): Boolean;
+var
+  lHasExistingTarget: Boolean;
+  lBackupFile: string;
+begin
+  xeBuildExistingRenameTargetPlan(
+    aTargetFile,
+    aTargetName,
+    aBackupPath,
+    aDeleteInsteadOfBackup,
+    lHasExistingTarget,
+    aOldDateTime,
+    lBackupFile,
+    aActionText,
+    aWarningText
+  );
+
+  if not lHasExistingTarget then
+    Exit(True);
+
+  Result := xePrepareExistingTargetForRename(
+    aTargetFile,
+    lBackupFile,
+    aDeleteInsteadOfBackup,
+    aErrorText
+  );
 end;
 
 function xeTryFinalizeModuleRename(

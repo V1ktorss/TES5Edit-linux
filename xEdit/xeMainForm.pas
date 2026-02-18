@@ -1517,13 +1517,11 @@ function DoRenameModule(const aFrom, aTo: string; aSilent: Boolean): Boolean;
 var
   lFrom       : string;
   lTo         : string;
-  lBackup     : string;
   lActionText : string;
   lErrorText  : string;
   lWarningText: string;
   s           : string;
   OldDateTime : TDateTime;
-  lHasExistingTarget: Boolean;
 begin
   Result := False;
 
@@ -1547,32 +1545,27 @@ begin
 
   // create backup file
   lTo := wbDataPath + aTo;
-  xeBuildExistingRenameTargetPlan(
+  if not xeTryHandleExistingRenameTarget(
     lTo,
     aTo,
     wbBackupPath,
     xeDontBackup,
-    lHasExistingTarget,
     OldDateTime,
-    lBackup,
     lActionText,
-    s
-  );
-
+    s,
+    lErrorText
+  ) then begin
+    wbProgress(lErrorText);
+    if not aSilent then
+      MessageDlg(lErrorText, mtError, [mbOK], 0);
+    Exit;
+  end;
+  if lActionText <> '' then
+    wbProgress(lActionText);
   if s <> '' then begin
     wbProgress(s);
     if not aSilent then
       MessageDlg(s, mtError, [mbOK], 0);
-  end;
-
-  if lHasExistingTarget then begin
-    wbProgress(lActionText);
-    if not xePrepareExistingTargetForRename(lTo, lBackup, xeDontBackup, lErrorText) then begin
-      wbProgress(lErrorText);
-      if not aSilent then
-        MessageDlg(lErrorText, mtError, [mbOK], 0);
-      Exit;
-    end;
   end;
 
   // rename temp save file to original
