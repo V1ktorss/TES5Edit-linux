@@ -1127,6 +1127,7 @@ type
     procedure ReInitTree(aNoGameMaster: Boolean; aFiles: TwbFiles);
 
     procedure PostAddMessage(const s: string);
+    procedure PostSelectMainRecord;
     procedure SendAddFile(const aFile: IwbFile);
     procedure SendLoaderDone(const aStartTime: TDateTime; aLoadOrder: Integer);
 
@@ -15488,6 +15489,11 @@ begin
   Self.PostMessage(xeWmUserAddMessage, UInt64(p), 0);
 end;
 
+procedure TfrmMain.PostSelectMainRecord;
+begin
+  Self.PostMessage(xeWmUserSelectMainRecord, 0, 0);
+end;
+
 procedure TfrmMain.PostPluggyChange(aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID);
 begin
   PluggyFormID := aFormID;
@@ -17911,7 +17917,7 @@ begin
         NodeDatas[i].Container.Def.Collapsed := True;
         NodeDatas[i].Container.Collapsed := tbUnknown;
         DelayedExpandView := True;
-        Self.PostMessage(xeWmUserSelectMainRecord, 0, 0);
+        PostSelectMainRecord;
       end else begin
         NodeDatas[i].Container.Collapsed := tbTrue;
         UpdateColumnWidths;
@@ -18394,7 +18400,7 @@ begin
         NodeDatas[i].Container.Def.Collapsed := False;
         NodeDatas[i].Container.Collapsed := tbUnknown;
         DelayedExpandView := True;
-        Self.PostMessage(xeWmUserSelectMainRecord, 0, 0);
+        PostSelectMainRecord;
       end else begin
         NodeDatas[i].Container.Collapsed := tbFalse;
         UpdateColumnWidths;
