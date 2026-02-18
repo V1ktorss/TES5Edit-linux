@@ -98,6 +98,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved async key-state checks to `wbPlatform.wbIsVirtualKeyPressed`
   - moved sync key-state checks to `wbPlatform.wbIsVirtualKeyPressed`
   - moved direct clipboard read/write usage to `wbGetClipboardText`/`wbSetClipboardText`
+  - moved FormID-to-main-record resolution from `xeMainForm` into `xeMainFormServices` (`xeTryResolveMainRecordFromFormID`) to further isolate non-visual logic
 - Extended `wbPlatform` helpers:
   - added `wbShowWindowNoActivate` wrapper for non-activating tip-form display
 - Started `xejviScriptAdapterMisc` decoupling:

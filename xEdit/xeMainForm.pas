@@ -20982,8 +20982,6 @@ end;
 procedure TfrmMain.UpdateActiveFromPluggyLink;
 var
   FormID                      : TwbFormID;
-  FileID                      : TwbFileID;
-  _File                       : IwbFile;
   MainRecord                  : IwbMainRecord;
   Node                        : PVirtualNode;
   i                           : Integer;
@@ -21006,50 +21004,28 @@ begin
     Exit;
   end;
 
-  if FormID.IsNull then
+  if not xeTryResolveMainRecordFromFormID(Files, FormID, MainRecord) then
     Exit;
 
-  FileID := FormID.FileID;
-  if wbIsLightSupported or wbPseudoLight or wbPseudoUpdate then begin
-    _File := nil;
-    for i := Low(Files) to High(Files) do
-      if Files[i].LoadOrderFileID = FileID then begin
-        _File := Files[i];
-        break;
-      end;
-    if not Assigned(_File) then
-      Exit;
-  end else begin
-    if (FileID.FullSlot < Low(Files)) or (FileID.FullSlot > High(Files)) then
-      Exit;
-    _File := Files[FileID.FullSlot];
-  end;
+  if MainRecord.Equals(ActiveRecord) then
+    Exit;
 
-  FormID.FileID := _File.FileFileID[True];
-  MainRecord := _File.RecordByFormID[FormID, True, True];
-  if Assigned(MainRecord) then begin
-    MainRecord := MainRecord.WinningOverride;
-
-    if MainRecord.Equals(ActiveRecord) then
-      Exit;
-
-    Node := FindNodeForElement(MainRecord);
-    if not Assigned(Node) then begin
-      MainRecord := MainRecord.MasterOrSelf;
-      for i := 0 to Pred(MainRecord.OverrideCount) do begin
-        Node := FindNodeForElement(MainRecord.Overrides[i]);
-        if Assigned(Node) then
-          Break;
-      end;
+  Node := FindNodeForElement(MainRecord);
+  if not Assigned(Node) then begin
+    MainRecord := MainRecord.MasterOrSelf;
+    for i := 0 to Pred(MainRecord.OverrideCount) do begin
+      Node := FindNodeForElement(MainRecord.Overrides[i]);
+      if Assigned(Node) then
+        Break;
     end;
-    if Assigned(Node) then begin
-      vstNav.ClearSelection;
-      vstNav.FocusedNode := Node;
-      vstNav.Selected[vstNav.FocusedNode] := True;
-      SetActiveRecord(MainRecord);
-    end else
-      SetActiveRecord(MainRecord);
   end;
+  if Assigned(Node) then begin
+    vstNav.ClearSelection;
+    vstNav.FocusedNode := Node;
+    vstNav.Selected[vstNav.FocusedNode] := True;
+    SetActiveRecord(MainRecord);
+  end else
+    SetActiveRecord(MainRecord);
 end;
 
 procedure TfrmMain.vstNavDragAllowed(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);

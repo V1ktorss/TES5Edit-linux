@@ -376,6 +376,11 @@ function xeTryUpdateGameLinkSelection(
   var aRefID, aBaseID: TwbFormID;
   out aSelection: TxeGameLinkSelection
 ): Boolean;
+function xeTryResolveMainRecordFromFormID(
+  const aFiles: TwbFiles;
+  const aInputFormID: TwbFormID;
+  out aMainRecord: IwbMainRecord
+): Boolean;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -1933,6 +1938,48 @@ begin
   if not xeTryReadGameLinkSelection(aFileName, aSelection) then
     Exit;
   Result := xeApplyGameLinkSelectionIfChanged(aRefID, aBaseID, aSelection);
+end;
+
+function xeTryResolveMainRecordFromFormID(
+  const aFiles: TwbFiles;
+  const aInputFormID: TwbFormID;
+  out aMainRecord: IwbMainRecord
+): Boolean;
+var
+  lFileID: TwbFileID;
+  lFile: IwbFile;
+  lFormID: TwbFormID;
+  i: Integer;
+begin
+  Result := False;
+  aMainRecord := nil;
+
+  if aInputFormID.IsNull then
+    Exit;
+
+  lFileID := aInputFormID.FileID;
+  if wbIsLightSupported or wbPseudoLight or wbPseudoUpdate then begin
+    lFile := nil;
+    for i := Low(aFiles) to High(aFiles) do
+      if aFiles[i].LoadOrderFileID = lFileID then begin
+        lFile := aFiles[i];
+        Break;
+      end;
+    if not Assigned(lFile) then
+      Exit;
+  end else begin
+    if (lFileID.FullSlot < Low(aFiles)) or (lFileID.FullSlot > High(aFiles)) then
+      Exit;
+    lFile := aFiles[lFileID.FullSlot];
+  end;
+
+  lFormID := aInputFormID;
+  lFormID.FileID := lFile.FileFileID[True];
+  aMainRecord := lFile.RecordByFormID[lFormID, True, True];
+  if Assigned(aMainRecord) then
+    aMainRecord := aMainRecord.WinningOverride;
+
+  Result := Assigned(aMainRecord);
 end;
 
 function xeGetStaleRefCacheFiles(
