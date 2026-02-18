@@ -365,6 +365,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved main-form layout/settings persistence on close (`pnlNav` width, nav column widths, window geometry/state) into service helper (`xePersistMainFormLayout`)
   - moved close-time temp-directory cleanup into service helper (`xeTryCleanupTempPath`) so `FormClose` no longer performs direct filesystem deletion
   - moved elapsed save-log line formatting (`[mm:ss] ...`) into service helper (`xeBuildElapsedLogLine`) and reused it in `SaveChanged`
+  - moved shutdown-rename state bootstrap (`wbForceTerminate`, timers/ticks, initial action) into service helper (`xeBeginShutdownRename`) and simplified `DoRename`
   - moved backup-module temp-save plan generation (`target backup path` + progress action text) into service helper (`xeBuildBackupModuleTempSavePlan`)
   - moved full non-UI backup-module flow (`source prepare`, `backup plan`, `rename execution`) into service helper (`xeTryRunBackupModuleFlow`)
 - Reduced GUI WinAPI import sites:

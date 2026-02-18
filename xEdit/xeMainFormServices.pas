@@ -92,6 +92,7 @@ function xeBuildRenameBatchOutcome(
   out aDialogMessage: string;
   out aShouldSaveLogs: Boolean
 ): Boolean;
+procedure xeBeginShutdownRename(out aInitialAction: string);
 function xeRunShutdownRenameBatch(
   const aFilesToRename: TStrings;
   const aRenameModule: TxeRenameModuleFunc;
@@ -559,6 +560,16 @@ begin
 
   aDialogMessage := xeBuildRenameFailuresDialogMessage(aDataPath);
   aShouldSaveLogs := aSaveProgress and aHasMainForm;
+end;
+
+procedure xeBeginShutdownRename(out aInitialAction: string);
+begin
+  wbForceTerminate := False;
+  wbShowStartTime := 1;
+  wbStartTime := Now;
+  wbCurrentTick := GetTickCount64;
+  aInitialAction := 'Closing files';
+  wbCurrentAction := aInitialAction;
 end;
 
 function xeRunShutdownRenameBatch(

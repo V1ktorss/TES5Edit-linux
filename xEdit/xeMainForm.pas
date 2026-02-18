@@ -1608,19 +1608,16 @@ end;
 
 procedure DoRename;
 var
+  StartAction: string;
   RenameAction: string;
   RenameDialogMessage: string;
   ShouldSaveLogs: Boolean;
 begin
-  wbForceTerminate := False;
   _wbProgressCallback := SaveProgress;
-  wbShowStartTime := 1;
-  wbStartTime := Now;
-  wbCurrentTick := GetTickCount64;
-  wbCurrentAction := 'Closing files';
+  xeBeginShutdownRename(StartAction);
   if Assigned(frmMain) then
     frmMain.mmoMessages.Clear;
-  wbProgress(wbCurrentAction);
+  wbProgress(StartAction);
 
   wbFileForceClosed;
 
