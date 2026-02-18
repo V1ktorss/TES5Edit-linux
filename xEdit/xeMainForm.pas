@@ -1160,10 +1160,9 @@ type
     plLastSpellFormID       : TwbFormID;
   protected
     procedure Execute; override;
-    procedure ChangeDetected;
+    procedure ChangeDetected(Sender: TObject);
     function ReadWatchStamp: Int64;
     function ShouldStopWatchLoop: Boolean;
-    procedure HandleWatchStampChange(Sender: TObject);
   end;
 
   TGameLinkThread = class(TwbThread)
@@ -1173,10 +1172,9 @@ type
     glLastBaseFormID : TwbFormID;
   protected
     procedure Execute; override;
-    procedure ChangeDetected;
+    procedure ChangeDetected(Sender: TObject);
     function ReadWatchStamp: Int64;
     function ShouldStopWatchLoop: Boolean;
-    procedure HandleWatchStampChange(Sender: TObject);
   end;
 
   IHistoryEntry = interface
@@ -21699,10 +21697,11 @@ end;
 
 { TPluggyLinkThread }
 
-procedure TPluggyLinkThread.ChangeDetected;
+procedure TPluggyLinkThread.ChangeDetected(Sender: TObject);
 var
   Selection: TxePluggySelection;
 begin
+  if Assigned(Sender) then;
   if not xeTryUpdatePluggySelection(
     plFolder,
     wbAppName,
@@ -21726,7 +21725,7 @@ begin
     plFolder,
     ReadWatchStamp,
     ShouldStopWatchLoop,
-    HandleWatchStampChange,
+    ChangeDetected,
     Self,
     frmMain.PostAddMessage
   );
@@ -21740,11 +21739,6 @@ end;
 function TPluggyLinkThread.ShouldStopWatchLoop: Boolean;
 begin
   Result := xeShouldStopWatchLoop(Terminated);
-end;
-
-procedure TPluggyLinkThread.HandleWatchStampChange(Sender: TObject);
-begin
-  ChangeDetected;
 end;
 
 
@@ -21856,10 +21850,11 @@ end;
 
 { TGameLinkThread }
 
-procedure TGameLinkThread.ChangeDetected;
+procedure TGameLinkThread.ChangeDetected(Sender: TObject);
 var
   Selection: TxeGameLinkSelection;
 begin
+  if Assigned(Sender) then;
   if not xeTryUpdateGameLinkSelection(xeGetGameLinkFilePath(glFolder), glLastFormID, glLastBaseFormID, Selection) then
     Exit;
 
@@ -21874,7 +21869,7 @@ begin
     glFolder,
     ReadWatchStamp,
     ShouldStopWatchLoop,
-    HandleWatchStampChange,
+    ChangeDetected,
     Self,
     frmMain.PostAddMessage
   );
@@ -21888,11 +21883,6 @@ end;
 function TGameLinkThread.ShouldStopWatchLoop: Boolean;
 begin
   Result := xeShouldStopWatchLoop(Terminated);
-end;
-
-procedure TGameLinkThread.HandleWatchStampChange(Sender: TObject);
-begin
-  ChangeDetected;
 end;
 
 { TMainRecordElementHistoryEntry }
