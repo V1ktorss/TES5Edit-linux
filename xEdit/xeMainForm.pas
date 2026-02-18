@@ -15850,6 +15850,7 @@ var
   s                           : string;
   t                           : string;
   DiscardInfo                 : string;
+  SaveStartMessage            : string;
   SavedAny                    : Boolean;
   SavedThisOne                : Boolean;
   AnyErrors                   : Boolean;
@@ -15938,9 +15939,9 @@ begin
               xePrepareLocalizationSaveNames(wbDataPath, _LFile.FileName, t, u, s, NeedsRename);
 
               try
-                if not xeTryEnsureParentDirectoryForFile(wbDataPath + s, t) then
+                if not xeTryPrepareSaveWriteTarget(wbDataPath + s, s, SaveStartMessage, t) then
                   raise Exception.Create(t);
-                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + xeBuildSaveStartMessage(s));
+                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + SaveStartMessage);
                 if not xeTrySaveLocalizationToTemp(
                   _LFile,
                   wbDataPath + s,
@@ -15970,9 +15971,9 @@ begin
 
               CRC := _File.CRC32;
               try
-                if not xeTryEnsureParentDirectoryForFile(wbDataPath + s, t) then
+                if not xeTryPrepareSaveWriteTarget(wbDataPath + s, s, SaveStartMessage, t) then
                   raise Exception.Create(t);
-                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + xeBuildSaveStartMessage(s));
+                PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] ' + SaveStartMessage);
                 SavedThisOne := xeTryWriteModuleToTempFile(
                   _File,
                   wbDataPath + s,

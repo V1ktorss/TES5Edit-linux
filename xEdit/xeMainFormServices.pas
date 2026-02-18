@@ -59,6 +59,10 @@ function xeTryPrepareSourceFileForRename(
 ): Boolean;
 function xeBuildSaveStartMessage(const aRelativeName: string): string;
 function xeBuildSaveErrorMessage(const aRelativeName, aErrorText: string): string;
+function xeTryPrepareSaveWriteTarget(
+  const aFullPath, aRelativeName: string;
+  out aStartMessage, aErrorText: string
+): Boolean;
 function xeBuildSaveUnhandledExceptionMessage(
   const aElapsed: TDateTime;
   const aExceptionClassName, aExceptionMessage: string
@@ -363,6 +367,19 @@ end;
 function xeBuildSaveErrorMessage(const aRelativeName, aErrorText: string): string;
 begin
   Result := 'Error saving ' + aRelativeName + ': ' + aErrorText;
+end;
+
+function xeTryPrepareSaveWriteTarget(
+  const aFullPath, aRelativeName: string;
+  out aStartMessage, aErrorText: string
+): Boolean;
+begin
+  Result := xeTryEnsureParentDirectoryForFile(aFullPath, aErrorText);
+  if not Result then begin
+    aStartMessage := '';
+    Exit;
+  end;
+  aStartMessage := xeBuildSaveStartMessage(aRelativeName);
 end;
 
 function xeBuildSaveUnhandledExceptionMessage(
