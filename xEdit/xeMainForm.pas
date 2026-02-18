@@ -15950,9 +15950,7 @@ begin
 
               except
                 on E: Exception do begin
-                  AnyErrors := True;
-                  NeedsRename := False;
-                  SavedThisOne := False;
+                  xeMarkSaveWriteFailure(wbDataPath, s, AnyErrors, NeedsRename, SavedThisOne);
                   PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Error saving ' + s + ': ' + E.Message);
                 end;
               end;
@@ -15997,7 +15995,7 @@ begin
                   SavedAny := True;
               except
                 on E: Exception do begin
-                  xeMarkTempSaveWriteFailure(wbDataPath, s, AnyErrors, NeedsRename);
+                  xeMarkSaveWriteFailure(wbDataPath, s, AnyErrors, NeedsRename, SavedThisOne);
                   PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Error saving ' + s + ': ' + E.Message);
                 end;
               end;

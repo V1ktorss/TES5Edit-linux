@@ -88,6 +88,10 @@ procedure xeMarkTempSaveWriteFailure(
   const aDataPath, aTempName: string;
   var aAnyErrors, aNeedsRename: Boolean
 );
+procedure xeMarkSaveWriteFailure(
+  const aDataPath, aTempName: string;
+  var aAnyErrors, aNeedsRename, aSavedThisOne: Boolean
+);
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
 function xeBuildModuleBackupPath(const aBackupPath, aTargetFileName: string; const aNow: TDateTime): string;
 function xeBuildTempSaveBackupPath(const aBackupPath, aFromFileName: string): string;
@@ -402,6 +406,15 @@ begin
   DeleteFile(aDataPath + aTempName);
   aAnyErrors := True;
   aNeedsRename := False;
+end;
+
+procedure xeMarkSaveWriteFailure(
+  const aDataPath, aTempName: string;
+  var aAnyErrors, aNeedsRename, aSavedThisOne: Boolean
+);
+begin
+  xeMarkTempSaveWriteFailure(aDataPath, aTempName, aAnyErrors, aNeedsRename);
+  aSavedThisOne := False;
 end;
 
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
