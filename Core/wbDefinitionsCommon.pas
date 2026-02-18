@@ -6967,16 +6967,6 @@ begin
 {$ENDIF}
 {$ENDIF}
 
-{$IFDEF FPC}
-  wbCrimeTypeEnum :=
-    wbEnum([
-      {0} 'Steal',
-      {1} 'Pickpocket',
-      {2} 'Trespass',
-      {3} 'Attack',
-      {4} 'Murder'
-    ]);
-{$ELSE}
   wbCrimeTypeEnum :=
     wbEnum([
       {0} 'Steal',
@@ -6992,7 +6982,6 @@ begin
     ], [
       -1, 'None'
     ]);
-{$ENDIF}
 {$IFDEF FPC}
 {$IFDEF XEDIT_HEADLESS}
 {$ENDIF}
@@ -7025,25 +7014,6 @@ begin
 {$ENDIF}
 {$ENDIF}
 
-{$IFDEF FPC}
-  wbEquipTypeEnum :=
-    wbEnum([
-      {0}  'Big Guns',
-      {1}  'Energy Weapons',
-      {2}  'Small Guns',
-      {3}  'Melee Weapons',
-      {4}  'Unarmed Weapon',
-      {5}  'Thrown Weapons',
-      {6}  'Mine',
-      {7}  'Body Wear',
-      {8}  'Head Wear',
-      {9}  'Hand Wear',
-      {10} 'Chems',
-      {11} 'Stimpak',
-      {12} 'Food',
-      {13} 'Alcohol'
-    ]);
-{$ELSE}
   wbEquipTypeEnum :=
     wbEnum([
       {0}  'Big Guns',
@@ -7063,7 +7033,6 @@ begin
     ], [
       -1, 'None'
     ]);
-{$ENDIF}
 {$IFDEF FPC}
   wbMenuModeEnum :=
     wbEnum([
