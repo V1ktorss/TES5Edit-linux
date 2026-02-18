@@ -1633,7 +1633,6 @@ end;
 
 procedure DoRename;
 var
-  i        : Integer;
   AnyError : Boolean;
 begin
   wbForceTerminate := False;
@@ -1660,10 +1659,7 @@ begin
   wbProgress(wbCurrentAction);
 
   _SaveProgress := False;
-  AnyError := False;
-  for i := 0 to Pred(FilesToRename.Count) do
-    if not DoRenameModule(FilesToRename.ValueFromIndex[i], FilesToRename.Names[i], False) then
-      AnyError := True;
+  AnyError := xeRenameSavedModules(FilesToRename, DoRenameModule);
 
   if AnyError then begin
     MessageDlg(

@@ -23,6 +23,7 @@ uses
   wbHelpers;
 
 type
+  TxeRenameModuleFunc = function(const aFrom, aTo: string; aSilent: Boolean): Boolean;
   TxeWatchStampReader = function: Int64 of object;
   TxeWatchStopPredicate = function: Boolean of object;
 
@@ -82,6 +83,7 @@ function xeTryFinalizeModuleRename(
   const aSkipRestoreForPluginsTxtOrder: Boolean;
   out aErrorText, aWarningText: string
 ): Boolean;
+function xeRenameSavedModules(const aFilesToRename: TStrings; const aRenameModule: TxeRenameModuleFunc): Boolean;
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
 function xeGetGameLinkFolder(const aDataPath: string): string;
 function xeGetGameLinkFilePath(const aFolder: string): string;
@@ -356,6 +358,19 @@ begin
     aSkipRestoreForPluginsTxtOrder,
     aWarningText
   );
+end;
+
+function xeRenameSavedModules(const aFilesToRename: TStrings; const aRenameModule: TxeRenameModuleFunc): Boolean;
+var
+  i: Integer;
+begin
+  Result := False;
+  if not Assigned(aFilesToRename) or not Assigned(aRenameModule) then
+    Exit;
+
+  for i := 0 to Pred(aFilesToRename.Count) do
+    if not aRenameModule(aFilesToRename.ValueFromIndex[i], aFilesToRename.Names[i], False) then
+      Result := True;
 end;
 
 function xeGetPluggyUserFilesFolder(const aMyGamesTheGamePath: string): string;
