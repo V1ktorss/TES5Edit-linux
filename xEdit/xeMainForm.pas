@@ -16012,9 +16012,7 @@ begin
                   SavedAny := True;
               except
                 on E: Exception do begin
-                  DeleteFile(wbDataPath + s);
-                  AnyErrors := True;
-                  NeedsRename := False;
+                  xeMarkTempSaveWriteFailure(wbDataPath, s, AnyErrors, NeedsRename);
                   PostAddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Error saving ' + s + ': ' + E.Message);
                 end;
               end;

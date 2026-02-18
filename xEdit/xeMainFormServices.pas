@@ -67,6 +67,10 @@ function xeTryDiscardUnchangedTempSave(
   var aNeedsRename, aTryDirectRename, aSavedThisOne: Boolean;
   out aInfoText: string
 ): Boolean;
+procedure xeMarkTempSaveWriteFailure(
+  const aDataPath, aTempName: string;
+  var aAnyErrors, aNeedsRename: Boolean
+);
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
 function xeBuildModuleBackupPath(const aBackupPath, aTargetFileName: string; const aNow: TDateTime): string;
 function xeBuildTempSaveBackupPath(const aBackupPath, aFromFileName: string): string;
@@ -301,6 +305,16 @@ begin
   aTryDirectRename := False;
   aSavedThisOne := False;
   aInfoText := 'File has not changed, removing: ' + aTempName;
+end;
+
+procedure xeMarkTempSaveWriteFailure(
+  const aDataPath, aTempName: string;
+  var aAnyErrors, aNeedsRename: Boolean
+);
+begin
+  DeleteFile(aDataPath + aTempName);
+  aAnyErrors := True;
+  aNeedsRename := False;
 end;
 
 function xeFindAvailablePath(const aInitialPath: string; const aMaxAttempts: Integer = 1000): string;
