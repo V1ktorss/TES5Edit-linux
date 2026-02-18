@@ -80,6 +80,15 @@ const
   DefaultInterval             = 1 / 24 / 6; // 10 minutes
   MaxSaveListCount            = 5;
   ScriptSelfTerminated        = 'Script terminated itself, Result=';
+  xeWmUserBase                = $0400;
+  xeWmUserAddMessage          = xeWmUserBase;
+  xeWmUserAddFile             = xeWmUserBase + 1;
+  xeWmUserLoaderDone          = xeWmUserBase + 2;
+  xeWmUserResetActiveTree     = xeWmUserBase + 3;
+  xeWmUserPluggyChange        = xeWmUserBase + 4;
+  xeWmUserSelectMainRecord    = xeWmUserBase + 5;
+  xeWmPaint                   = $000F;
+  xeWmXButtonUp               = 524;
   VK_SHIFT                    = $10;
   VK_CONTROL                  = $11;
   VK_MENU                     = $12;
@@ -913,12 +922,12 @@ type
     function FindColors(const s: string; out aColors: TArray<TColor>): Boolean;
     procedure WndProc(var Message: TMessage); override;
   private
-    procedure WMUser(var Message: TMessage); message WM_USER;
-    procedure WMUser1(var Message: TMessage); message WM_USER + 1;
-    procedure WMUserLoaderDone(var Message: TMessage); message WM_USER + 2;
-    procedure WMUser3(var Message: TMessage); message WM_USER + 3;
-    procedure WMUser4(var Message: TMessage); message WM_USER + 4;
-    procedure WMUser5(var Message: TMessage); message WM_USER + 5;
+    procedure WMUser(var Message: TMessage); message xeWmUserAddMessage;
+    procedure WMUser1(var Message: TMessage); message xeWmUserAddFile;
+    procedure WMUserLoaderDone(var Message: TMessage); message xeWmUserLoaderDone;
+    procedure WMUser3(var Message: TMessage); message xeWmUserResetActiveTree;
+    procedure WMUser4(var Message: TMessage); message xeWmUserPluggyChange;
+    procedure WMUser5(var Message: TMessage); message xeWmUserSelectMainRecord;
     procedure UpdateTreeLineColor;
   public
     Files: TwbFiles;
@@ -2059,8 +2068,6 @@ begin
 end;
 
 procedure TfrmMain.ApplicationMessage(var Msg: TMsg; var Handled: Boolean);
-const
-  xeWmXButtonUp = 524;
 begin
   if Msg.message = xeWmXButtonUp then
     {$IFDEF WIN32}
@@ -15562,7 +15569,7 @@ begin
   UniqueString(t);
   p := Pointer(t);
   Pointer(t) := nil;
-  Self.PostMessage(WM_USER, UInt64(p), 0);
+  Self.PostMessage(xeWmUserAddMessage, UInt64(p), 0);
 end;
 
 procedure TfrmMain.PostPluggyChange(aFormID, aBaseFormID, aInventoryFormID, aEnchantmentFormID, aSpellFormID: TwbFormID);
@@ -15572,7 +15579,7 @@ begin
   PluggyInventoryFormID := aInventoryFormID;
   PluggyEnchantmentFormID := aEnchantmentFormID;
   PluggySpellFormID := aSpellFormID;
-  Self.PostMessage(WM_USER + 4, 0, 0);
+  Self.PostMessage(xeWmUserPluggyChange, 0, 0);
 end;
 
 procedure TfrmMain.UpdateTreeLineColor;
@@ -15595,7 +15602,7 @@ procedure TfrmMain.PostResetActiveTree;
 begin
   if Length(PendingMainRecords) < 1 then begin
     PendingResetActiveTree := True;
-    Self.PostMessage(WM_USER + 3, 0, 0);
+    Self.PostMessage(xeWmUserResetActiveTree, 0, 0);
   end;
 end;
 
@@ -16291,12 +16298,12 @@ end;
 
 procedure TfrmMain.SendAddFile(const aFile: IwbFile);
 begin
-  Perform(WM_USER + 1, UInt64(Pointer(aFile)), 0);
+  Perform(xeWmUserAddFile, UInt64(Pointer(aFile)), 0);
 end;
 
 procedure TfrmMain.SendLoaderDone(const aStartTime: TDateTime; aLoadOrder: Integer);
 begin
-  Perform(WM_USER + 2, NativeUInt(@aStartTime), aLoadOrder);
+  Perform(xeWmUserLoaderDone, NativeUInt(@aStartTime), aLoadOrder);
 end;
 
 procedure TfrmMain.DoSetActiveContainer(const aContainer: IwbDataContainer);
@@ -17346,7 +17353,7 @@ var
   ClientWidth    : Integer;
 begin
   if vstView.Header.Columns.Header.States * [
-    hsAutoSizing,              // auto size chain is in progess, do not trigger again on WM_SIZE
+    hsAutoSizing,              // auto-size chain is in progress; do not trigger again on size messages
     hsDragging,                // header dragging is in progress (only if enabled)
     hsColumnWidthTracking,     // column resizing is in progress
     hsColumnWidthTrackPending, // left button is down, user might want to start resize a column
@@ -18051,7 +18058,7 @@ begin
         NodeDatas[i].Container.Def.Collapsed := True;
         NodeDatas[i].Container.Collapsed := tbUnknown;
         DelayedExpandView := True;
-        Self.PostMessage(WM_USER + 5, 0, 0);
+        Self.PostMessage(xeWmUserSelectMainRecord, 0, 0);
       end else begin
         NodeDatas[i].Container.Collapsed := tbTrue;
         UpdateColumnWidths;
@@ -18534,7 +18541,7 @@ begin
         NodeDatas[i].Container.Def.Collapsed := False;
         NodeDatas[i].Container.Collapsed := tbUnknown;
         DelayedExpandView := True;
-        Self.PostMessage(WM_USER + 5, 0, 0);
+        Self.PostMessage(xeWmUserSelectMainRecord, 0, 0);
       end else begin
         NodeDatas[i].Container.Collapsed := tbFalse;
         UpdateColumnWidths;
@@ -22051,7 +22058,7 @@ var
 procedure Detour_TWinControl_MainWndProc(Self: TWinControlProtectedHacker; var Message: TMessage);
 begin
   case Message.Msg of
-    WM_PAINT: begin
+    xeWmPaint: begin
       LockProcessMessages;
       try
         Trampoline_TWinControl_MainWndProc(Self, Message);

@@ -1,50 +1,31 @@
 # xeMainForm Message Surface Audit
 
 ## Summary
-- Handler declarations using message WM_*: 6
+- Handler declarations using message WM_*: 0
 - TMessage parameter usages: 17
-- WM_* references (raw): 15
+- WM_* references (raw): 0
 
 ## Handler Declarations
-916:    procedure WMUser(var Message: TMessage); message WM_USER;
-917:    procedure WMUser1(var Message: TMessage); message WM_USER + 1;
-918:    procedure WMUserLoaderDone(var Message: TMessage); message WM_USER + 2;
-919:    procedure WMUser3(var Message: TMessage); message WM_USER + 3;
-920:    procedure WMUser4(var Message: TMessage); message WM_USER + 4;
-921:    procedure WMUser5(var Message: TMessage); message WM_USER + 5;
+
 
 ## TMessage Usages
-914:    procedure WndProc(var Message: TMessage); override;
-916:    procedure WMUser(var Message: TMessage); message WM_USER;
-917:    procedure WMUser1(var Message: TMessage); message WM_USER + 1;
-918:    procedure WMUserLoaderDone(var Message: TMessage); message WM_USER + 2;
-919:    procedure WMUser3(var Message: TMessage); message WM_USER + 3;
-920:    procedure WMUser4(var Message: TMessage); message WM_USER + 4;
-921:    procedure WMUser5(var Message: TMessage); message WM_USER + 5;
-20750:procedure TfrmMain.WMUser(var Message: TMessage);
-20768:procedure TfrmMain.WMUser1(var Message: TMessage);
-20773:procedure TfrmMain.WMUserLoaderDone(var Message: TMessage);
-21079:procedure TfrmMain.WMUser3(var Message: TMessage);
-21088:procedure TfrmMain.WMUser4(var Message: TMessage);
-21093:procedure TfrmMain.WMUser5(var Message: TMessage);
-21224:procedure TfrmMain.WndProc(var Message: TMessage);
-22045:  TMainWndProc = procedure(var Message: TMessage) of object;
-22049:  Trampoline_TWinControl_MainWndProc : procedure(Self: TWinControlProtectedHacker; var Message: TMessage);
-22051:procedure Detour_TWinControl_MainWndProc(Self: TWinControlProtectedHacker; var Message: TMessage);
+923:    procedure WndProc(var Message: TMessage); override;
+925:    procedure WMUser(var Message: TMessage); message xeWmUserAddMessage;
+926:    procedure WMUser1(var Message: TMessage); message xeWmUserAddFile;
+927:    procedure WMUserLoaderDone(var Message: TMessage); message xeWmUserLoaderDone;
+928:    procedure WMUser3(var Message: TMessage); message xeWmUserResetActiveTree;
+929:    procedure WMUser4(var Message: TMessage); message xeWmUserPluggyChange;
+930:    procedure WMUser5(var Message: TMessage); message xeWmUserSelectMainRecord;
+20757:procedure TfrmMain.WMUser(var Message: TMessage);
+20775:procedure TfrmMain.WMUser1(var Message: TMessage);
+20780:procedure TfrmMain.WMUserLoaderDone(var Message: TMessage);
+21086:procedure TfrmMain.WMUser3(var Message: TMessage);
+21095:procedure TfrmMain.WMUser4(var Message: TMessage);
+21100:procedure TfrmMain.WMUser5(var Message: TMessage);
+21231:procedure TfrmMain.WndProc(var Message: TMessage);
+22052:  TMainWndProc = procedure(var Message: TMessage) of object;
+22056:  Trampoline_TWinControl_MainWndProc : procedure(Self: TWinControlProtectedHacker; var Message: TMessage);
+22058:procedure Detour_TWinControl_MainWndProc(Self: TWinControlProtectedHacker; var Message: TMessage);
 
 ## WM_* References
-916:    procedure WMUser(var Message: TMessage); message WM_USER;
-917:    procedure WMUser1(var Message: TMessage); message WM_USER + 1;
-918:    procedure WMUserLoaderDone(var Message: TMessage); message WM_USER + 2;
-919:    procedure WMUser3(var Message: TMessage); message WM_USER + 3;
-920:    procedure WMUser4(var Message: TMessage); message WM_USER + 4;
-921:    procedure WMUser5(var Message: TMessage); message WM_USER + 5;
-15565:  Self.PostMessage(WM_USER, UInt64(p), 0);
-15575:  Self.PostMessage(WM_USER + 4, 0, 0);
-15598:    Self.PostMessage(WM_USER + 3, 0, 0);
-16294:  Perform(WM_USER + 1, UInt64(Pointer(aFile)), 0);
-16299:  Perform(WM_USER + 2, NativeUInt(@aStartTime), aLoadOrder);
-17349:    hsAutoSizing,              // auto size chain is in progess, do not trigger again on WM_SIZE
-18054:        Self.PostMessage(WM_USER + 5, 0, 0);
-18537:        Self.PostMessage(WM_USER + 5, 0, 0);
-22054:    WM_PAINT: begin
+
