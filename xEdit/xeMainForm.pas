@@ -1619,20 +1619,16 @@ begin
     frmMain.mmoMessages.Clear;
   wbProgress(StartAction);
 
-  wbFileForceClosed;
-
-  if not xeTryPrepareShutdownRename(
+  if not xeTryPrepareShutdownRenameFlow(
     wbDontSave,
     FilesToRename,
     wbDataPath,
     wbBackupPath,
     not xeDontBackup,
-    wbBackupPath,
     RenameAction
   ) then
     Exit;
 
-  wbCurrentAction := RenameAction;
   wbProgress(wbCurrentAction);
 
   _SaveProgress := False;

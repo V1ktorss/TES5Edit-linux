@@ -112,6 +112,14 @@ function xeTryPrepareShutdownRename(
   const aUseBackup: Boolean;
   out aResolvedBackupPath, aActionText: string
 ): Boolean;
+function xeTryPrepareShutdownRenameFlow(
+  const aDontSave: Boolean;
+  const aFilesToRename: TStrings;
+  const aDataPath: string;
+  var aBackupPath: string;
+  const aUseBackup: Boolean;
+  out aActionText: string
+): Boolean;
 function xeBuildTempSaveSuffix(const aNow: TDateTime): string;
 function xeTryEnsureParentDirectoryForFile(const aFullPath: string; out aErrorText: string): Boolean;
 procedure xeBuildSaveTargetFileName(
@@ -622,6 +630,29 @@ begin
   aResolvedBackupPath := xeEnsureBackupPath(aBackupPath, aDataPath, aUseBackup);
   aActionText := 'Renaming previously saved files';
   Result := True;
+end;
+
+function xeTryPrepareShutdownRenameFlow(
+  const aDontSave: Boolean;
+  const aFilesToRename: TStrings;
+  const aDataPath: string;
+  var aBackupPath: string;
+  const aUseBackup: Boolean;
+  out aActionText: string
+): Boolean;
+begin
+  wbFileForceClosed;
+  Result := xeTryPrepareShutdownRename(
+    aDontSave,
+    aFilesToRename,
+    aDataPath,
+    aBackupPath,
+    aUseBackup,
+    aBackupPath,
+    aActionText
+  );
+  if Result then
+    wbCurrentAction := aActionText;
 end;
 
 function xeBuildTempSaveSuffix(const aNow: TDateTime): string;
