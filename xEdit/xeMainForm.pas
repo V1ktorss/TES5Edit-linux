@@ -16033,15 +16033,15 @@ begin
     except
       on E: Exception do begin
         if not (E is EAbort) then
-          AddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Error "' + E.ClassName + '": "' + E.Message + '"');
+          AddMessage(xeBuildSaveUnhandledExceptionMessage(Now - wbStartTime, E.ClassName, E.Message));
         AnyErrors := True;
       end;
     end;
 
     if AnyErrors then
-      AddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Errors have occured. At least one file was not saved.');
+      AddMessage(xeBuildSaveFailureSummaryMessage(Now - wbStartTime));
     if SavedAny then begin
-      AddMessage('[' + wbFormatElapsedTime( Now - wbStartTime) + '] Done saving.');
+      AddMessage(xeBuildSaveSuccessSummaryMessage(Now - wbStartTime));
       Result := srAllDone;
     end;
     if AnyErrors then

@@ -59,6 +59,12 @@ function xeTryPrepareSourceFileForRename(
 ): Boolean;
 function xeBuildSaveStartMessage(const aRelativeName: string): string;
 function xeBuildSaveErrorMessage(const aRelativeName, aErrorText: string): string;
+function xeBuildSaveUnhandledExceptionMessage(
+  const aElapsed: TDateTime;
+  const aExceptionClassName, aExceptionMessage: string
+): string;
+function xeBuildSaveFailureSummaryMessage(const aElapsed: TDateTime): string;
+function xeBuildSaveSuccessSummaryMessage(const aElapsed: TDateTime): string;
 function xeBuildTempSaveSuffix(const aNow: TDateTime): string;
 function xeTryEnsureParentDirectoryForFile(const aFullPath: string; out aErrorText: string): Boolean;
 procedure xeBuildSaveTargetFileName(
@@ -351,6 +357,24 @@ end;
 function xeBuildSaveErrorMessage(const aRelativeName, aErrorText: string): string;
 begin
   Result := 'Error saving ' + aRelativeName + ': ' + aErrorText;
+end;
+
+function xeBuildSaveUnhandledExceptionMessage(
+  const aElapsed: TDateTime;
+  const aExceptionClassName, aExceptionMessage: string
+): string;
+begin
+  Result := '[' + wbFormatElapsedTime(aElapsed) + '] Error "' + aExceptionClassName + '": "' + aExceptionMessage + '"';
+end;
+
+function xeBuildSaveFailureSummaryMessage(const aElapsed: TDateTime): string;
+begin
+  Result := '[' + wbFormatElapsedTime(aElapsed) + '] Errors have occured. At least one file was not saved.';
+end;
+
+function xeBuildSaveSuccessSummaryMessage(const aElapsed: TDateTime): string;
+begin
+  Result := '[' + wbFormatElapsedTime(aElapsed) + '] Done saving.';
 end;
 
 function xeBuildTempSaveSuffix(const aNow: TDateTime): string;

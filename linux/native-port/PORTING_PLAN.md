@@ -351,6 +351,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved save-status message formatting (`Saving: ...`, `Error saving ...`) into service helpers (`xeBuildSaveStartMessage`, `xeBuildSaveErrorMessage`)
   - moved save-write exception reconciliation (`failure flags + formatted error text`) into service helper (`xeHandleSaveWriteException`)
   - moved `SavedThisOne` guard + rename-flow dispatch into service helper (`xeFinalizeSavedModuleRenameFlowIfSaved`)
+  - moved save-tail summary/exception message formatting into service helpers (`xeBuildSaveUnhandledExceptionMessage`, `xeBuildSaveFailureSummaryMessage`, `xeBuildSaveSuccessSummaryMessage`)
 - Reduced GUI WinAPI import sites:
   - removed `Messages` from `xEdit/xeRichEditForm.pas` (`WM_KEYDOWN` replaced by local constant)
   - removed `Messages` from `xEdit/xePushLikeButton.pas` by replacing message-handler path with `Click` override + local `BM_SETCHECK`
