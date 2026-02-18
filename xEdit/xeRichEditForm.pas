@@ -13,9 +13,12 @@ unit xeRichEditForm;
 interface
 
 uses
-  Messages, System.SysUtils, System.Variants, System.Classes, Graphics,
+  System.SysUtils, System.Variants, System.Classes, Graphics,
   Controls, Forms, Dialogs, StdCtrls, JvExStdCtrls, JvRichEdit,
   ExtCtrls, ComCtrls, VirtualTrees, JvExExtCtrls, JvSplitter, xePushLikeButton;
+
+const
+  xeWmKeyDown = $0100;
 
 type
   TfrmRichEdit = class(TForm)
@@ -187,7 +190,7 @@ begin
         if not reMain.Focused then begin
           Inc(InRedirectKey);
           try
-            reMain.Perform(WM_KEYDOWN, Key, 0);
+            reMain.Perform(xeWmKeyDown, Key, 0);
           finally
             Dec(InRedirectKey);
           end;
