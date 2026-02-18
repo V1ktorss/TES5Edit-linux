@@ -359,6 +359,52 @@ function xeTryGetLatestNexusVersion(const aUrl: string; out aVersion: TwbVersion
 
 implementation
 
+uses
+  {$IFDEF MSWINDOWS}
+  WinInet,
+  {$ENDIF}
+  JsonDataObjects;
+
+function xeTryDownloadUrlUtf8(const aUrl: string; out aContent: UTF8String): Boolean;
+{$IFDEF MSWINDOWS}
+var
+  lNetHandle: HINTERNET;
+  lUrlHandle: HINTERNET;
+  lBuffer: array[0..1023] of Byte;
+  lBytesRead: DWORD;
+  lChunk: UTF8String;
+{$ENDIF}
+begin
+  Result := False;
+  aContent := '';
+  if aUrl = '' then
+    Exit;
+
+  {$IFDEF MSWINDOWS}
+  lNetHandle := InternetOpen('xEdit', INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0);
+  if not Assigned(lNetHandle) then
+    Exit;
+  try
+    lUrlHandle := InternetOpenUrl(lNetHandle, PChar(aUrl), nil, 0, INTERNET_FLAG_RELOAD, 0);
+    if not Assigned(lUrlHandle) then
+      Exit;
+    try
+      repeat
+        InternetReadFile(lUrlHandle, @lBuffer, SizeOf(lBuffer), lBytesRead);
+        SetString(lChunk, PAnsiChar(@lBuffer[0]), lBytesRead);
+        aContent := aContent + lChunk;
+      until lBytesRead = 0;
+      Result := True;
+    finally
+      InternetCloseHandle(lUrlHandle);
+    end;
+  finally
+    InternetCloseHandle(lNetHandle);
+  end;
+  Exit;
+  {$ENDIF}
+end;
+
 function xeTryReadGameLinkSelectionValues(
   const aFileName: string;
   out aSelectedRefID, aSelectedBaseID: TwbFormID
@@ -1890,13 +1936,15 @@ begin
 end;
 
 function xeTryGetLatestXEditVersionFromGitHub(out aVersion: TwbVersion): Boolean;
+var
+  lJson: UTF8String;
 begin
   Result := False;
   aVersion := '';
+  if not xeTryDownloadUrlUtf8('https://api.github.com/repos/TES5Edit/TES5Edit/releases', lJson) then
+    Exit;
   try
-    aVersion := xeParseLatestXEditVersionFromGitHubJson(
-      GetUrlContent('https://api.github.com/repos/TES5Edit/TES5Edit/releases')
-    );
+    aVersion := xeParseLatestXEditVersionFromGitHubJson(lJson);
     Result := True;
   except
   end;
@@ -1904,15 +1952,16 @@ end;
 
 function xeTryGetLatestNexusVersion(const aUrl: string; out aVersion: TwbVersion): Boolean;
 var
-  lHtml: string;
+  lHtml: UTF8String;
 begin
   Result := False;
   aVersion := '';
   if aUrl = '' then
     Exit;
+  if not xeTryDownloadUrlUtf8(aUrl, lHtml) then
+    Exit;
 
   try
-    lHtml := GetUrlContent(aUrl);
     aVersion := xeParseNexusVersionFromHtml(lHtml);
     Result := True;
   except

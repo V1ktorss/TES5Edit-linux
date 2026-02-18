@@ -373,6 +373,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved loader-shutdown wait loop (`process messages` + `sleep/poll`) into service helper (`xeWaitUntil`) and reused it in `FormClose`
   - moved force thread-termination call path from `xeMainForm` to `wbPlatform` (`wbForceTerminateThread`) and simplified `xeFinalizeBackgroundThread` to platform-wrapper usage only
   - moved loader-shutdown wait decision/flagging (`LoaderStarted`/`LoaderDone` + `wbForceTerminate`) into service helper (`xeShouldWaitForLoaderShutdown`)
+  - moved release-check network download path out of `xeMainForm` into `xeMainFormServices` (`xeTryDownloadUrlUtf8`, WinInet-gated in services); removed `WinInet`/JSON parsing dependency from `xeMainForm`
   - moved backup-module temp-save plan generation (`target backup path` + progress action text) into service helper (`xeBuildBackupModuleTempSavePlan`)
   - moved full non-UI backup-module flow (`source prepare`, `backup plan`, `rename execution`) into service helper (`xeTryRunBackupModuleFlow`)
 - Reduced GUI WinAPI import sites:
