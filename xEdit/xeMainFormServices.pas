@@ -459,6 +459,8 @@ function xeResolveColumnActiveIndex(
   const aColumn, aActiveRecordCount: Integer
 ): Integer;
 function xeMainRecordSupportsCopyAsNew(const aMainRecord: IwbMainRecord): Boolean;
+function xeMainRecordSupportsCopyAsWrapper(const aMainRecord: IwbMainRecord): Boolean;
+function xeBuildLocalizationSwitchCaption(const aIsLocalized: Boolean): string;
 function xeElementsContainOnlyMainRecordsWithSharedSignature(const aSelection: TDynElements): Boolean;
 function xeElementsContainOnlyFiles(const aSelection: TDynElements): Boolean;
 function xeElementsContainOnlyGroupRecords(const aSelection: TDynElements): Boolean;
@@ -2463,6 +2465,33 @@ begin
     (lSignature = 'LAND') or
     (lSignature = 'ROAD')
   );
+end;
+
+function xeMainRecordSupportsCopyAsWrapper(const aMainRecord: IwbMainRecord): Boolean;
+var
+  lSignature: TwbSignature;
+begin
+  Result := False;
+  if not Assigned(aMainRecord) then
+    Exit;
+
+  lSignature := aMainRecord.Signature;
+  Result :=
+    (lSignature = 'LVLB') or
+    (lSignature = 'LVLC') or
+    (lSignature = 'LVLI') or
+    (lSignature = 'LVLN') or
+    (lSignature = 'LVLP') or
+    (lSignature = 'LVSC') or
+    (lSignature = 'LVSP');
+end;
+
+function xeBuildLocalizationSwitchCaption(const aIsLocalized: Boolean): string;
+begin
+  if aIsLocalized then
+    Result := 'Delocalize plugin'
+  else
+    Result := 'Localize plugin';
 end;
 
 function xeElementsContainOnlyMainRecordsWithSharedSignature(const aSelection: TDynElements): Boolean;

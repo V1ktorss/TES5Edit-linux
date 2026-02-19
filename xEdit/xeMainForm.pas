@@ -15059,14 +15059,7 @@ begin
 
   mniNavCopyAsWrapper.Visible := False;
   if not (wbIsFallout76 or wbIsMorrowind) and mniNavCopyAsOverride.Visible and IsMainRecord then
-    mniNavCopyAsWrapper.Visible :=
-      (MainRecord.Signature = 'LVLB') or
-      (MainRecord.Signature = 'LVLC') or
-      (MainRecord.Signature = 'LVLI') or
-      (MainRecord.Signature = 'LVLN') or
-      (MainRecord.Signature = 'LVLP') or
-      (MainRecord.Signature = 'LVSC') or
-      (MainRecord.Signature = 'LVSP');
+    mniNavCopyAsWrapper.Visible := xeMainRecordSupportsCopyAsWrapper(MainRecord);
   mniNavCopyAsSpawnRateOverride.Visible :=
     mniNavCopyAsWrapper.Visible;
 
@@ -15116,10 +15109,7 @@ begin
     (Element.ElementType = etFile) and
     (Element._File.LoadOrder > 0);
   if mniNavLocalizationSwitch.Visible then
-    if Element._File.IsLocalized then
-      mniNavLocalizationSwitch.Caption := 'Delocalize plugin'
-    else
-      mniNavLocalizationSwitch.Caption := 'Localize plugin';
+    mniNavLocalizationSwitch.Caption := xeBuildLocalizationSwitchCaption(Element._File.IsLocalized);
 
   mniNavLogAnalyzer.Visible := (wbGameMode in [gmTES4, gmFO3, gmFNV]) or wbIsSkyrim;
   mniNavLogAnalyzer.Clear;
