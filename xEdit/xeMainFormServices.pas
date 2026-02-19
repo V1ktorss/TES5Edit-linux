@@ -462,6 +462,10 @@ function xeMainRecordSupportsCopyAsNew(const aMainRecord: IwbMainRecord): Boolea
 function xeMainRecordsIncludeAnyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsIncludeNonCopyNewRecords(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsIncludeOnlyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
+function xeTryEvaluateRefByVwdSelection(
+  const aSelection: TDynMainRecords;
+  out aAnyVwd, aAnyNotVwd: Boolean
+): Boolean;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -2497,6 +2501,39 @@ begin
       Exit(False);
     if not Assigned(lMainRecord.ChildGroup) then
       Exit(False);
+  end;
+
+  Result := True;
+end;
+
+function xeTryEvaluateRefByVwdSelection(
+  const aSelection: TDynMainRecords;
+  out aAnyVwd, aAnyNotVwd: Boolean
+): Boolean;
+var
+  i: Integer;
+  lMainRecord: IwbMainRecord;
+begin
+  aAnyVwd := False;
+  aAnyNotVwd := False;
+  Result := False;
+
+  if Length(aSelection) = 0 then
+    Exit;
+
+  for i := Low(aSelection) to High(aSelection) do begin
+    lMainRecord := aSelection[i];
+    if not Assigned(lMainRecord) then
+      Exit;
+    if lMainRecord.Signature <> 'REFR' then
+      Exit;
+    if not lMainRecord.IsEditable then
+      Exit;
+
+    if lMainRecord.IsVisibleWhenDistant then
+      aAnyVwd := True
+    else
+      aAnyNotVwd := True;
   end;
 
   Result := True;

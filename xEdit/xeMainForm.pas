@@ -15218,20 +15218,8 @@ begin
 
   mniRefByApplyScript.Visible := Length(Selected) > 0;
 
-  AnyVWD    := False;
-  AnyNotVWD := False;
-
-  for i := Low(Selected) to High(Selected) do begin
-    Rec := Selected[i];
-    if Rec.Signature <> 'REFR' then
-      Exit;
-    if not Rec.IsEditable then
-      Exit;
-    if Rec.IsVisibleWhenDistant then
-      AnyVWD := True
-    else
-      AnyNotVWD := True;
-  end;
+  if not xeTryEvaluateRefByVwdSelection(Selected, AnyVWD, AnyNotVWD) then
+    Exit;
 
   mniRefByVWD.Visible := AnyNotVWD;
   mniRefByNotVWD.Visible := AnyVWD;
