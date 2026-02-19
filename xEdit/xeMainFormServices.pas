@@ -63,6 +63,8 @@ function xeDetachPostedStringPayload(const aText: string): NativeUInt;
 function xeTakePostedStringPayload(const aPayload: NativeUInt): string;
 function xeSplitPostedMessageLines(const aText: string): TStringDynArray;
 procedure xeAppendPostedMessageLines(const aPayload: NativeUInt; var aLines: TStringList);
+function xeTakePostedFilePayload(const aPayload: NativeUInt): IwbFile;
+function xeTakePostedDateTimePayload(const aPayload: NativeUInt): TDateTime;
 function xeHandleThreadShutdown(
   const aThread: TThread;
   const aRequestTerminate, aAllowForceTerminate: Boolean
@@ -557,6 +559,18 @@ begin
   lLines := xeSplitPostedMessageLines(lText);
   for i := Low(lLines) to High(lLines) do
     aLines.Add(lLines[i]);
+end;
+
+function xeTakePostedFilePayload(const aPayload: NativeUInt): IwbFile;
+begin
+  Result := IwbFile(Pointer(aPayload));
+end;
+
+function xeTakePostedDateTimePayload(const aPayload: NativeUInt): TDateTime;
+begin
+  if aPayload = 0 then
+    Exit(0);
+  Result := PDateTime(aPayload)^;
 end;
 
 function xeHandleThreadShutdown(

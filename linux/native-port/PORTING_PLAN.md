@@ -113,6 +113,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved focused-column resolution logic from `xeMainForm` into `xeMainFormServices` (`xeResolveFocusedColumn`) and reused it in view-focus/text paths
   - reused `xeResolveFocusedColumn` in multi-copy selection path (`mniViewCopyMultipleToSelectedRecordsClick`) to remove direct focused-column branching from form logic
   - moved posted-message payload processing from `xeMainForm.HandleUserAddMessage` into `xeMainFormServices` (`xeAppendPostedMessageLines`)
+  - moved posted payload decoding for loader/file handlers into `xeMainFormServices` (`xeTakePostedDateTimePayload`, `xeTakePostedFilePayload`)
 - Extended `wbPlatform` helpers:
   - added `wbShowWindowNoActivate` wrapper for non-activating tip-form display
 - Started `xejviScriptAdapterMisc` decoupling:

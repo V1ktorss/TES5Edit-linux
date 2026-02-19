@@ -20439,7 +20439,7 @@ end;
 
 procedure TfrmMain.HandleUserAddFile(aFilePtr: NativeUInt);
 begin
-  AddFile(IwbFile(Pointer(aFilePtr)));
+  AddFile(xeTakePostedFilePayload(aFilePtr));
 end;
 
 procedure TfrmMain.HandleUserLoaderDone(aStartTimePtr: NativeUInt; aLoadOrder: NativeInt);
@@ -20470,7 +20470,7 @@ var
 begin
   try
     wbLoaderDone := True;
-    wbStartTime := PDateTime(aStartTimePtr)^;
+    wbStartTime := xeTakePostedDateTimePayload(aStartTimePtr);
     LoadOrder := aLoadOrder;
     if LoadOrder < 0 then begin
       Inc(wbShowStartTime);
