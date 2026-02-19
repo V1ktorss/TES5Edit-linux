@@ -8782,57 +8782,51 @@ end;
 
 procedure TfrmMain.mniViewMoveDownClick(Sender: TObject);
 var
-  NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
 begin
   if not wbEditAllowed then
     Exit;
 
-  NodeDatas := vstView.GetNodeData(vstViewFocusedNode);
-  if Assigned(NodeDatas) then begin
-    Element := NodeDatas[Pred(vstView.FocusedColumn)].Element;
-    if Assigned(Element) then begin
-      if not EditWarn then
-        Exit;
+  Element := GetFocusedViewElementSafely;
+  if not Assigned(Element) then
+    Exit;
 
-      LockProcessMessages;
-      try
-        Element.MoveDown;
-        ViewFocusedElement := Element;
-        EditFocusedViewElement := False;
-        ResetActiveTree;
-      finally
-        UnLockProcessMessages;
-      end;
-    end;
+  if not EditWarn then
+    Exit;
+
+  LockProcessMessages;
+  try
+    Element.MoveDown;
+    ViewFocusedElement := Element;
+    EditFocusedViewElement := False;
+    ResetActiveTree;
+  finally
+    UnLockProcessMessages;
   end;
 end;
 
 procedure TfrmMain.mniViewMoveUpClick(Sender: TObject);
 var
-  NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
 begin
   if not wbEditAllowed then
     Exit;
 
-  NodeDatas := vstView.GetNodeData(vstViewFocusedNode);
-  if Assigned(NodeDatas) then begin
-    Element := NodeDatas[Pred(vstView.FocusedColumn)].Element;
-    if Assigned(Element) then begin
-      if not EditWarn then
-        Exit;
+  Element := GetFocusedViewElementSafely;
+  if not Assigned(Element) then
+    Exit;
 
-      LockProcessMessages;
-      try
-        Element.MoveUp;
-        ViewFocusedElement := Element;
-        EditFocusedViewElement := False;
-        ResetActiveTree;
-      finally
-        UnlockProcessMessages;
-      end;
-    end;
+  if not EditWarn then
+    Exit;
+
+  LockProcessMessages;
+  try
+    Element.MoveUp;
+    ViewFocusedElement := Element;
+    EditFocusedViewElement := False;
+    ResetActiveTree;
+  finally
+    UnlockProcessMessages;
   end;
 end;
 
@@ -9832,126 +9826,131 @@ end;
 
 procedure TfrmMain.mniViewEditClick(Sender: TObject);
 var
-  NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
   EditValue                   : string;
   NamedDef                    : IwbNamedDef;
   IntegerDef                  : IwbIntegerDef;
   Flags                       : IwbFlagsDef;
+  FocusedActiveIndex          : Integer;
   i, StringID                 : Integer;
 begin
   if not wbEditAllowed then
     Exit;
 
-  NodeDatas := vstView.GetNodeData(vstViewFocusedNode);
-  if Assigned(NodeDatas) then begin
-    Element := NodeDatas[Pred(vstView.FocusedColumn)].Element;
-    if Assigned(Element) then begin
-      if not EditWarn then
-        Exit;
+  Element := GetFocusedViewElementSafely;
+  if not Assigned(Element) then
+    Exit;
 
-      EditValue := Element.EditValue;
+  FocusedActiveIndex := xeResolveFocusedActiveIndex(vstView.FocusedColumn, Length(ActiveRecords));
+  if FocusedActiveIndex < 0 then
+    Exit;
 
-      // for Flags, try to get the enclosed value
-      if Supports(Element.Def, IwbSubRecordDef) then
-        NamedDef := (Element.Def as IwbSubrecordDef).Value
-      else
-        NamedDef := Element.Def;
+  if not EditWarn then
+    Exit;
 
-      // flags editor
-      if Supports(NamedDef, IwbIntegerDef, IntegerDef) and
-        Supports(IntegerDef.Formater[Element], IwbFlagsDef, Flags) then begin
+  EditValue := Element.EditValue;
 
-        with TfrmFileSelect.Create(Self) do try
-          Caption := 'Edit Value';
+  // for Flags, try to get the enclosed value
+  if Supports(Element.Def, IwbSubRecordDef) then
+    NamedDef := (Element.Def as IwbSubrecordDef).Value
+  else
+    NamedDef := Element.Def;
 
-          for i := 0 to Pred(Flags.FlagCount) do begin
-            if Flags.FlagDontShow[Element, i] then
-              CheckListBox1.AddItem('', nil)
-            else
-              CheckListBox1.AddItem(Flags.Flags[i, False], nil);
-            CheckListBox1.Checked[i] := (i < Length(EditValue)) and (EditValue[i+1] = '1');
-          end;
+  // flags editor
+  if Supports(NamedDef, IwbIntegerDef, IntegerDef) and
+    Supports(IntegerDef.Formater[Element], IwbFlagsDef, Flags) then begin
 
-          if ShowModal = mrOK then begin
-            EditValue := StringOfChar('0', CheckListBox1.Items.Count);
-            for i := 0 to Pred(CheckListBox1.Items.Count) do begin
-              if CheckListBox1.Checked[i] then
-                EditValue[i+1] := '1';
-            end;
-          end;
-        finally
-          Free;
-        end;
+    with TfrmFileSelect.Create(Self) do try
+      Caption := 'Edit Value';
 
-      end
-
-      // localization editor
-      else if Element._File.IsLocalized and Assigned(Element.ValueDef) and (Element.ValueDef.DefType = dtLString) then begin
-        with TfrmLocalization.Create(Self) do try
-          wbLocalizationHandler.NoTranslate := true;
-          StringID := StrToInt64Def('$' + Element.Value, 0);
-          wbLocalizationHandler.NoTranslate := false;
-          EditValue(Element._File.FileName, StringID);
-          ShowModal;
-        finally
-          wbLocalizationHandler.NoTranslate := false;
-          Free;
-        end;
-        vstView.Invalidate;
-        Exit;
-      end
-
-      // string editor
-      else if not InputQuery('Edit Value', 'Please change the value:', EditValue) then
-        Exit;
-
-      if wbConvertIntFormID and Element.CanContainFormIDs then
-      begin
-        var tmp: Integer;
-        if not StartsText('0', EditValue) and not StartsText('0x', EditValue) then
-          if TryStrToInt(EditValue, tmp) then
-            EditValue := IntToHex(tmp, 8);
-
-        if StartsText('0x', EditValue) then
-          EditValue := ReplaceText(EditValue, '0x', '');
+      for i := 0 to Pred(Flags.FlagCount) do begin
+        if Flags.FlagDontShow[Element, i] then
+          CheckListBox1.AddItem('', nil)
+        else
+          CheckListBox1.AddItem(Flags.Flags[i, False], nil);
+        CheckListBox1.Checked[i] := (i < Length(EditValue)) and (EditValue[i+1] = '1');
       end;
 
-      Element.EditValue := EditValue;
-      ActiveRecords[Pred(vstView.FocusedColumn)].UpdateRefs;
-      ViewFocusedElement := Element;
-      EditFocusedViewElement := False;
-      Element := nil;
-      PostResetActiveTree;
-      InvalidateElementsTreeView(NoNodes);
+      if ShowModal = mrOK then begin
+        EditValue := StringOfChar('0', CheckListBox1.Items.Count);
+        for i := 0 to Pred(CheckListBox1.Items.Count) do begin
+          if CheckListBox1.Checked[i] then
+            EditValue[i+1] := '1';
+          end;
+        end;
+      end;
+    finally
+      Free;
     end;
+
+  end
+
+  // localization editor
+  else if Element._File.IsLocalized and Assigned(Element.ValueDef) and (Element.ValueDef.DefType = dtLString) then begin
+    with TfrmLocalization.Create(Self) do try
+      wbLocalizationHandler.NoTranslate := true;
+      StringID := StrToInt64Def('$' + Element.Value, 0);
+      wbLocalizationHandler.NoTranslate := false;
+      EditValue(Element._File.FileName, StringID);
+      ShowModal;
+    finally
+      wbLocalizationHandler.NoTranslate := false;
+      Free;
+    end;
+    vstView.Invalidate;
+    Exit;
+  end
+
+  // string editor
+  else if not InputQuery('Edit Value', 'Please change the value:', EditValue) then
+    Exit;
+
+  if wbConvertIntFormID and Element.CanContainFormIDs then
+  begin
+    var tmp: Integer;
+    if not StartsText('0', EditValue) and not StartsText('0x', EditValue) then
+      if TryStrToInt(EditValue, tmp) then
+        EditValue := IntToHex(tmp, 8);
+
+    if StartsText('0x', EditValue) then
+      EditValue := ReplaceText(EditValue, '0x', '');
   end;
+
+  Element.EditValue := EditValue;
+  ActiveRecords[FocusedActiveIndex].UpdateRefs;
+  ViewFocusedElement := Element;
+  EditFocusedViewElement := False;
+  Element := nil;
+  PostResetActiveTree;
+  InvalidateElementsTreeView(NoNodes);
 end;
 
 procedure TfrmMain.mniViewSetToDefaultClick(Sender: TObject);
 var
-  NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
+  FocusedActiveIndex          : Integer;
 begin
   if not wbEditAllowed then
     Exit;
 
-  NodeDatas := vstView.GetNodeData(vstViewFocusedNode);
-  if Assigned(NodeDatas) then begin
-    Element := NodeDatas[Pred(vstView.FocusedColumn)].Element;
-    if Assigned(Element) then begin
-      if not EditWarn then
-        Exit;
+  Element := GetFocusedViewElementSafely;
+  if not Assigned(Element) then
+    Exit;
 
-      Element.SetToDefault;
-      ActiveRecords[Pred(vstView.FocusedColumn)].UpdateRefs;
-      ViewFocusedElement := Element;
-      EditFocusedViewElement := False;
-      Element := nil;
-      PostResetActiveTree;
-      InvalidateElementsTreeView(NoNodes);
-    end;
-  end;
+  FocusedActiveIndex := xeResolveFocusedActiveIndex(vstView.FocusedColumn, Length(ActiveRecords));
+  if FocusedActiveIndex < 0 then
+    Exit;
+
+  if not EditWarn then
+    Exit;
+
+  Element.SetToDefault;
+  ActiveRecords[FocusedActiveIndex].UpdateRefs;
+  ViewFocusedElement := Element;
+  EditFocusedViewElement := False;
+  Element := nil;
+  PostResetActiveTree;
+  InvalidateElementsTreeView(NoNodes);
 end;
 
 procedure TfrmMain.mniViewHeaderCopyIntoClick(Sender: TObject);
@@ -11844,6 +11843,7 @@ var
   NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
   NextNode                    : PVirtualNode;
+  FocusedActiveIndex          : Integer;
 begin
   if not wbEditAllowed then
     Exit;
@@ -11864,18 +11864,25 @@ begin
         NextNode := nil;
     end;
 
+    FocusedActiveIndex := xeResolveFocusedActiveIndex(vstView.FocusedColumn, Length(ActiveRecords));
+    if FocusedActiveIndex < 0 then
+      Exit;
+
     if Assigned(NodeDatas) then begin
-      Element := NodeDatas[Pred(vstView.FocusedColumn)].Element;
+      Element := NodeDatas[FocusedActiveIndex].Element;
       if Assigned(Element) then begin
 
         if Assigned(NextNode) then begin
           NodeDatas := vstView.GetNodeData(NextNode);
-          ViewFocusedElement := NodeDatas[Pred(vstView.FocusedColumn)].Element;
+          if Assigned(NodeDatas) then
+            ViewFocusedElement := NodeDatas[FocusedActiveIndex].Element
+          else
+            ViewFocusedElement := nil;
           EditFocusedViewElement := False;
         end;
 
         Element.Remove;
-        ActiveRecords[Pred(vstView.FocusedColumn)].UpdateRefs;
+        ActiveRecords[FocusedActiveIndex].UpdateRefs;
         Element := nil;
         PostResetActiveTree;
         InvalidateElementsTreeView(NoNodes);
@@ -11891,6 +11898,7 @@ var
   NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
   NextNode                    : PVirtualNode;
+  FocusedActiveIndex          : Integer;
 begin
   if not wbEditAllowed then
     Exit;
@@ -11911,18 +11919,25 @@ begin
         NextNode := nil;
     end;
 
+    FocusedActiveIndex := xeResolveFocusedActiveIndex(vstView.FocusedColumn, Length(ActiveRecords));
+    if FocusedActiveIndex < 0 then
+      Exit;
+
     if Assigned(NodeDatas) then begin
-      Element := NodeDatas[Pred(vstView.FocusedColumn)].Element;
+      Element := NodeDatas[FocusedActiveIndex].Element;
       if Assigned(Element) then begin
 
         if Assigned(NextNode) then begin
           NodeDatas := vstView.GetNodeData(NextNode);
-          ViewFocusedElement := NodeDatas[Pred(vstView.FocusedColumn)].Element;
+          if Assigned(NodeDatas) then
+            ViewFocusedElement := NodeDatas[FocusedActiveIndex].Element
+          else
+            ViewFocusedElement := nil;
           EditFocusedViewElement := False;
         end;
 
         Element.Clear;
-        ActiveRecords[Pred(vstView.FocusedColumn)].UpdateRefs;
+        ActiveRecords[FocusedActiveIndex].UpdateRefs;
         Element := nil;
         PostResetActiveTree;
         InvalidateElementsTreeView(NoNodes);
@@ -14412,24 +14427,21 @@ end;
 
 procedure TfrmMain.mniViewNextMemberClick(Sender: TObject);
 var
-  NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
 begin
   if not wbEditAllowed then
     Exit;
 
-  NodeDatas := vstView.GetNodeData(vstViewFocusedNode);
-  if Assigned(NodeDatas) then begin
-    Element := NodeDatas[Pred(vstView.FocusedColumn)].Element;
-    if Assigned(Element) then begin
-      if not EditWarn then
-        Exit;
+  Element := GetFocusedViewElementSafely;
+  if not Assigned(Element) then
+    Exit;
 
-      ViewFocusedElement := Element.NextMember;
-      EditFocusedViewElement := False;
-      PostResetActiveTree;
-    end;
-  end;
+  if not EditWarn then
+    Exit;
+
+  ViewFocusedElement := Element.NextMember;
+  EditFocusedViewElement := False;
+  PostResetActiveTree;
 end;
 
 function TfrmMain.NodeDatasForContainer(const aContainer: IwbDataContainer): TDynViewNodeDatas;
@@ -15477,24 +15489,21 @@ end;
 
 procedure TfrmMain.mniViewPreviousMemberClick(Sender: TObject);
 var
-  NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
 begin
   if not wbEditAllowed then
     Exit;
 
-  NodeDatas := vstView.GetNodeData(vstViewFocusedNode);
-  if Assigned(NodeDatas) then begin
-    Element := NodeDatas[Pred(vstView.FocusedColumn)].Element;
-    if Assigned(Element) then begin
-      if not EditWarn then
-        Exit;
+  Element := GetFocusedViewElementSafely;
+  if not Assigned(Element) then
+    Exit;
 
-      ViewFocusedElement := Element.PreviousMember;
-      EditFocusedViewElement := False;
-      PostResetActiveTree;
-    end;
-  end;
+  if not EditWarn then
+    Exit;
+
+  ViewFocusedElement := Element.PreviousMember;
+  EditFocusedViewElement := False;
+  PostResetActiveTree;
 end;
 
 procedure TfrmMain.ReInitTree(aNoGameMaster: Boolean; aFiles: TwbFiles);
