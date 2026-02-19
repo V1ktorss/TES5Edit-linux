@@ -111,6 +111,7 @@ This document tracks what is already done for the native Linux path and what com
   - aligned `xeMainForm.AddMessage` line splitting with service helper (`xeSplitPostedMessageLines`) to avoid duplicate split logic
   - moved `xeMainForm` master/ONAM batch file loops into `xeMainFormServices` (`xeSetAllToMaster`, `xeUpdateAllOnam`)
   - moved focused-column resolution logic from `xeMainForm` into `xeMainFormServices` (`xeResolveFocusedColumn`) and reused it in view-focus/text paths
+  - reused `xeResolveFocusedColumn` in multi-copy selection path (`mniViewCopyMultipleToSelectedRecordsClick`) to remove direct focused-column branching from form logic
 - Extended `wbPlatform` helpers:
   - added `wbShowWindowNoActivate` wrapper for non-activating tip-form display
 - Started `xejviScriptAdapterMisc` decoupling:

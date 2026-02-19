@@ -8016,10 +8016,17 @@ var
   TargetMainRecord            : IwbMainRecord;
   SelectedNodes               : TNodeArray;
   i, j, k                     : Integer;
+  FocusedColumn               : Integer;
   Node                        : PVirtualNode;
 begin
   if not wbEditAllowed then
     Exit;
+
+  FocusedColumn := xeResolveFocusedColumn(
+    FocusedColumnOverride,
+    vstView.FocusedColumn,
+    Length(ActiveRecords)
+  );
 
   SourceMainRecord := nil;
   SetLength(AllNodeDatas, 0);
@@ -8028,8 +8035,8 @@ begin
     NodeDatas := vstView.GetNodeData(Node);
     if Assigned(NodeDatas) then begin
       Element := nil;
-      if (vstView.FocusedColumn > 0) and (Pred(vstView.FocusedColumn) <= High(ActiveRecords)) then begin
-        Element := NodeDatas[Pred(vstView.FocusedColumn)].Element;
+      if (FocusedColumn > 0) and (Pred(FocusedColumn) <= High(ActiveRecords)) then begin
+        Element := NodeDatas[Pred(FocusedColumn)].Element;
         if Assigned(Element) and not Assigned(SourceMainRecord) then
           SourceMainRecord := Element.ContainingMainRecord;
       end;
