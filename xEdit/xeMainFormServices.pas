@@ -482,6 +482,11 @@ function xeTryEvaluateRefByVwdSelection(
   const aSelection: TDynMainRecords;
   out aAnyVwd, aAnyNotVwd: Boolean
 ): Boolean;
+function xeTryEvaluateMainRecordVwdSelection(
+  const aSelection: TDynMainRecords;
+  const aRequireEditable: Boolean;
+  out aAnyVwd, aAnyNotVwd: Boolean
+): Boolean;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -2758,6 +2763,15 @@ function xeTryEvaluateRefByVwdSelection(
   const aSelection: TDynMainRecords;
   out aAnyVwd, aAnyNotVwd: Boolean
 ): Boolean;
+begin
+  Result := xeTryEvaluateMainRecordVwdSelection(aSelection, True, aAnyVwd, aAnyNotVwd);
+end;
+
+function xeTryEvaluateMainRecordVwdSelection(
+  const aSelection: TDynMainRecords;
+  const aRequireEditable: Boolean;
+  out aAnyVwd, aAnyNotVwd: Boolean
+): Boolean;
 var
   i: Integer;
   lMainRecord: IwbMainRecord;
@@ -2775,7 +2789,7 @@ begin
       Exit;
     if lMainRecord.Signature <> 'REFR' then
       Exit;
-    if not lMainRecord.IsEditable then
+    if aRequireEditable and (not lMainRecord.IsEditable) then
       Exit;
 
     if lMainRecord.IsVisibleWhenDistant then

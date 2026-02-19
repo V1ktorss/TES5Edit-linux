@@ -124,6 +124,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved `SelectionIncludesAnyDeepCopyRecords`, `SelectionIncludesNonCopyNewRecords`, and `SelectionIncludesOnlyDeepCopyRecords` element-predicate logic into `xeMainFormServices` (`xeElementsContainAnyDeepCopyRecords`, `xeElementsContainNonCopyNewRecords`, `xeElementsContainOnlyGroupRecords`)
   - moved `pmuNavPopup` copy-wrapper signature allowlist and localization switch caption selection into `xeMainFormServices` (`xeMainRecordSupportsCopyAsWrapper`, `xeBuildLocalizationSwitchCaption`)
   - moved `pmuNavPopup` `Copy as Override` visibility rule (including reflection gate) into `xeMainFormServices` (`xeCanShowCopyAsOverride`)
+  - reduced `pmuNavPopup` cell-child VWD handling to one selection pass by using `xeTryEvaluateMainRecordVwdSelection(..., aRequireEditable=False)`; removed now-redundant `SelectionIncludesOnlyREFR/AnyNotVWD/AnyVWD` wrappers from `xeMainForm`
 - Extended `wbPlatform` helpers:
   - added `wbShowWindowNoActivate` wrapper for non-activating tip-form display
 - Started `xejviScriptAdapterMisc` decoupling:

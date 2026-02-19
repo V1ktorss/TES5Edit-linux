@@ -896,9 +896,6 @@ type
     function ByRefSelectionIncludesAnyDeepCopyRecords(aSelection: TDynMainRecords): Boolean;
     function ByRefSelectionIncludesOnlyDeepCopyRecords(aSelection: TDynMainRecords): Boolean;
 
-    function SelectionIncludesOnlyREFR(Selection: TNodeArray): Boolean;
-    function SelectionIncludesAnyNotVWD(Selection: TNodeArray): Boolean;
-    function SelectionIncludesAnyVWD(Selection: TNodeArray): Boolean;
     function TryResolveNavSelectionElements(var Selection: TNodeArray; out Elements: TDynElements): Boolean;
     function TryResolveNavSelectionMainRecords(var Selection: TNodeArray; out MainRecords: TDynMainRecords): Boolean;
     procedure CheckHistoryRemove(const aList: IInterfaceList; const aMainRecord: IwbMainRecord);
@@ -14906,6 +14903,9 @@ var
   i                           : Integer;
   Nodes                       : TNodeArray;
   SelectedElements            : TDynElements;
+  SelectedMainRecords         : TDynMainRecords;
+  AnyVWD                      : Boolean;
+  AnyNotVWD                   : Boolean;
   lItemCount                  : Integer;
   lAddToMni                   : TMenuItem;
   IsMainRecord                : Boolean;
@@ -15096,11 +15096,17 @@ begin
 
   mniNavCellChildPers.Visible := False;
   mniNavCellChildTemp.Visible := False;
-  mniNavCellChildNotVWD.Visible := mniNavCheckForErrors.Visible and SelectionIncludesOnlyREFR(NoNodes);
-  mniNavCellChildVWD.Visible := mniNavCellChildNotVWD.Visible;
-  if mniNavCellChildNotVWD.Visible then begin
-    mniNavCellChildNotVWD.Checked := SelectionIncludesAnyNotVWD(NoNodes);
-    mniNavCellChildVWD.Checked := SelectionIncludesAnyVWD(NoNodes);
+  mniNavCellChildNotVWD.Visible := False;
+  mniNavCellChildVWD.Visible := False;
+  if mniNavCheckForErrors.Visible then begin
+    Nodes := nil;
+    if TryResolveNavSelectionMainRecords(Nodes, SelectedMainRecords) and
+       xeTryEvaluateMainRecordVwdSelection(SelectedMainRecords, False, AnyVWD, AnyNotVWD) then begin
+      mniNavCellChildNotVWD.Visible := True;
+      mniNavCellChildVWD.Visible := True;
+      mniNavCellChildNotVWD.Checked := AnyNotVWD;
+      mniNavCellChildVWD.Checked := AnyVWD;
+    end;
   end;
 
   mniNavCreateSEQFile.Visible := wbIsSkyrim and
@@ -15947,26 +15953,6 @@ begin
   Result := True;
 end;
 
-function TfrmMain.SelectionIncludesAnyNotVWD(Selection: TNodeArray): Boolean;
-var
-  MainRecords: TDynMainRecords;
-begin
-  Result := False;
-  if not TryResolveNavSelectionMainRecords(Selection, MainRecords) then
-    Exit;
-  Result := xeMainRecordsContainAnyNotVisibleWhenDistant(MainRecords);
-end;
-
-function TfrmMain.SelectionIncludesAnyVWD(Selection: TNodeArray): Boolean;
-var
-  MainRecords: TDynMainRecords;
-begin
-  Result := False;
-  if not TryResolveNavSelectionMainRecords(Selection, MainRecords) then
-    Exit;
-  Result := xeMainRecordsContainAnyVisibleWhenDistant(MainRecords);
-end;
-
 function TfrmMain.SelectionIncludesNonCopyNewRecords: Boolean;
 var
   Selection: TNodeArray;
@@ -15989,16 +15975,6 @@ begin
   if not TryResolveNavSelectionElements(Selection, Elements) then
     Exit;
   Result := xeElementsContainOnlyGroupRecords(Elements);
-end;
-
-function TfrmMain.SelectionIncludesOnlyREFR(Selection: TNodeArray): Boolean;
-var
-  MainRecords: TDynMainRecords;
-begin
-  Result := False;
-  if not TryResolveNavSelectionMainRecords(Selection, MainRecords) then
-    Exit;
-  Result := xeMainRecordsContainOnlySignature(MainRecords, 'REFR');
 end;
 
 procedure TfrmMain.SendAddFile(const aFile: IwbFile);
