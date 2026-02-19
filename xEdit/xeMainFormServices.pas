@@ -459,6 +459,7 @@ function xeResolveColumnActiveIndex(
   const aColumn, aActiveRecordCount: Integer
 ): Integer;
 function xeMainRecordSupportsCopyAsNew(const aMainRecord: IwbMainRecord): Boolean;
+function xeMainRecordsShareSignature(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsIncludeAnyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsIncludeNonCopyNewRecords(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsIncludeOnlyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
@@ -2452,6 +2453,32 @@ begin
     (lSignature = 'LAND') or
     (lSignature = 'ROAD')
   );
+end;
+
+function xeMainRecordsShareSignature(const aSelection: TDynMainRecords): Boolean;
+var
+  i: Integer;
+  lSignature: TwbSignature;
+  lMainRecord: IwbMainRecord;
+begin
+  Result := False;
+  if Length(aSelection) < 2 then
+    Exit;
+
+  lMainRecord := aSelection[Low(aSelection)];
+  if not Assigned(lMainRecord) then
+    Exit;
+  lSignature := lMainRecord.Signature;
+
+  for i := Succ(Low(aSelection)) to High(aSelection) do begin
+    lMainRecord := aSelection[i];
+    if not Assigned(lMainRecord) then
+      Exit;
+    if lMainRecord.Signature <> lSignature then
+      Exit;
+  end;
+
+  Result := True;
 end;
 
 function xeMainRecordsIncludeAnyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;

@@ -15168,9 +15168,6 @@ var
   Selected  : TDynMainRecords;
   AnyVWD    : Boolean;
   AnyNotVWD : Boolean;
-  i         : Integer;
-  Rec       : IwbMainRecord;
-  sig       : TwbSignature;
 begin
   Selected := GetRefBySelectionAsMainRecords;
 
@@ -15203,18 +15200,8 @@ begin
 
   mniRefByCompareSelected.Visible := False;
 
-  if Length(Selected) > 1 then begin
-    mniRefByCompareSelected.Visible := True;
-    sig := Selected[Low(Selected)].Signature;
-    for i := Succ(Low(Selected)) to High(Selected) do begin
-      Rec := Selected[i];
-      if sig <> Rec.Signature then begin
-        mniRefByCompareSelected.Visible := False;
-        Break;
-      end else
-        sig := Rec.Signature;
-    end;
-  end;
+  if Length(Selected) > 1 then
+    mniRefByCompareSelected.Visible := xeMainRecordsShareSignature(Selected);
 
   mniRefByApplyScript.Visible := Length(Selected) > 0;
 
