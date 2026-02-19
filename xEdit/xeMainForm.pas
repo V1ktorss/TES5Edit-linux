@@ -6487,6 +6487,7 @@ procedure TfrmMain.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftStat
 var
   OffsetXY                    : TPoint;
   Column                      : TColumnIndex;
+  FocusedActiveIndex          : Integer;
   FocusFile                   : IwbFile;
   _File                       : IwbFile;
   NavNode                     : PVirtualNode;
@@ -6534,8 +6535,9 @@ begin
       OffsetXY := vstView.OffsetXY;
       Column := vstView.FocusedColumn;
       FocusFile := nil;
-      if (Pred(Column) >= Low(ActiveRecords)) and (Pred(Column) <= High(ActiveRecords)) then
-        with ActiveRecords[Pred(Column)] do
+      FocusedActiveIndex := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+      if FocusedActiveIndex >= 0 then
+        with ActiveRecords[FocusedActiveIndex] do
           if Assigned(Element) then
             FocusFile := Element._File;
 
@@ -8022,6 +8024,7 @@ var
   SelectedNodes               : TNodeArray;
   i, j, k                     : Integer;
   FocusedColumn               : Integer;
+  FocusedActiveIndex          : Integer;
   Node                        : PVirtualNode;
 begin
   if not wbEditAllowed then
@@ -8032,6 +8035,7 @@ begin
     vstView.FocusedColumn,
     Length(ActiveRecords)
   );
+  FocusedActiveIndex := xeResolveColumnActiveIndex(FocusedColumn, Length(ActiveRecords));
 
   SourceMainRecord := nil;
   SetLength(AllNodeDatas, 0);
@@ -8040,8 +8044,8 @@ begin
     NodeDatas := vstView.GetNodeData(Node);
     if Assigned(NodeDatas) then begin
       Element := nil;
-      if (FocusedColumn > 0) and (Pred(FocusedColumn) <= High(ActiveRecords)) then begin
-        Element := NodeDatas[Pred(FocusedColumn)].Element;
+      if FocusedActiveIndex >= 0 then begin
+        Element := NodeDatas[FocusedActiveIndex].Element;
         if Assigned(Element) and not Assigned(SourceMainRecord) then
           SourceMainRecord := Element.ContainingMainRecord;
       end;
@@ -8125,8 +8129,8 @@ begin
       for j := Low(AllNodeDatas) to High(AllNodeDatas) do begin
         NodeDatas := AllNodeDatas[j];
 
-        if (FocusedColumn > 0) and (Pred(FocusedColumn) <= High(ActiveRecords)) then
-          Element := NodeDatas[Pred(FocusedColumn)].Element
+        if FocusedActiveIndex >= 0 then
+          Element := NodeDatas[FocusedActiveIndex].Element
         else
           Element := nil;
         if Assigned(Element) then begin
@@ -9962,6 +9966,7 @@ end;
 procedure TfrmMain.mniViewHeaderCopyIntoClick(Sender: TObject);
 var
   Column                      : TColumnIndex;
+  ActiveIndex                 : Integer;
   MainRecord                  : IwbMainRecord;
   Master                      : IwbMainRecord;
   AsNew                       : Boolean;
@@ -9979,12 +9984,10 @@ begin
   AsWrapper := Sender = mniViewHeaderCopyAsWrapper;
 
   Column := vstView.Header.Columns.PopupIndex;
-  if Column < 1 then
+  ActiveIndex := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if ActiveIndex < 0 then
     Exit;
-  Dec(Column);
-  if Column > High(ActiveRecords) then
-    Exit;
-  if not Supports(ActiveRecords[Column].Element, IwbMainRecord, MainRecord) then
+  if not Supports(ActiveRecords[ActiveIndex].Element, IwbMainRecord, MainRecord) then
     Exit;
   if not MainRecord.CanCopy then
     Exit;
@@ -10008,16 +10011,15 @@ end;
 procedure TfrmMain.mniViewHeaderHiddenClick(Sender: TObject);
 var
   Column                      : TColumnIndex;
+  ActiveIndex                 : Integer;
   Element                     : IwbElement;
   MainRecord                  : IwbMainRecord;
 begin
   Column := vstView.Header.Columns.PopupIndex;
-  if Column < 1 then
+  ActiveIndex := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if ActiveIndex < 0 then
     Exit;
-  Dec(Column);
-  if Column > High(ActiveRecords) then
-    Exit;
-  Element := ActiveRecords[Column].Element;
+  Element := ActiveRecords[ActiveIndex].Element;
   if not Supports(Element, IwbMainRecord, MainRecord) then
     Exit;
   if mniViewHeaderHidden.Checked then
@@ -10031,16 +10033,15 @@ end;
 procedure TfrmMain.mniViewHeaderJumpToClick(Sender: TObject);
 var
   Column                      : TColumnIndex;
+  ActiveIndex                 : Integer;
   Element                     : IwbElement;
   MainRecord                  : IwbMainRecord;
 begin
   Column := vstView.Header.Columns.PopupIndex;
-  if Column < 1 then
+  ActiveIndex := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if ActiveIndex < 0 then
     Exit;
-  Dec(Column);
-  if Column > High(ActiveRecords) then
-    Exit;
-  Element := ActiveRecords[Column].Element;
+  Element := ActiveRecords[ActiveIndex].Element;
   if not Supports(Element, IwbMainRecord, MainRecord) then
     Exit;
   JumpTo(MainRecord, True);
@@ -10049,6 +10050,7 @@ end;
 procedure TfrmMain.mniViewHeaderRemoveClick(Sender: TObject);
 var
   Column                      : TColumnIndex;
+  ActiveIndex                 : Integer;
   Node                        : PVirtualNode;
   Element                     : IwbElement;
   DialogResult                : Integer;
@@ -10063,12 +10065,10 @@ begin
     Exit;
 
   Column := vstView.Header.Columns.PopupIndex;
-  if Column < 1 then
+  ActiveIndex := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if ActiveIndex < 0 then
     Exit;
-  Dec(Column);
-  if Column > High(ActiveRecords) then
-    Exit;
-  Element := ActiveRecords[Column].Element;
+  Element := ActiveRecords[ActiveIndex].Element;
   if not Supports(Element, IwbMainRecord, MainRecord) then
     Exit;
 
@@ -18534,28 +18534,35 @@ end;
 
 procedure TfrmMain.vstViewHeaderDrawQueryElements(Sender: TVTHeader;
   var PaintInfo: THeaderPaintInfo; var Elements: THeaderPaintElements);
+var
+  ActiveIndex: Integer;
 begin
+  ActiveIndex := -1;
+  if Assigned(PaintInfo.Column) then
+    ActiveIndex := xeResolveColumnActiveIndex(PaintInfo.Column.Index, Length(ActiveRecords));
+
   if Assigned(PaintInfo.Column) and
     (PaintInfo.Column.Index > 0) and
-    (PaintInfo.Column.Index <= Length(ActiveRecords)) then begin
+    (PaintInfo.Column.Index <= Length(ActiveRecords)) and
+    (ActiveIndex >= 0) then begin
 
     with PaintInfo.TargetCanvas.Font do begin
-      if ActiveRecords[Pred(PaintInfo.Column.Index)].Element.Modified then
+      if ActiveRecords[ActiveIndex].Element.Modified then
         Style := [fsBold]
       else
         Style := [];
 
-      if ActiveRecords[Pred(PaintInfo.Column.Index)].Element.IsInjected then
+      if ActiveRecords[ActiveIndex].Element.IsInjected then
         Style := Style + [fsItalic]
       else
         Style := Style - [fsItalic];
 
-      if ActiveRecords[Pred(PaintInfo.Column.Index)].Element.IsNotReachable then
+      if ActiveRecords[ActiveIndex].Element.IsNotReachable then
         Style := Style + [fsStrikeOut]
       else
         Style := Style - [fsStrikeOut];
 
-      if ActiveRecords[Pred(PaintInfo.Column.Index)].Element.ReferencesInjected then
+      if ActiveRecords[ActiveIndex].Element.ReferencesInjected then
         Style := Style + [fsUnderline]
       else
         Style := Style - [fsUnderline];
@@ -18565,7 +18572,7 @@ begin
       Sender.Background := wbLighter(ConflictAllToColor(ActiveRecords[0].ConflictAll), 0.85);
     PaintInfo.TargetCanvas.Brush.Color := Sender.Background;
     Sender.Font.Color := wbDarker(ConflictThisToColor(
-      ActiveRecords[Pred(PaintInfo.Column.Index)].ConflictThis));
+      ActiveRecords[ActiveIndex].ConflictThis));
   end;
 end;
 

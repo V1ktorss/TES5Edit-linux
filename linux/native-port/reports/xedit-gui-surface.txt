@@ -45,16 +45,16 @@
 /home/v1ktors/TES5Edit-linux/xEdit/xeModGroupSelectForm.pas:17:  Dialogs, StdCtrls, Buttons, CheckLst, Menus,
 /home/v1ktors/TES5Edit-linux/xEdit/xeFileSelectForm.pas:17:  Dialogs, StdCtrls, Buttons, CheckLst, Menus,
 /home/v1ktors/TES5Edit-linux/xEdit/xeModuleSelectForm.pas:17:  Dialogs, StdCtrls, Buttons, CheckLst, Menus,
-/home/v1ktors/TES5Edit-linux/xEdit/xeFilterOptionsForm.pas:17:  Dialogs, StdCtrls, Buttons, CheckLst, Menus, IniFiles, ExtCtrls, System.UITypes;
 /home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:17:  Dialogs, StdCtrls, ComCtrls, ExtCtrls, wbInterface,
-/home/v1ktors/TES5Edit-linux/xEdit/xeInit.pas:69:  Dialogs,
-/home/v1ktors/TES5Edit-linux/xEdit/xeInit.pas:70:  Themes,
-/home/v1ktors/TES5Edit-linux/xEdit/xeInit.pas:71:  Styles,
+/home/v1ktors/TES5Edit-linux/xEdit/xeFilterOptionsForm.pas:17:  Dialogs, StdCtrls, Buttons, CheckLst, Menus, IniFiles, ExtCtrls, System.UITypes;
 /home/v1ktors/TES5Edit-linux/xEdit/xePushLikeButton.pas:18:  Graphics,
 /home/v1ktors/TES5Edit-linux/xEdit/xePushLikeButton.pas:19:  Controls,
 /home/v1ktors/TES5Edit-linux/xEdit/xePushLikeButton.pas:20:  StdCtrls,
 /home/v1ktors/TES5Edit-linux/xEdit/xePushLikeButton.pas:21:  Themes,
 /home/v1ktors/TES5Edit-linux/xEdit/xePushLikeButton.pas:22:  Styles;
+/home/v1ktors/TES5Edit-linux/xEdit/xeInit.pas:69:  Dialogs,
+/home/v1ktors/TES5Edit-linux/xEdit/xeInit.pas:70:  Themes,
+/home/v1ktors/TES5Edit-linux/xEdit/xeInit.pas:71:  Styles,
 /home/v1ktors/TES5Edit-linux/xEdit/xeLODGenForm.pas:17:  Dialogs, StdCtrls, ExtCtrls, CheckLst, Menus, IniFiles, wbInterface, StrUtils;
 /home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas:17:  Controls, Forms, Dialogs, StdCtrls, JvExStdCtrls, JvRichEdit,
 /home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas:18:  ExtCtrls, ComCtrls, VirtualTrees, JvExExtCtrls, JvSplitter, xePushLikeButton;
@@ -91,13 +91,13 @@
 /home/v1ktors/TES5Edit-linux/xEdit/xeModGroupSelectForm.pas:26:  TfrmModGroupSelect = class(TForm)
 /home/v1ktors/TES5Edit-linux/xEdit/xeFileSelectForm.pas:27:  TfrmFileSelect = class(TForm)
 /home/v1ktors/TES5Edit-linux/xEdit/xeModuleSelectForm.pas:25:  TfrmModuleSelect = class(TForm)
-/home/v1ktors/TES5Edit-linux/xEdit/xeFilterOptionsForm.pas:23:  TfrmFilterOptions = class(TForm)
 /home/v1ktors/TES5Edit-linux/xEdit/xeOptionsForm.pas:22:  TfrmOptions = class(TForm)
+/home/v1ktors/TES5Edit-linux/xEdit/xeFilterOptionsForm.pas:23:  TfrmFilterOptions = class(TForm)
 /home/v1ktors/TES5Edit-linux/xEdit/xeLODGenForm.pas:20:  TfrmLODGen = class(TForm)
 /home/v1ktors/TES5Edit-linux/xEdit/xeRichEditForm.pas:24:  TfrmRichEdit = class(TForm)
 /home/v1ktors/TES5Edit-linux/xEdit/xeLegendForm.pas:21:  TfrmLegend = class(TForm)
-/home/v1ktors/TES5Edit-linux/xEdit/xeLocalizationForm.pas:21:  TfrmLocalization = class(TForm)
 /home/v1ktors/TES5Edit-linux/xEdit/xeScriptForm.pas:38:  TfrmScript = class(TForm)
+/home/v1ktors/TES5Edit-linux/xEdit/xeLocalizationForm.pas:21:  TfrmLocalization = class(TForm)
 /home/v1ktors/TES5Edit-linux/xEdit/xeLocalizePluginForm.pas:20:  TfrmLocalizePlugin = class(TForm)
 /home/v1ktors/TES5Edit-linux/xEdit/xeTipForm.pas:20:  TfrmTip = class(TForm)
 /home/v1ktors/TES5Edit-linux/xEdit/xeLogAnalyzerForm.pas:36:  TfrmLogAnalyzer = class(TForm)

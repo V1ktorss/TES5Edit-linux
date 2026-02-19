@@ -455,6 +455,9 @@ function xeResolveFocusedColumn(
 function xeResolveFocusedActiveIndex(
   const aFocusedColumn, aActiveRecordCount: Integer
 ): Integer;
+function xeResolveColumnActiveIndex(
+  const aColumn, aActiveRecordCount: Integer
+): Integer;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -2410,6 +2413,15 @@ function xeResolveFocusedActiveIndex(
 ): Integer;
 begin
   Result := aFocusedColumn - 1;
+  if (Result < 0) or (Result >= aActiveRecordCount) then
+    Result := -1;
+end;
+
+function xeResolveColumnActiveIndex(
+  const aColumn, aActiveRecordCount: Integer
+): Integer;
+begin
+  Result := aColumn - 1;
   if (Result < 0) or (Result >= aActiveRecordCount) then
     Result := -1;
 end;
