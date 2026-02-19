@@ -15259,6 +15259,7 @@ end;
 procedure TfrmMain.pmuViewHeaderPopup(Sender: TObject);
 var
   Column     : TColumnIndex;
+  ActiveIndex: Integer;
   MainRecord : IwbMainRecord;
   AnyHidden  : Boolean;
   i          : Integer;
@@ -15279,12 +15280,10 @@ begin
   if wbTranslationMode then
     Exit;
   Column := vstView.Header.Columns.PopupIndex;
-  if Column < 1 then
+  ActiveIndex := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if ActiveIndex < 0 then
     Exit;
-  Dec(Column);
-  if Column > High(ActiveRecords) then
-    Exit;
-  if not Supports(ActiveRecords[Column].Element, IwbMainRecord, MainRecord) then
+  if not Supports(ActiveRecords[ActiveIndex].Element, IwbMainRecord, MainRecord) then
     Exit;
 
   mniViewHeaderCopyAsOverride.Visible := True;
@@ -15319,7 +15318,7 @@ begin
       end;
   mniViewHeaderUnhideAll.Visible := AnyHidden;
 
-  if not ActiveRecords[Column].Element._File.IsEditable then
+  if not ActiveRecords[ActiveIndex].Element._File.IsEditable then
     Exit;
   mniViewHeaderRemove.Visible := True;
 end;
@@ -15594,6 +15593,7 @@ var
   NodeDatas                   : PViewNodeDatas;
   r                           : TRect;
   ColumnWidths                : array of Integer;
+  FocusedActiveIndex          : Integer;
   i                           : Integer;
   sw                          : TStopwatch;
   Containers                  : TwbContainerElementRefs;
@@ -15614,12 +15614,16 @@ begin
       Node := vstViewFocusedNode;
       if Assigned(Node) then begin
         r := vstView.GetDisplayRect(Node, Column, False);
-        if not Assigned(ViewFocusedElement) then
-          if (Column > 0) and (Pred(Column) <= High(ActiveRecords)) then begin
+        if not Assigned(ViewFocusedElement) then begin
+          FocusedActiveIndex := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+          if FocusedActiveIndex >= 0 then begin
             NodeDatas := vstView.GetNodeData(Node);
-            ViewFocusedElement := NodeDatas[Pred(Column)].Element;
-            EditFocusedViewElement := False;
+            if Assigned(NodeDatas) then begin
+              ViewFocusedElement := NodeDatas[FocusedActiveIndex].Element;
+              EditFocusedViewElement := False;
+            end;
           end;
+        end;
       end;
       NodeForViewFocusedElement := nil;
 
@@ -17706,6 +17710,7 @@ var
   NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
   lLinksTo                    : IwbElement;
+  HotActiveIndex              : Integer;
 begin
   if vstView.HotColumn < 1 then
     Exit;
@@ -17714,14 +17719,15 @@ begin
   if not vstView.HotTrack then
     Exit;
 
-  if (Pred(vstView.HotColumn) < Low(ActiveRecords)) or (Pred(vstView.HotColumn) > High(ActiveRecords)) then
+  HotActiveIndex := xeResolveColumnActiveIndex(vstView.HotColumn, Length(ActiveRecords));
+  if HotActiveIndex < 0 then
     Exit;
 
   NodeDatas := vstView.GetNodeData(vstView.HotNode);
   if not Assigned(NodeDatas) then
     Exit;
 
-  Element := NodeDatas[Pred(vstView.HotColumn)].Element;
+  Element := NodeDatas[HotActiveIndex].Element;
   if not Assigned(Element) then
     Exit;
 
@@ -18505,14 +18511,15 @@ end;
 procedure TfrmMain.vstViewHeaderMouseDown(Sender: TVTHeader; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   Column     : Integer;
+  ActiveIndex: Integer;
   Element    : IwbElement;
   MainRecord : IwbMainRecord;
 begin
   if (Shift = [ssCtrl]) and (Button = mbLeft) then begin
     Column := vstView.Header.Columns.ColumnFromPosition(Point(X, Y));
-    Dec(Column);
-    if (Column >= Low(ActiveRecords)) and (Column <= High(ActiveRecords)) then begin
-      Element := ActiveRecords[Column].Element;
+    ActiveIndex := xeResolveColumnActiveIndex(Column + 1, Length(ActiveRecords));
+    if ActiveIndex >= 0 then begin
+      Element := ActiveRecords[ActiveIndex].Element;
       if not Supports(Element, IwbMainRecord, MainRecord) then
         Exit;
       JumpTo(MainRecord, True);
@@ -18525,8 +18532,7 @@ var
   Column     : Integer;
 begin
   Column := vstView.Header.Columns.ColumnFromPosition(Point(X, Y));
-  Dec(Column);
-  if (Column >= Low(ActiveRecords)) and (Column <= High(ActiveRecords)) then
+  if xeResolveColumnActiveIndex(Column + 1, Length(ActiveRecords)) >= 0 then
     vstView.Header.PopupMenu := pmuViewHeader
   else
     vstView.Header.PopupMenu := nil;
