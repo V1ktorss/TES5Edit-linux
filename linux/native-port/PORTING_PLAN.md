@@ -473,6 +473,7 @@ This document tracks what is already done for the native Linux path and what com
 - Continued `xeMainForm` non-visual selection decoupling:
   - extracted RefBy main-record selection predicates into `xeMainFormServices` (`xeMainRecordsIncludeAnyDeepCopyRecords`, `xeMainRecordsIncludeNonCopyNewRecords`, `xeMainRecordsIncludeOnlyDeepCopyRecords`)
   - rewired form-side wrappers (`ByRefSelectionIncludes*`) to use shared service helpers instead of inline selection loops
+  - centralized copy-as-new signature policy in `xeMainFormServices` (`xeMainRecordSupportsCopyAsNew`) and reused it in both RefBy selection checks and header popup visibility logic
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`

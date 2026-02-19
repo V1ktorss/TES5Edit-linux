@@ -15281,15 +15281,7 @@ begin
     mniViewHeaderDeepCopyAsOverrideWithOverwriting.Visible := True;
   end;
 
-  mniViewHeaderCopyAsNewRecord.Visible := not(
-    (MainRecord.Signature = 'CELL') or
-    (MainRecord.Signature = 'WRLD') or
-    (MainRecord.Signature = 'PGRD') or
-    (MainRecord.Signature = 'NAVM') or
-    (MainRecord.Signature = 'NAVI') or
-    (MainRecord.Signature = 'LAND') or
-    (MainRecord.Signature = 'ROAD')
-  );
+	  mniViewHeaderCopyAsNewRecord.Visible := xeMainRecordSupportsCopyAsNew(MainRecord);
   mniViewHeaderCopyAsWrapper.Visible := (MainRecord.Signature = 'LVLC') or (MainRecord.Signature = 'LVLI') or (MainRecord.Signature = 'LVSP') or (MainRecord.Signature = 'LVLN');
 
   mniViewHeaderJumpTo.Visible := True;
@@ -16032,11 +16024,10 @@ begin
   for i := Low(Selection) to High(Selection) do begin
     NodeData := vstNav.GetNodeData(Selection[i]);
     if Assigned(NodeData) then begin
-      if Supports(NodeData.Element, IwbMainRecord, MainRecord) then begin
-        Signature := MainRecord.Signature;
-        if (Signature = 'CELL') or (Signature = 'WRLD') or (Signature = 'ROAD') or (Signature = 'LAND') or (Signature = 'PGRD') or (Signature = 'NAVM') or (Signature = 'NAVI') then
-          Exit;
-      end;
+	      if Supports(NodeData.Element, IwbMainRecord, MainRecord) then begin
+	        if not xeMainRecordSupportsCopyAsNew(MainRecord) then
+	          Exit;
+	      end;
 
       if Supports(NodeData.Element, IwbGroupRecord, GroupRecord) then
         case GroupRecord.GroupType of

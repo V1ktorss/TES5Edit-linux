@@ -458,6 +458,7 @@ function xeResolveFocusedActiveIndex(
 function xeResolveColumnActiveIndex(
   const aColumn, aActiveRecordCount: Integer
 ): Integer;
+function xeMainRecordSupportsCopyAsNew(const aMainRecord: IwbMainRecord): Boolean;
 function xeMainRecordsIncludeAnyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsIncludeNonCopyNewRecords(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsIncludeOnlyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
@@ -2429,6 +2430,26 @@ begin
     Result := -1;
 end;
 
+function xeMainRecordSupportsCopyAsNew(const aMainRecord: IwbMainRecord): Boolean;
+var
+  lSignature: TwbSignature;
+begin
+  Result := False;
+  if not Assigned(aMainRecord) then
+    Exit;
+
+  lSignature := aMainRecord.Signature;
+  Result := not (
+    (lSignature = 'CELL') or
+    (lSignature = 'WRLD') or
+    (lSignature = 'PGRD') or
+    (lSignature = 'NAVM') or
+    (lSignature = 'NAVI') or
+    (lSignature = 'LAND') or
+    (lSignature = 'ROAD')
+  );
+end;
+
 function xeMainRecordsIncludeAnyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
 var
   i: Integer;
@@ -2448,7 +2469,6 @@ function xeMainRecordsIncludeNonCopyNewRecords(const aSelection: TDynMainRecords
 var
   i: Integer;
   lMainRecord: IwbMainRecord;
-  lSignature: TwbSignature;
 begin
   Result := False;
   for i := Low(aSelection) to High(aSelection) do begin
@@ -2456,13 +2476,7 @@ begin
     if not Assigned(lMainRecord) then
       Continue;
     lSignature := lMainRecord.Signature;
-    if (lSignature = 'CELL') or
-       (lSignature = 'WRLD') or
-       (lSignature = 'ROAD') or
-       (lSignature = 'LAND') or
-       (lSignature = 'PGRD') or
-       (lSignature = 'NAVM') or
-       (lSignature = 'NAVI') then begin
+    if not xeMainRecordSupportsCopyAsNew(lMainRecord) then begin
       Result := True;
       Exit;
     end;
