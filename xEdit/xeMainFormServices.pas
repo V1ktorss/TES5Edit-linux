@@ -463,6 +463,8 @@ function xeMainRecordsShareSignature(const aSelection: TDynMainRecords): Boolean
 function xeMainRecordsContainAnyVisibleWhenDistant(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsContainAnyNotVisibleWhenDistant(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsContainOnlySignature(const aSelection: TDynMainRecords; const aSignature: TwbSignature): Boolean;
+function xeGroupRecordBlocksCopyAsNew(const aGroupRecord: IwbGroupRecord): Boolean;
+function xeElementIsGroupRecord(const aElement: IwbElement): Boolean;
 function xeMainRecordsIncludeAnyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsIncludeNonCopyNewRecords(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsIncludeOnlyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
@@ -2532,6 +2534,31 @@ begin
   end;
 
   Result := True;
+end;
+
+function xeGroupRecordBlocksCopyAsNew(const aGroupRecord: IwbGroupRecord): Boolean;
+var
+  lSignature: TwbSignature;
+begin
+  Result := False;
+  if not Assigned(aGroupRecord) then
+    Exit;
+
+  case aGroupRecord.GroupType of
+  0: begin
+    lSignature := TwbSignature(aGroupRecord.GroupLabel);
+    Result := (lSignature = 'CELL') or (lSignature = 'WRLD');
+  end;
+  1..6, 9:
+    Result := True;
+  end;
+end;
+
+function xeElementIsGroupRecord(const aElement: IwbElement): Boolean;
+var
+  lGroupRecord: IwbGroupRecord;
+begin
+  Result := Supports(aElement, IwbGroupRecord, lGroupRecord);
 end;
 
 function xeMainRecordsIncludeAnyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;

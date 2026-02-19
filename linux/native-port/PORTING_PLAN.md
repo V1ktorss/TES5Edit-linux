@@ -477,6 +477,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved RefBy VWD eligibility evaluation (`REFR`/editable checks + VWD/not-VWD detection) into `xeMainFormServices` (`xeTryEvaluateRefByVwdSelection`) and simplified `pmuRefByPopup`
   - moved RefBy compare-signature gate into `xeMainFormServices` (`xeMainRecordsShareSignature`) and removed inline signature-loop logic from `pmuRefByPopup`
   - moved Nav selection predicates to main-record services (`xeMainRecordsContainAnyVisibleWhenDistant`, `xeMainRecordsContainAnyNotVisibleWhenDistant`, `xeMainRecordsContainOnlySignature`) and unified node-to-main-record conversion in `xeMainForm.TryResolveNavSelectionMainRecords`
+  - moved Nav group-rule predicates into service helpers (`xeGroupRecordBlocksCopyAsNew`, `xeElementIsGroupRecord`) and removed inline `GroupType/GroupLabel` switch logic from `xeMainForm` selection checks
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`

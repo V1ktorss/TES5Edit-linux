@@ -15916,7 +15916,6 @@ var
   Selection                   : TNodeArray;
   i                           : Integer;
   NodeData                    : PNavNodeData;
-  GroupRecord                 : IwbGroupRecord;
   MainRecord                  : IwbMainRecord;
 begin
   Result := True;
@@ -15926,7 +15925,7 @@ begin
   for i := Low(Selection) to High(Selection) do begin
     NodeData := vstNav.GetNodeData(Selection[i]);
     if Assigned(NodeData) then begin
-      if Supports(NodeData.Element, IwbGroupRecord, GroupRecord) then
+      if xeElementIsGroupRecord(NodeData.Element) then
         Exit;
       if Supports(NodeData.Element, IwbMainRecord, MainRecord) then
         if Assigned(MainRecord.ChildGroup) then
@@ -15990,7 +15989,6 @@ var
   NodeData                    : PNavNodeData;
   GroupRecord                 : IwbGroupRecord;
   MainRecord                  : IwbMainRecord;
-  Signature                   : TwbSignature;
 begin
   Result := True;
   Selection := vstNav.GetSortedSelection(True);
@@ -16005,15 +16003,8 @@ begin
 	      end;
 
       if Supports(NodeData.Element, IwbGroupRecord, GroupRecord) then
-        case GroupRecord.GroupType of
-        0: begin
-          Signature := TwbSignature(GroupRecord.GroupLabel);
-          if (Signature = 'CELL') or (Signature = 'WRLD') then
-            Exit;
-        end;
-        1..6, 9:
+        if xeGroupRecordBlocksCopyAsNew(GroupRecord) then
           Exit;
-        end;
 
     end;
   end;
@@ -16025,7 +16016,6 @@ var
   Selection                   : TNodeArray;
   i                           : Integer;
   NodeData                    : PNavNodeData;
-  GroupRecord                 : IwbGroupRecord;
 begin
   Result := False;
   Selection := vstNav.GetSortedSelection(True);
@@ -16034,7 +16024,7 @@ begin
   for i := Low(Selection) to High(Selection) do begin
     NodeData := vstNav.GetNodeData(Selection[i]);
     if Assigned(NodeData) then begin
-      if Supports(NodeData.Element, IwbGroupRecord, GroupRecord) then
+      if xeElementIsGroupRecord(NodeData.Element) then
         Continue;
       Exit;
     end;
