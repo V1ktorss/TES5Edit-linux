@@ -15890,26 +15890,14 @@ end;
 
 function TfrmMain.SelectionIncludesAnyDeepCopyRecords: Boolean;
 var
-  Selection                   : TNodeArray;
-  i                           : Integer;
-  NodeData                    : PNavNodeData;
-  MainRecord                  : IwbMainRecord;
+  Selection: TNodeArray;
+  Elements: TDynElements;
 begin
-  Result := True;
-  Selection := vstNav.GetSortedSelection(True);
-  if Length(Selection) < 1 then
-    Exit;
-  for i := Low(Selection) to High(Selection) do begin
-    NodeData := vstNav.GetNodeData(Selection[i]);
-    if Assigned(NodeData) then begin
-      if xeElementIsGroupRecord(NodeData.Element) then
-        Exit;
-      if Supports(NodeData.Element, IwbMainRecord, MainRecord) then
-        if Assigned(MainRecord.ChildGroup) then
-          Exit;
-    end;
-  end;
   Result := False;
+  Selection := nil;
+  if not TryResolveNavSelectionElements(Selection, Elements) then
+    Exit;
+  Result := xeElementsContainAnyDeepCopyRecords(Elements);
 end;
 
 function TfrmMain.TryResolveNavSelectionMainRecords(var Selection: TNodeArray; out MainRecords: TDynMainRecords): Boolean;
@@ -15987,52 +15975,26 @@ end;
 
 function TfrmMain.SelectionIncludesNonCopyNewRecords: Boolean;
 var
-  Selection                   : TNodeArray;
-  i                           : Integer;
-  NodeData                    : PNavNodeData;
-  GroupRecord                 : IwbGroupRecord;
-  MainRecord                  : IwbMainRecord;
+  Selection: TNodeArray;
+  Elements: TDynElements;
 begin
-  Result := True;
-  Selection := vstNav.GetSortedSelection(True);
-  if Length(Selection) < 1 then
-    Exit;
-  for i := Low(Selection) to High(Selection) do begin
-    NodeData := vstNav.GetNodeData(Selection[i]);
-    if Assigned(NodeData) then begin
-	      if Supports(NodeData.Element, IwbMainRecord, MainRecord) then begin
-	        if not xeMainRecordSupportsCopyAsNew(MainRecord) then
-	          Exit;
-	      end;
-
-      if Supports(NodeData.Element, IwbGroupRecord, GroupRecord) then
-        if xeGroupRecordBlocksCopyAsNew(GroupRecord) then
-          Exit;
-
-    end;
-  end;
   Result := False;
+  Selection := nil;
+  if not TryResolveNavSelectionElements(Selection, Elements) then
+    Exit;
+  Result := xeElementsContainNonCopyNewRecords(Elements);
 end;
 
 function TfrmMain.SelectionIncludesOnlyDeepCopyRecords: Boolean;
 var
-  Selection                   : TNodeArray;
-  i                           : Integer;
-  NodeData                    : PNavNodeData;
+  Selection: TNodeArray;
+  Elements: TDynElements;
 begin
   Result := False;
-  Selection := vstNav.GetSortedSelection(True);
-  if Length(Selection) < 1 then
+  Selection := nil;
+  if not TryResolveNavSelectionElements(Selection, Elements) then
     Exit;
-  for i := Low(Selection) to High(Selection) do begin
-    NodeData := vstNav.GetNodeData(Selection[i]);
-    if Assigned(NodeData) then begin
-      if xeElementIsGroupRecord(NodeData.Element) then
-        Continue;
-      Exit;
-    end;
-  end;
-  Result := True;
+  Result := xeElementsContainOnlyGroupRecords(Elements);
 end;
 
 function TfrmMain.SelectionIncludesOnlyREFR(Selection: TNodeArray): Boolean;

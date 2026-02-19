@@ -461,6 +461,9 @@ function xeResolveColumnActiveIndex(
 function xeMainRecordSupportsCopyAsNew(const aMainRecord: IwbMainRecord): Boolean;
 function xeElementsContainOnlyMainRecordsWithSharedSignature(const aSelection: TDynElements): Boolean;
 function xeElementsContainOnlyFiles(const aSelection: TDynElements): Boolean;
+function xeElementsContainOnlyGroupRecords(const aSelection: TDynElements): Boolean;
+function xeElementsContainAnyDeepCopyRecords(const aSelection: TDynElements): Boolean;
+function xeElementsContainNonCopyNewRecords(const aSelection: TDynElements): Boolean;
 function xeMainRecordsShareSignature(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsContainAnyVisibleWhenDistant(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsContainAnyNotVisibleWhenDistant(const aSelection: TDynMainRecords): Boolean;
@@ -2500,6 +2503,61 @@ begin
       Exit;
 
   Result := True;
+end;
+
+function xeElementsContainOnlyGroupRecords(const aSelection: TDynElements): Boolean;
+var
+  i: Integer;
+begin
+  Result := False;
+  if Length(aSelection) = 0 then
+    Exit;
+
+  for i := Low(aSelection) to High(aSelection) do
+    if not xeElementIsGroupRecord(aSelection[i]) then
+      Exit;
+
+  Result := True;
+end;
+
+function xeElementsContainAnyDeepCopyRecords(const aSelection: TDynElements): Boolean;
+var
+  i: Integer;
+  lMainRecord: IwbMainRecord;
+begin
+  Result := False;
+  for i := Low(aSelection) to High(aSelection) do begin
+    if xeElementIsGroupRecord(aSelection[i]) then begin
+      Result := True;
+      Exit;
+    end;
+    if Supports(aSelection[i], IwbMainRecord, lMainRecord) and Assigned(lMainRecord.ChildGroup) then begin
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
+function xeElementsContainNonCopyNewRecords(const aSelection: TDynElements): Boolean;
+var
+  i: Integer;
+  lMainRecord: IwbMainRecord;
+  lGroupRecord: IwbGroupRecord;
+begin
+  Result := False;
+  for i := Low(aSelection) to High(aSelection) do begin
+    if Supports(aSelection[i], IwbMainRecord, lMainRecord) then
+      if not xeMainRecordSupportsCopyAsNew(lMainRecord) then begin
+        Result := True;
+        Exit;
+      end;
+
+    if Supports(aSelection[i], IwbGroupRecord, lGroupRecord) then
+      if xeGroupRecordBlocksCopyAsNew(lGroupRecord) then begin
+        Result := True;
+        Exit;
+      end;
+  end;
 end;
 
 function xeMainRecordsShareSignature(const aSelection: TDynMainRecords): Boolean;
