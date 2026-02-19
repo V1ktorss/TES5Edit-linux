@@ -464,6 +464,11 @@ function xeBuildLocalizationSwitchCaption(const aIsLocalized: Boolean): string;
 function xeCanShowCopyAsOverride(
   const aCheckForErrorsVisible, aAddMastersVisible, aIsMainRecord, aContainsReflection: Boolean
 ): Boolean;
+function xeCanShowCleanupInjected(
+  const aCopyAsOverrideVisible, aIsMainRecord, aReferencesInjected: Boolean
+): Boolean;
+function xeCanShowCreateSeqFile(const aIsSkyrim, aIsFileElement: Boolean): Boolean;
+function xeCanShowLocalizationSwitch(const aIsFileElement: Boolean; const aLoadOrder: Integer): Boolean;
 function xeElementsContainOnlyMainRecordsWithSharedSignature(const aSelection: TDynElements): Boolean;
 function xeElementsContainOnlyFiles(const aSelection: TDynElements): Boolean;
 function xeElementsContainOnlyGroupRecords(const aSelection: TDynElements): Boolean;
@@ -2509,6 +2514,23 @@ begin
   Result := aCheckForErrorsVisible and not aAddMastersVisible;
   if Result and aIsMainRecord and aContainsReflection then
     Result := False;
+end;
+
+function xeCanShowCleanupInjected(
+  const aCopyAsOverrideVisible, aIsMainRecord, aReferencesInjected: Boolean
+): Boolean;
+begin
+  Result := aCopyAsOverrideVisible and aIsMainRecord and aReferencesInjected;
+end;
+
+function xeCanShowCreateSeqFile(const aIsSkyrim, aIsFileElement: Boolean): Boolean;
+begin
+  Result := aIsSkyrim and aIsFileElement;
+end;
+
+function xeCanShowLocalizationSwitch(const aIsFileElement: Boolean; const aLoadOrder: Integer): Boolean;
+begin
+  Result := aIsFileElement and (aLoadOrder > 0);
 end;
 
 function xeElementsContainOnlyMainRecordsWithSharedSignature(const aSelection: TDynElements): Boolean;

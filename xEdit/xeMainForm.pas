@@ -14908,7 +14908,9 @@ var
   AnyNotVWD                   : Boolean;
   lItemCount                  : Integer;
   lAddToMni                   : TMenuItem;
+  FileLoadOrder               : Integer;
   IsMainRecord                : Boolean;
+  IsFileElement               : Boolean;
   MainRecordContainsReflection: Boolean;
 begin
   mniNavTest.Visible := DebugHook <> 0;
@@ -15042,6 +15044,11 @@ begin
   mniNavAdd.Visible := mniNavAdd.Count > 0;
 
   IsMainRecord := Supports(Element, IwbMainRecord, MainRecord);
+  IsFileElement := Supports(Element, IwbFile, _File);
+  if IsFileElement then
+    FileLoadOrder := _File.LoadOrder
+  else
+    FileLoadOrder := 0;
   MainRecordContainsReflection := IsMainRecord and MainRecord.ContainsReflection;
 
   mniNavCopyAsOverride.Visible := xeCanShowCopyAsOverride(
@@ -15069,10 +15076,11 @@ begin
 
   mniNavCopyIdle.Visible := (wbGameMode <= gmFNV) and mniNavCheckForErrors.Visible and not mniNavAddMasters.Visible;
 
-  mniNavCleanupInjected.Visible :=
-    mniNavCopyAsOverride.Visible and
-    IsMainRecord and
-    MainRecord.ReferencesInjected;
+  mniNavCleanupInjected.Visible := xeCanShowCleanupInjected(
+    mniNavCopyAsOverride.Visible,
+    IsMainRecord,
+    IsMainRecord and MainRecord.ReferencesInjected
+  );
 
   mniNavCompareSelected.Visible := False;
   if IsMainRecord then begin
@@ -15084,7 +15092,7 @@ begin
   end;
 
   mniNavCreateModGroup.Visible := False;
-  if Supports(Element, IwbFile, _File) then begin
+  if IsFileElement then begin
     Nodes := vstNav.GetSortedSelection(True);
     if TryResolveNavSelectionElements(Nodes, SelectedElements) then
       mniNavCreateModGroup.Visible := xeElementsContainOnlyFiles(SelectedElements);
@@ -15109,17 +15117,12 @@ begin
     end;
   end;
 
-  mniNavCreateSEQFile.Visible := wbIsSkyrim and
-     Assigned(Element) and
-    (Element.ElementType = etFile);
+  mniNavCreateSEQFile.Visible := xeCanShowCreateSeqFile(wbIsSkyrim, IsFileElement);
 
   mniNavLocalization.Visible := (wbIsSkyrim or wbIsFallout4 or wbIsFallout76 or wbIsStarfield);
-  mniNavLocalizationSwitch.Visible :=
-     Assigned(Element) and
-    (Element.ElementType = etFile) and
-    (Element._File.LoadOrder > 0);
+  mniNavLocalizationSwitch.Visible := xeCanShowLocalizationSwitch(IsFileElement, FileLoadOrder);
   if mniNavLocalizationSwitch.Visible then
-    mniNavLocalizationSwitch.Caption := xeBuildLocalizationSwitchCaption(Element._File.IsLocalized);
+    mniNavLocalizationSwitch.Caption := xeBuildLocalizationSwitchCaption(_File.IsLocalized);
 
   mniNavLogAnalyzer.Visible := (wbGameMode in [gmTES4, gmFO3, gmFNV]) or wbIsSkyrim;
   mniNavLogAnalyzer.Clear;
