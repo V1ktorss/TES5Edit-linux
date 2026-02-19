@@ -6696,11 +6696,13 @@ function TfrmMain.GetAddElement(out TargetNode: PVirtualNode; out TargetIndex: I
 var
   NodeDatas                   : PViewNodeDatas;
   Container                   : IwbContainerElementRef;
+  FocusedActiveIndex          : Integer;
 begin
   TargetIndex := High(Integer);
   Result := False;
 
-  if Pred(vstView.FocusedColumn) > High(ActiveRecords) then
+  FocusedActiveIndex := xeResolveFocusedActiveIndex(vstView.FocusedColumn, Length(ActiveRecords));
+  if FocusedActiveIndex < 0 then
     Exit;
 
   TargetNode := vstViewFocusedNode;
@@ -6710,7 +6712,7 @@ begin
     else
       NodeDatas := vstView.GetNodeData(TargetNode);
     if Assigned(NodeDatas) then begin
-      TargetElement := NodeDatas[Pred(vstView.FocusedColumn)].Element;
+      TargetElement := NodeDatas[FocusedActiveIndex].Element;
       if Assigned(TargetElement) then begin
         if (TargetIndex < High(Integer)) and Supports(TargetElement, IwbContainerElementRef, Container) then
           Dec(TargetIndex, Container.AdditionalElementCount);
@@ -15313,6 +15315,7 @@ var
   TargetIndex   : Integer;
   TargetElement : IwbElement;
   NodeLabel     : String;
+  FocusedActiveIndex: Integer;
 begin
   Element := GetFocusedViewElementSafely;
   mniViewClipboard.Visible := Assigned(Element);
@@ -15360,10 +15363,11 @@ begin
     mniViewStickSelected.Caption := NodeLabel;
   end;
 
-  if vstView.FocusedColumn > 0 then begin
+  FocusedActiveIndex := xeResolveFocusedActiveIndex(vstView.FocusedColumn, Length(ActiveRecords));
+  if FocusedActiveIndex >= 0 then begin
     NodeDatas := vstView.GetNodeData(vstViewFocusedNode);
     if Assigned(NodeDatas) then begin
-      Element := NodeDatas[Pred(vstView.FocusedColumn)].Element;
+      Element := NodeDatas[FocusedActiveIndex].Element;
       mniViewEdit.Visible := Assigned(Element) and Element.IsEditable;
       mniViewSetToDefault.Visible := not wbTranslationMode and Assigned(Element) and Element._File.IsEditable and
         (Supports(Element.ValueDef, IwbStructDef, StructDef) and (StructDef.OptionalFromElement <> -1));
@@ -17923,6 +17927,7 @@ var
   ViewFocusedElement              : IwbElement;
   Element                     : IwbElement;
   Def                         : IwbNamedDef;
+  FocusedActiveIndex          : Integer;
 begin
   UserWasActive := True;
 
@@ -17942,8 +17947,9 @@ begin
   NodeDatas := vstView.GetNodeData(vstViewFocusedNode);
   if Assigned(NodeDatas) then begin
 
-    if vstView.FocusedColumn > 0 then
-      ViewFocusedElement := NodeDatas[Pred(vstView.FocusedColumn)].Element
+    FocusedActiveIndex := xeResolveFocusedActiveIndex(vstView.FocusedColumn, Length(ActiveRecords));
+    if FocusedActiveIndex >= 0 then
+      ViewFocusedElement := NodeDatas[FocusedActiveIndex].Element
     else
       ViewFocusedElement := nil;
     EditFocusedViewElement := False;

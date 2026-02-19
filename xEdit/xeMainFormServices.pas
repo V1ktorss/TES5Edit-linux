@@ -452,6 +452,9 @@ function xeComputeSaveInterval(
 function xeResolveFocusedColumn(
   const aFocusedColumnOverride, aTreeFocusedColumn, aActiveRecordCount: Integer
 ): Integer;
+function xeResolveFocusedActiveIndex(
+  const aFocusedColumn, aActiveRecordCount: Integer
+): Integer;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -2400,6 +2403,15 @@ begin
     Result := aTreeFocusedColumn;
   if aActiveRecordCount = 1 then
     Result := 1;
+end;
+
+function xeResolveFocusedActiveIndex(
+  const aFocusedColumn, aActiveRecordCount: Integer
+): Integer;
+begin
+  Result := aFocusedColumn - 1;
+  if (Result < 0) or (Result >= aActiveRecordCount) then
+    Result := -1;
 end;
 
 function xeGetStaleRefCacheFiles(
