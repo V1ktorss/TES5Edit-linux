@@ -6736,15 +6736,15 @@ function TfrmMain.GetTargetElement(Target: TBaseVirtualTree;
   var TargetNode: PVirtualNode; TargetColumn: Integer; out TargetIndex: Integer; out TargetElement: IwbElement): Boolean;
 var
   NodeDatas                   : PViewNodeDatas;
+  TargetActiveIndex           : Integer;
   Container                   : IwbContainerElementRef;
 begin
   TargetIndex := Low(Integer);
   TargetElement := nil;
   Result := False;
 
-  if TargetColumn < 1 then
-    Exit;
-  if Pred(TargetColumn) > High(ActiveRecords) then
+  TargetActiveIndex := xeResolveColumnActiveIndex(TargetColumn, Length(ActiveRecords));
+  if TargetActiveIndex < 0 then
     Exit;
 
   while Assigned(TargetNode) do begin
@@ -6753,7 +6753,7 @@ begin
     else
       NodeDatas := Target.GetNodeData(TargetNode);
     if Assigned(NodeDatas) then begin
-      TargetElement := NodeDatas[Pred(TargetColumn)].Element;
+      TargetElement := NodeDatas[TargetActiveIndex].Element;
       if Assigned(TargetElement) then begin
         if (TargetIndex >= 0) and Supports(TargetElement, IwbContainerElementRef, Container) then
           Dec(TargetIndex, Container.AdditionalElementCount);
@@ -14684,6 +14684,7 @@ function TfrmMain.PerformDrop(TargetTree    : TBaseVirtualTree;
                                             : Boolean;
 var
   TargetIndex     : Integer;
+  TargetActiveIndex: Integer;
   TargetElement   : IwbElement;
   NewElement      : IwbElement;
   TargetNodeDatas : PViewNodeDatas;
@@ -14691,6 +14692,9 @@ var
   TargetContainer : IwbContainerElementRef;
 begin
   Result := False;
+  TargetActiveIndex := xeResolveColumnActiveIndex(TargetColumn, Length(ActiveRecords));
+  if TargetActiveIndex < 0 then
+    Exit;
 
   if GetTargetElement(TargetTree, TargetNode, TargetColumn, TargetIndex, TargetElement) then begin
 
@@ -14709,7 +14713,7 @@ begin
       if Assigned(NewElement) and (TargetIndex >= 0) and (TargetIndex < High(Integer)) then begin
         TargetNodeDatas := vstView.GetNodeData(TargetNode);
         if Assigned(TargetNodeDatas) then begin
-          TargetNodeData := @TargetNodeDatas[Pred(TargetColumn)];
+          TargetNodeData := @TargetNodeDatas[TargetActiveIndex];
           if vnfIsAligned in TargetNodeData.ViewNodeFlags then
             if Supports(TargetElement, IwbContainerElementRef, TargetContainer) then begin
               NewElement.SortOrder := TargetIndex;
@@ -14719,7 +14723,7 @@ begin
         end;
       end;
 
-      ActiveRecords[Pred(TargetColumn)].UpdateRefs;
+      ActiveRecords[TargetActiveIndex].UpdateRefs;
       ViewFocusedElement := NewElement;
       EditFocusedViewElement := False;
       NewElement := nil;
@@ -17674,27 +17678,24 @@ end;
 procedure TfrmMain.vstViewCheckHotTrack(Sender: TBaseVirtualTree;
   HotNode: PVirtualNode; HotColumn: TColumnIndex; var Allow: Boolean);
 var
+  HotActiveIndex              : Integer;
   NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
   lLinksTo                    : IwbElement;
 begin
   Allow := False;
 
-  if HotColumn < 1 then
+  HotActiveIndex := xeResolveColumnActiveIndex(HotColumn, Length(ActiveRecords));
+  if HotActiveIndex < 0 then
     Exit;
   if not wbIsVirtualKeyPressed(VK_CONTROL) then
-    Exit;
-
-  Dec(HotColumn);
-
-  if (HotColumn < Low(ActiveRecords)) or (HotColumn > High(ActiveRecords)) then
     Exit;
 
   NodeDatas := vstView.GetNodeData(HotNode);
   if not Assigned(NodeDatas) then
     Exit;
 
-  Element := NodeDatas[HotColumn].Element;
+  Element := NodeDatas[HotActiveIndex].Element;
   if not Assigned(Element) then
     Exit;
 
@@ -17796,24 +17797,21 @@ Type
 procedure TfrmMain.vstViewCreateEditor(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; out EditLink: IVTEditLink);
 var
+  ActiveIndex                 : Integer;
   NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
 begin
-  if Column < 1 then
+  ActiveIndex := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if ActiveIndex < 0 then
     Exit;
   if wbIsVirtualKeyPressed(VK_SHIFT) then
-    Exit;
-
-  Dec(Column);
-
-  if (Column < Low(ActiveRecords)) or (Column > High(ActiveRecords)) then
     Exit;
 
   NodeDatas := vstView.GetNodeData(Node);
   if not Assigned(NodeDatas) then
     Exit;
 
-  Element := NodeDatas[Column].Element;
+  Element := NodeDatas[ActiveIndex].Element;
   if not Assigned(Element) then
     Exit;
 
@@ -18015,18 +18013,17 @@ end;
 procedure TfrmMain.vstViewDragAllowed(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
 var
+  ActiveIndex                 : Integer;
   NodeDatas                   : PViewNodeDatas;
 begin
   Allowed := False;
   if not wbEditAllowed then
     Exit;
-  if Column < 1 then
-    Exit;
-  Dec(Column);
-  if Column > High(ActiveRecords) then
+  ActiveIndex := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if ActiveIndex < 0 then
     Exit;
   NodeDatas := vstView.GetNodeData(Node);
-  Allowed := Assigned(NodeDatas[Column].Element);
+  Allowed := Assigned(NodeDatas[ActiveIndex].Element);
 end;
 
 procedure TfrmMain.vstViewDragDrop(Sender: TBaseVirtualTree; Source: TObject;
@@ -18322,21 +18319,20 @@ end;
 procedure TfrmMain.vstViewGetEditText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var CellText: string);
 var
+  ActiveIndex                 : Integer;
   NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
 begin
   CellText := '';
-  if Column < 1 then
-    Exit;
-  Dec(Column);
-  if Column > High(ActiveRecords) then
+  ActiveIndex := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if ActiveIndex < 0 then
     Exit;
 
   NodeDatas := Sender.GetNodeData(Node);
   if not Assigned(NodeDatas) then
     Exit;
 
-  Element := NodeDatas[Column].Element;
+  Element := NodeDatas[ActiveIndex].Element;
   if Assigned(Element) and Element.IsEditable then
     CellText := Element.EditValue;
 end;
@@ -18458,6 +18454,8 @@ end;
 
 procedure TfrmMain.vstViewHeaderDropped(Sender: TVTHeader; SourceColumn, TargetColumn: TColumnIndex; var Handled: Boolean);
 var
+  SourceActiveIndex           : Integer;
+  TargetActiveIndex           : Integer;
   TargetElement               : IwbElement;
   SourceElement               : IwbElement;
 begin
@@ -18468,18 +18466,13 @@ begin
 
   UserWasActive := True;
 
-  if SourceColumn < 1 then
-    Exit;
-  if TargetColumn < 1 then
-    Exit;
-
-  if SourceColumn > Length(ActiveRecords) then
-    Exit;
-  if TargetColumn > Length(ActiveRecords)then
+  SourceActiveIndex := xeResolveColumnActiveIndex(SourceColumn, Length(ActiveRecords));
+  TargetActiveIndex := xeResolveColumnActiveIndex(TargetColumn, Length(ActiveRecords));
+  if (SourceActiveIndex < 0) or (TargetActiveIndex < 0) then
     Exit;
 
-  SourceElement := ActiveRecords[Pred(SourceColumn)].Element;
-  TargetElement := ActiveRecords[Pred(TargetColumn)].Element;
+  SourceElement := ActiveRecords[SourceActiveIndex].Element;
+  TargetElement := ActiveRecords[TargetActiveIndex].Element;
 
   if not Assigned(SourceElement) then
     Exit;
@@ -18497,7 +18490,7 @@ begin
     vstView.BeginUpdate;
     try
       TargetElement.Assign(Low(Integer), SourceElement, False);
-      ActiveRecords[Pred(TargetColumn)].UpdateRefs;
+      ActiveRecords[TargetActiveIndex].UpdateRefs;
       TargetElement := nil;
       SourceElement := nil;
       PostResetActiveTree;
