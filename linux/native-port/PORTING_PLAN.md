@@ -123,6 +123,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved `pmuNavPopup` multi-selection predicates (`Compare Selected`, `Create Mod Group`) to `xeMainFormServices` (`xeElementsContainOnlyMainRecordsWithSharedSignature`, `xeElementsContainOnlyFiles`) and added `TryResolveNavSelectionElements` to reduce node-iteration logic in the form layer
   - moved `SelectionIncludesAnyDeepCopyRecords`, `SelectionIncludesNonCopyNewRecords`, and `SelectionIncludesOnlyDeepCopyRecords` element-predicate logic into `xeMainFormServices` (`xeElementsContainAnyDeepCopyRecords`, `xeElementsContainNonCopyNewRecords`, `xeElementsContainOnlyGroupRecords`)
   - moved `pmuNavPopup` copy-wrapper signature allowlist and localization switch caption selection into `xeMainFormServices` (`xeMainRecordSupportsCopyAsWrapper`, `xeBuildLocalizationSwitchCaption`)
+  - moved `pmuNavPopup` `Copy as Override` visibility rule (including reflection gate) into `xeMainFormServices` (`xeCanShowCopyAsOverride`)
 - Extended `wbPlatform` helpers:
   - added `wbShowWindowNoActivate` wrapper for non-activating tip-form display
 - Started `xejviScriptAdapterMisc` decoupling:

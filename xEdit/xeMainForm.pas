@@ -14909,6 +14909,7 @@ var
   lItemCount                  : Integer;
   lAddToMni                   : TMenuItem;
   IsMainRecord                : Boolean;
+  MainRecordContainsReflection: Boolean;
 begin
   mniNavTest.Visible := DebugHook <> 0;
 
@@ -15041,11 +15042,14 @@ begin
   mniNavAdd.Visible := mniNavAdd.Count > 0;
 
   IsMainRecord := Supports(Element, IwbMainRecord, MainRecord);
+  MainRecordContainsReflection := IsMainRecord and MainRecord.ContainsReflection;
 
-  mniNavCopyAsOverride.Visible := mniNavCheckForErrors.Visible and not mniNavAddMasters.Visible;
-
-  if IsMainRecord and MainRecord.ContainsReflection then
-    mniNavCopyAsOverride.Visible := False;
+  mniNavCopyAsOverride.Visible := xeCanShowCopyAsOverride(
+    mniNavCheckForErrors.Visible,
+    mniNavAddMasters.Visible,
+    IsMainRecord,
+    MainRecordContainsReflection
+  );
 
   mniNavCopyAsOverrideWithOverwrite.Visible := mniNavCopyAsOverride.Visible;
   mniNavDeepCopyAsOverride.Visible := mniNavCopyAsOverride.Visible and SelectionIncludesAnyDeepCopyRecords;

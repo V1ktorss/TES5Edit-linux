@@ -461,6 +461,9 @@ function xeResolveColumnActiveIndex(
 function xeMainRecordSupportsCopyAsNew(const aMainRecord: IwbMainRecord): Boolean;
 function xeMainRecordSupportsCopyAsWrapper(const aMainRecord: IwbMainRecord): Boolean;
 function xeBuildLocalizationSwitchCaption(const aIsLocalized: Boolean): string;
+function xeCanShowCopyAsOverride(
+  const aCheckForErrorsVisible, aAddMastersVisible, aIsMainRecord, aContainsReflection: Boolean
+): Boolean;
 function xeElementsContainOnlyMainRecordsWithSharedSignature(const aSelection: TDynElements): Boolean;
 function xeElementsContainOnlyFiles(const aSelection: TDynElements): Boolean;
 function xeElementsContainOnlyGroupRecords(const aSelection: TDynElements): Boolean;
@@ -2492,6 +2495,15 @@ begin
     Result := 'Delocalize plugin'
   else
     Result := 'Localize plugin';
+end;
+
+function xeCanShowCopyAsOverride(
+  const aCheckForErrorsVisible, aAddMastersVisible, aIsMainRecord, aContainsReflection: Boolean
+): Boolean;
+begin
+  Result := aCheckForErrorsVisible and not aAddMastersVisible;
+  if Result and aIsMainRecord and aContainsReflection then
+    Result := False;
 end;
 
 function xeElementsContainOnlyMainRecordsWithSharedSignature(const aSelection: TDynElements): Boolean;
