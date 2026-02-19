@@ -2063,46 +2063,30 @@ begin
 end;
 
 function TfrmMain.ByRefSelectionIncludesAnyDeepCopyRecords(aSelection: TDynMainRecords): Boolean;
-var
-  i                           : Integer;
-  MainRecord                  : IwbMainRecord;
 begin
   Result := True;
   if Length(aSelection) < 1 then
     aSelection := GetRefBySelectionAsMainRecords;
   if Length(aSelection) < 1 then
     Exit;
-  for i := Low(aSelection) to High(aSelection) do begin
-    MainRecord := aSelection[i];
-    if Assigned(MainRecord.ChildGroup) then
-      Exit;
-  end;
-  Result := False;
+  Result := xeMainRecordsIncludeAnyDeepCopyRecords(aSelection);
 end;
 
 function TfrmMain.ByRefSelectionIncludesNonCopyNewRecords(aSelection: TDynMainRecords): Boolean;
-var
-  i                           : Integer;
-  MainRecord                  : IwbMainRecord;
-  Signature                   : TwbSignature;
 begin
   Result := True;
   if Length(aSelection) < 1 then
     aSelection := GetRefBySelectionAsMainRecords;
   if Length(aSelection) < 1 then
     Exit;
-  for i := Low(aSelection) to High(aSelection) do begin
-    MainRecord := aSelection[i];
-    Signature := MainRecord.Signature;
-    if (Signature = 'CELL') or (Signature = 'WRLD') or (Signature = 'ROAD') or (Signature = 'LAND') or (Signature = 'PGRD') or (Signature = 'NAVM') or (Signature = 'NAVI') then
-      Exit;
-  end;
-  Result := False;
+  Result := xeMainRecordsIncludeNonCopyNewRecords(aSelection);
 end;
 
 function TfrmMain.ByRefSelectionIncludesOnlyDeepCopyRecords(aSelection: TDynMainRecords): Boolean;
 begin
-  Result := False;
+  if Length(aSelection) < 1 then
+    aSelection := GetRefBySelectionAsMainRecords;
+  Result := xeMainRecordsIncludeOnlyDeepCopyRecords(aSelection);
 end;
 
 procedure TfrmMain.ConflictLevelForMainRecord(const aMainRecord: IwbMainRecord; out aConflictAll: TConflictAll; out aConflictThis: TConflictThis);

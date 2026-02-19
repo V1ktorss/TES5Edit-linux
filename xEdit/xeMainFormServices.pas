@@ -458,6 +458,9 @@ function xeResolveFocusedActiveIndex(
 function xeResolveColumnActiveIndex(
   const aColumn, aActiveRecordCount: Integer
 ): Integer;
+function xeMainRecordsIncludeAnyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
+function xeMainRecordsIncludeNonCopyNewRecords(const aSelection: TDynMainRecords): Boolean;
+function xeMainRecordsIncludeOnlyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
 function xeGetStaleRefCacheFiles(
   const aCachePath, aAppCrcHex, aRefCacheExt: string
 ): TStringDynArray;
@@ -2424,6 +2427,65 @@ begin
   Result := aColumn - 1;
   if (Result < 0) or (Result >= aActiveRecordCount) then
     Result := -1;
+end;
+
+function xeMainRecordsIncludeAnyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
+var
+  i: Integer;
+  lMainRecord: IwbMainRecord;
+begin
+  Result := False;
+  for i := Low(aSelection) to High(aSelection) do begin
+    lMainRecord := aSelection[i];
+    if Assigned(lMainRecord) and Assigned(lMainRecord.ChildGroup) then begin
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
+function xeMainRecordsIncludeNonCopyNewRecords(const aSelection: TDynMainRecords): Boolean;
+var
+  i: Integer;
+  lMainRecord: IwbMainRecord;
+  lSignature: TwbSignature;
+begin
+  Result := False;
+  for i := Low(aSelection) to High(aSelection) do begin
+    lMainRecord := aSelection[i];
+    if not Assigned(lMainRecord) then
+      Continue;
+    lSignature := lMainRecord.Signature;
+    if (lSignature = 'CELL') or
+       (lSignature = 'WRLD') or
+       (lSignature = 'ROAD') or
+       (lSignature = 'LAND') or
+       (lSignature = 'PGRD') or
+       (lSignature = 'NAVM') or
+       (lSignature = 'NAVI') then begin
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
+function xeMainRecordsIncludeOnlyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
+var
+  i: Integer;
+  lMainRecord: IwbMainRecord;
+begin
+  if Length(aSelection) = 0 then
+    Exit(False);
+
+  for i := Low(aSelection) to High(aSelection) do begin
+    lMainRecord := aSelection[i];
+    if not Assigned(lMainRecord) then
+      Exit(False);
+    if not Assigned(lMainRecord.ChildGroup) then
+      Exit(False);
+  end;
+
+  Result := True;
 end;
 
 function xeGetStaleRefCacheFiles(

@@ -470,6 +470,9 @@ This document tracks what is already done for the native Linux path and what com
   - replaced remaining direct `Pred/Dec(Column)` active-record index translations in key view handlers with `xeResolveColumnActiveIndex`
   - updated focused-column element lookup in `vstViewGetText` to use `xeResolveFocusedActiveIndex` for consistent bounds handling
   - covered handlers: `vstViewBeforeCellPaint`, `vstViewDrawText`, `vstViewEditing`, `vstViewFocusChanged`, `vstViewGetText`, `vstViewMeasureTextWidth`, `vstViewNewText`, `vstViewPaintText`, `vstViewShortenString`
+- Continued `xeMainForm` non-visual selection decoupling:
+  - extracted RefBy main-record selection predicates into `xeMainFormServices` (`xeMainRecordsIncludeAnyDeepCopyRecords`, `xeMainRecordsIncludeNonCopyNewRecords`, `xeMainRecordsIncludeOnlyDeepCopyRecords`)
+  - rewired form-side wrappers (`ByRefSelectionIncludes*`) to use shared service helpers instead of inline selection loops
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`
