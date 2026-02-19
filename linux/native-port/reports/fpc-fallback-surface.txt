@@ -1,6 +1,6 @@
 # FPC Fallback Surface Audit
 
-Generated: 2026-02-19T00:10:36Z
+Generated: 2026-02-19T00:12:38Z
 
 ## Totals
 - Total `{$IFDEF FPC}` markers (Core+xEdit+xDump): 280

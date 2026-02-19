@@ -7801,6 +7801,7 @@ procedure TfrmMain.mniViewAddClick(Sender: TObject);
 var
   TargetNode                  : PVirtualNode;
   TargetIndex                 : Integer;
+  FocusedActiveIndex          : Integer;
   TargetElement               : IwbElement;
   NewElement                  : IwbElement;
   Control                     : Boolean;
@@ -7833,7 +7834,9 @@ begin
         if Assigned(NewElement) then
           NewElement.SetToDefaultIfAsCreatedEmpty;
 
-        ActiveRecords[Pred(vstView.FocusedColumn)].UpdateRefs;
+        FocusedActiveIndex := xeResolveFocusedActiveIndex(vstView.FocusedColumn, Length(ActiveRecords));
+        if FocusedActiveIndex >= 0 then
+          ActiveRecords[FocusedActiveIndex].UpdateRefs;
         TargetElement := nil;
         Control := wbIsVirtualKeyPressed(VK_CONTROL);
         if EditAddedElement or (wbFocusAddedElement xor Control) then begin
@@ -8122,7 +8125,10 @@ begin
       for j := Low(AllNodeDatas) to High(AllNodeDatas) do begin
         NodeDatas := AllNodeDatas[j];
 
-        Element := NodeDatas[Pred(vstView.FocusedColumn)].Element;
+        if (FocusedColumn > 0) and (Pred(FocusedColumn) <= High(ActiveRecords)) then
+          Element := NodeDatas[Pred(FocusedColumn)].Element
+        else
+          Element := nil;
         if Assigned(Element) then begin
           for i := Low(MainRecords) to High(MainRecords) do begin
             if CheckListBox1.Checked[i] then begin
@@ -18585,21 +18591,19 @@ procedure TfrmMain.vstViewKeyDown(Sender: TObject; var Key: Word; Shift: TShiftS
 var
   NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
-  Column                      : TColumnIndex;
+  FocusedActiveIndex          : Integer;
   ClipboardText               : string;
 begin
   UserWasActive := True;
 
-  Column := Pred(vstView.FocusedColumn);
+  FocusedActiveIndex := xeResolveFocusedActiveIndex(vstView.FocusedColumn, Length(ActiveRecords));
 
-  if Column > High(ActiveRecords) then
-    Exit;
-  if Column < Low(ActiveRecords) then
+  if FocusedActiveIndex < 0 then
     Exit;
 
   NodeDatas := vstView.GetNodeData(vstViewFocusedNode);
   if Assigned(NodeDatas) then
-    Element := NodeDatas[Column].Element;
+    Element := NodeDatas[FocusedActiveIndex].Element;
 
   if Shift = [ssCtrl] then begin
     case Key of
@@ -18769,18 +18773,20 @@ procedure TfrmMain.vstViewNewText(Sender: TBaseVirtualTree;
 var
   NodeDatas                   : PViewNodeDatas;
   Element                     : IwbElement;
+  EditedActiveIndex           : Integer;
 begin
   if not wbEditAllowed then
     Exit;
 
   UserWasActive := True;
 
-  if Pred(Column) > High(ActiveRecords) then
+  EditedActiveIndex := Pred(Column);
+  if not InRange(EditedActiveIndex, Low(ActiveRecords), High(ActiveRecords)) then
     Exit;
 
   NodeDatas := vstView.GetNodeData(Node);
   if Assigned(NodeDatas) then begin
-    Element := NodeDatas[Pred(Column)].Element;
+    Element := NodeDatas[EditedActiveIndex].Element;
     if Assigned(Element) and Element.IsEditable then begin
 
       if not EditWarn then
@@ -18790,7 +18796,7 @@ begin
       LockProcessMessages;
       try
         Element.EditValue := NewText;
-        ActiveRecords[Pred(vstView.FocusedColumn)].UpdateRefs;
+        ActiveRecords[EditedActiveIndex].UpdateRefs;
         ViewFocusedElement := Element;
         EditFocusedViewElement := False;
         Element := nil;
@@ -18818,7 +18824,7 @@ var
   ReferencesInjected          : Boolean;
   SortKeyFocus                : string;
   SortKeyThis                 : string;
-  FocusedColumn               : TColumnIndex;
+  FocusedColumn               : Integer;
 begin
   NodeDatas := Sender.GetNodeData(Node);
   Dec(Column);
@@ -18853,7 +18859,7 @@ begin
     end;
   end;
 
-  FocusedColumn := Pred(vstView.FocusedColumn);
+  FocusedColumn := xeResolveFocusedActiveIndex(vstView.FocusedColumn, Length(ActiveRecords));
 
   if ComparingSiblings and (Column >= 0) and (FocusedColumn >= 0) and (Column <= High(ActiveRecords)) and (FocusedColumn <= High(ActiveRecords)) then
     if Column = FocusedColumn then

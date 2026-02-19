@@ -116,6 +116,7 @@ This document tracks what is already done for the native Linux path and what com
   - moved posted payload decoding for loader/file handlers into `xeMainFormServices` (`xeTakePostedDateTimePayload`, `xeTakePostedFilePayload`)
   - added focused-active-index helper in `xeMainFormServices` (`xeResolveFocusedActiveIndex`) and applied it in add-element, popup, and double-click view paths
   - applied focused-element/index helpers across edit/move/member/remove/clear handlers in `xeMainForm` (`mniViewEditClick`, `mniViewSetToDefaultClick`, `mniViewMoveUpClick`, `mniViewMoveDownClick`, `mniViewNextMemberClick`, `mniViewPreviousMemberClick`, `mniViewRemoveClick`, `mniViewClearClick`) to reduce direct `Pred(vstView.FocusedColumn)` coupling
+  - removed remaining direct `Pred(vstView.FocusedColumn)` references in view interaction paths by reusing focused-index helpers in `mniViewAddClick`, `mniViewCopyMultipleToSelectedRecordsClick`, `vstViewKeyDown`, `vstViewNewText`, and `vstViewPaintText`
 - Extended `wbPlatform` helpers:
   - added `wbShowWindowNoActivate` wrapper for non-activating tip-form display
 - Started `xejviScriptAdapterMisc` decoupling:
