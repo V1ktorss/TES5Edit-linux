@@ -17630,27 +17630,26 @@ procedure TfrmMain.vstViewBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas
 var
   NodeDatas                   : PViewNodeDatas;
   Factor                      : Double;
+  ActiveColumn                : Integer;
 begin
   NodeDatas := Sender.GetNodeData(Node);
-  Dec(Column);
-  if Column > High(ActiveRecords) then
-    Column := High(ActiveRecords);
-  if Column >= 0 then begin
-    if not Assigned(NodeDatas[Column].Element) or (Column = ActiveIndex) then begin
+  ActiveColumn := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if ActiveColumn >= 0 then begin
+    if not Assigned(NodeDatas[ActiveColumn].Element) or (ActiveColumn = ActiveIndex) then begin
 
       Factor := 0.85;
 
-      if not Assigned(NodeDatas[Column].Element) then
+      if not Assigned(NodeDatas[ActiveColumn].Element) then
         Factor := Factor + 0.08;
 
-      if Column = ActiveIndex then begin
+      if ActiveColumn = ActiveIndex then begin
         Factor := Factor - 0.04;
-        if not Assigned(NodeDatas[Column].Element) then
+        if not Assigned(NodeDatas[ActiveColumn].Element) then
           Factor := Factor + 0.015;
       end;
 
-      if NodeDatas[Column].ConflictAll >= caNoConflict then
-        TargetCanvas.Brush.Color := wbLighter(ConflictAllToColor(NodeDatas[Column].ConflictAll), Factor)
+      if NodeDatas[ActiveColumn].ConflictAll >= caNoConflict then
+        TargetCanvas.Brush.Color := wbLighter(ConflictAllToColor(NodeDatas[ActiveColumn].ConflictAll), Factor)
       else
         Exit;
 
@@ -18071,10 +18070,11 @@ var
   r                           : TRect;
   Width                       : Integer;
   i                           : Integer;
+  ActiveColumn                : Integer;
   NodeDatas                   : PViewNodeDatas;
 begin
-  Dec(Column);
-  if InRange(Column, Low(ActiveRecords), High(ActiveRecords)) then begin
+  ActiveColumn := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if ActiveColumn >= 0 then begin
     if FindColors(Text, Colors) then begin
       if wbDontDrawColorText then
         DefaultDraw := False;
@@ -18110,7 +18110,7 @@ begin
 
     if DefaultDraw then begin
       NodeDatas := vstView.GetNodeData(Node);
-      with NodeDatas[Column] do
+      with NodeDatas[ActiveColumn] do
         if Assigned(Element) and (dfHideText in Element.Def.DefFlags) then
           DefaultDraw := False;
     end;
@@ -18131,11 +18131,8 @@ begin
   if not wbEditAllowed then
     Exit;
 
-  if Column < 1 then
-    Exit;
-  lColumn := Pred(Column);
-
-  if lColumn > High(ActiveRecords) then
+  lColumn := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if lColumn < 0 then
     Exit;
 
   NodeDatas := vstView.GetNodeData(Node);
@@ -18254,6 +18251,7 @@ end;
 procedure TfrmMain.vstViewFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
 var
   NodeDatas                   : PViewNodeDatas;
+  ActiveColumn                : Integer;
 begin
   if Column <> LastViewColumn then begin
     if ComparingSiblings then
@@ -18264,23 +18262,23 @@ begin
     LastViewColumn := Column;
   end;
 
-  Dec(Column);
+  ActiveColumn := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
 
   if not Assigned(frmLegend) then
     Exit;
-  if (Column < Low(ActiveRecords)) or (Column > High(ActiveRecords)) then
+  if ActiveColumn < 0 then
     Exit;
 
   NodeDatas := Sender.GetNodeData(Node);
   if not Assigned(NodeDatas) then
     Exit;
 
-  with NodeDatas[Column] do begin
+  with NodeDatas[ActiveColumn] do begin
     if Ord(ConflictAll) > 0 then
       frmLegend.dgLegend.Row := Ord(ConflictAll);
     if Ord(ConflictThis) > 0 then
       frmLegend.dgLegend.Col := Ord(ConflictThis)
-    else if Column = 0 then
+    else if ActiveColumn = 0 then
       frmLegend.dgLegend.Col := Ord(ctMaster);
   end;
 end;
@@ -18347,11 +18345,14 @@ var
   i,j          : Integer;
   UseSuffix    : Boolean;
   FocusedColumn: TColumnIndex;
+  ActiveColumn : Integer;
+  FocusedActiveIndex: Integer;
 begin
   CellText := '';
   NodeDatas := Sender.GetNodeData(Node);
 
-  if Pred(Column) > High(ActiveRecords) then
+  ActiveColumn := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if (Column >= 1) and (ActiveColumn < 0) then
     Exit;
 
   UseSuffix := False;
@@ -18364,9 +18365,9 @@ begin
       vstView.FocusedColumn,
       Length(ActiveRecords)
     );
-
-    if (FocusedColumn > 0) and (Pred(FocusedColumn) <= High(ActiveRecords)) then
-      Element := NodeDatas[Pred(FocusedColumn)].Element;
+    FocusedActiveIndex := xeResolveFocusedActiveIndex(FocusedColumn, Length(ActiveRecords));
+    if FocusedActiveIndex >= 0 then
+      Element := NodeDatas[FocusedActiveIndex].Element;
 
     UseSuffix := Assigned(Element);
 
@@ -18378,7 +18379,7 @@ begin
       end;
 
   end else
-    Element := NodeDatas[Pred(Column)].Element;
+    Element := NodeDatas[ActiveColumn].Element;
 
   if Assigned(Element) then begin
     if TextType = ttNormal then begin
@@ -18762,11 +18763,12 @@ procedure TfrmMain.vstViewMeasureTextWidth(Sender: TBaseVirtualTree; TargetCanva
 var
   NodeDatas : PViewNodeDatas;
   Colors : TArray<TColor>;
+  ActiveColumn: Integer;
 begin
-  Dec(Column);
-  if InRange(Column, Low(ActiveRecords), High(ActiveRecords)) then begin
+  ActiveColumn := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if ActiveColumn >= 0 then begin
     NodeDatas := vstView.GetNodeData(Node);
-    with NodeDatas[Column] do
+    with NodeDatas[ActiveColumn] do
       if Assigned(Element) and (dfHideText in Element.Def.DefFlags) then
         Extent := 0;
     if FindColors(Text, Colors) then
@@ -18786,8 +18788,8 @@ begin
 
   UserWasActive := True;
 
-  EditedActiveIndex := Pred(Column);
-  if not InRange(EditedActiveIndex, Low(ActiveRecords), High(ActiveRecords)) then
+  EditedActiveIndex := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if EditedActiveIndex < 0 then
     Exit;
 
   NodeDatas := vstView.GetNodeData(Node);
@@ -18831,21 +18833,22 @@ var
   SortKeyFocus                : string;
   SortKeyThis                 : string;
   FocusedColumn               : Integer;
+  ActiveColumn                : Integer;
 begin
   NodeDatas := Sender.GetNodeData(Node);
-  Dec(Column);
-  if Column > High(ActiveRecords) then
+  ActiveColumn := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if (Column >= 1) and (ActiveColumn < 0) then
     Exit;
 
   Modified := False;
   ReferencesInjected := False;
-  if Column >= 0 then begin
-    Element := NodeDatas[Column].Element;
+  if ActiveColumn >= 0 then begin
+    Element := NodeDatas[ActiveColumn].Element;
     if Assigned(Element) then begin
       Modified := Element.Modified;
       ReferencesInjected := Element.ReferencesInjected;
     end;
-    ConflictThis := NodeDatas[Column].ConflictThis
+    ConflictThis := NodeDatas[ActiveColumn].ConflictThis
   end
   else begin
     ConflictThis := ctUnknown;
@@ -18867,8 +18870,8 @@ begin
 
   FocusedColumn := xeResolveFocusedActiveIndex(vstView.FocusedColumn, Length(ActiveRecords));
 
-  if ComparingSiblings and (Column >= 0) and (FocusedColumn >= 0) and (Column <= High(ActiveRecords)) and (FocusedColumn <= High(ActiveRecords)) then
-    if Column = FocusedColumn then
+  if ComparingSiblings and (ActiveColumn >= 0) and (FocusedColumn >= 0) and (ActiveColumn <= High(ActiveRecords)) and (FocusedColumn <= High(ActiveRecords)) then
+    if ActiveColumn = FocusedColumn then
       ConflictThis := ctMaster
     else begin
 
@@ -18878,7 +18881,7 @@ begin
       else
         SortKeyFocus := '';
 
-      Element := NodeDatas[Column].Element;
+      Element := NodeDatas[ActiveColumn].Element;
       if Assigned(Element) then
         SortKeyThis := Element.DisplaySortKey[True]
       else
@@ -18918,12 +18921,13 @@ procedure TfrmMain.vstViewShortenString(Sender: TBaseVirtualTree; TargetCanvas: 
 var
   NodeDatas : PViewNodeDatas;
   Colors: TArray<TColor>;
+  ActiveColumn: Integer;
 begin
   Result := s;
-  Dec(Column);
-  if InRange(Column, Low(ActiveRecords), High(ActiveRecords)) then begin
+  ActiveColumn := xeResolveColumnActiveIndex(Column, Length(ActiveRecords));
+  if ActiveColumn >= 0 then begin
     NodeDatas := vstView.GetNodeData(Node);
-    with NodeDatas[Column] do
+    with NodeDatas[ActiveColumn] do
       if Assigned(Element) and (dfHideText in Element.Def.DefFlags) then
         Done := True;
     if not Done then begin

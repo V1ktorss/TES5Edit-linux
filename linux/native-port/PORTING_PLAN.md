@@ -466,6 +466,10 @@ This document tracks what is already done for the native Linux path and what com
 - Continued `xeMainForm` service extraction:
   - moved duplicated Pluggy/GameLink watch-loop message/orchestration into `xeMainFormServices.xeRunWatchStampLoopWithMessages`
   - `TPluggyLinkThread.Execute` and `TGameLinkThread.Execute` now use the shared service helper
+- Continued xEdit view-column decoupling in `xeMainForm`:
+  - replaced remaining direct `Pred/Dec(Column)` active-record index translations in key view handlers with `xeResolveColumnActiveIndex`
+  - updated focused-column element lookup in `vstViewGetText` to use `xeResolveFocusedActiveIndex` for consistent bounds handling
+  - covered handlers: `vstViewBeforeCellPaint`, `vstViewDrawText`, `vstViewEditing`, `vstViewFocusChanged`, `vstViewGetText`, `vstViewMeasureTextWidth`, `vstViewNewText`, `vstViewPaintText`, `vstViewShortenString`
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`
