@@ -459,6 +459,8 @@ function xeResolveColumnActiveIndex(
   const aColumn, aActiveRecordCount: Integer
 ): Integer;
 function xeMainRecordSupportsCopyAsNew(const aMainRecord: IwbMainRecord): Boolean;
+function xeElementsContainOnlyMainRecordsWithSharedSignature(const aSelection: TDynElements): Boolean;
+function xeElementsContainOnlyFiles(const aSelection: TDynElements): Boolean;
 function xeMainRecordsShareSignature(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsContainAnyVisibleWhenDistant(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsContainAnyNotVisibleWhenDistant(const aSelection: TDynMainRecords): Boolean;
@@ -2458,6 +2460,46 @@ begin
     (lSignature = 'LAND') or
     (lSignature = 'ROAD')
   );
+end;
+
+function xeElementsContainOnlyMainRecordsWithSharedSignature(const aSelection: TDynElements): Boolean;
+var
+  i: Integer;
+  lMainRecord: IwbMainRecord;
+  lSignature: TwbSignature;
+begin
+  Result := False;
+  if Length(aSelection) < 2 then
+    Exit;
+
+  if not Supports(aSelection[Low(aSelection)], IwbMainRecord, lMainRecord) then
+    Exit;
+  lSignature := lMainRecord.Signature;
+
+  for i := Succ(Low(aSelection)) to High(aSelection) do begin
+    if not Supports(aSelection[i], IwbMainRecord, lMainRecord) then
+      Exit;
+    if lMainRecord.Signature <> lSignature then
+      Exit;
+  end;
+
+  Result := True;
+end;
+
+function xeElementsContainOnlyFiles(const aSelection: TDynElements): Boolean;
+var
+  i: Integer;
+  lFile: IwbFile;
+begin
+  Result := False;
+  if Length(aSelection) < 2 then
+    Exit;
+
+  for i := Low(aSelection) to High(aSelection) do
+    if not Supports(aSelection[i], IwbFile, lFile) then
+      Exit;
+
+  Result := True;
 end;
 
 function xeMainRecordsShareSignature(const aSelection: TDynMainRecords): Boolean;

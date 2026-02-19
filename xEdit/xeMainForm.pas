@@ -899,6 +899,7 @@ type
     function SelectionIncludesOnlyREFR(Selection: TNodeArray): Boolean;
     function SelectionIncludesAnyNotVWD(Selection: TNodeArray): Boolean;
     function SelectionIncludesAnyVWD(Selection: TNodeArray): Boolean;
+    function TryResolveNavSelectionElements(var Selection: TNodeArray; out Elements: TDynElements): Boolean;
     function TryResolveNavSelectionMainRecords(var Selection: TNodeArray; out MainRecords: TDynMainRecords): Boolean;
     procedure CheckHistoryRemove(const aList: IInterfaceList; const aMainRecord: IwbMainRecord);
   protected
@@ -14904,6 +14905,7 @@ var
   _File                       : IwbFile;
   i                           : Integer;
   Nodes                       : TNodeArray;
+  SelectedElements            : TDynElements;
   lItemCount                  : Integer;
   lAddToMni                   : TMenuItem;
   IsMainRecord                : Boolean;
@@ -15078,42 +15080,17 @@ begin
   mniNavCompareSelected.Visible := False;
   if IsMainRecord then begin
     Nodes := vstNav.GetSortedSelection(True);
-    for i := Low(Nodes) to High(Nodes) do begin
-      NodeData := vstNav.GetNodeData(Nodes[i]);
-      if not Assigned(NodeData) then begin
-        Nodes := nil;
-        Break;
-      end;
-      Element := NodeData.Element;
-      if Element.ElementType <> etMainRecord then begin
-        Nodes := nil;
-        Break;
-      end;
-      if (Element as IwbMainRecord).Signature <> MainRecord.Signature then begin
-        Nodes := nil;
-        Break;
-      end;
-    end;
-    mniNavCompareSelected.Visible := Length(Nodes) > 1;
+    if TryResolveNavSelectionElements(Nodes, SelectedElements) and
+       xeElementsContainOnlyMainRecordsWithSharedSignature(SelectedElements) then
+      mniNavCompareSelected.Visible := True;
     mniNavCompareSelected.Caption := 'Compare Selected ('+Length(Nodes).ToString+')';
   end;
 
   mniNavCreateModGroup.Visible := False;
   if Supports(Element, IwbFile, _File) then begin
     Nodes := vstNav.GetSortedSelection(True);
-    for i := Low(Nodes) to High(Nodes) do begin
-      NodeData := vstNav.GetNodeData(Nodes[i]);
-      if not Assigned(NodeData) then begin
-        Nodes := nil;
-        Break;
-      end;
-      Element := NodeData.Element;
-      if Element.ElementType <> etFile then begin
-        Nodes := nil;
-        Break;
-      end;
-    end;
-    mniNavCreateModGroup.Visible := Length(Nodes) > 1;
+    if TryResolveNavSelectionElements(Nodes, SelectedElements) then
+      mniNavCreateModGroup.Visible := xeElementsContainOnlyFiles(SelectedElements);
   end;
 
   mniNavEditModGroup.Visible := Length(wbModGroupsByName(False)) > 0;
@@ -15957,6 +15934,32 @@ begin
     if not Supports(lNodeData.Element, IwbMainRecord, lMainRecord) then
       Exit(False);
     MainRecords[i] := lMainRecord;
+  end;
+
+  Result := True;
+end;
+
+function TfrmMain.TryResolveNavSelectionElements(var Selection: TNodeArray; out Elements: TDynElements): Boolean;
+var
+  i: Integer;
+  lNodeData: PNavNodeData;
+begin
+  if Length(Selection) = 0 then
+    Selection := vstNav.GetSortedSelection(True);
+  if Length(Selection) < 1 then begin
+    SetLength(Elements, 0);
+    Exit(False);
+  end;
+
+  SetLength(Elements, Length(Selection));
+
+  for i := Low(Selection) to High(Selection) do begin
+    lNodeData := vstNav.GetNodeData(Selection[i]);
+    if not Assigned(lNodeData) then
+      Exit(False);
+    Elements[i] := lNodeData.Element;
+    if not Assigned(Elements[i]) then
+      Exit(False);
   end;
 
   Result := True;
