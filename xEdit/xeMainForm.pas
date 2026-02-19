@@ -899,6 +899,7 @@ type
     function SelectionIncludesOnlyREFR(Selection: TNodeArray): Boolean;
     function SelectionIncludesAnyNotVWD(Selection: TNodeArray): Boolean;
     function SelectionIncludesAnyVWD(Selection: TNodeArray): Boolean;
+    function TryResolveNavSelectionMainRecords(var Selection: TNodeArray; out MainRecords: TDynMainRecords): Boolean;
     procedure CheckHistoryRemove(const aList: IInterfaceList; const aMainRecord: IwbMainRecord);
   protected
     procedure UpdateColumnWidths;
@@ -15935,52 +15936,51 @@ begin
   Result := False;
 end;
 
-function TfrmMain.SelectionIncludesAnyNotVWD(Selection: TNodeArray): Boolean;
+function TfrmMain.TryResolveNavSelectionMainRecords(var Selection: TNodeArray; out MainRecords: TDynMainRecords): Boolean;
 var
-  i                           : Integer;
-  NodeData                    : PNavNodeData;
-  MainRecord                  : IwbMainRecord;
+  i: Integer;
+  lNodeData: PNavNodeData;
+  lMainRecord: IwbMainRecord;
 begin
-  Result := False;
   if Length(Selection) = 0 then
     Selection := vstNav.GetSortedSelection(True);
-  if Length(Selection) < 1 then
-    Exit;
-  for i := Low(Selection) to High(Selection) do begin
-    NodeData := vstNav.GetNodeData(Selection[i]);
-    if Assigned(NodeData) then begin
-      if Supports(NodeData.Element, IwbMainRecord, MainRecord) then begin
-        if not MainRecord.IsVisibleWhenDistant then begin
-          Result := True;
-          Exit;
-        end;
-      end;
-    end;
+  if Length(Selection) < 1 then begin
+    SetLength(MainRecords, 0);
+    Exit(False);
   end;
+
+  SetLength(MainRecords, Length(Selection));
+
+  for i := Low(Selection) to High(Selection) do begin
+    lNodeData := vstNav.GetNodeData(Selection[i]);
+    if not Assigned(lNodeData) then
+      Exit(False);
+    if not Supports(lNodeData.Element, IwbMainRecord, lMainRecord) then
+      Exit(False);
+    MainRecords[i] := lMainRecord;
+  end;
+
+  Result := True;
+end;
+
+function TfrmMain.SelectionIncludesAnyNotVWD(Selection: TNodeArray): Boolean;
+var
+  MainRecords: TDynMainRecords;
+begin
+  Result := False;
+  if not TryResolveNavSelectionMainRecords(Selection, MainRecords) then
+    Exit;
+  Result := xeMainRecordsContainAnyNotVisibleWhenDistant(MainRecords);
 end;
 
 function TfrmMain.SelectionIncludesAnyVWD(Selection: TNodeArray): Boolean;
 var
-  i                           : Integer;
-  NodeData                    : PNavNodeData;
-  MainRecord                  : IwbMainRecord;
+  MainRecords: TDynMainRecords;
 begin
   Result := False;
-  if Length(Selection) = 0 then
-    Selection := vstNav.GetSortedSelection(True);
-  if Length(Selection) < 1 then
+  if not TryResolveNavSelectionMainRecords(Selection, MainRecords) then
     Exit;
-  for i := Low(Selection) to High(Selection) do begin
-    NodeData := vstNav.GetNodeData(Selection[i]);
-    if Assigned(NodeData) then begin
-      if Supports(NodeData.Element, IwbMainRecord, MainRecord) then begin
-        if MainRecord.IsVisibleWhenDistant then begin
-          Result := True;
-          Exit;
-        end;
-      end;
-    end;
-  end;
+  Result := xeMainRecordsContainAnyVisibleWhenDistant(MainRecords);
 end;
 
 function TfrmMain.SelectionIncludesNonCopyNewRecords: Boolean;
@@ -16044,27 +16044,12 @@ end;
 
 function TfrmMain.SelectionIncludesOnlyREFR(Selection: TNodeArray): Boolean;
 var
-  i                           : Integer;
-  NodeData                    : PNavNodeData;
-  MainRecord                  : IwbMainRecord;
-  Signature                   : TwbSignature;
+  MainRecords: TDynMainRecords;
 begin
   Result := False;
-  if Length(Selection) = 0 then
-    Selection := vstNav.GetSortedSelection(True);
-  if Length(Selection) < 1 then
+  if not TryResolveNavSelectionMainRecords(Selection, MainRecords) then
     Exit;
-  for i := Low(Selection) to High(Selection) do begin
-    NodeData := vstNav.GetNodeData(Selection[i]);
-    if Assigned(NodeData) then begin
-      if not Supports(NodeData.Element, IwbMainRecord, MainRecord) then
-        Exit;
-      Signature := MainRecord.Signature;
-      if (Signature <> 'REFR') then
-          Exit;
-    end;
-  end;
-  Result := True;
+  Result := xeMainRecordsContainOnlySignature(MainRecords, 'REFR');
 end;
 
 procedure TfrmMain.SendAddFile(const aFile: IwbFile);

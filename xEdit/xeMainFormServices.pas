@@ -460,6 +460,9 @@ function xeResolveColumnActiveIndex(
 ): Integer;
 function xeMainRecordSupportsCopyAsNew(const aMainRecord: IwbMainRecord): Boolean;
 function xeMainRecordsShareSignature(const aSelection: TDynMainRecords): Boolean;
+function xeMainRecordsContainAnyVisibleWhenDistant(const aSelection: TDynMainRecords): Boolean;
+function xeMainRecordsContainAnyNotVisibleWhenDistant(const aSelection: TDynMainRecords): Boolean;
+function xeMainRecordsContainOnlySignature(const aSelection: TDynMainRecords; const aSignature: TwbSignature): Boolean;
 function xeMainRecordsIncludeAnyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsIncludeNonCopyNewRecords(const aSelection: TDynMainRecords): Boolean;
 function xeMainRecordsIncludeOnlyDeepCopyRecords(const aSelection: TDynMainRecords): Boolean;
@@ -2475,6 +2478,56 @@ begin
     if not Assigned(lMainRecord) then
       Exit;
     if lMainRecord.Signature <> lSignature then
+      Exit;
+  end;
+
+  Result := True;
+end;
+
+function xeMainRecordsContainAnyVisibleWhenDistant(const aSelection: TDynMainRecords): Boolean;
+var
+  i: Integer;
+  lMainRecord: IwbMainRecord;
+begin
+  Result := False;
+  for i := Low(aSelection) to High(aSelection) do begin
+    lMainRecord := aSelection[i];
+    if Assigned(lMainRecord) and lMainRecord.IsVisibleWhenDistant then begin
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
+function xeMainRecordsContainAnyNotVisibleWhenDistant(const aSelection: TDynMainRecords): Boolean;
+var
+  i: Integer;
+  lMainRecord: IwbMainRecord;
+begin
+  Result := False;
+  for i := Low(aSelection) to High(aSelection) do begin
+    lMainRecord := aSelection[i];
+    if Assigned(lMainRecord) and (not lMainRecord.IsVisibleWhenDistant) then begin
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
+function xeMainRecordsContainOnlySignature(const aSelection: TDynMainRecords; const aSignature: TwbSignature): Boolean;
+var
+  i: Integer;
+  lMainRecord: IwbMainRecord;
+begin
+  Result := False;
+  if Length(aSelection) = 0 then
+    Exit;
+
+  for i := Low(aSelection) to High(aSelection) do begin
+    lMainRecord := aSelection[i];
+    if not Assigned(lMainRecord) then
+      Exit;
+    if lMainRecord.Signature <> aSignature then
       Exit;
   end;
 

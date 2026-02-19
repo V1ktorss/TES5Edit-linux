@@ -476,6 +476,7 @@ This document tracks what is already done for the native Linux path and what com
   - centralized copy-as-new signature policy in `xeMainFormServices` (`xeMainRecordSupportsCopyAsNew`) and reused it in both RefBy selection checks and header popup visibility logic
   - moved RefBy VWD eligibility evaluation (`REFR`/editable checks + VWD/not-VWD detection) into `xeMainFormServices` (`xeTryEvaluateRefByVwdSelection`) and simplified `pmuRefByPopup`
   - moved RefBy compare-signature gate into `xeMainFormServices` (`xeMainRecordsShareSignature`) and removed inline signature-loop logic from `pmuRefByPopup`
+  - moved Nav selection predicates to main-record services (`xeMainRecordsContainAnyVisibleWhenDistant`, `xeMainRecordsContainAnyNotVisibleWhenDistant`, `xeMainRecordsContainOnlySignature`) and unified node-to-main-record conversion in `xeMainForm.TryResolveNavSelectionMainRecords`
 
 2. Add basic CI job (Linux) for:
 - Implemented workflow: `.github/workflows/bsarch-linux-ci.yml`
