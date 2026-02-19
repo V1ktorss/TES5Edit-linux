@@ -20433,19 +20433,8 @@ begin
 end;
 
 procedure TfrmMain.HandleUserAddMessage(aPayload: NativeUInt);
-var
-  t : string;
-  Strs: TStringDynArray;
-  s: string;
 begin
-  t := xeTakePostedStringPayload(aPayload);
-  if not Assigned(NewMessages) then
-    NewMessages := TStringList.Create;
-
-  Strs := xeSplitPostedMessageLines(t);
-
-  for s in Strs do
-    NewMessages.Add(s);
+  xeAppendPostedMessageLines(aPayload, NewMessages);
 end;
 
 procedure TfrmMain.HandleUserAddFile(aFilePtr: NativeUInt);

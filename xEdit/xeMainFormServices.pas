@@ -62,6 +62,7 @@ function xeTryEnsureSettingsLoaded(var aSettings: TMemIniFile; const aSettingsFi
 function xeDetachPostedStringPayload(const aText: string): NativeUInt;
 function xeTakePostedStringPayload(const aPayload: NativeUInt): string;
 function xeSplitPostedMessageLines(const aText: string): TStringDynArray;
+procedure xeAppendPostedMessageLines(const aPayload: NativeUInt; var aLines: TStringList);
 function xeHandleThreadShutdown(
   const aThread: TThread;
   const aRequestTerminate, aAllowForceTerminate: Boolean
@@ -541,6 +542,21 @@ begin
   Result := aText.Split(CRLF);
   if Length(Result) < 1 then
     SetLength(Result, 1);
+end;
+
+procedure xeAppendPostedMessageLines(const aPayload: NativeUInt; var aLines: TStringList);
+var
+  lText: string;
+  lLines: TStringDynArray;
+  i: Integer;
+begin
+  lText := xeTakePostedStringPayload(aPayload);
+  if not Assigned(aLines) then
+    aLines := TStringList.Create;
+
+  lLines := xeSplitPostedMessageLines(lText);
+  for i := Low(lLines) to High(lLines) do
+    aLines.Add(lLines[i]);
 end;
 
 function xeHandleThreadShutdown(
